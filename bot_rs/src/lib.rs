@@ -31,11 +31,37 @@ fn log(msg: &str) {
 
 #[no_mangle]
 pub extern "C" fn setup(request_reserve: usize) -> usize {
-    log("Rust -> wasm reporting!");
     let msg = format!("Reserving space for {} bytes.", request_reserve);
     log(&msg);
     unsafe {
         HOST_RESERVE.resize(request_reserve, 0);
+    }
+
+    let version_str = env!("CARGO_PKG_VERSION");
+    let mut version_parts = version_str.split('.');
+    let major: u32 = version_parts.next().unwrap_or("0").parse().unwrap_or(0);
+    let minor: u32 = version_parts.next().unwrap_or("0").parse().unwrap_or(0);
+    let patch: u32 = version_parts.next().unwrap_or("0").parse().unwrap_or(0);
+    let version = vec![major, minor, patch];
+
+    const MAX_NAME_LEN: usize = 20;
+    let name = env!("CARGO_PKG_NAME");
+    let name_len = std::cmp::min(MAX_NAME_LEN, name.len());
+    let mut offset = 0;
+    unsafe {
+        HOST_RESERVE[offset..offset+name_len].clone_from_slice(&name.as_bytes()[0..name_len]);
+        HOST_RESERVE[name_len..MAX_NAME_LEN].fill(0);
+    }
+    offset += MAX_NAME_LEN;
+    version.iter().for_each(|ve| {
+        let bytes = ve.to_le_bytes();
+        unsafe {
+            HOST_RESERVE[offset..offset+std::mem::size_of::<u32>()].clone_from_slice(&bytes);
+        }
+        offset += std::mem::size_of::<u32>()
+    });
+
+    unsafe {
         HOST_RESERVE.as_mut_ptr() as usize
     }
 }
@@ -67,7 +93,6 @@ pub extern "C" fn runFib(offset: usize, result: usize) -> bool {
     }
 
     let fib_num = fib(n.into());
-    let fib_num_bytes = fib_num.to_le_bytes();
-    write_host_bytes(result, &fib_num_bytes);
+    write_host_bytes(result, &fib_num.to_le_bytes());
     true
 }

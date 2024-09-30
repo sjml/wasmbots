@@ -1,0 +1,64 @@
+API
+    - called from engine:
+        - Receive -- takes a JSON string response to the last command
+    - called from WASM:
+        - Output -- takes a JSON string command output
+
+(all numbers just examples)
+
+When engine calls receive: 
+    - sends a JSON string to WASM, according to defined protocol
+    - starts a timer for 200ms
+    - at 150ms, warns of impending shutdown
+    - at 200ms, shuts down
+    - if WASM calls Output before timer runs out, it shuts down gracefully
+    - Engine will only tick every 250ms *at most* (no guarantees, but shouldn't matter)
+
+WASM can only run in response to a Receive call?
+File size limit on uploaded WASM? (Pyiodide minimum is around 10 MB, for reference)
+Promise size of JSON string sent to Receive? (similarly, limit string given to Output?)
+
+
+Protocol:
+    Messages from Engine:
+        - HandshakeOpening:
+            - gives an input string and requests a simple checksum
+        - Opening:
+            - immediate surroundings
+            - given circumstances (goal, etc?)
+        - Surroundings:
+            - what is visible within a 3 square radius (modified if dark, if obstructed, if different race, etc)
+        - AttackResult
+        - SpellResult
+        - Failure: 
+            - if last command was understood but did not work (Move into a wall, for example)
+        - Error:
+            - if last command was not understood
+        - Shutdown:
+            - reason we're shutting down (GameOver_Death, GameOver_Victory, InvalidHandshake, PlayerRequest, etc.)
+            - final circumstances
+        - HTTPResponse
+            - code
+            - headers
+            - body
+    Messages from WASM:
+        - HandshakeResponse:
+            - returns the checksum along with the program name, program version, and protocol version understood
+        - Move (target)
+            - Response: Failure or Surroundings
+        - Attack (target)
+            - Response: AttackResult
+        - Spell (spell type, target if applicable)
+            - Response: SpellResult
+        - Wait
+            - Response: Surroundings
+        - Look
+            - Response: Surroundings
+        - Quit
+            - Response: Shutdown
+        - HTTPRequest
+            - id -- self-created string
+            - url
+            - headers
+            - body
+            - Response: HTTPResponse

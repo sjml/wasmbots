@@ -1,6 +1,11 @@
 @external("env", "logFunction")
 declare function logFunction(msgPtr: usize, msgLen: usize): void;
 
+// as with zig, would be nice to be able to pull from
+//   the build config, but alack
+const BOT_NAME = "bot_as";
+const VERSION = [0, 1, 0];
+
 var HOST_RESERVE = new Uint8Array(0);
 
 function log(msg: string): void {
@@ -9,10 +14,26 @@ function log(msg: string): void {
 }
 
 export function setup(requestReserve: usize): usize {
-    log("AssemblyScript -> wasm reporting!");
     const msg = `Reserving space for ${requestReserve} bytes.`;
     log(msg);
     HOST_RESERVE = new Uint8Array(requestReserve as i32);
+
+    const dv = new DataView(HOST_RESERVE.buffer);
+    const MAX_NAME_LEN = 20;
+    const nameLen = min(MAX_NAME_LEN, BOT_NAME.length);
+    let offset = 0;
+
+    const bn8 = String.UTF8.encode(BOT_NAME);
+    const bn8a = Uint8Array.wrap(bn8);
+    HOST_RESERVE.set(bn8a, 0);
+    HOST_RESERVE.fill(0, nameLen, MAX_NAME_LEN);
+    offset += MAX_NAME_LEN;
+
+    for (let i=0; i < VERSION.length; i++) {
+        dv.setUint32(offset, VERSION[i], true);
+        offset += 4;
+    }
+
     return HOST_RESERVE.dataStart;
 }
 

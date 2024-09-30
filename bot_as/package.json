@@ -1,6 +1,6 @@
 {
   "name": "bot_as",
-  "version": "1.0.0",
+  "version": "0.1.0",
   "main": "index.js",
   "scripts": {
     "asbuild": "asc assembly/index.ts"
