@@ -1,7 +1,7 @@
 extern void logFunction(unsigned int msgPtr, unsigned int msgLen);
 
 // not wanting to bring in <string.h> just for this
-unsigned int strlen(const char* ptr) {
+unsigned int _strlen(const char* ptr) {
     unsigned int count = 0;
     while (*ptr != '\0') {
         count++;
@@ -13,5 +13,5 @@ unsigned int strlen(const char* ptr) {
 void run() {
     const char* msg = "C -> wasm reporting!";
 
-    logFunction((unsigned int)msg, strlen(msg));
+    logFunction((unsigned int)msg, _strlen(msg));
 }

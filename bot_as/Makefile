@@ -1,15 +1,14 @@
 
-build/release.wasm: assembly/index.ts
-	npm run asbuild:release
+build/bot_as.wasm: assembly/index.ts
+	npm run asbuild
 
-build/release.wat: build/release.wasm
+build/bot_as.wat: build/bot_as.wasm
 
 .PHONY: all
-all: build/release.wasm build/release.wat
+all: build/bot_as.wasm build/bot_as.wat
 
 .PHONY: install
 install: all
-	mv build/release.wasm ../built_bots/bot_as.wasm
-	mv build/release.wat ../built_bots/bot_as.wat
+	mv build/bot_as.wa* ../built_bots/
 
 .DEFAULT_GOAL = all

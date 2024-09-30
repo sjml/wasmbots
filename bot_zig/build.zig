@@ -17,6 +17,12 @@ pub fn build(b: *std.Build) void {
 
     exe.rdynamic = true;
 
+    // wasm memory limits
+    exe.import_memory = true;
+    exe.initial_memory = 1048576;
+    exe.max_memory = 1048576;
+    exe.stack_size = 1024;
+
     exe.entry = .disabled;
 
     b.installArtifact(exe);

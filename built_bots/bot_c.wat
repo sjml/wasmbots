@@ -2,9 +2,10 @@
   (type (;0;) (func (param i32 i32)))
   (type (;1;) (func))
   (type (;2;) (func (param i32) (result i32)))
+  (import "env" "memory" (memory (;0;) 2))
   (import "env" "logFunction" (func $logFunction (type 0)))
   (func $__wasm_call_ctors (type 1))
-  (func $strlen (type 2) (param i32) (result i32)
+  (func $_strlen (type 2) (param i32) (result i32)
     (local i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32)
     global.get $__stack_pointer
     local.set 1
@@ -99,7 +100,7 @@
     i32.load offset=12
     local.set 5
     local.get 5
-    call $strlen
+    call $_strlen
     local.set 6
     local.get 4
     local.get 6
@@ -113,7 +114,6 @@
     local.get 8
     global.set $__stack_pointer
     return)
-  (memory (;0;) 2)
   (global $__stack_pointer (mut i32) (i32.const 66592))
   (global (;1;) i32 (i32.const 1024))
   (global (;2;) i32 (i32.const 1045))
@@ -124,9 +124,8 @@
   (global (;7;) i32 (i32.const 131072))
   (global (;8;) i32 (i32.const 0))
   (global (;9;) i32 (i32.const 1))
-  (export "memory" (memory 0))
   (export "__wasm_call_ctors" (func $__wasm_call_ctors))
-  (export "strlen" (func $strlen))
+  (export "_strlen" (func $_strlen))
   (export "run" (func $run))
   (export "__dso_handle" (global 1))
   (export "__data_end" (global 2))
