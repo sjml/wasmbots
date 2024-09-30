@@ -2,7 +2,8 @@
 
 set -e
 
-cd "$(dirname "0")"
+cd "$(dirname "$0")"
+cd ..
 
 for bot_dir in $(ls -d ./bot_*); do
   pushd $bot_dir

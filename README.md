@@ -8,6 +8,15 @@ At the moment, each of them implements:
 
 The `runFib` functions all intentionally use an inefficient recursive Fibonacci algorithm, just to show that some actual computation is happening. The host only asks for the 42nd Fibonacci number (267,914,296) right now, so none of them churn for _too_ long. 
 
+## Testing
+
+Prereqs on macOS; modify this appropriately if you're using something else: 
+```
+brew install emscripten wabt deno zig rust node
+```
+
+Run [`scripts/build_and_run_wasms.sh`](./scripts/build_and_run_wasms.sh). 
+
 ## (Lack of) Memory Constraints
 
 My original idea was to limit the memory sizes of the WASM programs to something very small, just as an exercise in old-school parsimony. At first just a single page of memory (64k) then I went up to a megabyte... but what I found was that when the WASM **host** manages memory, the programs themselves have to be compiled with directives to import their memory, and you also have to manually tell them how much to expect to have. Seems simple enough EXCEPT most programming languages these days don't seem to play well with such restrictions, at least not if I make them low enough to be interesting. Rust's default allocator in particular [doesn't work if it can't grow the memory](https://github.com/rustwasm/wasm-bindgen/issues/1389#issuecomment-476224477). 

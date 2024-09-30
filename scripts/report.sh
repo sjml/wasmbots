@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+cd "$(dirname "$0")"
+cd ..
+
 output="Bot:WASM:WAT:WASM.gz\n---:----:---:-------\n"
 
 for wasm in $(ls -S built_bots/*.wasm); do
