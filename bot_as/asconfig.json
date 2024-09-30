@@ -1,4 +1,11 @@
 {
+  "targets": {
+    "memoryImport": {
+      "importMemory": true,
+      "initialMemory": 1,
+      "maximumMemory": 16
+    }
+  },
   "options": {
     "outFile": "build/bot_as.wasm",
     "textFile": "build/bot_as.wat",
@@ -7,9 +14,6 @@
     "shrinkLevel": 0,
     "converge": false,
     "noAssert": false,
-    "bindings": "esm",
-    "importMemory": true,
-    "initialMemory": 16,
-    "maximumMemory": 16
+    "bindings": "esm"
   }
 }

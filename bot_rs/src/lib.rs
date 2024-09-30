@@ -1,29 +1,71 @@
-#[link(wasm_import_module = "env")]
-extern "C" {
-    pub static mut memory: *mut u8;
-}
+static mut HOST_RESERVE: Vec<u8> = Vec::new();
 
 extern "C" {
     #[link_name = "logFunction"]
-    fn log_function(msg_ptr: usize, msg_len: usize);
+    fn host_log_function(msg_ptr: usize, msg_len: usize);
 }
 
-#[no_mangle]
-pub extern "C" fn run() {
-    let msg = "Rust -> wasm reporting!";
+fn get_host_reserve_len() -> usize {
     unsafe {
-        log_function(msg.as_ptr() as usize, msg.len() as usize);
+        return HOST_RESERVE.len();
+    }
+}
+
+fn read_host_byte(offset: usize) -> u8 {
+    unsafe {
+        return HOST_RESERVE[offset];
+    }
+}
+
+fn write_host_bytes(offset: usize, bytes: &[u8]) {
+    unsafe {
+        HOST_RESERVE[offset..offset+bytes.len()].clone_from_slice(bytes);
+    }
+}
+
+fn log(msg: &str) {
+    unsafe {
+        host_log_function(msg.as_ptr() as usize, msg.len() as usize);
     }
 }
 
 #[no_mangle]
-pub extern "C" fn modmem() {
+pub extern "C" fn setup(request_reserve: usize) -> usize {
+    log("Rust -> wasm reporting!");
     unsafe {
-        let write_slice = std::slice::from_raw_parts_mut(memory, 8);
+        HOST_RESERVE.resize(request_reserve, 0);
+        HOST_RESERVE.as_mut_ptr() as usize
+     }
+}
 
-        write_slice[1] =  16;
-        write_slice[3] =  32;
-        write_slice[5] =  64;
-        write_slice[7] = 128;
+// not efficient, you know
+fn fib(n: u64) -> u64 {
+    if n < 2 {
+        n
     }
+    else {
+        fib(n-2) + fib(n-1)
+    }
+}
+
+#[no_mangle]
+pub extern "C" fn runFib(offset: usize, result: usize) -> bool {
+    if result + std::mem::size_of::<u64>() > get_host_reserve_len() {
+        log("Invalid result offset");
+        return false;
+    }
+    if offset > get_host_reserve_len() {
+        log("Invalid offset");
+        return false;
+    }
+    let n = read_host_byte(offset);
+    if n > 93 {
+        log("Fib index too high");
+        return false;
+    }
+
+    let fib_num = fib(n.into());
+    let fib_num_bytes = fib_num.to_le_bytes();
+    write_host_bytes(result, &fib_num_bytes);
+    true
 }
