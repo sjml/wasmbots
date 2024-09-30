@@ -10,6 +10,8 @@ function log(msg: string): void {
 
 export function setup(requestReserve: usize): usize {
     log("AssemblyScript -> wasm reporting!");
+    const msg = `Reserving space for ${requestReserve} bytes.`;
+    log(msg);
     HOST_RESERVE = new Uint8Array(requestReserve as i32);
     return HOST_RESERVE.dataStart;
 }

@@ -14,7 +14,7 @@ function log(msgPtr: number, msgLen: number) {
     // const av = new Uint8Array(SHARED_MEMORY.buffer, msgPtr, msgLen);
     const av = new Uint8Array((instance.exports.memory as WebAssembly.Memory).buffer, msgPtr, msgLen);
     const logStr = new TextDecoder("utf-8").decode(av);
-    console.log(`${new Date().toISOString()} (${msgPtr}, ${msgLen}):\n    "${logStr}"`);
+    console.log(`${new Date().toISOString()} (${msgPtr}, ${msgLen}):\n    ${logStr}`);
 }
 
 const { instance } = await WebAssembly.instantiate(programBuffer, {
@@ -46,6 +46,6 @@ if (exp.runFib != undefined) {
     if (exp.runFib(fibIdxLoc, resultLoc)) {
         const dv = new DataView(reserveArea.buffer, reserveArea.byteOffset, reserveArea.byteLength);
         const result = dv.getBigUint64(resultLoc, true);
-        console.log(`        Got result ${result} for Fibonacci index ${fibIdx}.`)
+        console.log(`        Got result ${result} (${result == 267914296n ? "correct" : "WRONG"}) for Fibonacci index ${fibIdx}.`)
     }
 }

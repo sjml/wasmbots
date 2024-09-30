@@ -2,6 +2,7 @@
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
 
 const uint8_t* HOST_RESERVE = 0;
 size_t HOST_RESERVE_SIZE = 0;
@@ -14,6 +15,11 @@ void _log(const char* msg) {
 
 size_t setup(size_t requestReserve) {
     _log("C -> wasm reporting!");
+    size_t buffSizeNeeded = snprintf(NULL, 0, "Reserving space for %zu bytes.", requestReserve);
+    char* msgBuffer = malloc(buffSizeNeeded+1);
+    sprintf(msgBuffer, "Reserving space for %zu bytes.", requestReserve);
+    _log(msgBuffer);
+    free(msgBuffer);
     HOST_RESERVE = malloc(requestReserve);
     HOST_RESERVE_SIZE = requestReserve;
     return (size_t)HOST_RESERVE;

@@ -32,10 +32,12 @@ fn log(msg: &str) {
 #[no_mangle]
 pub extern "C" fn setup(request_reserve: usize) -> usize {
     log("Rust -> wasm reporting!");
+    let msg = format!("Reserving space for {} bytes.", request_reserve);
+    log(&msg);
     unsafe {
         HOST_RESERVE.resize(request_reserve, 0);
         HOST_RESERVE.as_mut_ptr() as usize
-     }
+    }
 }
 
 // not efficient, you know

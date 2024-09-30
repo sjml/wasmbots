@@ -11,10 +11,14 @@ fn log(msg: []const u8) void {
 }
 
 export fn setup(requestReserve: usize) usize {
-    log("Zig -> wasm reporting!");
-
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     GLOBAL_ALLOCATOR = gpa.allocator();
+
+    log("Zig -> wasm reporting!");
+    const msg = std.fmt.allocPrint(GLOBAL_ALLOCATOR, "Reserving space for {d} bytes.", .{requestReserve}) catch @panic("Error allocating formatted string");
+    log(msg);
+    defer GLOBAL_ALLOCATOR.free(msg);
+
     HOST_RESERVE = GLOBAL_ALLOCATOR.alloc(u8, requestReserve) catch @panic("Error allocating host reserve memory.");
     return @intFromPtr(HOST_RESERVE.ptr);
 }
