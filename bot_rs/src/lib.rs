@@ -1,5 +1,7 @@
 static mut HOST_RESERVE: Vec<u8> = Vec::new();
 
+const GP_VERSION: u16 = 7;
+
 extern "C" {
     #[link_name = "logFunction"]
     fn host_log_function(msg_ptr: usize, msg_len: usize);
@@ -14,6 +16,13 @@ fn get_host_reserve_len() -> usize {
 fn read_host_byte(offset: usize) -> u8 {
     unsafe {
         return HOST_RESERVE[offset];
+    }
+}
+
+fn read_host_u16(offset: usize) -> u16 {
+    unsafe {
+        let bytes: [u8; 2] = HOST_RESERVE[offset..offset+2].try_into().expect("couldn't convert to u16");
+        u16::from_le_bytes(bytes)
     }
 }
 
@@ -39,12 +48,12 @@ pub extern "C" fn setup(request_reserve: usize) -> usize {
 
     let version_str = env!("CARGO_PKG_VERSION");
     let mut version_parts = version_str.split('.');
-    let major: u32 = version_parts.next().unwrap_or("0").parse().unwrap_or(0);
-    let minor: u32 = version_parts.next().unwrap_or("0").parse().unwrap_or(0);
-    let patch: u32 = version_parts.next().unwrap_or("0").parse().unwrap_or(0);
+    let major: u16 = version_parts.next().unwrap_or("0").parse().unwrap_or(0);
+    let minor: u16 = version_parts.next().unwrap_or("0").parse().unwrap_or(0);
+    let patch: u16 = version_parts.next().unwrap_or("0").parse().unwrap_or(0);
     let version = vec![major, minor, patch];
 
-    const MAX_NAME_LEN: usize = 20;
+    const MAX_NAME_LEN: usize = 26;
     let name = env!("CARGO_PKG_NAME");
     let name_len = std::cmp::min(MAX_NAME_LEN, name.len());
     let mut offset = 0;
@@ -56,14 +65,27 @@ pub extern "C" fn setup(request_reserve: usize) -> usize {
     version.iter().for_each(|ve| {
         let bytes = ve.to_le_bytes();
         unsafe {
-            HOST_RESERVE[offset..offset+std::mem::size_of::<u32>()].clone_from_slice(&bytes);
+            HOST_RESERVE[offset..offset+std::mem::size_of::<u16>()].clone_from_slice(&bytes);
         }
-        offset += std::mem::size_of::<u32>()
+        offset += std::mem::size_of::<u16>()
     });
 
     unsafe {
         HOST_RESERVE.as_mut_ptr() as usize
     }
+}
+
+#[no_mangle]
+pub extern "C" fn receiveGameParams(offset: usize) -> bool {
+    let gp_version = read_host_u16(offset);
+    if gp_version != GP_VERSION {
+        log(&format!("ERROR: Can't parse GameParams v{}; only prepared for v{}", gp_version, GP_VERSION));
+        return false;
+    }
+
+    // don't care about rest
+
+    true
 }
 
 // not efficient, you know

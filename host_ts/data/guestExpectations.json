@@ -1,0 +1,29 @@
+{
+  "memory": "exported",
+  "functionExports": {
+    "setup": {
+      "doc": "called at startup; do whatever you need to do here but also reserve a block of memory for the engine to use later. also write 32 bytes to that memory: the first 26 a utf-8 string of the program name (null-terminated if length < 26) and then 3 u16s in a row indicating semver major.minor.patch",
+      "paramsDoc": ["how many bytes of continguous memory to reserve for the host"],
+      "returnDoc": ["a pointer to where in the linear memory the reserved block begins"],
+      "params": ["i32"],
+      "return": "i32"
+    },
+    "receiveGameParams": {
+      "doc": "called after the setup function; the initial game circumstances (specced in `circumstances.json`) are currently sitting in the reserved memory block. they won't stay there, so copy out anything you need.",
+      "paramsDoc": ["the offset in the shared memory where the circumstances begin"],
+      "returnDoc": ["a boolean value saying whether or not we can proceed (if something in the circumstances means we can't run, for example)"],
+      "params": ["i32"],
+      "return": "i32"
+    },
+    "runFib": {
+      "doc": "just for example purposes; calculate a Fibonacci number while reading and writing from shared memory",
+      "paramsDoc": [
+        "where in memory to find the single byte telling you which Fibonacci number to calculate",
+        "the memory location to write the result as a u64"
+      ],
+      "returnDoc": "a boolean value saying whether the function was successful; if not it will have logged a reason",
+      "params": ["i32", "i32"],
+      "return": "i32"
+    }
+  }
+}

@@ -16,7 +16,10 @@ if (!valid) {
     Deno.exit(1);
 }
 
-gp.runSetup(2048);
+const ready = gp.runSetup(2048);
+if (!ready) {
+    Deno.exit(1);
+}
 gp.runTestFib();
 
 Deno.exit(0);

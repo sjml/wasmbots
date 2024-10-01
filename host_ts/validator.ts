@@ -1,18 +1,6 @@
 import binaryen from "npm:binaryen@119.0.0";
 
-const expectations = {
-    memory: "exported", // could also be "imported" or "none"
-    functionExports: {
-        setup: {
-            params: ["i32"],
-            return: "i32",
-        },
-        runFib: {
-            params: ["i32", "i32"],
-            return: "i32",
-        },
-    }
-};
+import { default as expectations } from "./data/guestExpectations.json" with { type: "json" };
 
 const typeMap: { [key: string]: binaryen.Type } = {
     i32: binaryen.i32,
@@ -27,6 +15,15 @@ function arraysEqual(a: number[], b: number[]): boolean {
     }
     return a.every((v,i) => b[i] == v);
 }
+
+// pulled from binaryen.js because const enum exports can be problematic in TypeScript
+const enum ExternalKinds {
+    Function,
+    Table,
+    Memory,
+    Global,
+    Tag
+  }
 
 // assuming that the wasm was already able to be compiled;
 //   binaryen dies in weird ways if readBinary gets an invalid buffer.
@@ -69,7 +66,7 @@ export function validateWasm(buff: Uint8Array|ArrayBuffer): boolean {
             hasError = true;
             continue;
         }
-        if (exportInfo.kind != binaryen.ExternalKinds.Function) {
+        if (exportInfo.kind as unknown as ExternalKinds != ExternalKinds.Function) {
             console.error(`VALIDATION ERROR: Export ${func} is not a function`);
             hasError = true;
             continue;
@@ -79,7 +76,7 @@ export function validateWasm(buff: Uint8Array|ArrayBuffer): boolean {
         const functionParams = binaryen.expandType(functionInfo.params);
         const functionReturn = binaryen.expandType(functionInfo.results);
         const paramTarget = signature.params.map(t => typeMap[t]);
-        const returnTarget = [typeMap[signature.return]];
+        const returnTarget = signature.return ? [typeMap[signature.return]] : [];
         if (!arraysEqual(functionParams, paramTarget)) {
             console.error(`VALIDATION ERROR: Export ${func} has wrong parameters`);
             hasError = true;
