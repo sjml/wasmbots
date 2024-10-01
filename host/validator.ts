@@ -1,6 +1,6 @@
 import binaryen from "npm:binaryen@119.0.0";
 
-import { default as expectations } from "./data/guestExpectations.json" with { type: "json" };
+import { default as expectations } from "../data/guestExpectations.json" with { type: "json" };
 
 const typeMap: { [key: string]: binaryen.Type } = {
     i32: binaryen.i32,

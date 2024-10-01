@@ -13,6 +13,6 @@ all: bot_c.wasm
 
 .PHONY: install
 install: all
-	rsync -u -t -p bot_c.wasm ../built_bots
+	rsync -u -t -p bot_c.wasm ../../built_bots
 
 .DEFAULT_GOAL = all
