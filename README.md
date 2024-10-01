@@ -4,9 +4,13 @@ Playing around with a basic TypeScript host that can run WASM programs of a cert
 
 At the moment, each of them implements: 
 * `setup` function, which takes a parameter saying how much space to reserve for host communication. In whatever way makes sense to the language, set aside a block of memory of the given size (2048 bytes at the moment). The idea is that the host will write to this memory for non-trivial data like strings and structs that cannot be simply passed as function parameters between WASM and the host. **returns** a pointer to where that memory resides in the overall WASM memory block. 
+  * In the newly allocated reserved space, it also leaves information for the host. The first 20 bytes are the program's name (null-terminated if less than 20, but padded to 20 bytes), followed by 12 bytes representing a major.minor.patch [semver](https://semver.org/) version (3 little-endian unsigned 32-bit integers in a row). The host will scoop out this data and immediately clear the entire reserved block. 
 * `runFib` function, which is largely just a proof that two-way communication is working via the reserved memory space allocated in `setup`. Takes two parameters, one a lookup location (offset into the reserved memory space) for where to find a single byte value which indicates which Fibonacci number to calculate. The second parameter is the offset in the shared space where the WASM program should write the output as a little-endian unsigned 64-bit integer. **returns** whether the whole operation was successful (could fail if given a Fibonacci number too large to fit in a u64, or a result offset where the answer could not fit, etc.)
 
 The `runFib` functions all intentionally use an inefficient recursive Fibonacci algorithm, just to show that some actual computation is happening. The host only asks for the 42nd Fibonacci number (267,914,296) right now, so none of them churn for _too_ long. 
+
+The host, in turn, offers just a single export to the WASM program:
+* `logFunction` takes a pointer and a length representing a string. The pointer can be to anywhere in the WASM program's memory space. The string must be utf-8 encoded, and the length is the number of bytes (not characters). As you might imagine, the host will then print this string to the console. It does not need to be retained after the calling of the function, so it can safely take a pointer from the stack or whatever. (And the program allocated it, it needs to free it. Or face the wrath of the memory gods, I suppose.)
 
 ## Testing
 

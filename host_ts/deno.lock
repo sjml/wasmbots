@@ -1,0 +1,15 @@
+{
+  "version": "3",
+  "packages": {
+    "specifiers": {
+      "npm:binaryen@119.0.0": "npm:binaryen@119.0.0"
+    },
+    "npm": {
+      "binaryen@119.0.0": {
+        "integrity": "sha512-DTdcs8ijrj2OIEftWVPVkYsgJ8MzlYH+uSsC8156g88E7CNaG8kEfWNGSXxb3tPlzadrm6sD3mgSEKKZJu4Q3g==",
+        "dependencies": {}
+      }
+    }
+  },
+  "remote": {}
+}

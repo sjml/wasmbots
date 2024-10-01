@@ -1,12 +1,9 @@
+import { validateWasm } from "./validator.ts";
+
 interface WasmBotsExports {
     memory: WebAssembly.Memory,
     setup: (requestReserve: number) => number;
     runFib: (offset: number, resultLocation: number) => boolean;
-}
-// TODO: can this be derived from the above, somehow?
-const funcExpects = {
-    setup: 1,
-    runFib: 2,
 }
 
 export class GuestProgram {
@@ -38,7 +35,19 @@ export class GuestProgram {
     // TODO: error handling, reject promise
     // have to do a separate init function because can't have async constructor
     async init(programBuffer: ArrayBuffer): Promise<boolean> {
-        const inst = await WebAssembly.instantiate(programBuffer, {
+        let mod: WebAssembly.Module;
+        try {
+            mod = await WebAssembly.compile(programBuffer);
+        }
+        catch (err) {
+            console.error(`PROGRAM ERROR: Buffer is not valid WebAssembly\n${err}`);
+            return false;
+        }
+        if (!validateWasm(programBuffer)) {
+            // errors output by validation function
+            return false;
+        }
+        this.instance = await WebAssembly.instantiate(mod, {
             env: {
                 abort: GuestProgram.abort,
                 logFunction: (msgPtr: number, msgLen: number) => {
@@ -46,41 +55,9 @@ export class GuestProgram {
                 }
             }
         });
-        this.instance = inst.instance;
-        if (!this.validate()) {
-            return false;
-        }
-        this.exports = inst.instance.exports as unknown as WasmBotsExports;
+
+        this.exports = this.instance.exports as unknown as WasmBotsExports;
         return true;
-    }
-
-    validate(): boolean {
-        let hasError = false;
-        const exports = this.instance!.exports;
-        if (exports.memory === undefined) {
-            console.error("VALIDATION ERROR: no exported `memory` object");
-            hasError = true;
-        }
-        if (exports.memory.constructor !== WebAssembly.Memory) {
-            console.error("VALIDATION ERROR: exported `memory` object is not WebAssembly.Memory");
-            hasError = true;
-        }
-
-        for (const [k, v] of Object.entries(funcExpects)) {
-            if (exports[k] === undefined) {
-                console.error(`VALIDATION ERROR: missing function \`${k}\``);
-                hasError = true;
-            }
-            if (typeof exports[k] != "function") {
-                console.error(`VALIDATION ERROR: exported \`${k}\` is not a function`);
-                hasError = true;
-            }
-            if ((exports[k] as CallableFunction).length != v) {
-                console.error(`VALIDATION ERROR: \`${k}\` function takes the wrong number of parameters (should be ${v})`);
-                hasError = true;
-            }
-        }
-        return !hasError;
     }
 
     runSetup(reserveMemSize: number) {
