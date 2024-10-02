@@ -5,7 +5,6 @@ if (Deno.args.length == 0) {
     Deno.exit(1);
 }
 
-console.log(`Running ${Deno.args[0]}`);
 const f = await Deno.readFile(Deno.args[0]);
 const programBuffer = f.buffer;
 

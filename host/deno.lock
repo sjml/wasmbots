@@ -1,0 +1,14 @@
+{
+  "version": "3",
+  "packages": {
+    "specifiers": {
+      "jsr:@std/path": "jsr:@std/path@1.0.6"
+    },
+    "jsr": {
+      "@std/path@1.0.6": {
+        "integrity": "ab2c55f902b380cf28e0eec501b4906e4c1960d13f00e11cfbcd21de15f18fed"
+      }
+    }
+  },
+  "remote": {}
+}

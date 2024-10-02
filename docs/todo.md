@@ -1,6 +1,4 @@
 * CLI cleanup
-  * separate out Deno stuff to own area so the other parts could run on web
-    * figure out relative paths of resources for CLI, etc. 
   * bundling
     * maybe Deno's not a good long-term solution here
       * bun? back to just tsc? 

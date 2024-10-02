@@ -1,3 +1,5 @@
+import { readTextFile, readBinaryFile } from "./loader.ts";
+
 let validatorProgramBytes: Uint8Array = new Uint8Array(0);
 let validatorProgram: WebAssembly.Module|null = null;
 let expectationsJson: string = "";
@@ -7,11 +9,11 @@ export async function validateWasm(buff: Uint8Array|ArrayBuffer): Promise<boolea
     const ab: Uint8Array = new Uint8Array(buff);
 
     if (validatorProgram == null) {
-        validatorProgramBytes = await Deno.readFile("./host/lib/wasmbots_validator.wasm");
+        validatorProgramBytes = await readBinaryFile("/lib/wasmbots_validator.wasm");
         validatorProgram = await WebAssembly.compile(validatorProgramBytes);
     }
     if (expectationsJson.length == 0) {
-        expectationsJson = await Deno.readTextFile("./data/guestExpectations.json");
+        expectationsJson = await readTextFile("/data/guestExpectations.json");
     }
     const jsonBuff = new TextEncoder().encode(expectationsJson);
     const validator = await WebAssembly.instantiate(validatorProgram, {
