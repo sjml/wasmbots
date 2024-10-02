@@ -50,7 +50,7 @@ export class GuestProgram {
             console.error(`PROGRAM ERROR: Buffer is not valid WebAssembly\n${err}`);
             return false;
         }
-        if (!validateWasm(programBuffer)) {
+        if (!await validateWasm(programBuffer)) {
             // errors output by validation function
             return false;
         }

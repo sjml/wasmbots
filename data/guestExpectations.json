@@ -1,5 +1,8 @@
 {
-  "memory": "exported",
+  "memory": {
+    "doc": "the wasm module should export its linear memory, rather than expecting to import it from the host (at the moment only 'exported' is valid)",
+    "kind": "exported"
+  },
   "functionExports": {
     "setup": {
       "doc": "called at startup; do whatever you need to do here but also reserve a block of memory for the engine to use later. also write 32 bytes to that memory: the first 26 a utf-8 string of the program name (null-terminated if length < 26) and then 3 u16s in a row indicating semver major.minor.patch",
