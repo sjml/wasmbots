@@ -23,10 +23,6 @@ Examine
     - no operands; take a turn to ID a weapon or scroll in your square
 Take
     - no operands; take the item on your square
-// WebRequest
-    - urlOffset (4 bytes)
-    - urlLength (2 bytes)
-    - list of headers? body? 
 Resign
     - no operands; resigns the game
 
