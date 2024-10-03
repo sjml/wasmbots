@@ -2,7 +2,6 @@
   * bundling
     * maybe Deno's not a good long-term solution here
       * bun? back to just tsc? 
-* add getElapsedTime function (since loading? )
 * get some basic web stuff working
   * first just a page (svelte baby)
   * then put it in a web worker
@@ -35,6 +34,7 @@
     - https://excaliburjs.com
     - http://pixijs.com/
   * items, weapons, armor, spells
+* add getElapsedTime function (since loading? )
 * trainer
   * single executable that hosts webpage
   * visualization of memory, enter options from dropdown

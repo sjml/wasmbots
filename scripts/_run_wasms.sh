@@ -7,6 +7,6 @@ cd ..
 
 for bot in $(ls built_bots/*.wasm); do
   echo "Running $bot"
-  deno run --allow-read ./host/src/host.ts $bot
+  deno run --allow-read ./host/src/deno-cli/host.ts $bot
   echo
 done

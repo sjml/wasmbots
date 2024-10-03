@@ -1,4 +1,4 @@
-import { GuestProgram } from "./guest.ts";
+import { GuestProgram } from "../core/guest.ts"
 
 if (Deno.args.length == 0) {
     console.error("Give a file path.")

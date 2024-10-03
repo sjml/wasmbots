@@ -205,7 +205,7 @@ mod tests {
     #[test]
     fn validate() {
         let wasm = include_bytes!("../../built_bots/bot_as.wasm");
-        let exp = include_str!("../../data/guestExpectations.json");
+        let exp = include_str!("../../host/rsc/data/guestExpectations.json");
         match _validate_wasm(wasm, exp) {
             Ok(()) => {},
             Err(e) => {

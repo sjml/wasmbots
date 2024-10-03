@@ -1,4 +1,4 @@
-import * as config from "./config.ts";
+import config from "../core/config.ts";
 
 type GameParameters = {
     version: number;
@@ -6,7 +6,7 @@ type GameParameters = {
     layout: { doc: string, type: string }[],
 }
 
-import { default as __rawGP } from "../rsc/data/circumstances.json" with { type: "json" };
+import { default as __rawGP } from "../../rsc/data/circumstances.json" with { type: "json" };
 const gameParameters: GameParameters = __rawGP;
 
 // engine name length
