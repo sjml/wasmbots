@@ -1,3 +1,10 @@
+export enum LogLevel {
+    Error = "error",
+    Warn = "warn",
+    Log = "log",
+    Info = "info",
+    Debug = "debug",
+}
 
 // subset of lib.dom.ts's Console interface
 export interface ILogger {

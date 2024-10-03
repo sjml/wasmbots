@@ -139,11 +139,22 @@ fn _validate_wasm(wasm_bytes: &[u8], expect_json: &str) -> Result<(), WatParserE
             return Err(WatParserError::MissingExportedFunction(func_name));
         };
 
-        let mapped_return = str_to_val_type(&sig_data.r#return).expect("Invalid valtype string in expectations file");
-        match exported_data.ret {
-            Some(r) => if mapped_return != r { return Err(WatParserError::ExportHasWrongResult(func_name))},
-            None => return Err(WatParserError::ExportHasWrongResult(func_name))
+        match sig_data.r#return {
+            Some(ret) => {
+                let mapped_return = str_to_val_type(&ret).expect("Invalid valtype string in expectations file");
+                match exported_data.ret {
+                    Some(r) => if mapped_return != r { return Err(WatParserError::ExportHasWrongResult(func_name))},
+                    None => return Err(WatParserError::ExportHasWrongResult(func_name))
+                }
+            },
+            None => {
+                match exported_data.ret {
+                    Some(_) => return Err(WatParserError::ExportHasWrongResult(func_name)),
+                    None => {},
+                }
+            }
         }
+
 
         let mapped_params: Vec<wasmparser::ValType> = sig_data.params.iter()
             .map(|s| str_to_val_type(s))

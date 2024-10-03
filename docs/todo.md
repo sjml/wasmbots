@@ -1,11 +1,12 @@
 * get some basic web stuff working
-  * first just a page (svelte baby)
   * then put it in a web worker
   * then load two web workers
   * time limits and strikes
 * tech break: 
-  * usizes are getting cast into i32s (not even u32!)
-    * is that actually handled under the hood by the languages? 
+  * change expectations to indicate when params are unsigned; validator will need to be updated
+    * while we're in there, have it check imports
+      * you don't HAVE to import, but if you do, they should match
+  * wasm-bindgen?
   * convenience functions for all languages
 * game stuff
   * generate world
@@ -31,6 +32,7 @@
     - https://github.com/KilledByAPixel/LittleJS
     - https://excaliburjs.com
     - http://pixijs.com/
+    - https://ondras.github.io/rot.js/hp/
   * items, weapons, armor, spells
 * add getElapsedTime function (since loading? )
 * trainer
@@ -38,10 +40,7 @@
   * visualization of memory, enter options from dropdown
     * edit memory
   * load a wasm file, let it take a turn
-* build out a few different example bots
-  * dummy: just stands still and doesn't do anything
-  * scaredycat: explores until it encounters an item or person and then moves in the other direction
-  * aggro: attacks relentlessly once it sees someone; wanders randomly otherwise
+* build out a few different example bots (./bot_concepts.md)
 * libraries for the four main languages
   * how to hook into setup? tick can provide a callback or whatever... 
   * maybe just shunt out or something? 

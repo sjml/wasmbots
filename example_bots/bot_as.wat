@@ -4,13 +4,13 @@
   (type (;2;) (func (param i32 i32) (result i32)))
   (type (;3;) (func))
   (type (;4;) (func (param i32 i32)))
-  (type (;5;) (func (param i32 i32 i32 i32)))
-  (type (;6;) (func (param i32 i32 i64)))
-  (type (;7;) (func (result i32)))
-  (type (;8;) (func (param i32 i32 i32)))
+  (type (;5;) (func (param i32 i32 i32)))
+  (type (;6;) (func (param i32 i32 i32 i32)))
+  (type (;7;) (func (param i32 i32 i64)))
+  (type (;8;) (func (result i32)))
   (type (;9;) (func (param i64) (result i64)))
-  (import "env" "abort" (func (;0;) (type 5)))
-  (import "env" "logFunction" (func (;1;) (type 4)))
+  (import "env" "abort" (func (;0;) (type 6)))
+  (import "env" "logFunction" (func (;1;) (type 5)))
   (func (;2;) (type 3)
     (local i32 i32)
     i32.const 1056
@@ -69,7 +69,7 @@
         local.get 0
         i32.const 20
         i32.add
-        call 14
+        call 15
         local.get 0
         i32.load offset=4
         i32.const -4
@@ -613,7 +613,7 @@
     i32.shl
     i32.or
     i32.store offset=4)
-  (func (;7;) (type 6) (param i32 i32 i64)
+  (func (;7;) (type 7) (param i32 i32 i64)
     (local i32 i32 i32)
     local.get 2
     local.get 1
@@ -802,7 +802,7 @@
     call 7
     i32.const 37104
     global.set 9)
-  (func (;9;) (type 7) (result i32)
+  (func (;9;) (type 8) (result i32)
     (local i32 i32 i32)
     block  ;; label = @1
       block  ;; label = @2
@@ -856,7 +856,7 @@
               local.get 0
               i32.const 20
               i32.add
-              call 14
+              call 15
               global.get 3
               return
             end
@@ -923,7 +923,7 @@
                 local.get 0
                 i32.const 20
                 i32.add
-                call 14
+                call 15
               end
               local.get 0
               i32.load offset=4
@@ -1500,7 +1500,7 @@
     local.get 0
     memory.fill
     local.get 1)
-  (func (;12;) (type 8) (param i32 i32 i32)
+  (func (;12;) (type 5) (param i32 i32 i32)
     (local i32)
     local.get 1
     i32.eqz
@@ -1558,7 +1558,9 @@
         end
       end
     end)
-  (func (;13;) (type 9) (param i64) (result i64)
+  (func (;13;) (type 1) (param i32)
+    nop)
+  (func (;14;) (type 9) (param i64) (result i64)
     local.get 0
     i64.const 2
     i64.lt_u
@@ -1568,14 +1570,14 @@
       local.get 0
       i64.const 2
       i64.sub
-      call 13
+      call 14
       local.get 0
       i64.const 1
       i64.sub
-      call 13
+      call 14
       i64.add
     end)
-  (func (;14;) (type 1) (param i32)
+  (func (;15;) (type 1) (param i32)
     (local i32 i32)
     block  ;; label = @1
       block  ;; label = @2
@@ -1663,7 +1665,7 @@
       local.get 0
       call 4
     end)
-  (func (;15;) (type 3)
+  (func (;16;) (type 3)
     (local i32)
     global.get 13
     i32.const 8
@@ -1716,7 +1718,7 @@
     i32.const 1568
     global.set 8
     i32.const 0
-    call 16
+    call 17
     global.set 10
     global.get 13
     global.get 10
@@ -1730,13 +1732,13 @@
     i32.const 1
     global.set 11
     local.get 0
-    call 17
+    call 18
     global.set 12
     global.get 13
     i32.const 8
     i32.add
     global.set 13)
-  (func (;16;) (type 0) (param i32) (result i32)
+  (func (;17;) (type 0) (param i32) (result i32)
     (local i32 i32 i32)
     global.get 13
     i32.const 8
@@ -1869,7 +1871,7 @@
     i32.const 1
     call 0
     unreachable)
-  (func (;17;) (type 0) (param i32) (result i32)
+  (func (;18;) (type 0) (param i32) (result i32)
     (local i32 i32)
     global.get 13
     i32.const 8
@@ -2013,7 +2015,7 @@
     i32.const 1
     call 0
     unreachable)
-  (func (;18;) (type 2) (param i32 i32) (result i32)
+  (func (;19;) (type 2) (param i32 i32) (result i32)
     (local i32 i32 i32 i32 i32)
     global.get 13
     i32.const 16
@@ -2224,7 +2226,7 @@
     i32.add
     global.set 13
     local.get 5)
-  (func (;19;) (type 0) (param i32) (result i32)
+  (func (;20;) (type 0) (param i32) (result i32)
     (local i32)
     global.get 13
     i32.const 8
@@ -2259,14 +2261,14 @@
     i32.store
     local.get 0
     local.get 1
-    call 18
+    call 19
     local.set 0
     global.get 13
     i32.const 8
     i32.add
     global.set 13
     local.get 0)
-  (func (;20;) (type 0) (param i32) (result i32)
+  (func (;21;) (type 0) (param i32) (result i32)
     (local i32 i32 i32 i32 i32)
     global.get 13
     i32.const 4
@@ -2577,7 +2579,7 @@
     i32.const 1
     call 0
     unreachable)
-  (func (;21;) (type 1) (param i32)
+  (func (;22;) (type 1) (param i32)
     global.get 13
     i32.const 8
     i32.sub
@@ -2603,12 +2605,13 @@
     global.set 11
     global.get 13
     local.get 0
-    call 20
+    call 21
     local.tee 0
     i32.store offset=4
     global.get 13
     local.get 0
     i32.store
+    i32.const 2
     local.get 0
     local.get 0
     i32.const 20
@@ -2619,7 +2622,7 @@
     i32.const 8
     i32.add
     global.set 13)
-  (func (;22;) (type 0) (param i32) (result i32)
+  (func (;23;) (type 0) (param i32) (result i32)
     global.get 13
     i32.const 4
     i32.sub
@@ -2649,7 +2652,7 @@
     i32.add
     global.set 13
     local.get 0)
-  (func (;23;) (type 0) (param i32) (result i32)
+  (func (;24;) (type 0) (param i32) (result i32)
     (local i32 i32 i32 i32)
     global.get 13
     i32.const 24
@@ -2668,7 +2671,7 @@
       local.set 1
       global.get 13
       local.get 0
-      call 26
+      call 27
       local.tee 2
       i32.store
       global.get 13
@@ -2692,16 +2695,16 @@
       i32.store offset=8
       local.get 1
       i32.const 1856
-      call 19
+      call 20
       local.tee 1
       i32.store offset=12
       global.get 13
       local.get 1
       i32.store offset=4
       local.get 1
-      call 21
+      call 22
       local.get 0
-      call 16
+      call 17
       global.set 10
       global.get 13
       global.get 10
@@ -2715,7 +2718,7 @@
       i32.const 1
       global.set 11
       local.get 0
-      call 17
+      call 18
       global.set 12
       global.get 13
       i32.const 1056
@@ -2738,7 +2741,7 @@
       global.set 11
       global.get 13
       i32.const 1056
-      call 20
+      call 21
       local.tee 2
       i32.store offset=16
       global.get 13
@@ -2848,13 +2851,13 @@
       local.get 0
       i32.store offset=8
       local.get 0
-      call 22
+      call 23
       local.set 3
       global.get 13
       local.get 2
       i32.store offset=8
       local.get 2
-      call 22
+      call 23
       local.get 3
       i32.lt_s
       if  ;; label = @2
@@ -2908,7 +2911,7 @@
       local.get 0
       i32.store
       local.get 0
-      call 22
+      call 23
       local.tee 0
       local.get 1
       i32.add
@@ -3102,7 +3105,7 @@
     i32.const 1
     call 0
     unreachable)
-  (func (;24;) (type 0) (param i32) (result i32)
+  (func (;25;) (type 0) (param i32) (result i32)
     (local i32)
     global.get 13
     i32.const 20
@@ -3175,12 +3178,12 @@
       if  ;; label = @2
         global.get 13
         local.get 0
-        call 26
+        call 27
         local.tee 0
         i32.store offset=4
         global.get 13
         i32.const 7
-        call 26
+        call 27
         local.tee 1
         i32.store offset=8
         global.get 13
@@ -3216,13 +3219,13 @@
         i32.const 3664
         i32.store offset=16
         i32.const 4080
-        call 19
+        call 20
         local.set 0
         global.get 13
         local.get 0
         i32.store
         local.get 0
-        call 21
+        call 22
         global.get 13
         i32.const 20
         i32.add
@@ -3243,7 +3246,7 @@
     i32.const 1
     call 0
     unreachable)
-  (func (;25;) (type 2) (param i32 i32) (result i32)
+  (func (;26;) (type 2) (param i32 i32) (result i32)
     (local i64 i32)
     global.get 13
     i32.const 12
@@ -3351,7 +3354,7 @@
         end
         local.get 0
         i64.extend_i32_u
-        call 13
+        call 14
         local.set 2
         global.get 13
         global.get 10
@@ -3366,7 +3369,7 @@
         global.set 11
         global.get 13
         local.get 0
-        call 17
+        call 18
         local.tee 0
         i32.store offset=8
         global.get 13
@@ -3432,13 +3435,13 @@
       unreachable
     end
     local.get 0
-    call 21
+    call 22
     global.get 13
     i32.const 12
     i32.add
     global.set 13
     i32.const 0)
-  (func (;26;) (type 0) (param i32) (result i32)
+  (func (;27;) (type 0) (param i32) (result i32)
     (local i32 i32 i32)
     global.get 13
     i32.const 4
@@ -3643,11 +3646,12 @@
   (global (;11;) (mut i32) (i32.const 0))
   (global (;12;) (mut i32) (i32.const 0))
   (global (;13;) (mut i32) (i32.const 37092))
-  (export "setup" (func 23))
-  (export "receiveGameParams" (func 24))
-  (export "runFib" (func 25))
+  (export "setup" (func 24))
+  (export "receiveGameParams" (func 25))
+  (export "tick" (func 13))
+  (export "runFib" (func 26))
   (export "memory" (memory 0))
-  (start 15)
+  (start 16)
   (data (;0;) (i32.const 1036) "\1c")
   (data (;1;) (i32.const 1048) "\02\00\00\00\0c\00\00\00b\00o\00t\00_\00a\00s")
   (data (;2;) (i32.const 1068) "\1c")

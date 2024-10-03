@@ -16,7 +16,7 @@ pub struct FunctionExpectEntry {
     // pub params_doc: Vec<String>,
     // pub return_doc: String,
     pub params: Vec<String>,
-    pub r#return: String,
+    pub r#return: Option<String>,
 }
 
 #[derive(Debug, serde::Deserialize)]
@@ -24,6 +24,7 @@ pub struct FunctionExpectEntry {
 pub struct Expectations {
     pub memory: MemoryExpectEntry,
     pub function_exports: HashMap<String, FunctionExpectEntry>,
+    pub function_imports: HashMap<String, FunctionExpectEntry>,
 }
 
 impl Expectations {

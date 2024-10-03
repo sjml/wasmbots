@@ -1,5 +1,5 @@
 @external("env", "logFunction")
-declare function logFunction(msgPtr: usize, msgLen: usize): void;
+declare function logFunction(logLevel: usize, msgPtr: usize, msgLen: usize): void;
 
 // as with zig, would be nice to be able to pull from
 //   the build config, but alack
@@ -11,7 +11,7 @@ let HOST_DV: DataView = new DataView(HOST_RESERVE.buffer);
 
 function log(msg: string): void {
     const msg8 = String.UTF8.encode(msg);
-    logFunction(changetype<usize>(msg8), msg8.byteLength);
+    logFunction(2, changetype<usize>(msg8), msg8.byteLength);
 }
 
 
@@ -50,6 +50,10 @@ export function receiveGameParams(offset: usize): boolean {
     // don't care about rest
 
     return true;
+}
+
+export function tick(offset: usize): void {
+
 }
 
 function fib(n: u64): u64 {

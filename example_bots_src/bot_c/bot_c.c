@@ -15,10 +15,10 @@ const uint16_t VERSION_PATCH = 0;
 
 const uint16_t GP_VERSION = 7;
 
-extern void logFunction(unsigned int msgPtr, unsigned int msgLen);
+extern void logFunction(int logLevel, unsigned int msgPtr, unsigned int msgLen);
 
 void _log(const char* msg) {
-    logFunction((size_t)msg, strlen(msg));
+    logFunction(2, (size_t)msg, strlen(msg));
 }
 
 void _logf(const char* fmt, ...) {
@@ -68,6 +68,10 @@ bool receiveGameParams(size_t offset) {
     // don't care about rest
 
     return true;
+}
+
+void tick(size_t offset) {
+
 }
 
 uint64_t fib(uint64_t n) {

@@ -10,10 +10,10 @@ const GP_VERSION: u16 = 7;
 var GLOBAL_ALLOCATOR: std.mem.Allocator = undefined;
 var HOST_RESERVE: []u8 = undefined;
 
-extern fn logFunction(msgPtr: usize, msgLen: usize) void;
+extern fn logFunction(logLevel: i32, msgPtr: usize, msgLen: usize) void;
 
 fn log(msg: []const u8) void {
-    logFunction(@intFromPtr(msg.ptr), msg.len);
+    logFunction(2, @intFromPtr(msg.ptr), msg.len);
 }
 
 export fn setup(requestReserve: usize) usize {
@@ -53,6 +53,10 @@ export fn receiveGameParams(offset: usize) bool {
     // don't care about rest
 
     return true;
+}
+
+export fn tick(offset: usize) void {
+    _ = offset;
 }
 
 fn fib(n: u64) u64 {

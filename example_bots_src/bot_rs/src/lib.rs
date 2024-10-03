@@ -4,7 +4,7 @@ const GP_VERSION: u16 = 7;
 
 extern "C" {
     #[link_name = "logFunction"]
-    fn host_log_function(msg_ptr: usize, msg_len: usize);
+    fn host_log_function(log_level: i32, msg_ptr: usize, msg_len: usize);
 }
 
 fn get_host_reserve_len() -> usize {
@@ -34,7 +34,7 @@ fn write_host_bytes(offset: usize, bytes: &[u8]) {
 
 fn log(msg: &str) {
     unsafe {
-        host_log_function(msg.as_ptr() as usize, msg.len() as usize);
+        host_log_function(2, msg.as_ptr() as usize, msg.len() as usize);
     }
 }
 
@@ -86,6 +86,11 @@ pub extern "C" fn receiveGameParams(offset: usize) -> bool {
     // don't care about rest
 
     true
+}
+
+#[no_mangle]
+pub extern "C" fn tick(_offset: usize) {
+
 }
 
 // not efficient, you know

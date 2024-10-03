@@ -1,43 +1,36 @@
 <script lang="ts">
-    import { Validator, Loader, type ILogger } from "../host";
+    import { Validator, Loader, Logger } from "../host";
 
-    enum LogLevel {
-        Debug = "debug",
-        Info = "info",
-        Log = "log",
-        Warn = "warn",
-        Error = "error",
-    }
     interface LogEntry {
-        level: LogLevel;
+        level: Logger.LogLevel;
         msg: string;
     };
     let logs: LogEntry[] = [];
 
-    class Logger implements ILogger {
+    class UILogger implements Logger.ILogger {
         assert(condition?: boolean, ...data: any[]): void {
             if (!condition) { this.error(data); }
         }
         clear(): void {
             logs = [];
         }
-        debug(...data: any[]): void {
-            logs = [...logs, {level: LogLevel.Debug, msg: data.join(" ")}];
-        }
         error(...data: any[]): void {
-            logs = [...logs, {level: LogLevel.Error, msg: data.join(" ")}];
-        }
-        info(...data: any[]): void {
-            logs = [...logs, {level: LogLevel.Info, msg: data.join(" ")}];
-        }
-        log(...data: any[]): void {
-            logs = [...logs, {level: LogLevel.Log, msg: data.join(" ")}];
+            logs = [...logs, {level: Logger.LogLevel.Error, msg: data.join(" ")}];
         }
         warn(...data: any[]): void {
-            logs = [...logs, {level: LogLevel.Warn, msg: data.join(" ")}];
+            logs = [...logs, {level: Logger.LogLevel.Warn, msg: data.join(" ")}];
+        }
+        log(...data: any[]): void {
+            logs = [...logs, {level: Logger.LogLevel.Log, msg: data.join(" ")}];
+        }
+        info(...data: any[]): void {
+            logs = [...logs, {level: Logger.LogLevel.Info, msg: data.join(" ")}];
+        }
+        debug(...data: any[]): void {
+            logs = [...logs, {level: Logger.LogLevel.Debug, msg: data.join(" ")}];
         }
     }
-    export const logger: ILogger = new Logger();
+    export const logger: Logger.ILogger = new UILogger();
 
     async function validate(fpath: string) {
         if (!fpath || fpath.length == 0) return;

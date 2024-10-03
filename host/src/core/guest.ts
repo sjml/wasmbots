@@ -1,22 +1,30 @@
 import { validateWasm } from "./validator.ts";
 import { writegameParameters } from "./circumstances.ts";
+import { type ILogger, LogLevel } from "./logger.ts";
 
 interface WasmBotsExports {
-    memory: WebAssembly.Memory,
+    memory: WebAssembly.Memory;
     setup: (requestReserve: number) => number;
     receiveGameParams: (offset: number) => boolean;
+    tick: (offset: number) => void;
     runFib: (offset: number, resultLocation: number) => boolean;
 }
 
 export class GuestProgram {
     instance: WebAssembly.Instance|null = null;
     exports: WasmBotsExports|null = null;
+    private logger: ILogger;
     private reservePtr: number = 0;
     private reserveLength: number = 0;
     private reserveBlock = new Uint8Array();
 
-    private static abort(msg: string, file: string, line: number, col: number) {
-        console.error(`FATAL ERROR: ${file}:${line}:${col}\n${msg}`);
+    constructor(logger?: ILogger) {
+        logger ||= console;
+        this.logger = logger;
+    }
+
+    private abort(msg: string, file: string, line: number, col: number) {
+        this.logger.error(`FATAL ERROR: ${file}:${line}:${col}\n${msg}`);
     }
 
     private liftString(msgPtr: number, msgLen: number): string {
@@ -34,9 +42,30 @@ export class GuestProgram {
         return dv.getUint32(ptr, true);
     }
 
-    private log(msgPtr: number, msgLen: number) {
+    private log(logLevel: number, msgPtr: number, msgLen: number) {
         const logStr = this.liftString(msgPtr, msgLen);
-        console.log(`${new Date().toISOString()} (${msgPtr}, ${msgLen}):\n    ${logStr}`);
+        const output = `${new Date().toISOString()} (${msgPtr}, ${msgLen}):\n    ${logStr}`;
+        switch (logLevel) {
+            case 0:
+                this.logger.error(output);
+                break;
+            case 1:
+                this.logger.warn(output);
+                break;
+            case 2:
+                this.logger.log(output);
+                break;
+            case 3:
+                this.logger.info(output);
+                break;
+            case 4:
+                this.logger.debug(output);
+                break;
+            default:
+                // put to the "real" console
+                console.error("ERROR: Invalid log level");
+                break;
+        }
     }
 
     // TODO: error handling, reject promise
@@ -47,7 +76,7 @@ export class GuestProgram {
             mod = await WebAssembly.compile(programBuffer);
         }
         catch (err) {
-            console.error(`PROGRAM ERROR: Buffer is not valid WebAssembly\n${err}`);
+            this.logger.error(`PROGRAM ERROR: Buffer is not valid WebAssembly\n${err}`);
             return false;
         }
         if (!await validateWasm(programBuffer)) {
@@ -56,9 +85,9 @@ export class GuestProgram {
         }
         this.instance = await WebAssembly.instantiate(mod, {
             env: {
-                abort: GuestProgram.abort,
-                logFunction: (msgPtr: number, msgLen: number) => {
-                    this.log(msgPtr, msgLen);
+                abort: this.abort,
+                logFunction: (logLevel: number, msgPtr: number, msgLen: number) => {
+                    this.log(logLevel, msgPtr, msgLen);
                 }
             }
         });
@@ -69,7 +98,7 @@ export class GuestProgram {
 
     runSetup(reserveMemSize: number): boolean {
         if (!this.exports) {
-            console.error("RUNTIME ERROR: calling `runSetup` on uninitialized GuestProgram.");
+            this.logger.error("RUNTIME ERROR: calling `runSetup` on uninitialized GuestProgram.");
             return false;
         }
         this.reservePtr = this.exports.setup(reserveMemSize);
@@ -85,7 +114,7 @@ export class GuestProgram {
         offset += 2;
         const versionPatch = this.liftUint16(offset);
         offset += 2;
-        console.log(`    # program info -- ${botName} v${versionMajor}.${versionMinor}.${versionPatch}`);
+        this.logger.log(`    # program info -- ${botName} v${versionMajor}.${versionMinor}.${versionPatch}`);
 
         this.reserveBlock.fill(0);
 
@@ -96,7 +125,7 @@ export class GuestProgram {
 
     runTestFib() {
         if (!this.exports) {
-            console.error("RUNTIME ERROR: calling `runTestFib` on uninitialized GuestProgram.");
+            this.logger.error("RUNTIME ERROR: calling `runTestFib` on uninitialized GuestProgram.");
             return;
         }
         const fibIdx = 42;
@@ -106,7 +135,7 @@ export class GuestProgram {
         if (this.exports.runFib(fibIdxLoc, resultLoc)) {
             const dv = new DataView(this.reserveBlock.buffer, this.reserveBlock.byteOffset, this.reserveBlock.byteLength);
             const result = dv.getBigUint64(resultLoc, true);
-            console.log(`    Got result ${result} (${result == 267914296n ? "correct" : "WRONG"}) for Fibonacci index ${fibIdx}.`)
+            this.logger.log(`    Got result ${result} (${result == 267914296n ? "correct" : "WRONG"}) for Fibonacci index ${fibIdx}.`)
         }
     }
 }
