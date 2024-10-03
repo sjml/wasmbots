@@ -16,7 +16,7 @@ export async function validateWasm(buff: Uint8Array|ArrayBuffer, logger?: ILogge
         validatorProgram = await WebAssembly.compile(validatorProgramBytes);
     }
     if (expectationsJson.length == 0) {
-        expectationsJson = await readTextFile("$rsc/data/guestExpectations.json");
+        expectationsJson = await readTextFile("$rsc/data/guestAPI.json");
     }
     const jsonBuff = new TextEncoder().encode(expectationsJson);
     const validator = await WebAssembly.instantiate(validatorProgram, {

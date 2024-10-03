@@ -5,6 +5,10 @@ target/wasm32-unknown-unknown/release/bot_rs.wasm: src/lib.rs
 .PHONY: all
 all: target/wasm32-unknown-unknown/release/bot_rs.wasm
 
+.PHONY: clean
+clean:
+	cargo clean
+
 .PHONY: install
 install: all
 	rsync -u -t -p target/wasm32-unknown-unknown/release/bot_rs.wasm ../../example_bots

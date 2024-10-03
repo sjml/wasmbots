@@ -2,7 +2,7 @@
 
 Playing around with a basic TypeScript host that can run WASM programs of a certain specification. 
 
-Each hosted program is expected to implement a specific set of functions. They are documented in [`guestExpectations.json`](./host/rsc/data/guestExpectations.json), which the host also uses to programatically validate a WASM file before running it. (Perhaps that file could also be used to automatically generate stubs? Sounds ambitious. )
+Each hosted program is expected to implement a specific set of functions. They are documented in [`guestAPI.json`](./host/rsc/data/guestAPI.json), which the host also uses to programatically validate a WASM file before running it. (Perhaps that file could also be used to automatically generate stubs? Sounds ambitious. )
 
 * `setup` function, which takes a parameter saying how much space to reserve for host communication. In whatever way makes sense to the language, set aside a block of memory of the given size (2048 bytes at the moment). The idea is that the host will write to this memory for non-trivial data like strings and structs that cannot be simply passed as function parameters between WASM and the host. **returns** a pointer to where that memory resides in the overall WASM memory block. 
   * In the newly allocated reserved space, it also leaves information for the host. The first 26 bytes are the program's name (null-terminated if less than 26, but padded to 26 bytes), followed by 6 bytes representing a major.minor.patch [semver](https://semver.org/) version (3 little-endian unsigned 16-bit integers in a row). The host will scoop out this data and immediately clear the entire reserved block. 

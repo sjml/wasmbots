@@ -8,6 +8,10 @@ node_modules:
 .PHONY: all
 all: build/bot_as.wasm
 
+.PHONY: clean
+clean:
+	rm -rf build
+
 .PHONY: install
 install: all
 	rsync -u -t -p build/bot_as.wasm ../../example_bots

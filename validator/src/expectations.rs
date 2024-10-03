@@ -5,16 +5,12 @@ use serde;
 #[derive(Debug, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MemoryExpectEntry {
-    // pub doc: String,
     pub kind: String,
 }
 
 #[derive(Debug, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct FunctionExpectEntry {
-    // pub doc: String,
-    // pub params_doc: Vec<String>,
-    // pub return_doc: String,
     pub params: Vec<String>,
     pub r#return: Option<String>,
 }

@@ -3,9 +3,6 @@
   * then load two web workers
   * time limits and strikes
 * tech break: 
-  * change expectations to indicate when params are unsigned; validator will need to be updated
-    * while we're in there, have it check imports
-      * you don't HAVE to import, but if you do, they should match
   * wasm-bindgen?
   * convenience functions for all languages
 * game stuff

@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+use expectations::FunctionExpectEntry;
 use wasmparser::{self, TypeRef};
 
 mod expectations;
@@ -27,8 +28,9 @@ pub enum WatParserError {
     WasmParserError(wasmparser::BinaryReaderError),
     WrongMemoryType,
     MissingExportedFunction(String),
-    ExportHasWrongParams(String),
-    ExportHasWrongResult(String),
+    FunctionHasWrongParams(String),
+    FunctionHasWrongResult(String),
+    UnexpectedImport(String),
 }
 
 impl From<wasmparser::BinaryReaderError> for WatParserError {
@@ -101,6 +103,7 @@ fn _validate_wasm(wasm_bytes: &[u8], expect_json: &str) -> Result<(), WatParserE
     }
 
     let mut exported_functions: HashMap<&str, FuncInfo> = HashMap::new();
+    let mut imported_functions: HashMap<&str, FuncInfo> = HashMap::new();
     let imported_func_count = imports.iter().filter(|i| matches!(i.ty, TypeRef::Func(_))).count();
 
     for ex in exports {
@@ -127,29 +130,37 @@ fn _validate_wasm(wasm_bytes: &[u8], expect_json: &str) -> Result<(), WatParserE
         }
     }
 
-    if guest_expect.memory.kind == "exported" {
-        if !has_exported_memory {
-            return Err(WatParserError::WrongMemoryType);
+    for imp in imports {
+        match imp.ty {
+            TypeRef::Func(type_idx) => {
+                let ft = &func_types[usize::try_from(type_idx).unwrap()];
+                let mut r: Option<wasmparser::ValType> = None;
+                if ft.results().len() > 0 {
+                    r = Some(ft.results()[0]);
+                }
+                let fi = FuncInfo {
+                    params: ft.params(),
+                    ret: r,
+                };
+                imported_functions.insert(imp.name, fi);
+            },
+            // TypeRef::Memory(memory_type) => todo!(),
+            _ => {},
         }
     }
-    for (func_name, sig_data) in guest_expect.function_exports {
-        let exported_data = if let Some(exported_data) = exported_functions.get(func_name.as_str()) {
-            exported_data
-        } else {
-            return Err(WatParserError::MissingExportedFunction(func_name));
-        };
 
-        match sig_data.r#return {
+    let validate_func = |func_name: &str, sig_data: &FunctionExpectEntry, binary_data: &FuncInfo| -> Result<(), WatParserError> {
+        match &sig_data.r#return {
             Some(ret) => {
                 let mapped_return = str_to_val_type(&ret).expect("Invalid valtype string in expectations file");
-                match exported_data.ret {
-                    Some(r) => if mapped_return != r { return Err(WatParserError::ExportHasWrongResult(func_name))},
-                    None => return Err(WatParserError::ExportHasWrongResult(func_name))
+                match binary_data.ret {
+                    Some(r) => if mapped_return != r { return Err(WatParserError::FunctionHasWrongResult(func_name.to_string()))},
+                    None => return Err(WatParserError::FunctionHasWrongResult(func_name.to_string()))
                 }
             },
             None => {
-                match exported_data.ret {
-                    Some(_) => return Err(WatParserError::ExportHasWrongResult(func_name)),
+                match binary_data.ret {
+                    Some(_) => return Err(WatParserError::FunctionHasWrongResult(func_name.to_string())),
                     None => {},
                 }
             }
@@ -160,12 +171,42 @@ fn _validate_wasm(wasm_bytes: &[u8], expect_json: &str) -> Result<(), WatParserE
             .map(|s| str_to_val_type(s))
             .filter_map(|x| x)
             .collect();
-        if mapped_params.len() != exported_data.params.len() {
-            return Err(WatParserError::ExportHasWrongParams(func_name));
+
+        if mapped_params.len() != binary_data.params.len() {
+            return Err(WatParserError::FunctionHasWrongParams(func_name.to_string()));
         }
 
-        if mapped_params != exported_data.params {
-            return Err(WatParserError::ExportHasWrongParams(func_name));
+        if mapped_params != binary_data.params {
+            return Err(WatParserError::FunctionHasWrongParams(func_name.to_string()));
+        }
+
+        Ok(())
+    };
+
+
+    if guest_expect.memory.kind == "exported" {
+        if !has_exported_memory {
+            return Err(WatParserError::WrongMemoryType);
+        }
+    }
+    for (func_name, sig_data) in guest_expect.function_exports {
+        let exported_data = if let Some(exported_data) = exported_functions.get(&*func_name) {
+            exported_data
+        } else {
+            return Err(WatParserError::MissingExportedFunction(func_name.to_string()));
+        };
+        validate_func(&func_name, &sig_data, exported_data)?;
+    }
+    // you don't HAVE to import any of these, but if you do, they should match
+    for (func_name, sig_data) in &guest_expect.function_imports {
+        if let Some(imported_data) = imported_functions.get(&func_name as &str) {
+            validate_func(&func_name, sig_data, imported_data)?;
+        }
+    }
+    // at the same time, if you import something we're not expecting, that's bad
+    for func_name in imported_functions.keys() {
+        if !guest_expect.function_imports.contains_key(*func_name) {
+            return Err(WatParserError::UnexpectedImport(func_name.to_string()))
         }
     }
 
@@ -189,11 +230,11 @@ pub extern "C" fn validate_wasm(wasm_ptr: *mut u8, wasm_len: usize, json_ptr: *m
                 log(&"Some error in the WASM parser");
                 1
             },
-            WatParserError::ExportHasWrongParams(f) => {
+            WatParserError::FunctionHasWrongParams(f) => {
                 log(&format!("{} has wrong parameters", f));
                 2
             },
-            WatParserError::ExportHasWrongResult(f) => {
+            WatParserError::FunctionHasWrongResult(f) => {
                 log(&format!("{} has wrong result", f));
                 3
             },
@@ -205,6 +246,10 @@ pub extern "C" fn validate_wasm(wasm_ptr: *mut u8, wasm_len: usize, json_ptr: *m
                 log(&"memory is not exported");
                 5
             },
+            WatParserError::UnexpectedImport(f) => {
+                log(&format!("{} is not exported", f));
+                6
+            }
         },
     }
 }
@@ -216,7 +261,7 @@ mod tests {
     #[test]
     fn validate() {
         let wasm = include_bytes!("../../example_bots/bot_as.wasm");
-        let exp = include_str!("../../host/rsc/data/guestExpectations.json");
+        let exp = include_str!("../../host/rsc/data/guestAPI.json");
         match _validate_wasm(wasm, exp) {
             Ok(()) => {},
             Err(e) => {
