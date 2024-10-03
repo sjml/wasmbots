@@ -1,4 +1,4 @@
-# WasmBots proof-of-concept
+# WasmBots
 
 Playing around with a basic TypeScript host that can run WASM programs of a certain specification. 
 

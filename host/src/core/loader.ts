@@ -1,12 +1,14 @@
 import config from "./config.ts";
 
 export async function readTextFile(filepath: string): Promise<string> {
+    if (filepath.startsWith("$rsc/")) {
+        filepath = pathJoin(getRscPath(), filepath.substring(4));
+    }
     try {
-        const fetchPath = pathJoin(getRscPath(), filepath);
         if (config.environment == "Deno") {
-            return await Deno.readTextFile(fetchPath);
+            return await Deno.readTextFile(filepath);
         }
-        const resp = await fetch(fetchPath);
+        const resp = await fetch(filepath);
         if (!resp.ok) {
             throw new Error(`Failed to fetch ${filepath}: (${resp.status}) ${resp.statusText}`);
         }
@@ -18,16 +20,19 @@ export async function readTextFile(filepath: string): Promise<string> {
 }
 
 export async function readBinaryFile(filepath: string): Promise<Uint8Array> {
+    if (filepath.startsWith("$rsc/")) {
+        filepath = pathJoin(getRscPath(), filepath.substring(4));
+    }
     try {
-        const fetchPath = pathJoin(getRscPath(), filepath);
         if (config.environment == "Deno") {
-            return await Deno.readFile(fetchPath);
+            return await Deno.readFile(filepath);
         }
-        const resp = await fetch(fetchPath);
+        const resp = await fetch(filepath);
         if (!resp.ok) {
             throw new Error(`Failed to fetch ${filepath}: (${resp.status}) ${resp.statusText}`);
         }
-        return await resp.bytes();
+        const buff = await resp.arrayBuffer();
+        return new Uint8Array(buff);
     } catch(err) {
         console.error(`ERROR: Could not read file: ${err}`);
         throw err;

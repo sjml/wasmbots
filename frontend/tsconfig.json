@@ -13,6 +13,7 @@
      */
     "allowJs": true,
     "checkJs": true,
+    "allowImportingTsExtensions": true,
     "isolatedModules": true,
     "moduleDetection": "force"
   },
