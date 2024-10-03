@@ -21,7 +21,7 @@ Prereqs on macOS; modify this appropriately if you're using something else:
 brew install emscripten wabt deno zig rust node
 ```
 
-Run [`scripts/build_and_run_wasms.sh`](./scripts/build_and_run_wasms.sh). 
+Run [`scripts/_build_wasms.sh`](./scripts/_build_wasms.sh) and then [`scripts/_validate_wasms.sh`](./scripts/_validate_wasms.sh). 
 
 ## (Lack of) Memory Constraints
 

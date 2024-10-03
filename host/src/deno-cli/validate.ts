@@ -12,11 +12,11 @@ try {
     const _ = await WebAssembly.compile(wasmBytes);
 }
 catch (err) {
-    console.error(`PROGRAM ERROR: Buffer is not valid WebAssembly\n${err}`);
+    console.error(`❌ File is not valid WebAssembly\n${err}`);
     Deno.exit(1);
 }
 if (!await validateWasm(wasmBytes)) {
-    console.error("WebAssembly binary does not conform to spec")
+    console.error("❌ WebAssembly binary does not conform to spec")
     Deno.exit(1);
 }
-console.log("✅ WebAssembly binary file appears to be valid and conforms to spec")
+console.log(`✅ WebAssembly binary file ${Deno.args[0]} appears to be valid and conforms to spec`)

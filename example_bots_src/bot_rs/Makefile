@@ -7,6 +7,6 @@ all: target/wasm32-unknown-unknown/release/bot_rs.wasm
 
 .PHONY: install
 install: all
-	rsync -u -t -p target/wasm32-unknown-unknown/release/bot_rs.wasm ../../built_bots
+	rsync -u -t -p target/wasm32-unknown-unknown/release/bot_rs.wasm ../../example_bots
 
 .DEFAULT_GOAL = all

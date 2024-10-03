@@ -17,7 +17,7 @@ if [ $? -ne 0 ]; then
   exit
 fi
 
-for wasm in $(ls ./built_bots/*.wasm); do
+for wasm in $(ls ./example_bots/*.wasm); do
   wat="${wasm%.*}.wat"
   if [[ ! -f $wat || $wat -ot $wasm ]]; then
     wasm2wat $wasm > $wat

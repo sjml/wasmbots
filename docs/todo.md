@@ -1,14 +1,12 @@
-* CLI cleanup
-  * bundling
-    * maybe Deno's not a good long-term solution here
-      * bun? back to just tsc? 
 * get some basic web stuff working
   * first just a page (svelte baby)
   * then put it in a web worker
   * then load two web workers
   * time limits and strikes
-* tech investigate: usizes are getting cast into i32s (not even u32!)
-  * is that actually handled under the hood by the languages? 
+* tech break: 
+  * usizes are getting cast into i32s (not even u32!)
+    * is that actually handled under the hood by the languages? 
+  * convenience functions for all languages
 * game stuff
   * generate world
     * just pre-authored text files to start

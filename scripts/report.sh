@@ -5,7 +5,7 @@ cd ..
 
 output="Bot:WASM:WAT:WASM.gz\n---:----:---:-------\n"
 
-for wasm in $(ls -S built_bots/*.wasm); do
+for wasm in $(ls -S example_bots/*.wasm); do
   wasm_bytes=$(stat -f %z $wasm)
   wat="${wasm%.*}.wat"
   wat_bytes=$(stat -f %z $wat)
