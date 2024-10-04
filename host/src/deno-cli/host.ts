@@ -31,7 +31,7 @@ function log(level: LogLevel, msg: string) {
 const coord = new WasmCoordinator(log);
 
 coord.kickoff(program);
-await coord.waitUntilReady();
+await coord.untilReady();
 await coord.tick();
 await coord.tick();
 await coord.tick();

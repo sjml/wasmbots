@@ -1,5 +1,4 @@
 * get some basic web stuff working
-  * hook web worker to actual ui
   * then load **two** web workers
 * test:
   * worker crashing during setup

@@ -1,5 +1,9 @@
 <script lang="ts">
-    import { Validator, Loader, Logger } from "../host";
+    import { onMount } from "svelte";
+
+    import { Validator, Loader, Logger, WasmCoordinator, WorkerStatus } from "../host";
+
+    let coordinator!: WasmCoordinator;
 
     interface LogEntry {
         level: Logger.LogLevel;
@@ -7,39 +11,24 @@
     };
     let logs: LogEntry[] = [];
 
-    class UILogger implements Logger.ILogger {
-        assert(condition?: boolean, ...data: any[]): void {
-            if (!condition) { this.error(data); }
-        }
-        clear(): void {
-            logs = [];
-        }
-        error(...data: any[]): void {
-            logs = [...logs, {level: Logger.LogLevel.Error, msg: data.join(" ")}];
-        }
-        warn(...data: any[]): void {
-            logs = [...logs, {level: Logger.LogLevel.Warn, msg: data.join(" ")}];
-        }
-        log(...data: any[]): void {
-            logs = [...logs, {level: Logger.LogLevel.Log, msg: data.join(" ")}];
-        }
-        info(...data: any[]): void {
-            logs = [...logs, {level: Logger.LogLevel.Info, msg: data.join(" ")}];
-        }
-        debug(...data: any[]): void {
-            logs = [...logs, {level: Logger.LogLevel.Debug, msg: data.join(" ")}];
-        }
-    }
-    export const logger: Logger.ILogger = new UILogger();
-
-    async function validate(fpath: string) {
+    async function runBot(fpath: string) {
         if (!fpath || fpath.length == 0) return;
+        logs = [];
         fpath = `/example_bots/${fpath}`;
         const wasmBytes = await Loader.readBinaryFile(fpath);
-        Validator.validateWasm(wasmBytes, logger);
+        coordinator = new WasmCoordinator((level: Logger.LogLevel, msg: string) => {
+            logs = [...logs, {level, msg}];
+        });
+        coordinator.kickoff(wasmBytes);
+        await coordinator.untilReady();
+        let count = 0;
+        while (count < 10 && coordinator.workerStatus != WorkerStatus.Shutdown) {
+            await coordinator.tick();
+            count += 1;
+        }
     }
     export let selectedFile: string;
-    $: validate(selectedFile);
+    $: runBot(selectedFile);
 </script>
 
 <div class="console">
@@ -53,6 +42,7 @@
         background-color: black;
         color: white;
         font-family: 'Courier New', Courier, monospace;
+        white-space: pre;
 
         padding: 10px;
     }
@@ -62,6 +52,7 @@
     }
     .console .error::before {
         content: "❌ ";
+        font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
     }
 
     .console .info {
@@ -69,17 +60,21 @@
     }
     .console .info::before {
         content: "ⓘ ";
+        font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
     }
 
     .console .log::before {
-        content: "  ";
+        content: "";
+        font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
     }
 
     .console .warn::before {
-        content: "⚠️️ ";
+        content: "⚠️ ";
+        font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
     }
 
     .console .debug::before {
         content: "👾 ";
+        font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
     }
 </style>

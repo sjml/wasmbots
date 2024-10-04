@@ -2,7 +2,7 @@ import config from "../core/config.ts";
 import { LogLevel } from "../core/logger.ts";
 import * as Msg from "./messages.ts";
 
-enum WorkerStatus {
+export enum WorkerStatus {
     Uninitialized,
     Invalid,
     Ready,
@@ -48,7 +48,7 @@ export class WasmCoordinator {
         });
     }
 
-    waitUntilReady(): Promise<void> {
+    untilReady(): Promise<void> {
         return this.readyPromise;
     }
 
