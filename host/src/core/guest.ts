@@ -1,6 +1,5 @@
-import { validateWasm } from "./validator.ts";
-import { writegameParameters } from "./circumstances.ts";
-import { type ILogger, LogLevel } from "./logger.ts";
+import { writegameParameters, writeCircumstances } from "./circumstances.ts";
+import { type ILogger } from "./logger.ts";
 
 interface WasmBotsExports {
     memory: WebAssembly.Memory;
@@ -70,20 +69,8 @@ export class GuestProgram {
 
     // TODO: error handling, reject promise
     // have to do a separate init function because can't have async constructor
-    async init(programBuffer: ArrayBuffer): Promise<boolean> {
-        let mod: WebAssembly.Module;
-        try {
-            mod = await WebAssembly.compile(programBuffer);
-        }
-        catch (err) {
-            this.logger.error(`PROGRAM ERROR: Buffer is not valid WebAssembly\n${err}`);
-            return false;
-        }
-        if (!await validateWasm(programBuffer)) {
-            // errors output by validation function
-            return false;
-        }
-        this.instance = await WebAssembly.instantiate(mod, {
+    async init(module: WebAssembly.Module) {
+        this.instance = await WebAssembly.instantiate(module, {
             env: {
                 abort: this.abort,
                 logFunction: (logLevel: number, msgPtr: number, msgLen: number) => {
@@ -93,7 +80,6 @@ export class GuestProgram {
         });
 
         this.exports = this.instance.exports as unknown as WasmBotsExports;
-        return true;
     }
 
     runSetup(reserveMemSize: number): boolean {
@@ -114,13 +100,20 @@ export class GuestProgram {
         offset += 2;
         const versionPatch = this.liftUint16(offset);
         offset += 2;
-        this.logger.log(`    # program info -- ${botName} v${versionMajor}.${versionMinor}.${versionPatch}`);
+        this.logger.log(`### program info -- ${botName} v${versionMajor}.${versionMinor}.${versionPatch} ###`);
 
         this.reserveBlock.fill(0);
 
         writegameParameters(this.reserveBlock, 0);
         const ready = this.exports.receiveGameParams(0);
         return ready;
+    }
+
+    runTick(lastTickDuration: number) {
+        this.reserveBlock.fill(0);
+        const circOffset = 0;
+        writeCircumstances(this.reserveBlock, circOffset, lastTickDuration);
+        this.exports!.tick(circOffset);
     }
 
     runTestFib() {

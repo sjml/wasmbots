@@ -6,6 +6,7 @@ export async function readTextFile(filepath: string): Promise<string> {
     }
     try {
         if (config.environment == "Deno") {
+            // @ts-ignore
             return await Deno.readTextFile(filepath);
         }
         const resp = await fetch(filepath);
@@ -25,6 +26,7 @@ export async function readBinaryFile(filepath: string): Promise<Uint8Array> {
     }
     try {
         if (config.environment == "Deno") {
+            // @ts-ignore
             return await Deno.readFile(filepath);
         }
         const resp = await fetch(filepath);

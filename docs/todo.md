@@ -1,7 +1,12 @@
 * get some basic web stuff working
-  * then put it in a web worker
-  * then load two web workers
-  * time limits and strikes
+  * hook web worker to actual ui
+  * then load **two** web workers
+* test:
+  * worker crashing during setup
+  * crashing during tick
+  * overrunning setup time limit
+  * overrunning time limit (soft)
+  * overrunning time limit (hard)
 * tech break: 
   * wasm-bindgen?
   * convenience functions for all languages

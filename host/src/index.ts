@@ -1,5 +1,5 @@
 export * as Circumstances from "./core/circumstances.ts";
-export * as Config from "./core/config.ts";
+export { default as Config } from "./core/config.ts";
 export * from "./core/guest.ts";
 export * as Loader from "./core/loader.ts";
 export * as Logger  from "./core/logger.ts";

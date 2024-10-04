@@ -4397,7 +4397,10 @@
     local.get 2
     call 22
     unreachable)
-  (func (;13;) (type 5) (param i32))
+  (func (;13;) (type 5) (param i32)
+    i64.const 41
+    call 14
+    drop)
   (func (;14;) (type 6) (param i64) (result i64)
     (local i64)
     i64.const 0

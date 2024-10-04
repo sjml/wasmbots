@@ -90,7 +90,7 @@ pub extern "C" fn receiveGameParams(offset: usize) -> bool {
 
 #[no_mangle]
 pub extern "C" fn tick(_offset: usize) {
-
+    fib(41);
 }
 
 // not efficient, you know
