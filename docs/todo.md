@@ -1,5 +1,3 @@
-* get some basic web stuff working
-  * then load **two** web workers
 * test:
   * worker crashing during setup
   * crashing during tick

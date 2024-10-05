@@ -1,13 +1,10 @@
 <script lang="ts">
-    import BotSelector from "./lib/BotSelector.svelte";
-    import BotConsole from "./lib/BotConsole.svelte";
-
-    let selectedBotFile: string;
+    import BotChoice from "./lib/BotChoice.svelte";
 </script>
 
 <main>
-    <BotSelector bind:chosen={selectedBotFile}/>
-    <BotConsole selectedFile={selectedBotFile}/>
+    <BotChoice />
+    <BotChoice />
 </main>
 
 <style>

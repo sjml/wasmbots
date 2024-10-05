@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+    import { onMount, tick as svelteTick } from "svelte";
 
     import { Validator, Loader, Logger, WasmCoordinator, WorkerStatus } from "../host";
 
@@ -10,14 +10,20 @@
         msg: string;
     };
     let logs: LogEntry[] = [];
+    let consoleDiv: HTMLDivElement;
 
     async function runBot(fpath: string) {
         if (!fpath || fpath.length == 0) return;
         logs = [];
         fpath = `/example_bots/${fpath}`;
         const wasmBytes = await Loader.readBinaryFile(fpath);
-        coordinator = new WasmCoordinator((level: Logger.LogLevel, msg: string) => {
+        coordinator = new WasmCoordinator(async (level: Logger.LogLevel, msg: string) => {
             logs = [...logs, {level, msg}];
+            await svelteTick();
+            consoleDiv.scroll({
+                top: consoleDiv.scrollHeight,
+                behavior: "smooth",
+            });
         });
         coordinator.kickoff(wasmBytes);
         await coordinator.untilReady();
@@ -31,7 +37,7 @@
     $: runBot(selectedFile);
 </script>
 
-<div class="console">
+<div class="console" bind:this={consoleDiv}>
     {#each logs as log}
         <div class={log.level}>{log.msg}</div>
     {/each}
@@ -43,6 +49,9 @@
         color: white;
         font-family: 'Courier New', Courier, monospace;
         white-space: pre;
+
+        height: 150px;
+        overflow-y: auto;
 
         padding: 10px;
     }
