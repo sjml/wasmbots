@@ -8,9 +8,7 @@
 #include "wasmbot_client.h"
 
 const char* WSMBTCLNT_BOT_NAME = "bot_c";
-const uint16_t WSMBTCLNT_VERSION_MAJOR = 0;
-const uint16_t WSMBTCLNT_VERSION_MINOR = 1;
-const uint16_t WSMBTCLNT_VERSION_PATCH = 0;
+const uint16_t WSMBTCLNT_VERSION[3] = {0, 1, 0};
 
 // intentionally inefficient fibonacci calculator
 uint64_t fib(uint64_t n) {

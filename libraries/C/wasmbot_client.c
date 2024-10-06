@@ -391,9 +391,7 @@ bool receiveGameParams(size_t offset) {
 
 //// SETUP AND LOOP
 extern const char* WSMBTCLNT_BOT_NAME;
-extern const uint16_t WSMBTCLNT_VERSION_MAJOR;
-extern const uint16_t WSMBTCLNT_VERSION_MINOR;
-extern const uint16_t WSMBTCLNT_VERSION_PATCH;
+extern const uint16_t WSMBTCLNT_VERSION[3];
 
 size_t setup(size_t requestReserve) {
     if (!_reserveMemory(requestReserve)) {
@@ -407,12 +405,9 @@ size_t setup(size_t requestReserve) {
     memcpy((void*)&WSMBTCLNT_HOST_RESERVE[offset], WSMBTCLNT_BOT_NAME, bnLen);
     memset((void*)&WSMBTCLNT_HOST_RESERVE[nameLen], 0, MAX_NAME_LEN-nameLen);
     offset += MAX_NAME_LEN;
-    memcpy((void*)&WSMBTCLNT_HOST_RESERVE[offset], &WSMBTCLNT_VERSION_MAJOR, sizeof(uint16_t));
-    offset += sizeof(uint16_t);
-    memcpy((void*)&WSMBTCLNT_HOST_RESERVE[offset], &WSMBTCLNT_VERSION_MINOR, sizeof(uint16_t));
-    offset += sizeof(uint16_t);
-    memcpy((void*)&WSMBTCLNT_HOST_RESERVE[offset], &WSMBTCLNT_VERSION_PATCH, sizeof(uint16_t));
-    offset += sizeof(uint16_t);
+    offset = wsmbtclnt_write_u16(offset, WSMBTCLNT_VERSION[0]);
+    offset = wsmbtclnt_write_u16(offset, WSMBTCLNT_VERSION[1]);
+    offset = wsmbtclnt_write_u16(offset, WSMBTCLNT_VERSION[2]);
 
     return (size_t)WSMBTCLNT_HOST_RESERVE;
 }
