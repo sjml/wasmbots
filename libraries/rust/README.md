@@ -22,14 +22,15 @@ wasmbots_client = { path = "[path_to_local_crate]" }
 Somewhere in your module **make sure** you have the following function: 
 ```rust
 #[no_mangle]
-pub extern "C" fn setup(request_reserve: usize) -> usize {
-    wasmbots_client::setup(request_reserve, Some(tick))
+pub extern "C" fn client_setup(_params: &GameParameters) -> bool {
+    true
 }
 ```
+The GameParameters struct tells you the basic conditions of the game (how many players, what style of game, engine version, etc). You return `true` or `false` to indicate your readiness to play under those parameters. 
 
-The host needs to see that `setup` function exported or it won't even try to run your module. Anyway, you can do whatever else you want in the function, but make sure you return the result of the `wasmbots_client::setup`. The `Some(tick)` parameter can also be `None`, of course, but `tick` should be a function that takes no parameters and returns nothing; it's "where the magic happens." 
+In the client setup, before returning, you can do whatever kinds of prep you want to for the game. Most importantly, you probably want to call `wasmbots_client::set_tick_callback` and pass it a pointer to a function that takes no parameters and returns void; it's where the magic happens.
 
-Finally, make sure to build like so to actually get the WASM. 
+Finally, make sure to build like this to actually get the WASM. 
 
 ```shell
 cargo build --target wasm32-unknown-unknown --release

@@ -3,9 +3,10 @@ CLANG_FLAGS = --target=wasm32 --no-standard-libraries -ffreestanding -nostdinc -
 CLANG_IMPORT_MEM_FLAGS = -Wl,--import-memory
 EMCC = emcc
 EMCC_FLAGS = -s WASM=1 -s EXPORTED_FUNCTIONS='["_setup", "_receiveGameParams", "_tick", "_runFib"]' -O3 --no-entry -s ERROR_ON_UNDEFINED_SYMBOLS=0
+LIBDIR = ../../libraries/C
 
-bot_c.wasm: bot_c.c
-	$(EMCC) $(EMCC_FLAGS) -o bot_c.wasm bot_c.c
+bot_c.wasm: bot_c.c $(LIBDIR)/wasmbot_client.c
+	$(EMCC) $(EMCC_FLAGS) -I$(LIBDIR) -o bot_c.wasm $?
 	chmod -x $@
 
 .PHONY: all

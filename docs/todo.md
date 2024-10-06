@@ -1,6 +1,7 @@
 * tech break: 
   * convenience functions for all languages
-    * the remove runFib
+    * then remove runFib
+  * engine calling setup should check if return 0
   * minimum tick time in engine
   * test:
     * worker crashing during setup

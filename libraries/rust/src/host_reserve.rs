@@ -43,6 +43,14 @@ impl HostReserve {
     }
 
     // Rust generics should be helpful here, but they're kinda not
+    pub fn write_i8(&mut self, offset: usize, value: i8) -> usize {
+        const INT_SIZE: usize = std::mem::size_of::<i8>();
+        let mut slice = self.res.lock().unwrap();
+        let bytes = value.to_le_bytes();
+        slice[offset..offset+INT_SIZE].clone_from_slice(&bytes);
+        offset + INT_SIZE
+    }
+
     pub fn write_u16(&mut self, offset: usize, value: u16) -> usize {
         const INT_SIZE: usize = std::mem::size_of::<u16>();
         let mut slice = self.res.lock().unwrap();
