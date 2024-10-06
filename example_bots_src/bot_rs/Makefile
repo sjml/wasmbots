@@ -1,6 +1,7 @@
 
 target/wasm32-unknown-unknown/release/bot_rs.wasm: src/lib.rs
 	cargo build --release
+	chmod -x $@
 
 .PHONY: all
 all: target/wasm32-unknown-unknown/release/bot_rs.wasm

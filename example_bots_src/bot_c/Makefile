@@ -6,6 +6,7 @@ EMCC_FLAGS = -s WASM=1 -s EXPORTED_FUNCTIONS='["_setup", "_receiveGameParams", "
 
 bot_c.wasm: bot_c.c
 	$(EMCC) $(EMCC_FLAGS) -o bot_c.wasm bot_c.c
+	chmod -x $@
 
 .PHONY: all
 all: bot_c.wasm

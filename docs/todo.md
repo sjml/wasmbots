@@ -1,12 +1,20 @@
-* test:
-  * worker crashing during setup
-  * crashing during tick
-  * overrunning setup time limit
-  * overrunning time limit (soft)
-  * overrunning time limit (hard)
 * tech break: 
-  * wasm-bindgen?
   * convenience functions for all languages
+    * the remove runFib
+  * minimum tick time in engine
+  * test:
+    * worker crashing during setup
+    * crashing during tick
+    * overrunning setup time limit
+    * overrunning time limit (soft)
+    * overrunning time limit (hard)
+    * rust that doesn't implement client_setup
+  * swap api param reals and raws
+  * look at exception use (maybe use more, make sure to catch where using)
+* some basic display niceties
+  * push bot consoles to verticals on opposite sides of page
+  * stub out a "world display" in the middle
+  * figure out a decent solution for landscape/mobile 😬
 * game stuff
   * generate world
     * just pre-authored text files to start

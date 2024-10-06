@@ -5,11 +5,14 @@ Behavior that should get shut down
 * writes outside scratchpad
 * crashes
 * takes too long on tick
+  * gets strikes
+  * dies immediately
 
 ## weird bots
 Stressing the limits of the system
 
 * chatty: spam the log
+
 
 ## test bots
 

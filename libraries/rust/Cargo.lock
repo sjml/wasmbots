@@ -3,12 +3,5 @@
 version = 3
 
 [[package]]
-name = "bot_rs"
-version = "0.1.0"
-dependencies = [
- "wasmbots_client",
-]
-
-[[package]]
 name = "wasmbots_client"
 version = "0.1.0"

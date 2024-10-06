@@ -60,6 +60,7 @@
       "returnDoc": "",
       "paramsImp": ["u32", "usize", "usize"],
       "params": ["i32", "i32", "i32"],
+      "returnImp": null,
       "return": null
     }
   }

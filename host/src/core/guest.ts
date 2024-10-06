@@ -1,4 +1,4 @@
-import { writegameParameters, writeCircumstances } from "./circumstances.ts";
+import { writeGameParameters, writeCircumstances } from "./circumstances.ts";
 import { type ILogger } from "./logger.ts";
 
 interface WasmBotsExports {
@@ -104,7 +104,7 @@ export class GuestProgram {
 
         this.reserveBlock.fill(0);
 
-        writegameParameters(this.reserveBlock, 0);
+        writeGameParameters(this.reserveBlock, 0);
         const ready = this.exports.receiveGameParams(0);
         return ready;
     }

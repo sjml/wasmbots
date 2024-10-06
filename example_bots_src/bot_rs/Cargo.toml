@@ -11,3 +11,4 @@ strip = true
 lto = true
 
 [dependencies]
+wasmbots_client = { path = "../../libraries/rust" }
