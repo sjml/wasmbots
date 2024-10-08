@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 void wsmbtclnt_log(const char* msg);
 void wsmbtclnt_logErr(const char* msg);
@@ -33,6 +34,14 @@ typedef struct wsmbtclnt_GameParameters {
     uint16_t paramsVersion;
     uint16_t engineVersion[3];
 } wsmbtclnt_GameParameters;
+
+#define WSMBTCLNT_MAX_BOT_NAME_LEN 26
+
+typedef struct wsmbtclnt_BotMetadata {
+    char name[WSMBTCLNT_MAX_BOT_NAME_LEN];
+    uint16_t botVersion[3];
+    bool ready;
+} wsmbtclnt_BotMetadata;
 
 typedef void (*wsmbtclnt_TickFunction)();
 void wsmbtclnt_setTickCallback(wsmbtclnt_TickFunction tickFunc);

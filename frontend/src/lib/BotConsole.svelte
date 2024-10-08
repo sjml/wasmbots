@@ -1,7 +1,7 @@
 <script lang="ts">
-    import { onMount, tick as svelteTick } from "svelte";
+    import { tick as svelteTick } from "svelte";
 
-    import { Validator, Loader, Logger, WasmCoordinator, WorkerStatus } from "../host";
+    import { Loader, Logger, WasmCoordinator, WorkerStatus } from "../host";
 
     let coordinator!: WasmCoordinator;
 

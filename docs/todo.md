@@ -1,6 +1,8 @@
 * tech break: 
-  * convenience functions for all languages
+  * convenience functions for all languages (including TypeScript)
+  * fix size_t -> uintptr_t in C
     * then remove runFib
+  * min length for name
   * engine calling setup should check if return 0
   * minimum tick time in engine
   * test:
@@ -11,7 +13,7 @@
     * overrunning time limit (hard)
     * rust that doesn't implement client_setup
   * swap api param reals and raws
-  * look at exception use (maybe use more, make sure to catch where using)
+  * look at exception use in TypeScript (maybe use more, make sure to catch where using)
 * some basic display niceties
   * push bot consoles to verticals on opposite sides of page
   * stub out a "world display" in the middle

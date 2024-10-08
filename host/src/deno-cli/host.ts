@@ -1,4 +1,4 @@
-import { WasmCoordinator } from "../worker/coordinator.ts";
+import { WasmCoordinator, WorkerStatus } from "../worker/coordinator.ts";
 import { LogLevel } from "../core/logger.ts";
 
 if (Deno.args.length == 0) {
@@ -32,12 +32,8 @@ const coord = new WasmCoordinator(log);
 
 coord.kickoff(program);
 await coord.untilReady();
-await coord.tick();
-await coord.tick();
-await coord.tick();
-await coord.tick();
-await coord.tick();
-await coord.tick();
-await coord.tick();
+while (coord.workerStatus != WorkerStatus.Shutdown) {
+    await coord.tick();
+}
 
 Deno.exit(0);

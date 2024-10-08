@@ -16,6 +16,8 @@ Stressing the limits of the system
 
 ## test bots
 
+* no-show: does not accept game params
+* resigner: resign the game after X turns
 * dummy: just stands still and doesn't do anything
 * scaredycat: explores until it encounters an item or person and then moves in the other direction
 * aggro: attacks relentlessly once it sees someone; wanders randomly otherwise

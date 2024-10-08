@@ -15,17 +15,20 @@
     },
     "receiveGameParams": {
       "doc": "called after the setup function; the initial game parameters (specced in `circumstances.json`) are currently sitting in the reserved memory block. they won't stay there, so copy out anything you need.",
-      "paramsDoc": ["the offset in the shared memory where the parameters begin"],
+      "paramsDoc": [
+        "the offset in the shared memory where the parameters begin",
+        "the offset "
+      ],
       "returnDoc": "a boolean value saying whether or not we can proceed (if something in the parameters means we can't run, for example)",
-      "paramsImp": ["usize"],
-      "params": ["i32"],
+      "paramsImp": ["usize", "usize"],
+      "params": ["i32", "i32"],
       "returnImp": "boolean",
       "return": "i32"
     },
     "tick": {
       "doc": "a prompt from the engine for you to make your move; the current circumstances will be waiting for you in the reserved block",
       "paramsDoc": ["the offset in the shared memory where the circumstances begin"],
-      "returnDoc": "",
+      "returnDoc": "the memory location to start writing the bot metadata",
       "paramsImp": ["usize"],
       "params": ["i32"],
       "returnImp": null,

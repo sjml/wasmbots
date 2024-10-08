@@ -4,7 +4,7 @@ import { type ILogger } from "./logger.ts";
 interface WasmBotsExports {
     memory: WebAssembly.Memory;
     setup: (requestReserve: number) => number;
-    receiveGameParams: (offset: number) => boolean;
+    receiveGameParams: (offset: number, resultLocation: number) => boolean;
     tick: (offset: number) => void;
     runFib: (offset: number, resultLocation: number) => boolean;
 }
@@ -91,8 +91,15 @@ export class GuestProgram {
         this.reserveLength = reserveMemSize;
         this.reserveBlock = new Uint8Array(this.exports.memory.buffer, this.reservePtr, this.reserveLength);
 
-        let offset = this.reservePtr;
-        const botName = this.liftString(this.reservePtr, 26);
+        this.reserveBlock.fill(0);
+
+        writeGameParameters(this.reserveBlock, 0);
+
+        const resultOffset = 1024;
+        const ready = this.exports.receiveGameParams(0, resultOffset);
+
+        let offset = this.reservePtr + resultOffset;
+        const botName = this.liftString(offset, 26);
         offset += 26;
         const versionMajor = this.liftUint16(offset);
         offset += 2;
@@ -102,10 +109,6 @@ export class GuestProgram {
         offset += 2;
         this.logger.log(`### program info -- ${botName} v${versionMajor}.${versionMinor}.${versionPatch} ###`);
 
-        this.reserveBlock.fill(0);
-
-        writeGameParameters(this.reserveBlock, 0);
-        const ready = this.exports.receiveGameParams(0);
         return ready;
     }
 

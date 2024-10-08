@@ -366,9 +366,9 @@ int64_t wsmbtclnt_read_i64(size_t offset) {
 //// GAME PARAMETERS
 const uint16_t GP_VERSION = 7;
 
-extern bool clientSetup(wsmbtclnt_GameParameters params);
+extern wsmbtclnt_BotMetadata clientSetup(wsmbtclnt_GameParameters params);
 
-bool receiveGameParams(size_t offset) {
+bool receiveGameParams(size_t offset, size_t infoOffset) {
     wsmbtclnt_GameParameters params;
 
     params.paramsVersion = wsmbtclnt_read_u16(offset);
@@ -384,30 +384,22 @@ bool receiveGameParams(size_t offset) {
     params.engineVersion[2] = wsmbtclnt_read_u16(offset);
     offset += sizeof(uint16_t);
 
-    return clientSetup(params);
+    const wsmbtclnt_BotMetadata botData = clientSetup(params);
+    memcpy((char*)(WSMBTCLNT_HOST_RESERVE + infoOffset), botData.name, WSMBTCLNT_MAX_BOT_NAME_LEN);
+    infoOffset += WSMBTCLNT_MAX_BOT_NAME_LEN;
+    infoOffset = wsmbtclnt_write_u16(infoOffset, botData.botVersion[0]);
+    infoOffset = wsmbtclnt_write_u16(infoOffset, botData.botVersion[1]);
+    infoOffset = wsmbtclnt_write_u16(infoOffset, botData.botVersion[2]);
+    return botData.ready;
 }
 //// \GAME PARAMETERS
 
 
 //// SETUP AND LOOP
-extern const char* WSMBTCLNT_BOT_NAME;
-extern const uint16_t WSMBTCLNT_VERSION[3];
-
 size_t setup(size_t requestReserve) {
     if (!_reserveMemory(requestReserve)) {
         return 0;
     }
-
-    const uint32_t MAX_NAME_LEN = 26;
-    size_t bnLen = strlen(WSMBTCLNT_BOT_NAME);
-    size_t nameLen = MAX_NAME_LEN > bnLen ? bnLen : MAX_NAME_LEN;
-    size_t offset = 0;
-    memcpy((void*)&WSMBTCLNT_HOST_RESERVE[offset], WSMBTCLNT_BOT_NAME, bnLen);
-    memset((void*)&WSMBTCLNT_HOST_RESERVE[nameLen], 0, MAX_NAME_LEN-nameLen);
-    offset += MAX_NAME_LEN;
-    offset = wsmbtclnt_write_u16(offset, WSMBTCLNT_VERSION[0]);
-    offset = wsmbtclnt_write_u16(offset, WSMBTCLNT_VERSION[1]);
-    offset = wsmbtclnt_write_u16(offset, WSMBTCLNT_VERSION[2]);
 
     return (size_t)WSMBTCLNT_HOST_RESERVE;
 }

@@ -4,17 +4,14 @@ Moves
 Wait
     - no-op, no operands
 SetBotInfo
-    - four bytes offset (bot name)
-    - one byte length (bot name)
-    - majorOffset
-    - minorOffset
-    - patchOffset
-    - only valid during setup
+    - 26 bytes (bot name)
+    - semver (u16 * 3; 6 bytes)
+    - only valid during setup? (why tho)
 Move
     - direction UP, RIGHT, DOWN, LEFT (one byte)
     - number of spaces (one byte)
 Attack
-    - square relative to you (2 bytes x and 2 bytes y)
+    - square relative to you (i16 x and i16 y; 4 bytes)
 Cast
     - square (4 bytes)
     - spell (1 byte)
