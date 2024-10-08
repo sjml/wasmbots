@@ -51,8 +51,8 @@ void wsmbtclnt_logfErr(const char* fmt, ...) {
 #if !defined(WSMBTCLNT_BOUNDS_CHECKING)
     #define WSMBTCLNT_BOUNDS_CHECKING 1
 #endif
-#if !defined(WSMBTCLNT_BIG_ENDIAN)
-    #define WSMBTCLNT_BIG_ENDIAN 0
+#if !defined(WSMBTCLNT_DEV_BIG_ENDIAN)
+    #define WSMBTCLNT_DEV_BIG_ENDIAN 0
 #endif
 
 uint8_t* WSMBTCLNT_HOST_RESERVE = NULL;
@@ -256,7 +256,7 @@ uint16_t wsmbtclnt_read_u16(size_t offset) {
     #endif
 
     uint16_t value = 0;
-    #if !WSMBTCLNT_BIG_ENDIAN
+    #if !WSMBTCLNT_DEV_BIG_ENDIAN
     memcpy(&value, &WSMBTCLNT_HOST_RESERVE[offset], sizeof(value));
     #else
     for (size_t i = 0; i < sizeof(uint16_t); i++) {
@@ -275,7 +275,7 @@ int16_t wsmbtclnt_read_i16(size_t offset) {
     #endif
 
     int16_t value = 0;
-    #if !WSMBTCLNT_BIG_ENDIAN
+    #if !WSMBTCLNT_DEV_BIG_ENDIAN
     memcpy(&value, &WSMBTCLNT_HOST_RESERVE[offset], sizeof(value));
     #else
     for (size_t i = 0; i < sizeof(int16_t); i++) {
@@ -294,7 +294,7 @@ uint32_t wsmbtclnt_read_u32(size_t offset) {
     #endif
 
     uint32_t value = 0;
-    #if !WSMBTCLNT_BIG_ENDIAN
+    #if !WSMBTCLNT_DEV_BIG_ENDIAN
     memcpy(&value, &WSMBTCLNT_HOST_RESERVE[offset], sizeof(value));
     #else
     for (size_t i = 0; i < sizeof(uint32_t); i++) {
@@ -313,7 +313,7 @@ int32_t wsmbtclnt_read_i32(size_t offset) {
     #endif
 
     int32_t value = 0;
-    #if !WSMBTCLNT_BIG_ENDIAN
+    #if !WSMBTCLNT_DEV_BIG_ENDIAN
     memcpy(&value, &WSMBTCLNT_HOST_RESERVE[offset], sizeof(value));
     #else
     for (size_t i = 0; i < sizeof(int32_t); i++) {
@@ -332,7 +332,7 @@ uint64_t wsmbtclnt_read_u64(size_t offset) {
     #endif
 
     uint64_t value = 0;
-    #if !WSMBTCLNT_BIG_ENDIAN
+    #if !WSMBTCLNT_DEV_BIG_ENDIAN
     memcpy(&value, &WSMBTCLNT_HOST_RESERVE[offset], sizeof(value));
     #else
     for (size_t i = 0; i < sizeof(uint64_t); i++) {
@@ -351,7 +351,7 @@ int64_t wsmbtclnt_read_i64(size_t offset) {
     #endif
 
     int64_t value = 0;
-    #if !WSMBTCLNT_BIG_ENDIAN
+    #if !WSMBTCLNT_DEV_BIG_ENDIAN
     memcpy(&value, &WSMBTCLNT_HOST_RESERVE[offset], sizeof(value));
     #else
     for (size_t i = 0; i < sizeof(int64_t); i++) {
