@@ -31,7 +31,13 @@ function log(level: LogLevel, msg: string) {
 const coord = new WasmCoordinator(log);
 
 coord.kickoff(program);
-await coord.untilReady();
+try {
+    await coord.untilReady();
+}
+catch {
+    // error already printed
+    Deno.exit(1);
+}
 while (coord.workerStatus != WorkerStatus.Shutdown) {
     await coord.tick();
 }

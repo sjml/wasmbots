@@ -77,7 +77,7 @@ size_t wsmbtclnt_write_string(size_t offset, char* str) {
     size_t str_len = strlen(str);
     if (offset + str_len >= WSMBTCLNT_HOST_RESERVE_SIZE) {
         wsmbtclnt_logErr("CLIENT_ERROR: String too long to write to reserve memory");
-        return 0;
+        return offset;
     }
     #else
     size_t str_len = 0;
@@ -97,7 +97,7 @@ size_t wsmbtclnt_write_u8(size_t offset, uint8_t value) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset >= WSMBTCLNT_HOST_RESERVE_SIZE) {
         wsmbtclnt_logErr("CLIENT_ERROR: Writing uint8_t outside of reserve memory");
-        return 0;
+        return offset;
     }
     #endif
     WSMBTCLNT_HOST_RESERVE[offset] = value;
@@ -108,7 +108,7 @@ size_t wsmbtclnt_write_i8(size_t offset, int8_t value) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset >= WSMBTCLNT_HOST_RESERVE_SIZE) {
         wsmbtclnt_logErr("CLIENT_ERROR: Writing uint8_t outside of reserve memory");
-        return 0;
+        return offset;
     }
     #endif
     WSMBTCLNT_HOST_RESERVE[offset] = value;
@@ -119,12 +119,12 @@ size_t wsmbtclnt_write_u16(size_t offset, uint16_t value) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(value) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
         wsmbtclnt_logErr("CLIENT_ERROR: Writing uint16_t outside of reserve memory");
-        return 0;
+        return offset;
     }
     #endif
 
     for (size_t i = 0; i < sizeof(value); i++) {
-        WSMBTCLNT_HOST_RESERVE[offset + i] = (value >> (i * 8)) & 0xFF;  // Extract each byte
+        WSMBTCLNT_HOST_RESERVE[offset + i] = (value >> (i * 8)) & 0xFF;
     }
 
     return offset + sizeof(value);
@@ -134,12 +134,12 @@ size_t wsmbtclnt_write_i16(size_t offset, int16_t value) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(value) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
         wsmbtclnt_logErr("CLIENT_ERROR: Writing int16_t outside of reserve memory");
-        return 0;
+        return offset;
     }
     #endif
 
     for (size_t i = 0; i < sizeof(value); i++) {
-        WSMBTCLNT_HOST_RESERVE[offset + i] = (value >> (i * 8)) & 0xFF;  // Extract each byte
+        WSMBTCLNT_HOST_RESERVE[offset + i] = (value >> (i * 8)) & 0xFF;
     }
 
     return offset + sizeof(value);
@@ -149,12 +149,12 @@ size_t wsmbtclnt_write_u32(size_t offset, uint32_t value) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(value) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
         wsmbtclnt_logErr("CLIENT_ERROR: Writing uint32_t outside of reserve memory");
-        return 0;
+        return offset;
     }
     #endif
 
     for (size_t i = 0; i < sizeof(value); i++) {
-        WSMBTCLNT_HOST_RESERVE[offset + i] = (value >> (i * 8)) & 0xFF;  // Extract each byte
+        WSMBTCLNT_HOST_RESERVE[offset + i] = (value >> (i * 8)) & 0xFF;
     }
 
     return offset + sizeof(value);
@@ -164,12 +164,12 @@ size_t wsmbtclnt_write_i32(size_t offset, int32_t value) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(value) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
         wsmbtclnt_logErr("CLIENT_ERROR: Writing int32_t outside of reserve memory");
-        return 0;
+        return offset;
     }
     #endif
 
     for (size_t i = 0; i < sizeof(value); i++) {
-        WSMBTCLNT_HOST_RESERVE[offset + i] = (value >> (i * 8)) & 0xFF;  // Extract each byte
+        WSMBTCLNT_HOST_RESERVE[offset + i] = (value >> (i * 8)) & 0xFF;
     }
 
     return offset + sizeof(value);
@@ -179,12 +179,12 @@ size_t wsmbtclnt_write_u64(size_t offset, uint64_t value) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(value) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
         wsmbtclnt_logErr("CLIENT_ERROR: Writing uint64_t outside of reserve memory");
-        return 0;
+        return offset;
     }
     #endif
 
     for (size_t i = 0; i < sizeof(value); i++) {
-        WSMBTCLNT_HOST_RESERVE[offset + i] = (value >> (i * 8)) & 0xFF;  // Extract each byte
+        WSMBTCLNT_HOST_RESERVE[offset + i] = (value >> (i * 8)) & 0xFF;
     }
 
     return offset + sizeof(value);
@@ -194,12 +194,12 @@ size_t wsmbtclnt_write_i64(size_t offset, int64_t value) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(value) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
         wsmbtclnt_logErr("CLIENT_ERROR: Writing int64_t outside of reserve memory");
-        return 0;
+        return offset;
     }
     #endif
 
     for (size_t i = 0; i < sizeof(value); i++) {
-        WSMBTCLNT_HOST_RESERVE[offset + i] = (value >> (i * 8)) & 0xFF;  // Extract each byte
+        WSMBTCLNT_HOST_RESERVE[offset + i] = (value >> (i * 8)) & 0xFF;
     }
 
     return offset + sizeof(value);

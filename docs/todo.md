@@ -1,7 +1,9 @@
 * tech break: 
   * convenience functions for all languages (including TypeScript)
+    * don't forget floats!
   * fix size_t -> uintptr_t in C
-    * then remove runFib
+  * CLIENT_ERROR vs CLIENT ERROR
+  * then remove runFib
   * min length for name
   * engine calling setup should check if return 0
   * minimum tick time in engine

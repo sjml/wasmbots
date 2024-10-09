@@ -52,10 +52,6 @@ extern "C" fn receiveGameParams(mut offset: usize, mut info_offset: usize) -> bo
     };
 
     let bot_data = unsafe { client_setup(&gp) };
-    if bot_data.name.len() > MAX_NAME_LEN {
-        log_err(&format!("CLIENT ERROR: bot name longer than {} bytes", MAX_NAME_LEN));
-        return false;
-    }
 
     let mut reserve = HostReserve::new();
 

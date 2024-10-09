@@ -97,6 +97,7 @@ export class WasmCoordinator {
         if (!payload.success) {
             this.workerStatus = WorkerStatus.Invalid;
             this.logFunction(LogLevel.Error, "Could not instantiate module");
+            this.readyReject();
             return;
         }
         this.workerStatus = WorkerStatus.Ready;
