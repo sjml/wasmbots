@@ -43,7 +43,8 @@ export class GuestProgram {
 
     private log(logLevel: number, msgPtr: number, msgLen: number) {
         const logStr = this.liftString(msgPtr, msgLen);
-        const output = `${new Date().toISOString()} (${msgPtr}, ${msgLen}):\n    ${logStr}`;
+        // const output = `${new Date().toISOString()} (${msgPtr}, ${msgLen}):\n    ${logStr}`;
+        const output = `${new Date().toISOString()}: ${logStr}`;
         switch (logLevel) {
             case 0:
                 this.logger.error(output);

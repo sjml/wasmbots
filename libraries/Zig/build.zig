@@ -9,19 +9,11 @@ pub fn build(b: *std.Build) void {
     const optimize = std.builtin.OptimizeMode.ReleaseSmall;
 
     const exe = b.addExecutable(.{
-        .name = "bot_zig",
-        .root_source_file = b.path("src/bot.zig"),
+        .name = "wasmbot_client",
+        .root_source_file = b.path("src/wasmbot_client.zig"),
         .target = target,
         .optimize = optimize,
     });
-
-    const wc_module = b.createModule(.{
-        .root_source_file = .{ .src_path = .{
-            .owner = b,
-            .sub_path = "../../libraries/Zig/src/wasmbot_client.zig",
-        } },
-    });
-    exe.root_module.addImport("wasmbot_client", wc_module);
 
     exe.rdynamic = true;
 
