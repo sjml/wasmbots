@@ -1,5 +1,5 @@
 use crate::host_reserve::HostReserve;
-use crate::{log, log_err};
+use crate::log_err;
 
 const GP_VERSION: u16 = 7;
 const MAX_NAME_LEN: usize = 26;
@@ -35,7 +35,7 @@ extern "C" fn receiveGameParams(mut offset: usize, mut info_offset: usize) -> bo
     let gp_version = res.read_u16(offset);
     offset += std::mem::size_of::<u16>();
     if gp_version != GP_VERSION {
-        log(&format!("ERROR: Can't parse GameParams v{}; only prepared for v{}", gp_version, GP_VERSION));
+        log_err(&format!("ERROR: Can't parse GameParams v{}; only prepared for v{}", gp_version, GP_VERSION));
         return false;
     }
 

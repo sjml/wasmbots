@@ -106,6 +106,11 @@ impl HostReserve {
         slice[offset]
     }
 
+    pub fn read_i8(&self, offset: usize) -> i8 {
+        let slice = self.res.lock().unwrap();
+        slice[offset] as i8
+    }
+
     pub fn read_u16(&self, offset: usize) -> u16 {
         const INT_SIZE: usize = std::mem::size_of::<u16>();
         let slice = self.res.lock().unwrap();

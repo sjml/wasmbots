@@ -9,7 +9,8 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
-    "assemblyscript": "^0.27.30"
+    "assemblyscript": "^0.27.30",
+    "wasmbots_client": "file:../../libraries/AssemblyScript"
   },
   "type": "module",
   "exports": {

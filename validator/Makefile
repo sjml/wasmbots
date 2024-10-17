@@ -13,5 +13,5 @@ clean:
 
 .PHONY: install
 install: $(BIN_PATH)$(BIN)
-	cp $(BIN_PATH)$(BIN) $(INSTALL_PATH)
+	rsync -u -t -p $(BIN_PATH)$(BIN) $(INSTALL_PATH)
 	@# ../scripts/bin2ts.sh $(INSTALL_PATH)$(BIN) $(INSTALL_PATH)$(EMBED)

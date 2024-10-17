@@ -1,59 +1,23 @@
-@external("env", "logFunction")
-declare function logFunction(logLevel: usize, msgPtr: usize, msgLen: usize): void;
+export { setup, tick, receiveGameParams } from "wasmbots_client/assembly";
+import { GameParameters, BotMetadata, setTickCallback, log, HostReserve, registerClientSetup } from "wasmbots_client/assembly";
 
 // as with zig, would be nice to be able to pull from
 //   the build config, but alack
 const BOT_NAME = "bot_as";
 const VERSION: u16[] = [0, 1, 0];
 
-let HOST_RESERVE = new Uint8Array(0);
-let HOST_DV: DataView = new DataView(HOST_RESERVE.buffer);
 
-function log(msg: string): void {
-    const msg8 = String.UTF8.encode(msg);
-    logFunction(2, changetype<usize>(msg8), msg8.byteLength);
+function clientSetup(params: GameParameters): BotMetadata {
+    setTickCallback(tick);
+
+    const botMeta = new BotMetadata(BOT_NAME, VERSION, true);
+    log("Good to go!");
+    return botMeta;
 }
+registerClientSetup(clientSetup); // gets called as part of WebAssembly module initialization
 
-
-export function setup(requestReserve: usize): usize {
-    const msg = `Reserving space for ${requestReserve} bytes.`;
-    log(msg);
-    HOST_RESERVE = new Uint8Array(requestReserve as i32);
-    HOST_DV = new DataView(HOST_RESERVE.buffer);
-
-    const MAX_NAME_LEN = 26;
-    const nameLen = min(MAX_NAME_LEN, BOT_NAME.length);
-    let offset = 0;
-
-    const bn8 = String.UTF8.encode(BOT_NAME);
-    const bn8a = Uint8Array.wrap(bn8);
-    HOST_RESERVE.set(bn8a, 0);
-    HOST_RESERVE.fill(0, nameLen, MAX_NAME_LEN);
-    offset += MAX_NAME_LEN;
-
-    for (let i=0; i < VERSION.length; i++) {
-        HOST_DV.setUint16(offset, VERSION[i], true);
-        offset += 2;
-    }
-
-    return HOST_RESERVE.dataStart;
-}
-
-const GP_VERSION: u16 = 7;
-export function receiveGameParams(offset: usize): boolean {
-    const gpVersion = HOST_DV.getUint16(offset as i32, true);
-    if (gpVersion != GP_VERSION) {
-        log(`ERROR: Can't parse GameParams v${gpVersion}; only prepared for v${GP_VERSION}`);
-        return false;
-    }
-
-    // don't care about rest
-
-    return true;
-}
-
-export function tick(offset: usize): void {
-
+function tick(): void {
+    fib(40);
 }
 
 function fib(n: u64): u64 {
@@ -66,22 +30,21 @@ function fib(n: u64): u64 {
 }
 
 export function runFib(offset: usize, result: usize): boolean {
-    if (result + sizeof<u64>() > (HOST_RESERVE.byteLength as usize)) {
+    if (result + sizeof<u64>() > HostReserve.length) {
         log("Invalid result offset");
         return false;
     }
-    if (offset > (HOST_RESERVE.byteLength as usize)) {
+    if (offset > HostReserve.length) {
         log("Invalid offset");
         return false;
     }
-    const n = HOST_RESERVE[offset as i32];
+    const n = HostReserve.read_u8(offset);
     if (n > 93) {
         log("Fib index too high");
         return false;
     }
 
     const fibNum = fib(n);
-    const dv = new DataView(HOST_RESERVE.buffer);
-    dv.setUint64(result as i32, fibNum, true);
+    HostReserve.write_u64(result, fibNum);
     return true;
 }

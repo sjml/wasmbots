@@ -15,5 +15,6 @@ clean:
 .PHONY: install
 install: all
 	rsync -u -t -p build/bot_as.wasm ../../example_bots
+	rsync -u -t -p build/bot_as.wat ../../example_bots
 
 .DEFAULT_GOAL = all

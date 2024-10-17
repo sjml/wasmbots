@@ -15,5 +15,8 @@
     "converge": false,
     "noAssert": false,
     "bindings": "esm"
-  }
+  },
+  "include": [
+    "../../librarys/AssemblyScript/assembly"
+  ]
 }
