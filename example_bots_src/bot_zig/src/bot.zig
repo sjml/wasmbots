@@ -32,23 +32,3 @@ fn fib(n: u64) u64 {
         return fib(n - 2) + fib(n - 1);
     }
 }
-
-export fn runFib(offset: usize, result: usize) bool {
-    if (result + @sizeOf(u64) > hostReserve.HOST_RESERVE.len) {
-        wasmbotClient.logErr("Invalid result offset");
-        return false;
-    }
-    if (offset > hostReserve.HOST_RESERVE.len) {
-        wasmbotClient.logErr("Invalid offset");
-        return false;
-    }
-    const n = hostReserve.HOST_RESERVE[offset];
-    if (n > 93) {
-        wasmbotClient.logErr("Fib index too high");
-        return false;
-    }
-
-    const fibNum = fib(n);
-    _ = hostReserve.write_number(u64, result, fibNum);
-    return true;
-}

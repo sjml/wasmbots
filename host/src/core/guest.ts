@@ -6,7 +6,6 @@ interface WasmBotsExports {
     setup: (requestReserve: number) => number;
     receiveGameParams: (offset: number, resultLocation: number) => boolean;
     tick: (offset: number) => void;
-    runFib: (offset: number, resultLocation: number) => boolean;
 }
 
 export class GuestProgram {
@@ -144,21 +143,5 @@ export class GuestProgram {
         const circOffset = 0;
         writeCircumstances(this.reserveBlock, circOffset, lastTickDuration);
         this.exports!.tick(circOffset);
-    }
-
-    runTestFib() {
-        if (!this.exports) {
-            this.logger.error("RUNTIME ERROR: calling `runTestFib` on uninitialized GuestProgram.");
-            return;
-        }
-        const fibIdx = 42;
-        const fibIdxLoc = 128;
-        const resultLoc = 1024;
-        this.reserveBlock[fibIdxLoc] = fibIdx;
-        if (this.exports.runFib(fibIdxLoc, resultLoc)) {
-            const dv = new DataView(this.reserveBlock.buffer, this.reserveBlock.byteOffset, this.reserveBlock.byteLength);
-            const result = dv.getBigUint64(resultLoc, true);
-            this.logger.log(`    Got result ${result} (${result == 267914296n ? "correct" : "WRONG"}) for Fibonacci index ${fibIdx}.`)
-        }
     }
 }

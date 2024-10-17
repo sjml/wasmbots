@@ -76,7 +76,7 @@ size_t wsmbtclnt_write_string(size_t offset, char* str) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     size_t str_len = strlen(str);
     if (offset + str_len >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: String too long to write to reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: String too long to write to reserve memory");
         return offset;
     }
     #else
@@ -96,7 +96,7 @@ size_t wsmbtclnt_write_string(size_t offset, char* str) {
 size_t wsmbtclnt_write_u8(size_t offset, uint8_t value) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: Writing uint8_t outside of reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: Writing uint8_t outside of reserve memory");
         return offset;
     }
     #endif
@@ -107,7 +107,7 @@ size_t wsmbtclnt_write_u8(size_t offset, uint8_t value) {
 size_t wsmbtclnt_write_i8(size_t offset, int8_t value) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: Writing uint8_t outside of reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: Writing uint8_t outside of reserve memory");
         return offset;
     }
     #endif
@@ -118,7 +118,7 @@ size_t wsmbtclnt_write_i8(size_t offset, int8_t value) {
 size_t wsmbtclnt_write_u16(size_t offset, uint16_t value) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(value) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: Writing uint16_t outside of reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: Writing uint16_t outside of reserve memory");
         return offset;
     }
     #endif
@@ -133,7 +133,7 @@ size_t wsmbtclnt_write_u16(size_t offset, uint16_t value) {
 size_t wsmbtclnt_write_i16(size_t offset, int16_t value) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(value) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: Writing int16_t outside of reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: Writing int16_t outside of reserve memory");
         return offset;
     }
     #endif
@@ -148,7 +148,7 @@ size_t wsmbtclnt_write_i16(size_t offset, int16_t value) {
 size_t wsmbtclnt_write_u32(size_t offset, uint32_t value) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(value) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: Writing uint32_t outside of reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: Writing uint32_t outside of reserve memory");
         return offset;
     }
     #endif
@@ -163,7 +163,7 @@ size_t wsmbtclnt_write_u32(size_t offset, uint32_t value) {
 size_t wsmbtclnt_write_i32(size_t offset, int32_t value) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(value) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: Writing int32_t outside of reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: Writing int32_t outside of reserve memory");
         return offset;
     }
     #endif
@@ -178,7 +178,7 @@ size_t wsmbtclnt_write_i32(size_t offset, int32_t value) {
 size_t wsmbtclnt_write_u64(size_t offset, uint64_t value) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(value) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: Writing uint64_t outside of reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: Writing uint64_t outside of reserve memory");
         return offset;
     }
     #endif
@@ -193,7 +193,7 @@ size_t wsmbtclnt_write_u64(size_t offset, uint64_t value) {
 size_t wsmbtclnt_write_i64(size_t offset, int64_t value) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(value) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: Writing int64_t outside of reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: Writing int64_t outside of reserve memory");
         return offset;
     }
     #endif
@@ -208,7 +208,7 @@ size_t wsmbtclnt_write_i64(size_t offset, int64_t value) {
 size_t wsmbtclnt_write_f32(size_t offset, float32_t value) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(value) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: Writing float32_t outside of reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: Writing float32_t outside of reserve memory");
         return offset;
     }
     #endif
@@ -224,7 +224,7 @@ size_t wsmbtclnt_write_f32(size_t offset, float32_t value) {
 size_t wsmbtclnt_write_f64(size_t offset, float64_t value) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(value) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: Writing float64_t outside of reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: Writing float64_t outside of reserve memory");
         return offset;
     }
     #endif
@@ -241,14 +241,14 @@ size_t wsmbtclnt_write_f64(size_t offset, float64_t value) {
 const char* wsmbtclnt_read_string(size_t offset, size_t len) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + len >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: String read will overrun reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: String read will overrun reserve memory");
         return NULL;
     }
     #endif
 
     char* str = malloc(len + 1);
     if (str == NULL) {
-        wsmbtclnt_logErr("CLIENT_ERROR: String memory allocation failed");
+        wsmbtclnt_logErr("CLIENT ERROR: String memory allocation failed");
         return NULL;
     }
 
@@ -262,7 +262,7 @@ const char* wsmbtclnt_read_string(size_t offset, size_t len) {
 uint8_t wsmbtclnt_read_u8(size_t offset) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: uint8_tt read will overrun reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: uint8_tt read will overrun reserve memory");
         return 0;
     }
     #endif
@@ -272,7 +272,7 @@ uint8_t wsmbtclnt_read_u8(size_t offset) {
 int8_t wsmbtclnt_read_i8(size_t offset) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: int8_t read will overrun reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: int8_t read will overrun reserve memory");
         return 0;
     }
     #endif
@@ -282,7 +282,7 @@ int8_t wsmbtclnt_read_i8(size_t offset) {
 uint16_t wsmbtclnt_read_u16(size_t offset) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(uint16_t) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: uint16_t read will overrun reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: uint16_t read will overrun reserve memory");
         return 0;
     }
     #endif
@@ -301,7 +301,7 @@ uint16_t wsmbtclnt_read_u16(size_t offset) {
 int16_t wsmbtclnt_read_i16(size_t offset) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(int16_t) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: int16_t read will overrun reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: int16_t read will overrun reserve memory");
         return 0;
     }
     #endif
@@ -320,7 +320,7 @@ int16_t wsmbtclnt_read_i16(size_t offset) {
 uint32_t wsmbtclnt_read_u32(size_t offset) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(uint32_t) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: uint32_t read will overrun reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: uint32_t read will overrun reserve memory");
         return 0;
     }
     #endif
@@ -339,7 +339,7 @@ uint32_t wsmbtclnt_read_u32(size_t offset) {
 int32_t wsmbtclnt_read_i32(size_t offset) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(int32_t) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: int32_t read will overrun reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: int32_t read will overrun reserve memory");
         return 0;
     }
     #endif
@@ -358,7 +358,7 @@ int32_t wsmbtclnt_read_i32(size_t offset) {
 uint64_t wsmbtclnt_read_u64(size_t offset) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(uint64_t) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: uint64_t read will overrun reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: uint64_t read will overrun reserve memory");
         return 0;
     }
     #endif
@@ -377,7 +377,7 @@ uint64_t wsmbtclnt_read_u64(size_t offset) {
 int64_t wsmbtclnt_read_i64(size_t offset) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(int64_t) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: int64_t read will overrun reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: int64_t read will overrun reserve memory");
         return 0;
     }
     #endif
@@ -396,7 +396,7 @@ int64_t wsmbtclnt_read_i64(size_t offset) {
 float32_t wsmbtclnt_read_f32(size_t offset) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(float32_t) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: float32_t read will overrun reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: float32_t read will overrun reserve memory");
         return 0.0f;
     }
     #endif
@@ -416,7 +416,7 @@ float32_t wsmbtclnt_read_f32(size_t offset) {
 float64_t wsmbtclnt_read_f64(size_t offset) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset + sizeof(float64_t) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT_ERROR: float64_t read will overrun reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: float64_t read will overrun reserve memory");
         return 0.0;
     }
     #endif

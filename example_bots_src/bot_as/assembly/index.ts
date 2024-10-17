@@ -28,23 +28,3 @@ function fib(n: u64): u64 {
         return fib(n-2) + fib(n-1);
     }
 }
-
-export function runFib(offset: usize, result: usize): boolean {
-    if (result + sizeof<u64>() > HostReserve.length) {
-        log("Invalid result offset");
-        return false;
-    }
-    if (offset > HostReserve.length) {
-        log("Invalid offset");
-        return false;
-    }
-    const n = HostReserve.read_u8(offset);
-    if (n > 93) {
-        log("Fib index too high");
-        return false;
-    }
-
-    const fibNum = fib(n);
-    HostReserve.write_u64(result, fibNum);
-    return true;
-}

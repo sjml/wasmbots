@@ -22,7 +22,7 @@ pub fn reserveMemory(request: usize) bool {
 
 pub fn write_string(offset: usize, msg: []const u8) usize {
     if (offset + msg.len >= HOST_RESERVE.len) {
-        logErr("CLIENT_ERROR: String too long to write to reserve memory");
+        logErr("CLIENT ERROR: String too long to write to reserve memory");
         return offset;
     }
     std.mem.copyForwards(u8, HOST_RESERVE[offset..][0..msg.len], msg);
@@ -31,10 +31,10 @@ pub fn write_string(offset: usize, msg: []const u8) usize {
 
 pub fn read_string(allocator: Allocator, offset: usize, len: usize) []const u8 {
     if (offset + len >= HOST_RESERVE.len) {
-        logErr("CLIENT_ERROR: String read will overrun reserve memory");
+        logErr("CLIENT ERROR: String read will overrun reserve memory");
         return null;
     }
-    const str = allocator.alloc(u8, len) catch @panic("CLIENT_ERROR: String memory allocation failed");
+    const str = allocator.alloc(u8, len) catch @panic("CLIENT ERROR: String memory allocation failed");
     for (0..len) |i| {
         str[i] = HOST_RESERVE[offset + i];
     }
@@ -65,7 +65,7 @@ pub fn write_number(comptime T: type, offset: usize, value: T) usize {
     }
 
     if (offset + @sizeOf(T) >= HOST_RESERVE.len) {
-        logErr(comptime std.fmt.comptimePrint("CLIENT_ERROR: Writing {s} outside of reserve memory", .{@typeName(T)}));
+        logErr(comptime std.fmt.comptimePrint("CLIENT ERROR: Writing {s} outside of reserve memory", .{@typeName(T)}));
         return offset;
     }
     const slice = HOST_RESERVE[offset..][0..@sizeOf(T)];
@@ -81,7 +81,7 @@ pub fn read_number(comptime T: type, offset: usize) T {
     }
 
     if (offset + @sizeOf(T) >= HOST_RESERVE.len) {
-        logErr(comptime std.fmt.comptimePrint("CLIENT_ERROR: {s} read will overrun reserve memory", .{@typeName(T)}));
+        logErr(comptime std.fmt.comptimePrint("CLIENT ERROR: {s} read will overrun reserve memory", .{@typeName(T)}));
         return 0;
     }
 

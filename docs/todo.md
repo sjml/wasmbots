@@ -1,8 +1,4 @@
 * tech break: 
-  * fix size_t -> uintptr_t in C
-  * CLIENT_ERROR vs CLIENT ERROR
-  * then remove runFib
-  * fix errors from clean build
   * min length for name
     * unify how we're handling the name stuff (function to build it or smart writers)
   * also unify tick function (just have a built-in void it's calling if it's not set isntead of it being an optional)

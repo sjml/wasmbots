@@ -1,4 +1,3 @@
-use wasmbots_client::HostReserve;
 use wasmbots_client::params;
 
 #[no_mangle]
@@ -41,27 +40,4 @@ fn fib(n: u64) -> u64 {
     else {
         fib(n-2) + fib(n-1)
     }
-}
-
-// just a hack for now
-#[no_mangle]
-pub extern "C" fn runFib(offset: usize, result: usize) -> bool {
-    let mut res = HostReserve::new();
-    if result + std::mem::size_of::<u64>() > res.len() {
-        wasmbots_client::log("Invalid result offset");
-        return false;
-    }
-    if offset > res.len() {
-        wasmbots_client::log("Invalid offset");
-        return false;
-    }
-    let n = res.read_u8(offset);
-    if n > 93 {
-        wasmbots_client::log("Fib index too high");
-        return false;
-    }
-
-    let fib_num = fib(n.into());
-    res.write_u64(result, fib_num);
-    true
 }

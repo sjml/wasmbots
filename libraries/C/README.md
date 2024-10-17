@@ -5,7 +5,7 @@ Include these files in your build system, however that happens. (There's [an exa
 Assuming you're compiling with `emcc`, these are the flags you'll need: 
 
 ```
--s WASM=1 -s EXPORTED_FUNCTIONS='["_setup", "_receiveGameParams", "_tick", "_runFib"]' -O3 --no-entry -s ERROR_ON_UNDEFINED_SYMBOLS=0
+-s WASM=1 -s EXPORTED_FUNCTIONS='["_setup", "_receiveGameParams", "_tick"]' -O3 --no-entry -s ERROR_ON_UNDEFINED_SYMBOLS=0
 ```
 
 Play with the optimization flag as needed. 
