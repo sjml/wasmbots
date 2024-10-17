@@ -7,7 +7,7 @@ LIBDIR = ../../libraries/C
 
 bot_c.wasm: bot_c.c $(LIBDIR)/wasmbot_client.c
 	$(EMCC) $(EMCC_FLAGS) -I$(LIBDIR) -o bot_c.wasm $?
-	@# $(EMCC) $(EMCC_FLAGS) -DWSMBTCLNT_BOUNDS_CHECKING=0 -I$(LIBDIR) -o bot_c.wasm $?
+	@# $(EMCC) $(EMCC_FLAGS) -DWSMBT_BOUNDS_CHECKING=0 -I$(LIBDIR) -o bot_c.wasm $?
 	chmod -x $@
 
 .PHONY: all

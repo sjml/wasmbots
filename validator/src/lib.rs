@@ -150,7 +150,7 @@ fn _validate_wasm(wasm_bytes: &[u8], expect_json: &str) -> Result<(), WatParserE
     }
 
     let validate_func = |func_name: &str, sig_data: &FunctionExpectEntry, binary_data: &FuncInfo| -> Result<(), WatParserError> {
-        match &sig_data.r#return {
+        match &sig_data.wasm_return {
             Some(ret) => {
                 let mapped_return = str_to_val_type(&ret).expect("Invalid valtype string in expectations file");
                 match binary_data.ret {
@@ -167,7 +167,7 @@ fn _validate_wasm(wasm_bytes: &[u8], expect_json: &str) -> Result<(), WatParserE
         }
 
 
-        let mapped_params: Vec<wasmparser::ValType> = sig_data.params.iter()
+        let mapped_params: Vec<wasmparser::ValType> = sig_data.wasm_params.iter()
             .map(|s| str_to_val_type(s))
             .filter_map(|x| x)
             .collect();

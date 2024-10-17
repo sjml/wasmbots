@@ -1,15 +1,4 @@
 * tech break: 
-  * test:
-    * worker crashing during setup
-    * crashing during tick
-    * overrunning setup time limit
-    * overrunning time limit (soft)
-    * overrunning time limit (hard)
-    * rust that doesn't implement client_setup
-    * name too long
-    * name too short
-  * swap api param reals and raws
-  * look at all the exports in all the languages; see if we can organize/cleanup/hide stuff as needed
   * other languages...
     * tinygo example bot?
     * C# w/blazor?
@@ -59,3 +48,4 @@
 ## far-flung future
 * clang-format for c? (prettier or biome for TS / AssemblyScript?)
   * integrate with commit hook?
+* look at all the exports in all the languages; see if we can organize/cleanup/hide stuff as needed

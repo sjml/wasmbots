@@ -106,7 +106,9 @@ async function runTick(payload: Msg.RunTickPayload) {
     program.runTick(payload.lastTickDuration);
     self.postMessage({
         type: Msg.GuestToHostMessageType.RunTickDone,
-        payload: {} as Msg.RunTickDonePayload,
+        payload: {
+            hadError: program.isShutDown,
+        } as Msg.RunTickDonePayload,
     });
 }
 

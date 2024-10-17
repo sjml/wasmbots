@@ -128,9 +128,9 @@ export class WasmCoordinator {
                 type: Msg.HostToGuestMessageType.RunTick,
                 payload: {
                     lastTickDuration: this.lastTickDuration,
-                } as Msg.RunTickDonePayload
+                } as Msg.RunTickPayload
             });
-            this.logFunction(LogLevel.Info, `last tick duration: ${this.lastTickDuration}`);
+            // this.logFunction(LogLevel.Info, `last tick duration: ${this.lastTickDuration}`);
 
             this.tickTimeout = setTimeout(() => {
                 this.logFunction(LogLevel.Error, `Module timed out on tick (limit: ${config.tickKillTimeLimit}ms)`);
@@ -154,6 +154,12 @@ export class WasmCoordinator {
                 this.worker.terminate();
                 this.workerStatus = WorkerStatus.Shutdown;
             }
+        }
+        if (payload.hadError) {
+            this.worker.terminate();
+            this.workerStatus = WorkerStatus.Shutdown;
+            this.tickReject();
+            return;
         }
         const remainder = config.minimumTickTime - this.lastTickDuration;
         if (remainder > 0) {

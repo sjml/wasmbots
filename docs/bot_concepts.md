@@ -1,12 +1,13 @@
 ## bad bots
-Behavior that should get shut down
+Behavior that should get shut down (hopefully gracefully)
 
 * tries to grow memory too big
 * writes outside scratchpad
-* crashes
-* takes too long on tick
-  * gets strikes
-  * dies immediately
+* crash during start/init
+* overrunning tick time limit (soft)
+* rust that doesn't implement client_setup
+* name too long
+* name too short
 
 ## weird bots
 Stressing the limits of the system

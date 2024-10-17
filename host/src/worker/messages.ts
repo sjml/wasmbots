@@ -16,7 +16,9 @@ export interface InitModuleDonePayload {
 export interface InstantiateDonePayload {
     success: boolean;
 }
-export interface RunTickDonePayload {}
+export interface RunTickDonePayload {
+    hadError: boolean;
+}
 export interface LogMessagePayload {
     logLevel: LogLevel;
     message: string;

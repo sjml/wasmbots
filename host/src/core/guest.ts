@@ -19,6 +19,7 @@ export class GuestProgram {
     private reservePtr: number = 0;
     private reserveLength: number = 0;
     private reserveBlock = new Uint8Array();
+    isShutDown: boolean = false;
 
     constructor(logger?: ILogger) {
         logger ||= console;
@@ -27,6 +28,7 @@ export class GuestProgram {
 
     private abort(msg: string, file: string, line: number, col: number) {
         this.logger.error(`FATAL ERROR: ${file}:${line}:${col}\n${msg}`);
+        this.isShutDown = true;
     }
 
     private readString(msgPtr: number, msgLen: number): string {
@@ -97,8 +99,9 @@ export class GuestProgram {
         }
     }
 
+    // TODO: expose this to the modules
     private shutdown() {
-        // TODO
+        this.isShutDown = true;
     }
 
     // TODO: error handling, reject promise
@@ -127,11 +130,19 @@ export class GuestProgram {
     runSetup(reserveMemSize: number): boolean {
         if (!this.exports) {
             this.logger.error("RUNTIME ERROR: calling `runSetup` on uninitialized GuestProgram.");
+            this.isShutDown = true;
             return false;
         }
-        this.reservePtr = this.exports.setup(reserveMemSize);
+        try {
+            this.reservePtr = this.exports.setup(reserveMemSize);
+        } catch (error) {
+            this.logger.error(`RUNTIME ERROR: Crash during initial setup call\n  ${error}`);
+            this.isShutDown = true;
+            return false;
+        }
         if (this.reservePtr == 0) {
             // was already logged from client code, probably
+            this.isShutDown = true;
             return false;
         }
         this.reserveLength = reserveMemSize;
@@ -142,12 +153,21 @@ export class GuestProgram {
         writeGameParameters(this.reserveBlock, 0);
 
         const resultOffset = 1024;
-        const ready = this.exports.receiveGameParams(0, resultOffset);
+        let ready: boolean;
+        try {
+            ready = this.exports.receiveGameParams(0, resultOffset);
+        }
+        catch (error) {
+            this.logger.error(`FATAL ERROR: Crash during client setup:\n  ${error}`);
+            this.isShutDown = true;
+            return false;
+        }
 
         let offset = this.reservePtr + resultOffset;
         const botName = this.readString(offset, 26);
         if (botName.length < MIN_NAME_LEN) {
             this.logger.error(`CLIENT ERROR: Bot name "${botName}" is too short (minimum length: ${MIN_NAME_LEN})`);
+            this.isShutDown = true;
             return false;
         }
         offset += 26;
@@ -159,6 +179,7 @@ export class GuestProgram {
         offset += 2;
         this.logger.log(`### program info -- ${botName} v${versionMajor}.${versionMinor}.${versionPatch} ###`);
 
+        this.isShutDown = !ready;
         return ready;
     }
 
@@ -166,6 +187,11 @@ export class GuestProgram {
         this.reserveBlock.fill(0);
         const circOffset = 0;
         writeCircumstances(this.reserveBlock, circOffset, lastTickDuration);
-        this.exports!.tick(circOffset);
+        try {
+            this.exports!.tick(circOffset);
+        } catch (error) {
+            this.logger.error(`FATAL ERROR: Crash during tick function:\n  ${error}`);
+            this.isShutDown = true;
+        }
     }
 }

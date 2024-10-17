@@ -14,5 +14,6 @@ clean:
 .PHONY: install
 install: all
 	rsync -u -t -p target/wasm32-unknown-unknown/release/bot_rs.wasm ../../example_bots
+	wasm2wat ../../example_bots/bot_rs.wasm > ../../example_bots/bot_rs.wat
 
 .DEFAULT_GOAL = all
