@@ -35,7 +35,10 @@ extern "C" fn receiveGameParams(mut offset: usize, mut info_offset: usize) -> bo
     let gp_version = res.read_u16(offset);
     offset += std::mem::size_of::<u16>();
     if gp_version != GP_VERSION {
-        log_err(&format!("ERROR: Can't parse GameParams v{}; only prepared for v{}", gp_version, GP_VERSION));
+        log_err(&format!(
+            "ERROR: Can't parse GameParams v{}; only prepared for v{}",
+            gp_version, GP_VERSION
+        ));
         return false;
     }
 
@@ -46,7 +49,7 @@ extern "C" fn receiveGameParams(mut offset: usize, mut info_offset: usize) -> bo
     offset += std::mem::size_of::<u16>();
     eng_version[2] = res.read_u16(offset);
 
-    let gp = GameParameters{
+    let gp = GameParameters {
         params_version: gp_version,
         engine_version: eng_version,
     };
@@ -56,9 +59,14 @@ extern "C" fn receiveGameParams(mut offset: usize, mut info_offset: usize) -> bo
     let mut reserve = HostReserve::new();
 
     let info_zero = info_offset;
-    let valid_len = bot_data.name.iter().position(|&x| x == 0).unwrap_or(bot_data.name.len());
+    let valid_len = bot_data
+        .name
+        .iter()
+        .position(|&x| x == 0)
+        .unwrap_or(bot_data.name.len());
 
-    let name_str = std::str::from_utf8(&bot_data.name[..valid_len]).expect("Invalid UTF-8 in bot name");
+    let name_str =
+        std::str::from_utf8(&bot_data.name[..valid_len]).expect("Invalid UTF-8 in bot name");
     info_offset = reserve.write_string(info_offset, name_str);
     while info_offset < info_zero + MAX_NAME_LEN {
         info_offset = reserve.write_u8(info_offset, 0);

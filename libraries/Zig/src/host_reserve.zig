@@ -29,12 +29,25 @@ pub fn write_string(offset: usize, msg: []const u8) usize {
     return offset + msg.len;
 }
 
-fn _intTypeIsValid(comptime T: type) bool {
+pub fn read_string(allocator: Allocator, offset: usize, len: usize) []const u8 {
+    if (offset + len >= HOST_RESERVE.len) {
+        logErr("CLIENT_ERROR: String read will overrun reserve memory");
+        return null;
+    }
+    const str = allocator.alloc(u8, len) catch @panic("CLIENT_ERROR: String memory allocation failed");
+    for (0..len) |i| {
+        str[i] = HOST_RESERVE[offset + i];
+    }
+    return str;
+}
+
+fn _numberTypeIsValid(comptime T: type) bool {
     const validIntTypes = [_]type{
         u8,  i8,
         u16, i16,
         u32, i32,
         u64, i64,
+        f32, f64,
     };
     for (validIntTypes) |vt| {
         if (T == vt) {
@@ -44,9 +57,9 @@ fn _intTypeIsValid(comptime T: type) bool {
     return false;
 }
 
-pub fn write_int(comptime T: type, offset: usize, value: T) usize {
+pub fn write_number(comptime T: type, offset: usize, value: T) usize {
     comptime {
-        if (!_intTypeIsValid(T)) {
+        if (!_numberTypeIsValid(T)) {
             @compileError("Invalid integer type");
         }
     }
@@ -60,22 +73,10 @@ pub fn write_int(comptime T: type, offset: usize, value: T) usize {
     return offset + @sizeOf(T);
 }
 
-pub fn read_string(allocator: Allocator, offset: usize, len: usize) []const u8 {
-    if (offset + len >= HOST_RESERVE.len) {
-        logErr("CLIENT_ERROR: String read will overrun reserve memory");
-        return null;
-    }
-    const str = allocator.alloc(u8, len) catch @panic("CLIENT_ERROR: String memory allocation failed");
-    for (0..len) |i| {
-        str[i] = HOST_RESERVE[offset + i];
-    }
-    return str;
-}
-
-pub fn read_int(comptime T: type, offset: usize) T {
+pub fn read_number(comptime T: type, offset: usize) T {
     comptime {
-        if (!_intTypeIsValid(T)) {
-            @compileError("Invalid integer type");
+        if (!_numberTypeIsValid(T)) {
+            @compileError("Invalid number type");
         }
     }
 

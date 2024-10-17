@@ -49,6 +49,6 @@ export fn runFib(offset: usize, result: usize) bool {
     }
 
     const fibNum = fib(n);
-    _ = hostReserve.write_int(u64, result, fibNum);
+    _ = hostReserve.write_number(u64, result, fibNum);
     return true;
 }

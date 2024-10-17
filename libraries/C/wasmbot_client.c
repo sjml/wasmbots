@@ -205,6 +205,38 @@ size_t wsmbtclnt_write_i64(size_t offset, int64_t value) {
     return offset + sizeof(value);
 }
 
+size_t wsmbtclnt_write_f32(size_t offset, float32_t value) {
+    #if WSMBTCLNT_BOUNDS_CHECKING
+    if (offset + sizeof(value) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
+        wsmbtclnt_logErr("CLIENT_ERROR: Writing float32_t outside of reserve memory");
+        return offset;
+    }
+    #endif
+
+    uint8_t* valuePunnedPtr = (uint8_t*) &value;
+    for (size_t i = 0; i < sizeof(value); i++) {
+        WSMBTCLNT_HOST_RESERVE[offset + i] = valuePunnedPtr[i];
+    }
+
+    return offset + sizeof(value);
+}
+
+size_t wsmbtclnt_write_f64(size_t offset, float64_t value) {
+    #if WSMBTCLNT_BOUNDS_CHECKING
+    if (offset + sizeof(value) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
+        wsmbtclnt_logErr("CLIENT_ERROR: Writing float64_t outside of reserve memory");
+        return offset;
+    }
+    #endif
+
+    uint8_t* valuePunnedPtr = (uint8_t*) &value;
+    for (size_t i = 0; i < sizeof(value); i++) {
+        WSMBTCLNT_HOST_RESERVE[offset + i] = valuePunnedPtr[i];
+    }
+
+    return offset + sizeof(value);
+}
+
 
 const char* wsmbtclnt_read_string(size_t offset, size_t len) {
     #if WSMBTCLNT_BOUNDS_CHECKING
@@ -259,8 +291,8 @@ uint16_t wsmbtclnt_read_u16(size_t offset) {
     #if !WSMBTCLNT_DEV_BIG_ENDIAN
     memcpy(&value, &WSMBTCLNT_HOST_RESERVE[offset], sizeof(value));
     #else
-    for (size_t i = 0; i < sizeof(uint16_t); i++) {
-        value |= (uint16_t)WSMBTCLNT_HOST_RESERVE[offset + (sizeof(uint16_t) - 1 - i)] << (i * 8);
+    for (size_t i = 0; i < sizeof(value); i++) {
+        value |= (uint16_t)WSMBTCLNT_HOST_RESERVE[offset + (sizeof(value) - 1 - i)] << (i * 8);
     }
     #endif
     return value;
@@ -278,8 +310,8 @@ int16_t wsmbtclnt_read_i16(size_t offset) {
     #if !WSMBTCLNT_DEV_BIG_ENDIAN
     memcpy(&value, &WSMBTCLNT_HOST_RESERVE[offset], sizeof(value));
     #else
-    for (size_t i = 0; i < sizeof(int16_t); i++) {
-        value |= (int16_t)WSMBTCLNT_HOST_RESERVE[offset + (sizeof(int16_t) - 1 - i)] << (i * 8);
+    for (size_t i = 0; i < sizeof(value); i++) {
+        value |= (int16_t)WSMBTCLNT_HOST_RESERVE[offset + (sizeof(value) - 1 - i)] << (i * 8);
     }
     #endif
     return value;
@@ -297,8 +329,8 @@ uint32_t wsmbtclnt_read_u32(size_t offset) {
     #if !WSMBTCLNT_DEV_BIG_ENDIAN
     memcpy(&value, &WSMBTCLNT_HOST_RESERVE[offset], sizeof(value));
     #else
-    for (size_t i = 0; i < sizeof(uint32_t); i++) {
-        value |= (uint32_t)WSMBTCLNT_HOST_RESERVE[offset + (sizeof(uint32_t) - 1 - i)] << (i * 8);
+    for (size_t i = 0; i < sizeof(value); i++) {
+        value |= (uint32_t)WSMBTCLNT_HOST_RESERVE[offset + (sizeof(value) - 1 - i)] << (i * 8);
     }
     #endif
     return value;
@@ -316,8 +348,8 @@ int32_t wsmbtclnt_read_i32(size_t offset) {
     #if !WSMBTCLNT_DEV_BIG_ENDIAN
     memcpy(&value, &WSMBTCLNT_HOST_RESERVE[offset], sizeof(value));
     #else
-    for (size_t i = 0; i < sizeof(int32_t); i++) {
-        value |= (int32_t)WSMBTCLNT_HOST_RESERVE[offset + (sizeof(int32_t) - 1 - i)] << (i * 8);
+    for (size_t i = 0; i < sizeof(value); i++) {
+        value |= (int32_t)WSMBTCLNT_HOST_RESERVE[offset + (sizeof(value) - 1 - i)] << (i * 8);
     }
     #endif
     return value;
@@ -335,8 +367,8 @@ uint64_t wsmbtclnt_read_u64(size_t offset) {
     #if !WSMBTCLNT_DEV_BIG_ENDIAN
     memcpy(&value, &WSMBTCLNT_HOST_RESERVE[offset], sizeof(value));
     #else
-    for (size_t i = 0; i < sizeof(uint64_t); i++) {
-        value |= (uint64_t)WSMBTCLNT_HOST_RESERVE[offset + (sizeof(uint64_t) - 1 - i)] << (i * 8);
+    for (size_t i = 0; i < sizeof(value); i++) {
+        value |= (uint64_t)WSMBTCLNT_HOST_RESERVE[offset + (sizeof(value) - 1 - i)] << (i * 8);
     }
     #endif
     return value;
@@ -354,8 +386,48 @@ int64_t wsmbtclnt_read_i64(size_t offset) {
     #if !WSMBTCLNT_DEV_BIG_ENDIAN
     memcpy(&value, &WSMBTCLNT_HOST_RESERVE[offset], sizeof(value));
     #else
-    for (size_t i = 0; i < sizeof(int64_t); i++) {
-        value |= (int64_t)WSMBTCLNT_HOST_RESERVE[offset + (sizeof(int64_t) - 1 - i)] << (i * 8);
+    for (size_t i = 0; i < sizeof(value); i++) {
+        value |= (int64_t)WSMBTCLNT_HOST_RESERVE[offset + (sizeof(value) - 1 - i)] << (i * 8);
+    }
+    #endif
+    return value;
+}
+
+float32_t wsmbtclnt_read_f32(size_t offset) {
+    #if WSMBTCLNT_BOUNDS_CHECKING
+    if (offset + sizeof(float32_t) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
+        wsmbtclnt_logErr("CLIENT_ERROR: float32_t read will overrun reserve memory");
+        return 0.0f;
+    }
+    #endif
+
+    float32_t value = 0.0f;
+    #if !WSMBTCLNT_DEV_BIG_ENDIAN
+    memcpy(&value, &WSMBTCLNT_HOST_RESERVE[offset], sizeof(value));
+    #else
+    uint8_t* valuePunnedPtr = (uint8_t*) &value;
+    for (size_t i = 0; i < sizeof(value); i++) {
+        valuePunnedPtr[i] = WSMBTCLNT_HOST_RESERVE[offset + (sizeof(value) - 1 - i)];
+    }
+    #endif
+    return value;
+}
+
+float64_t wsmbtclnt_read_f64(size_t offset) {
+    #if WSMBTCLNT_BOUNDS_CHECKING
+    if (offset + sizeof(float64_t) >= WSMBTCLNT_HOST_RESERVE_SIZE) {
+        wsmbtclnt_logErr("CLIENT_ERROR: float64_t read will overrun reserve memory");
+        return 0.0;
+    }
+    #endif
+
+    float64_t value = 0.0;
+    #if !WSMBTCLNT_DEV_BIG_ENDIAN
+    memcpy(&value, &WSMBTCLNT_HOST_RESERVE[offset], sizeof(value));
+    #else
+    uint8_t* valuePunnedPtr = (uint8_t*) &value;
+    for (size_t i = 0; i < sizeof(value); i++) {
+        valuePunnedPtr[i] = WSMBTCLNT_HOST_RESERVE[offset + (sizeof(value) - 1 - i)];
     }
     #endif
     return value;

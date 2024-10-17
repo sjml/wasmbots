@@ -5,6 +5,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+// should hold true on the vast majority of modern platforms,
+//   but if you're on something unusual, check this
+typedef float float32_t;
+typedef double float64_t;
+
 void wsmbtclnt_log(const char* msg);
 void wsmbtclnt_logErr(const char* msg);
 void wsmbtclnt_logf(const char* fmt, ...);
@@ -19,6 +24,8 @@ size_t wsmbtclnt_write_u32(size_t offset, uint32_t value);
 size_t wsmbtclnt_write_i32(size_t offset, int32_t value);
 size_t wsmbtclnt_write_u64(size_t offset, uint64_t value);
 size_t wsmbtclnt_write_i64(size_t offset, int64_t value);
+size_t wsmbtclnt_write_f32(size_t offset, float32_t value);
+size_t wsmbtclnt_write_f64(size_t offset, float64_t value);
 
 const char* wsmbtclnt_read_string(size_t offset, size_t len);
 uint8_t wsmbtclnt_read_u8(size_t offset);
@@ -29,6 +36,8 @@ uint32_t wsmbtclnt_read_u32(size_t offset);
 int32_t wsmbtclnt_read_i32(size_t offset);
 uint64_t wsmbtclnt_read_u64(size_t offset);
 int64_t wsmbtclnt_read_i64(size_t offset);
+float32_t wsbtclnt_read_f32(size_t offset);
+float64_t wsbtclnt_read_f64(size_t offset);
 
 typedef struct wsmbtclnt_GameParameters {
     uint16_t paramsVersion;

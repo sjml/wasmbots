@@ -1,6 +1,4 @@
 * tech break: 
-  * convenience functions for all languages (including TypeScript)
-    * don't forget floats!
   * fix size_t -> uintptr_t in C
   * CLIENT_ERROR vs CLIENT ERROR
   * then remove runFib
@@ -18,6 +16,7 @@
   * could clientSetup go in the function table and get found that way instead of "extern and pray"? 
     * tables not exposed to most tooling; maybe the idea of the module start is useful tho
   * examine todos
+  * clang-format for c? (prettier or biome for TS / AssemblyScript?)
   * minimum tick time in engine
   * test:
     * worker crashing during setup

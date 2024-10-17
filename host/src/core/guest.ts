@@ -26,23 +26,49 @@ export class GuestProgram {
         this.logger.error(`FATAL ERROR: ${file}:${line}:${col}\n${msg}`);
     }
 
-    private liftString(msgPtr: number, msgLen: number): string {
+    private readString(msgPtr: number, msgLen: number): string {
         const av = new Uint8Array((this.instance!.exports.memory as WebAssembly.Memory).buffer, msgPtr, msgLen);
         return new TextDecoder("utf-8").decode(av);
     }
 
-    private liftUint16(ptr: number): number {
+    private readUint16(ptr: number): number {
         const dv = new DataView(this.exports!.memory.buffer);
         return dv.getUint16(ptr, true);
     }
+    private readInt16(ptr: number): number {
+        const dv = new DataView(this.exports!.memory.buffer);
+        return dv.getInt16(ptr, true);
+    }
 
-    private liftUint32(ptr: number): number {
+    private readUint32(ptr: number): number {
         const dv = new DataView(this.exports!.memory.buffer);
         return dv.getUint32(ptr, true);
     }
+    private readInt32(ptr: number): number {
+        const dv = new DataView(this.exports!.memory.buffer);
+        return dv.getInt32(ptr, true);
+    }
+
+    private readUint64(ptr: number): BigInt {
+        const dv = new DataView(this.exports!.memory.buffer);
+        return dv.getBigUint64(ptr, true);
+    }
+    private readInt64(ptr: number): BigInt {
+        const dv = new DataView(this.exports!.memory.buffer);
+        return dv.getBigInt64(ptr, true);
+    }
+
+    private readFloat32(ptr: number): number {
+        const dv = new DataView(this.exports!.memory.buffer);
+        return dv.getFloat32(ptr, true);
+    }
+    private readFloat64(ptr: number): number {
+        const dv = new DataView(this.exports!.memory.buffer);
+        return dv.getFloat64(ptr, true);
+    }
 
     private log(logLevel: number, msgPtr: number, msgLen: number) {
-        const logStr = this.liftString(msgPtr, msgLen);
+        const logStr = this.readString(msgPtr, msgLen);
         // const output = `${new Date().toISOString()} (${msgPtr}, ${msgLen}):\n    ${logStr}`;
         const output = `${new Date().toISOString()}: ${logStr}`;
         switch (logLevel) {
@@ -100,13 +126,13 @@ export class GuestProgram {
         const ready = this.exports.receiveGameParams(0, resultOffset);
 
         let offset = this.reservePtr + resultOffset;
-        const botName = this.liftString(offset, 26);
+        const botName = this.readString(offset, 26);
         offset += 26;
-        const versionMajor = this.liftUint16(offset);
+        const versionMajor = this.readUint16(offset);
         offset += 2;
-        const versionMinor = this.liftUint16(offset);
+        const versionMinor = this.readUint16(offset);
         offset += 2;
-        const versionPatch = this.liftUint16(offset);
+        const versionPatch = this.readUint16(offset);
         offset += 2;
         this.logger.log(`### program info -- ${botName} v${versionMajor}.${versionMinor}.${versionPatch} ###`);
 

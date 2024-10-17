@@ -67,6 +67,16 @@ export class HostReserve {
         return offset + 8;
     }
 
+    static write_f32(offset: usize, value: f32): usize {
+        HostReserve.MEMORY_DV.setFloat32(offset as i32, value, true);
+        return offset + 4;
+    }
+
+    static write_f64(offset: usize, value: f64): usize {
+        HostReserve.MEMORY_DV.setFloat32(offset as i32, value, true);
+        return offset + 8;
+    }
+
 
     static read_string(offset: usize, len: usize): string {
         const slice = HostReserve.MEMORY.subarray(offset, offset+len);
@@ -103,5 +113,13 @@ export class HostReserve {
 
     static read_i64(offset: usize): i64 {
         return HostReserve.MEMORY_DV.getInt64(offset as i32, true);
+    }
+
+    static read_f32(offset: usize): f32 {
+        return HostReserve.MEMORY_DV.getFloat32(offset as i32, true);
+    }
+
+    static read_f64(offset: usize): f32 {
+        return HostReserve.MEMORY_DV.getFloat64(offset as i32, true);
     }
 }
