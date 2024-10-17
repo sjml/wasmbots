@@ -1,11 +1,4 @@
 * tech break: 
-  * min length for name
-    * unify how we're handling the name stuff (function to build it or smart writers)
-  * also unify tick function (just have a built-in void it's calling if it's not set isntead of it being an optional)
-  * reserveHostMemory should be failable (alloc fails or already reserved)
-    * should be private or whatever in Rust/Zig? 
-  * error checking on writes/reads in Rust/AssemblyScript/Zig
-  * engine calling setup should check if return 0
   * look at exception use in TypeScript (maybe use more, make sure to catch where using)
   * think about some kind of test harness that checks all reads/writes work properly? 
   * see about overriding the AS "abort" on the AS side so it doesn't have to be in the host
@@ -13,7 +6,9 @@
     * tables not exposed to most tooling; maybe the idea of the module start is useful tho
   * examine todos
   * clang-format for c? (prettier or biome for TS / AssemblyScript?)
+    * integrate with commit hook?
   * minimum tick time in engine
+  * change example bots to increase their calc time until they get three soft strikes
   * test:
     * worker crashing during setup
     * crashing during tick
@@ -24,10 +19,12 @@
     * name too long
     * name too short
   * swap api param reals and raws
+  * look at all the exports in all the languages; see if we can organize/cleanup/hide stuff as needed
   * other languages...
     * tinygo example bot?
     * C# w/blazor?
   * update readme, document the interface
+    * also library readmes
 * some basic display niceties
   * push bot consoles to verticals on opposite sides of page
   * stub out a "world display" in the middle
@@ -65,3 +62,4 @@
     * edit memory
   * load a wasm file, let it take a turn
 * build out a few different example bots (./bot_concepts.md)
+* CI to build/validate/deploy

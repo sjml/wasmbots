@@ -1,6 +1,8 @@
 import { writeGameParameters, writeCircumstances } from "./circumstances.ts";
 import { type ILogger } from "./logger.ts";
 
+const MIN_NAME_LEN = 4;
+
 interface WasmBotsExports {
     memory: WebAssembly.Memory;
     setup: (requestReserve: number) => number;
@@ -114,6 +116,10 @@ export class GuestProgram {
             return false;
         }
         this.reservePtr = this.exports.setup(reserveMemSize);
+        if (this.reservePtr == 0) {
+            // was already logged from client code, probably
+            return false;
+        }
         this.reserveLength = reserveMemSize;
         this.reserveBlock = new Uint8Array(this.exports.memory.buffer, this.reservePtr, this.reserveLength);
 
@@ -126,6 +132,10 @@ export class GuestProgram {
 
         let offset = this.reservePtr + resultOffset;
         const botName = this.readString(offset, 26);
+        if (botName.length < MIN_NAME_LEN) {
+            this.logger.error(`CLIENT ERROR: Bot name "${botName}" is too short (minimum length: ${MIN_NAME_LEN})`);
+            return false;
+        }
         offset += 26;
         const versionMajor = this.readUint16(offset);
         offset += 2;

@@ -262,7 +262,7 @@ const char* wsmbtclnt_read_string(size_t offset, size_t len) {
 uint8_t wsmbtclnt_read_u8(size_t offset) {
     #if WSMBTCLNT_BOUNDS_CHECKING
     if (offset >= WSMBTCLNT_HOST_RESERVE_SIZE) {
-        wsmbtclnt_logErr("CLIENT ERROR: uint8_tt read will overrun reserve memory");
+        wsmbtclnt_logErr("CLIENT ERROR: uint8_t read will overrun reserve memory");
         return 0;
     }
     #endif
@@ -457,11 +457,11 @@ bool receiveGameParams(size_t offset, size_t infoOffset) {
     offset += sizeof(uint16_t);
 
     const wsmbtclnt_BotMetadata botData = clientSetup(params);
-    memcpy((char*)(WSMBTCLNT_HOST_RESERVE + infoOffset), botData.name, WSMBTCLNT_MAX_BOT_NAME_LEN);
-    infoOffset += WSMBTCLNT_MAX_BOT_NAME_LEN;
-    infoOffset = wsmbtclnt_write_u16(infoOffset, botData.botVersion[0]);
-    infoOffset = wsmbtclnt_write_u16(infoOffset, botData.botVersion[1]);
-    infoOffset = wsmbtclnt_write_u16(infoOffset, botData.botVersion[2]);
+    memcpy((char*)(WSMBTCLNT_HOST_RESERVE + infoOffset), botData.name, WSMBTCLNT_BOT_MAX_NAME_LEN);
+    infoOffset += WSMBTCLNT_BOT_MAX_NAME_LEN;
+    infoOffset = wsmbtclnt_write_u16(infoOffset, botData.version[0]);
+    infoOffset = wsmbtclnt_write_u16(infoOffset, botData.version[1]);
+    infoOffset = wsmbtclnt_write_u16(infoOffset, botData.version[2]);
     return botData.ready;
 }
 //// \GAME PARAMETERS
@@ -476,18 +476,14 @@ size_t setup(size_t requestReserve) {
     return (size_t)WSMBTCLNT_HOST_RESERVE;
 }
 
-wsmbtclnt_TickFunction _clientTick = NULL;
+void _noop() {}
+wsmbtclnt_TickFunction _clientTick = &_noop;
 
 void wsmbtclnt_setTickCallback(wsmbtclnt_TickFunction tickFunc) {
-    if (_clientTick != NULL) {
-        wsmbtclnt_logErr("CLIENT ERROR: Tick callback already registered");
-    }
     _clientTick = tickFunc;
 }
 
 void tick(size_t offset) {
-    if (_clientTick != NULL) {
-        _clientTick();
-    }
+    _clientTick();
 }
 //// \SETUP AND LOOP

@@ -1,5 +1,5 @@
 export { setup, tick, receiveGameParams } from "wasmbots_client/assembly";
-import { GameParameters, BotMetadata, setTickCallback, log, HostReserve, registerClientSetup } from "wasmbots_client/assembly";
+import { GameParameters, BotMetadata, setTickCallback, log, registerClientSetup } from "wasmbots_client/assembly";
 
 // as with zig, would be nice to be able to pull from
 //   the build config, but alack

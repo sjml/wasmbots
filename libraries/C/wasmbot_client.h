@@ -44,11 +44,11 @@ typedef struct wsmbtclnt_GameParameters {
     uint16_t engineVersion[3];
 } wsmbtclnt_GameParameters;
 
-#define WSMBTCLNT_MAX_BOT_NAME_LEN 26
+#define WSMBTCLNT_BOT_MAX_NAME_LEN 26
 
 typedef struct wsmbtclnt_BotMetadata {
-    char name[WSMBTCLNT_MAX_BOT_NAME_LEN];
-    uint16_t botVersion[3];
+    char name[WSMBTCLNT_BOT_MAX_NAME_LEN];
+    uint16_t version[3];
     bool ready;
 } wsmbtclnt_BotMetadata;
 

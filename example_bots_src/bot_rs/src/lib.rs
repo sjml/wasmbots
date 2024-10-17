@@ -29,7 +29,7 @@ pub extern "C" fn client_setup(_params: &params::GameParameters) -> params::BotM
 
 
 fn tick() {
-    fib(40);
+    fib(41);
 }
 
 // intentionally inefficient fibonacci calculator

@@ -1,6 +1,8 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
 
+const config = @import("config");
+
 const log = @import("./wasmbot_client.zig").log;
 const logErr = @import("./wasmbot_client.zig").logErr;
 
@@ -21,18 +23,22 @@ pub fn reserveMemory(request: usize) bool {
 }
 
 pub fn write_string(offset: usize, msg: []const u8) usize {
-    if (offset + msg.len >= HOST_RESERVE.len) {
-        logErr("CLIENT ERROR: String too long to write to reserve memory");
-        return offset;
+    if (config.bounds_checking) {
+        if (offset + msg.len >= HOST_RESERVE.len) {
+            logErr("CLIENT ERROR: String too long to write to reserve memory");
+            return offset;
+        }
     }
     std.mem.copyForwards(u8, HOST_RESERVE[offset..][0..msg.len], msg);
     return offset + msg.len;
 }
 
 pub fn read_string(allocator: Allocator, offset: usize, len: usize) []const u8 {
-    if (offset + len >= HOST_RESERVE.len) {
-        logErr("CLIENT ERROR: String read will overrun reserve memory");
-        return null;
+    if (config.bounds_checking) {
+        if (offset + len >= HOST_RESERVE.len) {
+            logErr("CLIENT ERROR: String read will overrun reserve memory");
+            return null;
+        }
     }
     const str = allocator.alloc(u8, len) catch @panic("CLIENT ERROR: String memory allocation failed");
     for (0..len) |i| {
@@ -60,13 +66,15 @@ fn _numberTypeIsValid(comptime T: type) bool {
 pub fn write_number(comptime T: type, offset: usize, value: T) usize {
     comptime {
         if (!_numberTypeIsValid(T)) {
-            @compileError("Invalid integer type");
+            @compileError("Invalid number type");
         }
     }
 
-    if (offset + @sizeOf(T) >= HOST_RESERVE.len) {
-        logErr(comptime std.fmt.comptimePrint("CLIENT ERROR: Writing {s} outside of reserve memory", .{@typeName(T)}));
-        return offset;
+    if (config.bounds_checking) {
+        if (offset + @sizeOf(T) >= HOST_RESERVE.len) {
+            logErr(comptime std.fmt.comptimePrint("CLIENT ERROR: Writing {s} outside of reserve memory", .{@typeName(T)}));
+            return offset;
+        }
     }
     const slice = HOST_RESERVE[offset..][0..@sizeOf(T)];
     std.mem.writeInt(T, @constCast(slice), value, .little);
@@ -80,9 +88,11 @@ pub fn read_number(comptime T: type, offset: usize) T {
         }
     }
 
-    if (offset + @sizeOf(T) >= HOST_RESERVE.len) {
-        logErr(comptime std.fmt.comptimePrint("CLIENT ERROR: {s} read will overrun reserve memory", .{@typeName(T)}));
-        return 0;
+    if (config.bounds_checking) {
+        if (offset + @sizeOf(T) >= HOST_RESERVE.len) {
+            logErr(comptime std.fmt.comptimePrint("CLIENT ERROR: {s} read will overrun reserve memory", .{@typeName(T)}));
+            return 0;
+        }
     }
 
     return std.mem.readInt(T, HOST_RESERVE[offset..][0..@sizeOf(T)], .little);

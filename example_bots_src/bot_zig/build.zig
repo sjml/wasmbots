@@ -21,6 +21,13 @@ pub fn build(b: *std.Build) void {
             .sub_path = "../../libraries/Zig/src/wasmbot_client.zig",
         } },
     });
+
+    const bounds_check = b.option(bool, "bounds_checking", "Whether reads and writes to the reserve memory should do bounds checks before access") orelse true;
+
+    const options = b.addOptions();
+    options.addOption(bool, "bounds_checking", bounds_check);
+    wc_module.addOptions("config", options);
+
     exe.root_module.addImport("wasmbot_client", wc_module);
 
     exe.rdynamic = true;

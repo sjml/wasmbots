@@ -1,6 +1,7 @@
 
 zig-out/bin/bot_zig.wasm: src/bot.zig
 	zig build
+	@# zig build -Dbounds_checking=false
 	chmod -x $@
 
 .PHONY: all

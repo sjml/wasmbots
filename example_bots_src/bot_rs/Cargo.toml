@@ -11,4 +11,8 @@ strip = true
 lto = true
 
 [dependencies]
-wasmbots_client = { path = "../../libraries/Rust" }
+wasmbots_client = { path = "../../libraries/Rust", default-features = false}
+
+[features]
+default = ["bounds_checking"]
+bounds_checking = ["wasmbots_client/bounds_checking"]

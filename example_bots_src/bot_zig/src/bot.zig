@@ -10,7 +10,7 @@ const GP_VERSION: u16 = 7;
 
 export fn client_setup(pars: params.GameParameters) params.BotMetadata {
     _ = pars;
-    _ = wasmbotClient.setTickCallback(clientTick);
+    wasmbotClient.setTickCallback(clientTick);
     const botMeta = params.BotMetadata{
         .name = params.makeBotName(BOT_NAME),
         .botVersion = BOT_VERSION,

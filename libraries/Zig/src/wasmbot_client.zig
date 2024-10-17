@@ -19,21 +19,14 @@ export fn setup(requestReserve: usize) usize {
 }
 
 pub const TickFn = fn () void;
-var _clientTick: ?*const TickFn = null;
+var _clientTick: *const TickFn = _noop;
+fn _noop() void {}
 
-pub fn setTickCallback(cb: ?*const TickFn) bool {
-    if (_clientTick) |_| {
-        logErr("CLIENT ERROR: Tick callback already registered");
-        return false;
-    } else {
-        _clientTick = cb;
-        return true;
-    }
+pub fn setTickCallback(cb: *const TickFn) void {
+    _clientTick = cb;
 }
 
 export fn tick(offset: usize) void {
     _ = offset;
-    if (_clientTick) |ct| {
-        ct();
-    }
+    _clientTick();
 }

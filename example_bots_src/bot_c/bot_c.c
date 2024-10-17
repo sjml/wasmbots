@@ -30,12 +30,12 @@ wsmbtclnt_BotMetadata clientSetup(wsmbtclnt_GameParameters params) {
     wsmbtclnt_BotMetadata botMeta;
 
     memset(botMeta.name, 0, sizeof(botMeta.name));
-    size_t copyLength = strlen(BOT_NAME) < WSMBTCLNT_MAX_BOT_NAME_LEN ? strlen(BOT_NAME) : WSMBTCLNT_MAX_BOT_NAME_LEN;
+    size_t copyLength = strlen(BOT_NAME) < WSMBTCLNT_BOT_MAX_NAME_LEN ? strlen(BOT_NAME) : WSMBTCLNT_BOT_MAX_NAME_LEN;
     memcpy(botMeta.name, BOT_NAME, copyLength);
 
-    botMeta.botVersion[0] = BOT_VERSION[0];
-    botMeta.botVersion[1] = BOT_VERSION[1];
-    botMeta.botVersion[2] = BOT_VERSION[2];
+    botMeta.version[0] = BOT_VERSION[0];
+    botMeta.version[1] = BOT_VERSION[1];
+    botMeta.version[2] = BOT_VERSION[2];
 
     botMeta.ready = true;
 

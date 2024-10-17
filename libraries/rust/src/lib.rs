@@ -1,11 +1,12 @@
-use std::sync::OnceLock;
+use std::sync::Mutex;
 
 mod host_reserve;
 pub mod params;
 pub use host_reserve::HostReserve;
 
 pub type TickFn = fn();
-static CLIENT_TICK: OnceLock<TickFn> = OnceLock::new();
+static CLIENT_TICK: Mutex<TickFn> = Mutex::new(_noop);
+fn _noop() {}
 
 extern "C" {
     #[link_name = "logFunction"]
@@ -25,25 +26,22 @@ pub fn log_err(msg: &str) {
 
 #[no_mangle]
 extern "C" fn setup(request_reserve: usize) -> usize {
-    host_reserve::reserve_host_memory(request_reserve);
+    if !host_reserve::reserve_host_memory(request_reserve) {
+        log_err("CLIENT ERROR: Could not allocate reserve memory");
+        return 0;
+    }
     let reserve = HostReserve::new();
 
     reserve.raw_ptr() as usize
 }
 
-pub fn set_tick_callback(cb: TickFn) -> bool {
-    match CLIENT_TICK.set(cb) {
-        Ok(_) => true,
-        Err(_) => {
-            log_err("CLIENT ERROR: Tick callback already registered");
-            false
-        }
-    }
+pub fn set_tick_callback(cb: TickFn) {
+    let mut ct = CLIENT_TICK.lock().unwrap();
+    *ct = cb;
 }
 
 #[no_mangle]
 extern "C" fn tick(_offset: usize) {
-    if let Some(tick_fn) = CLIENT_TICK.get() {
-        tick_fn();
-    }
+    let ct = CLIENT_TICK.lock().unwrap();
+    ct();
 }
