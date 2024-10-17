@@ -3,6 +3,7 @@ const config = {
     webRoot: "/",
     // @ts-ignore
     environment: typeof Deno !== "undefined" ? "Deno" : "Web",
+    minimumTickTime: 100,
     tickWarnTimeLimit: 250,
     tickKillTimeLimit: 500,
     setupTimeLimit: 1000,

@@ -1,14 +1,4 @@
 * tech break: 
-  * look at exception use in TypeScript (maybe use more, make sure to catch where using)
-  * think about some kind of test harness that checks all reads/writes work properly? 
-  * see about overriding the AS "abort" on the AS side so it doesn't have to be in the host
-  * could clientSetup go in the function table and get found that way instead of "extern and pray"? 
-    * tables not exposed to most tooling; maybe the idea of the module start is useful tho
-  * examine todos
-  * clang-format for c? (prettier or biome for TS / AssemblyScript?)
-    * integrate with commit hook?
-  * minimum tick time in engine
-  * change example bots to increase their calc time until they get three soft strikes
   * test:
     * worker crashing during setup
     * crashing during tick
@@ -23,6 +13,8 @@
   * other languages...
     * tinygo example bot?
     * C# w/blazor?
+  * examine todos
+  * think about some kind of test harness that checks all reads/writes work properly? 
   * update readme, document the interface
     * also library readmes
 * some basic display niceties
@@ -63,3 +55,7 @@
   * load a wasm file, let it take a turn
 * build out a few different example bots (./bot_concepts.md)
 * CI to build/validate/deploy
+
+## far-flung future
+* clang-format for c? (prettier or biome for TS / AssemblyScript?)
+  * integrate with commit hook?

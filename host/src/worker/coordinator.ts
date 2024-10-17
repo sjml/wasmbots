@@ -1,6 +1,7 @@
 import config from "../core/config.ts";
 import { LogLevel } from "../core/logger.ts";
 import * as Msg from "./messages.ts";
+import { sleep } from "../core/util.ts";
 
 export enum WorkerStatus {
     Uninitialized,
@@ -141,7 +142,7 @@ export class WasmCoordinator {
         return this.tickPromise;
     }
 
-    runTickDone(payload: Msg.RunTickDonePayload) {
+    async runTickDone(payload: Msg.RunTickDonePayload) {
         clearTimeout(this.tickTimeout)
         this.inTick = false;
         this.lastTickDuration = Math.ceil(performance.now() - this.tickStartTime);
@@ -154,9 +155,14 @@ export class WasmCoordinator {
                 this.workerStatus = WorkerStatus.Shutdown;
             }
         }
+        const remainder = config.minimumTickTime - this.lastTickDuration;
+        if (remainder > 0) {
+            await sleep(remainder);
+        }
         this.tickResolve();
     }
 
+    // TODO
     handleCrash(payload: Msg.ProgramCrashedPayload) {
         // clear all timeouts
         // set to shutdown
@@ -164,7 +170,7 @@ export class WasmCoordinator {
         // log error message
     }
 
-    private onMessage(evt: MessageEvent<Msg.GuestToHostMessage<Msg.GuestToHostMessageType>>) {
+    private async onMessage(evt: MessageEvent<Msg.GuestToHostMessage<Msg.GuestToHostMessageType>>) {
         const { type, payload } = evt.data;
         switch (type) {
             case Msg.GuestToHostMessageType.InitModuleDone:
@@ -174,7 +180,7 @@ export class WasmCoordinator {
                 this.instantiateDone(payload as Msg.InstantiateDonePayload);
                 break;
             case Msg.GuestToHostMessageType.RunTickDone:
-                this.runTickDone(payload as Msg.RunTickDonePayload);
+                await this.runTickDone(payload as Msg.RunTickDonePayload);
                 break;
             case Msg.GuestToHostMessageType.ProgramCrashed:
                 this.handleCrash(payload as Msg.ProgramCrashedPayload);

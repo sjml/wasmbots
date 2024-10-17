@@ -10,6 +10,11 @@ declare function logFunction(logLevel: usize, msgPtr: usize, msgLen: usize): voi
 export type TickFunction = () => void;
 let CLIENT_TICK: TickFunction = () => {};
 
+export function as_abort(msg: usize, file: usize, line: u32, col: u32): void {
+    logErr(`FATAL ERROR: ${file}:${line}:${col}\n${msg}`);
+    unreachable();
+}
+
 export function log(msg: string): void {
     const msg8 = String.UTF8.encode(msg);
     logFunction(2, changetype<usize>(msg8), msg8.byteLength);

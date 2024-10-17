@@ -42,3 +42,8 @@ wsmbtclnt_BotMetadata clientSetup(wsmbtclnt_GameParameters params) {
     wsmbtclnt_log("Good to go!");
     return botMeta;
 }
+
+// int start() {
+//     wsmbtclnt_log("startup");
+//     return 0;
+// }

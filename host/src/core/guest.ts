@@ -8,6 +8,8 @@ interface WasmBotsExports {
     setup: (requestReserve: number) => number;
     receiveGameParams: (offset: number, resultLocation: number) => boolean;
     tick: (offset: number) => void;
+    _start?: () => void;
+    _initialize?: () => void;
 }
 
 export class GuestProgram {
@@ -95,6 +97,10 @@ export class GuestProgram {
         }
     }
 
+    private shutdown() {
+        // TODO
+    }
+
     // TODO: error handling, reject promise
     // have to do a separate init function because can't have async constructor
     async init(module: WebAssembly.Module) {
@@ -108,6 +114,14 @@ export class GuestProgram {
         });
 
         this.exports = this.instance.exports as unknown as WasmBotsExports;
+
+        // Emscripten setup functions
+        if (this.exports?._start) {
+            this.exports._start();
+        }
+        if (this.exports?._initialize) {
+            this.exports._initialize();
+        }
     }
 
     runSetup(reserveMemSize: number): boolean {

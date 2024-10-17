@@ -36,15 +36,6 @@
     }
   },
   "functionImports": {
-    "abort": {
-      "doc": "NOT FOR GENERAL USE: only here because the AssemblyScript runtime demands it; at the moment just prints the error",
-      "paramsDoc": ["AssemblyScript-internal pointer to the string to print", "AssemblyScript-internal pointer to path to the file where we're calling abort", "line where we're calling abort", "column where we're calling abort"],
-      "returnDoc": "",
-      "paramsImp": ["i32", "i32", "i32", "i32"],
-      "params": ["i32", "i32", "i32", "i32"],
-      "returnImp": null,
-      "return": null
-    },
     "logFunction": {
       "doc": "the engine's hook for logging; will print to either the terminal (if running from CLI) or the web console (if running in browser) or the visible UI (running in the frontend)",
       "paramsDoc": ["the log level; 0 = error, 1 = warn, 2 = log, 3 = info, 4 = debug", "the offset in the shared memory where the string to log begins", "length of the string"],

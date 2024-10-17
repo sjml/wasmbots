@@ -6,7 +6,7 @@ pub extern "C" fn client_setup(_params: &params::GameParameters) -> params::BotM
 
     let mut bot_meta = params::BotMetadata {
         name: params::make_bot_name(env!("CARGO_PKG_NAME")),
-        bot_version: [0, 0, 0],
+        version: [0, 0, 0],
         ready: false,
     };
 
@@ -20,7 +20,7 @@ pub extern "C" fn client_setup(_params: &params::GameParameters) -> params::BotM
     let minor = version_parts.next().unwrap().parse::<u16>().expect("Semver parts must fit in u16");
     let patch = version_parts.next().unwrap().parse::<u16>().expect("Semver parts must fit in u16");
 
-    bot_meta.bot_version = [major, minor, patch];
+    bot_meta.version = [major, minor, patch];
     bot_meta.ready = true;
 
     wasmbots_client::log("Good to go!");

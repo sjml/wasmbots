@@ -1,6 +1,6 @@
 
 build/bot_as.wasm: assembly/index.ts node_modules
-	npm run asbuild
+	npm run asbuild -- --use abort="~lib/wasmbots_client/assembly/index/as_abort"
 
 node_modules:
 	npm install

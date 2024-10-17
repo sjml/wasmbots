@@ -17,7 +17,7 @@ pub struct GameParameters {
 #[repr(C)]
 pub struct BotMetadata {
     pub name: [u8; MAX_NAME_LEN],
-    pub bot_version: [u16; 3],
+    pub version: [u16; 3],
     pub ready: bool,
 }
 
@@ -71,7 +71,7 @@ extern "C" fn receiveGameParams(mut offset: usize, mut info_offset: usize) -> bo
     while info_offset < info_zero + MAX_NAME_LEN {
         info_offset = reserve.write_u8(info_offset, 0);
     }
-    bot_data.bot_version.iter().for_each(|ve| {
+    bot_data.version.iter().for_each(|ve| {
         info_offset = reserve.write_u16(info_offset, *ve);
     });
 
