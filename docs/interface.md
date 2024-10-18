@@ -13,11 +13,11 @@ As for how to export or import these functions in your own module, that's beyond
 The host exposes a function for logging, which takes a parameter for the log level, a pointer to the start of a string, and its length in bytes. The string _must_ be encoded in UTF-8. It is not retained by the host after printing, so you can safely free it. It can be anywhere in memory, not just the reserve block. 
 
 The valid log levels are: 
-    * `0`: error
-    * `1`: warning
-    * `2`: log
-    * `3`: info
-    * `4`: debug
+* `0`: error
+* `1`: warning
+* `2`: log
+* `3`: info
+* `4`: debug
 
 ## Handshake
 
