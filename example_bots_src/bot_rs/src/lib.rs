@@ -1,9 +1,6 @@
 use wasmbots_client::params;
 
-#[no_mangle]
-pub extern "C" fn client_setup(_params: &params::GameParameters) -> params::BotMetadata {
-    wasmbots_client::set_tick_callback(tick);
-
+fn client_setup(_params: &params::GameParameters) -> params::BotMetadata {
     let mut bot_meta = params::BotMetadata {
         name: params::make_bot_name(env!("CARGO_PKG_NAME")),
         version: [0, 0, 0],
@@ -50,4 +47,10 @@ fn fib(n: u64) -> u64 {
     } else {
         fib(n - 2) + fib(n - 1)
     }
+}
+
+#[export_name="clientInitialize"]
+pub extern "C" fn client_initialize() {
+    params::register_client_setup(client_setup);
+    wasmbots_client::register_tick_callback(tick);
 }

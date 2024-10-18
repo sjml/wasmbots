@@ -34,6 +34,6 @@ func tick(offset uintptr) {
 	clientTick()
 }
 
-func SetTickCallback(cb TickFunction) {
+func RegisterTickCallback(cb TickFunction) {
 	clientTick = cb
 }

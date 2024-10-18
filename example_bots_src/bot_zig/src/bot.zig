@@ -8,12 +8,11 @@ const BOT_NAME = "bot_zig";
 const BOT_VERSION = [3]u16{ 0, 1, 0 };
 const GP_VERSION: u16 = 7;
 
-export fn client_setup(pars: params.GameParameters) params.BotMetadata {
+fn clientSetup(pars: params.GameParameters) params.BotMetadata {
     _ = pars;
-    wasmbotClient.setTickCallback(clientTick);
     const botMeta = params.BotMetadata{
         .name = params.makeBotName(BOT_NAME),
-        .botVersion = BOT_VERSION,
+        .version = BOT_VERSION,
         .ready = true,
     };
 
@@ -31,4 +30,9 @@ fn fib(n: u64) u64 {
     } else {
         return fib(n - 2) + fib(n - 1);
     }
+}
+
+export fn clientInitialize() void {
+    params.registerClientSetup(clientSetup);
+    wasmbotClient.registerTickCallback(clientTick);
 }

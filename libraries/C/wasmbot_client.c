@@ -479,7 +479,7 @@ size_t setup(size_t requestReserve) {
 void _noop() {}
 wsmbt_TickFunction _clientTick = &_noop;
 
-void wsmbt_setTickCallback(wsmbt_TickFunction tickFunc) {
+void wsmbt_registerTickCallback(wsmbt_TickFunction tickFunc) {
     _clientTick = tickFunc;
 }
 

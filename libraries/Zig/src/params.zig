@@ -8,7 +8,20 @@ const logErr = @import("./wasmbot_client.zig").logErr;
 const GP_VERSION: u16 = 7;
 const MAX_NAME_LEN: usize = 26;
 
-extern fn client_setup(params: GameParameters) BotMetadata;
+pub const ClientSetupFn = fn (GameParameters) BotMetadata;
+var _clientSetup: *const ClientSetupFn = _clientSetup_noop;
+fn _clientSetup_noop(gp: GameParameters) BotMetadata {
+    _ = gp;
+    return BotMetadata{
+        .name = makeBotName("[INVALID]"),
+        .version = [_]u16{ 0, 0, 0 },
+        .ready = false,
+    };
+}
+
+pub fn registerClientSetup(cb: *const ClientSetupFn) void {
+    _clientSetup = cb;
+}
 
 pub const GameParameters = extern struct {
     paramsVersion: u16,
@@ -17,7 +30,7 @@ pub const GameParameters = extern struct {
 
 pub const BotMetadata = extern struct {
     name: [MAX_NAME_LEN]u8,
-    botVersion: [3]u16,
+    version: [3]u16,
     ready: bool,
 };
 
@@ -53,7 +66,7 @@ export fn receiveGameParams(offset: usize, infoOffset: usize) bool {
         .engineVersion = engVersion,
     };
 
-    const botData = client_setup(gp);
+    const botData = _clientSetup(gp);
 
     for (0..MAX_NAME_LEN) |i| {
         if (i < botData.name.len) {
@@ -63,7 +76,7 @@ export fn receiveGameParams(offset: usize, infoOffset: usize) bool {
         }
     }
     localInfoOffset += MAX_NAME_LEN;
-    for (botData.botVersion) |ve| {
+    for (botData.version) |ve| {
         localInfoOffset = host_reserve.write_number(u16, localInfoOffset, ve);
     }
 

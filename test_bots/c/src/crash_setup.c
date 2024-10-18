@@ -15,7 +15,7 @@ wsmbt_BotMetadata clientSetup(wsmbt_GameParameters params) {
     *ptr = 123456;
     // nothing else matters because the above will crash
 
-    wsmbt_setTickCallback(&clientTick);
+    wsmbt_registerTickCallback(&clientTick);
 
     wsmbt_BotMetadata botMeta;
     memset(botMeta.name, 0, sizeof(botMeta.name));

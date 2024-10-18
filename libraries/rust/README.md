@@ -28,7 +28,7 @@ pub extern "C" fn client_setup(_params: &GameParameters) -> bool {
 ```
 The GameParameters struct tells you the basic conditions of the game (how many players, what style of game, engine version, etc). You return `true` or `false` to indicate your readiness to play under those parameters. 
 
-In the client setup, before returning, you can do whatever kinds of prep you want to for the game. Most importantly, you probably want to call `wasmbots_client::set_tick_callback` and pass it a pointer to a function that takes no parameters and returns void; it's where the magic happens.
+In the client setup, before returning, you can do whatever kinds of prep you want to for the game. Most importantly, you probably want to call `wasmbots_client::register_tick_callback` and pass it a pointer to a function that takes no parameters and returns void; it's where the magic happens.
 
 Finally, make sure to build like this to actually get the WASM. 
 

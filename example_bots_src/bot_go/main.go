@@ -8,7 +8,7 @@ func init() {
 }
 
 func clientSetup(params wasmbot_client.GameParameters) wasmbot_client.BotMetadata {
-	wasmbot_client.SetTickCallback(tick)
+	wasmbot_client.RegisterTickCallback(tick)
 
 	botMeta := wasmbot_client.BotMetadata{
 		Name:    "bot_go",

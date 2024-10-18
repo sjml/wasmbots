@@ -25,7 +25,7 @@ void clientTick() {
 }
 
 wsmbt_BotMetadata clientSetup(wsmbt_GameParameters params) {
-    wsmbt_setTickCallback(&clientTick);
+    wsmbt_registerTickCallback(&clientTick);
 
     wsmbt_BotMetadata botMeta;
 

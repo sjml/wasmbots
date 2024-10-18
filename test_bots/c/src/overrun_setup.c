@@ -23,7 +23,7 @@ wsmbt_BotMetadata clientSetup(wsmbt_GameParameters params) {
     // will overrun the setup timeout
     fib(52);
 
-    wsmbt_setTickCallback(&clientTick);
+    wsmbt_registerTickCallback(&clientTick);
 
     wsmbt_BotMetadata botMeta;
     memset(botMeta.name, 0, sizeof(botMeta.name));

@@ -22,7 +22,7 @@ pub const TickFn = fn () void;
 var _clientTick: *const TickFn = _noop;
 fn _noop() void {}
 
-pub fn setTickCallback(cb: *const TickFn) void {
+pub fn registerTickCallback(cb: *const TickFn) void {
     _clientTick = cb;
 }
 

@@ -1,11 +1,20 @@
+use std::sync::Mutex;
+
 use crate::host_reserve::HostReserve;
 use crate::log_err;
 
 const GP_VERSION: u16 = 7;
 const MAX_NAME_LEN: usize = 26;
 
-extern "C" {
-    fn client_setup(params: &GameParameters) -> BotMetadata;
+pub type ClientSetupFn = fn(&GameParameters) -> BotMetadata;
+static CLIENT_SETUP: Mutex<ClientSetupFn> = Mutex::new(_setup_noop);
+fn _setup_noop(_: &GameParameters) -> BotMetadata {
+    BotMetadata { name: make_bot_name("[INVALID]"), version: [0,0,0], ready: false }
+}
+
+pub fn register_client_setup(cs: ClientSetupFn) {
+    let mut csf = CLIENT_SETUP.lock().unwrap();
+    *csf = cs;
 }
 
 #[repr(C)]
@@ -54,7 +63,7 @@ extern "C" fn receiveGameParams(mut offset: usize, mut info_offset: usize) -> bo
         engine_version: eng_version,
     };
 
-    let bot_data = unsafe { client_setup(&gp) };
+    let bot_data = CLIENT_SETUP.lock().unwrap()(&gp);
 
     let mut reserve = HostReserve::new();
 

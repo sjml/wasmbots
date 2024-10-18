@@ -27,7 +27,7 @@ bool clientSetup(wsmbt_GameParameters params);
 
 The GameParameters struct tells you the basic conditions of the game (how many players, what style of game, engine version, etc). You return `true` or `false` to indicate your readiness to play under those parameters. 
 
-In the client setup, before returning, you can do whatever kinds of prep you want to for the game. Most importantly, you probably want to call `wsmbt_setTickCallback` and pass it a pointer to a function that takes no parameters and returns void; it's where the magic happens.
+In the client setup, before returning, you can do whatever kinds of prep you want to for the game. Most importantly, you probably want to call `wsmbt_registerTickCallback` and pass it a pointer to a function that takes no parameters and returns void; it's where the magic happens.
 
 ### Configuration
 Note there are two compile flags you can set:

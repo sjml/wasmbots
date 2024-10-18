@@ -35,7 +35,7 @@ extern "C" fn setup(request_reserve: usize) -> usize {
     reserve.raw_ptr() as usize
 }
 
-pub fn set_tick_callback(cb: TickFn) {
+pub fn register_tick_callback(cb: TickFn) {
     let mut ct = CLIENT_TICK.lock().unwrap();
     *ct = cb;
 }

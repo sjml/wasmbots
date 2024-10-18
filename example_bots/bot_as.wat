@@ -1,7 +1,7 @@
 (module
  (type $0 (func (param i32) (result i32)))
- (type $1 (func (param i32)))
- (type $2 (func))
+ (type $1 (func))
+ (type $2 (func (param i32)))
  (type $3 (func (param i32 i32) (result i32)))
  (type $4 (func (param i32 i32)))
  (type $5 (func (result i32)))
@@ -75,16 +75,16 @@
  (data $26.1 (i32.const 3784) "\01\00\00\00\06\00\00\00\00\00\01")
  (data $27 (i32.const 3804) ",")
  (data $27.1 (i32.const 3816) "\t\00\00\00\10\00\00\00\d0\0e\00\00\d0\0e\00\00\06\00\00\00\03")
- (data $28 (i32.const 3852) "\1c")
- (data $28.1 (i32.const 3864) "\0c\00\00\00\08\00\00\00\02")
- (data $29 (i32.const 3884) "<")
- (data $29.1 (i32.const 3896) "\02\00\00\00&\00\00\00~\00l\00i\00b\00/\00s\00t\00a\00t\00i\00c\00a\00r\00r\00a\00y\00.\00t\00s")
- (data $30 (i32.const 3948) "<")
- (data $30.1 (i32.const 3960) "\02\00\00\00$\00\00\00~\00l\00i\00b\00/\00t\00y\00p\00e\00d\00a\00r\00r\00a\00y\00.\00t\00s")
- (data $31 (i32.const 4012) ",")
- (data $31.1 (i32.const 4024) "\02\00\00\00\16\00\00\00G\00o\00o\00d\00 \00t\00o\00 \00g\00o\00!")
+ (data $28 (i32.const 3852) "<")
+ (data $28.1 (i32.const 3864) "\02\00\00\00&\00\00\00~\00l\00i\00b\00/\00s\00t\00a\00t\00i\00c\00a\00r\00r\00a\00y\00.\00t\00s")
+ (data $29 (i32.const 3916) "<")
+ (data $29.1 (i32.const 3928) "\02\00\00\00$\00\00\00~\00l\00i\00b\00/\00t\00y\00p\00e\00d\00a\00r\00r\00a\00y\00.\00t\00s")
+ (data $30 (i32.const 3980) ",")
+ (data $30.1 (i32.const 3992) "\02\00\00\00\16\00\00\00G\00o\00o\00d\00 \00t\00o\00 \00g\00o\00!")
+ (data $31 (i32.const 4028) "\1c")
+ (data $31.1 (i32.const 4040) "\r\00\00\00\08\00\00\00\02")
  (data $32 (i32.const 4060) "\1c")
- (data $32.1 (i32.const 4072) "\r\00\00\00\08\00\00\00\03")
+ (data $32.1 (i32.const 4072) "\0c\00\00\00\08\00\00\00\03")
  (data $33 (i32.const 4092) "\\")
  (data $33.1 (i32.const 4104) "\02\00\00\00>\00\00\00E\00R\00R\00O\00R\00:\00 \00C\00a\00n\00\'\00t\00 \00p\00a\00r\00s\00e\00 \00G\00a\00m\00e\00P\00a\00r\00a\00m\00s\00 \00v")
  (data $34 (i32.const 4188) "<")
@@ -98,7 +98,8 @@
  (data $38.1 (i32.const 4420) "\a4\00\00\00\82\00\00\00\00\00\00\00d")
  (data $38.2 (i32.const 4444) "\02\t")
  (table $0 4 4 funcref)
- (elem $0 (i32.const 1) $start:~lib/wasmbots_client/assembly/index~anonymous|0 $assembly/index/tick $assembly/index/clientSetup)
+ (elem $0 (i32.const 1) $start:~lib/wasmbots_client/assembly/index~anonymous|0 $assembly/index/clientSetup $assembly/index/tick)
+ (export "clientInitialize" (func $assembly/index/clientInitialize))
  (export "setup" (func $~lib/wasmbots_client/assembly/index/setup))
  (export "tick" (func $~lib/wasmbots_client/assembly/index/tick))
  (export "receiveGameParams" (func $~lib/wasmbots_client/assembly/params/receiveGameParams))
@@ -1785,7 +1786,7 @@
   global.set $~argumentsLength
   global.get $~lib/wasmbots_client/assembly/index/CLIENT_TICK
   i32.load
-  call_indirect (type $2)
+  call_indirect (type $1)
  )
  (func $~lib/array/Array<u16>~visit (param $0 i32)
   global.get $~lib/memory/__stack_pointer
@@ -1955,98 +1956,76 @@
  (func $~start
   (local $0 i32)
   global.get $~lib/memory/__stack_pointer
-  i32.const 4
+  i32.const 8
   i32.sub
   global.set $~lib/memory/__stack_pointer
-  block $folding-inner0
-   global.get $~lib/memory/__stack_pointer
-   i32.const 4448
-   i32.lt_s
-   br_if $folding-inner0
-   global.get $~lib/memory/__stack_pointer
-   i32.const 0
-   i32.store
-   global.get $~lib/memory/__stack_pointer
-   i32.const 8
-   i32.sub
-   global.set $~lib/memory/__stack_pointer
-   global.get $~lib/memory/__stack_pointer
-   i32.const 4448
-   i32.lt_s
-   br_if $folding-inner0
-   global.get $~lib/memory/__stack_pointer
-   i64.const 0
-   i64.store
-   memory.size
-   i32.const 16
-   i32.shl
-   i32.const 37216
-   i32.sub
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4448
+  i32.lt_s
+  if
+   i32.const 37248
+   i32.const 37296
    i32.const 1
-   i32.shr_u
-   global.set $~lib/rt/itcms/threshold
-   i32.const 1572
-   i32.const 1568
-   i32.store
-   i32.const 1576
-   i32.const 1568
-   i32.store
-   i32.const 1568
-   global.set $~lib/rt/itcms/pinSpace
-   i32.const 1604
-   i32.const 1600
-   i32.store
-   i32.const 1608
-   i32.const 1600
-   i32.store
-   i32.const 1600
-   global.set $~lib/rt/itcms/toSpace
-   i32.const 1748
-   i32.const 1744
-   i32.store
-   i32.const 1752
-   i32.const 1744
-   i32.store
-   i32.const 1744
-   global.set $~lib/rt/itcms/fromSpace
-   i32.const 0
-   call $~lib/typedarray/Uint8Array#constructor
-   global.set $~lib/wasmbots_client/assembly/hostReserve/HostReserve.MEMORY
-   global.get $~lib/memory/__stack_pointer
-   global.get $~lib/wasmbots_client/assembly/hostReserve/HostReserve.MEMORY
-   local.tee $0
-   i32.store offset=4
-   global.get $~lib/memory/__stack_pointer
-   local.get $0
-   i32.load
-   local.tee $0
-   i32.store
    i32.const 1
-   global.set $~argumentsLength
-   local.get $0
-   call $~lib/dataview/DataView#constructor@varargs
-   global.set $~lib/wasmbots_client/assembly/hostReserve/HostReserve.MEMORY_DV
-   global.get $~lib/memory/__stack_pointer
-   i32.const 8
-   i32.add
-   global.set $~lib/memory/__stack_pointer
-   global.get $~lib/memory/__stack_pointer
-   i32.const 4080
-   i32.store
-   i32.const 4080
-   global.set $~lib/wasmbots_client/assembly/params/CLIENT_SETUP
-   global.get $~lib/memory/__stack_pointer
-   i32.const 4
-   i32.add
-   global.set $~lib/memory/__stack_pointer
-   return
+   call $~lib/wasmbots_client/assembly/index/as_abort
+   unreachable
   end
-  i32.const 37248
-  i32.const 37296
+  global.get $~lib/memory/__stack_pointer
+  i64.const 0
+  i64.store
+  memory.size
+  i32.const 16
+  i32.shl
+  i32.const 37216
+  i32.sub
   i32.const 1
+  i32.shr_u
+  global.set $~lib/rt/itcms/threshold
+  i32.const 1572
+  i32.const 1568
+  i32.store
+  i32.const 1576
+  i32.const 1568
+  i32.store
+  i32.const 1568
+  global.set $~lib/rt/itcms/pinSpace
+  i32.const 1604
+  i32.const 1600
+  i32.store
+  i32.const 1608
+  i32.const 1600
+  i32.store
+  i32.const 1600
+  global.set $~lib/rt/itcms/toSpace
+  i32.const 1748
+  i32.const 1744
+  i32.store
+  i32.const 1752
+  i32.const 1744
+  i32.store
+  i32.const 1744
+  global.set $~lib/rt/itcms/fromSpace
+  i32.const 0
+  call $~lib/typedarray/Uint8Array#constructor
+  global.set $~lib/wasmbots_client/assembly/hostReserve/HostReserve.MEMORY
+  global.get $~lib/memory/__stack_pointer
+  global.get $~lib/wasmbots_client/assembly/hostReserve/HostReserve.MEMORY
+  local.tee $0
+  i32.store offset=4
+  global.get $~lib/memory/__stack_pointer
+  local.get $0
+  i32.load
+  local.tee $0
+  i32.store
   i32.const 1
-  call $~lib/wasmbots_client/assembly/index/as_abort
-  unreachable
+  global.set $~argumentsLength
+  local.get $0
+  call $~lib/dataview/DataView#constructor@varargs
+  global.set $~lib/wasmbots_client/assembly/hostReserve/HostReserve.MEMORY_DV
+  global.get $~lib/memory/__stack_pointer
+  i32.const 8
+  i32.add
+  global.set $~lib/memory/__stack_pointer
  )
  (func $~lib/util/string/joinStringArray (param $0 i32) (param $1 i32) (result i32)
   (local $2 i32)
@@ -3391,7 +3370,7 @@
      i32.ge_u
      if
       i32.const 1648
-      i32.const 3968
+      i32.const 3936
       i32.const 167
       i32.const 45
       call $~lib/wasmbots_client/assembly/index/as_abort
@@ -3432,7 +3411,7 @@
      i32.ge_u
      if
       i32.const 1648
-      i32.const 3904
+      i32.const 3872
       i32.const 93
       i32.const 41
       call $~lib/wasmbots_client/assembly/index/as_abort
@@ -3572,11 +3551,6 @@
    i32.const 0
    i32.store offset=8
    global.get $~lib/memory/__stack_pointer
-   i32.const 3872
-   i32.store
-   i32.const 3872
-   global.set $~lib/wasmbots_client/assembly/index/CLIENT_TICK
-   global.get $~lib/memory/__stack_pointer
    i32.const 3760
    i32.store
    global.get $~lib/memory/__stack_pointer
@@ -3587,7 +3561,7 @@
    local.tee $1
    i32.store offset=8
    global.get $~lib/memory/__stack_pointer
-   i32.const 4032
+   i32.const 4000
    i32.store
    global.get $~lib/memory/__stack_pointer
    i32.const 8
@@ -3601,12 +3575,12 @@
    i64.const 0
    i64.store
    global.get $~lib/memory/__stack_pointer
-   i32.const 4032
+   i32.const 4000
    i32.store
    i32.const 1
    global.set $~argumentsLength
    global.get $~lib/memory/__stack_pointer
-   i32.const 4032
+   i32.const 4000
    call $~lib/string/String.UTF8.encode@varargs
    local.tee $0
    i32.store offset=4
@@ -3637,6 +3611,40 @@
   i32.const 1
   call $~lib/wasmbots_client/assembly/index/as_abort
   unreachable
+ )
+ (func $assembly/index/clientInitialize
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.sub
+  global.set $~lib/memory/__stack_pointer
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4448
+  i32.lt_s
+  if
+   i32.const 37248
+   i32.const 37296
+   i32.const 1
+   i32.const 1
+   call $~lib/wasmbots_client/assembly/index/as_abort
+   unreachable
+  end
+  global.get $~lib/memory/__stack_pointer
+  i32.const 0
+  i32.store
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4048
+  i32.store
+  i32.const 4048
+  global.set $~lib/wasmbots_client/assembly/params/CLIENT_SETUP
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4080
+  i32.store
+  i32.const 4080
+  global.set $~lib/wasmbots_client/assembly/index/CLIENT_TICK
+  global.get $~lib/memory/__stack_pointer
+  i32.const 4
+  i32.add
+  global.set $~lib/memory/__stack_pointer
  )
  (func $~lib/wasmbots_client/assembly/hostReserve/HostReserve.read_u16 (param $0 i32) (result i32)
   (local $1 i32)
@@ -4242,7 +4250,7 @@
        i32.ge_u
        if
         i32.const 1648
-        i32.const 3968
+        i32.const 3936
         i32.const 178
         i32.const 45
         call $~lib/wasmbots_client/assembly/index/as_abort
@@ -4444,7 +4452,7 @@
    unreachable
   end
   i32.const 1648
-  i32.const 3904
+  i32.const 3872
   i32.const 78
   i32.const 41
   call $~lib/wasmbots_client/assembly/index/as_abort

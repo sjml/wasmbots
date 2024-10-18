@@ -31,7 +31,7 @@ export function setup(requestReserve: usize): usize {
     return HostReserve.rawPtr;
 }
 
-export function setTickCallback(cb: TickFunction): boolean {
+export function registerTickCallback(cb: TickFunction): boolean {
     CLIENT_TICK = cb;
     return true;
 }

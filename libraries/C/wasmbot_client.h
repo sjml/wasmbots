@@ -53,6 +53,6 @@ typedef struct wsmbt_BotMetadata {
 } wsmbt_BotMetadata;
 
 typedef void (*wsmbt_TickFunction)();
-void wsmbt_setTickCallback(wsmbt_TickFunction tickFunc);
+void wsmbt_registerTickCallback(wsmbt_TickFunction tickFunc);
 
 #endif // \WASMBOT_CLIENT_H
