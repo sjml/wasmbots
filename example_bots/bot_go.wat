@@ -21212,7 +21212,8 @@
         i32.load offset=4
         call $wasmbot_client.Log
       end
-      i64.const 40
+      i32.const 85832
+      i64.load
       call $main.fib
       drop
       local.get 1

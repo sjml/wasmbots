@@ -24,7 +24,7 @@ function tick(lastDuration: u32): void {
         CURRENT_FIB += 1;
         log(`Incrementing fib to ${CURRENT_FIB}`);
     }
-    fib(40);
+    fib(CURRENT_FIB);
 }
 
 function fib(n: u64): u64 {

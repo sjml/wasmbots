@@ -30,7 +30,7 @@ fn clientTick(lastDuration: u32) void {
         const result = std.fmt.bufPrintZ(&output, "Incrementing fib to {d}", .{CURRENT_FIB}) catch unreachable;
         wasmbotClient.log(result);
     }
-    _ = fib(40);
+    _ = fib(CURRENT_FIB);
 }
 
 fn fib(n: u64) u64 {

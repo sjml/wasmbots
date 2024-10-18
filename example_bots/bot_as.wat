@@ -4182,7 +4182,7 @@
     local.get $0
     call $~lib/wasmbots_client/assembly/index/log
    end
-   i64.const 40
+   global.get $assembly/index/CURRENT_FIB
    call $assembly/index/fib
    drop
    global.get $~lib/memory/__stack_pointer

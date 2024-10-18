@@ -195,7 +195,8 @@
       local.get 0
       call 4
     end
-    i64.const 40
+    i32.const 0
+    i64.load offset=1049296
     call 8
     drop
     local.get 1

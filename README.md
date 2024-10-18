@@ -15,7 +15,9 @@ brew install emscripten wabt deno zig rust node go tinygo-org/tools/tinygo
 At the moment you can verify everything is working as expected by running:
 
 ```
-./scripts/_build_wasms.sh && ./scripts/_validate_wasms.sh && ./scripts/_run_wasms.sh
+./scripts/_build_wasms.sh
+./scripts/_validate_wasms.sh
+./scripts/_run_wasms.sh
 ```
 
 That will build, validate, and run all the example bots. As of this writing, each one just starts at 35 and calculates increasingly large Fibonacci indexes until it gets killed for overrunning the tick time limit. 

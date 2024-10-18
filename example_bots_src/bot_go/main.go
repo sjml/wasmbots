@@ -29,7 +29,7 @@ func tick(lastDuration uint32) {
 		CURRENT_FIB += 1
 		wasmbot_client.Log(fmt.Sprintf("Incrementing fib to %d", CURRENT_FIB))
 	}
-	fib(40)
+	fib(CURRENT_FIB)
 }
 
 // intentionally inefficient fibonacci calculator
