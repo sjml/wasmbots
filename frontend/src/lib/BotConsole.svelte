@@ -15,7 +15,7 @@
     async function runBot(fpath: string) {
         if (!fpath || fpath.length == 0) return;
         logs = [];
-        fpath = `/example_bots/${fpath}`;
+        fpath = `./example_bots/${fpath}`;
         const wasmBytes = await Loader.readBinaryFile(fpath);
         coordinator = new WasmCoordinator(async (level: Logger.LogLevel, msg: string) => {
             logs = [...logs, {level, msg}];
@@ -50,7 +50,7 @@
         font-family: 'Courier New', Courier, monospace;
         white-space: pre;
 
-        height: 150px;
+        height: 450px;
         overflow-y: auto;
 
         padding: 10px;

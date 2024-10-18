@@ -3,9 +3,15 @@
 </script>
 
 <main>
-    <BotChoice />
-    <BotChoice />
+    <div class="choiceOverlay">
+        <BotChoice />
+        <BotChoice />
+    </div>
 </main>
 
 <style>
+    .choiceOverlay {
+        display: flex;
+        justify-content: space-between;
+    }
 </style>

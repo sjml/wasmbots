@@ -15,8 +15,10 @@
     {/each}
 </select>
 
-{#if botData}
-    <div class="botInfo">
+<div class="botInfo">
+    {#if botData}
         <strong>Bot Name:</strong> {botData.name} (<a href={botData.source} target="_blank">src</a>)
-    </div>
-{/if}
+    {:else}
+        <br>
+    {/if}
+</div>

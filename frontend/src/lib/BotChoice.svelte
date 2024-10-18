@@ -11,4 +11,9 @@
 </div>
 
 <style>
+    .botChoice {
+        width: 700px;
+
+        /* opacity: 80%; */
+    }
 </style>

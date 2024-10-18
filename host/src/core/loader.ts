@@ -84,5 +84,6 @@ function getRscPath(): string {
         const dirname = pathDirname(filename);
         return pathJoin(dirname, "..", "..", "rsc");
     }
-    return pathJoin(config.webRoot, "rsc");
+    // @ts-ignore
+    return pathJoin(import.meta.env.BASE_URL, "rsc");
 }

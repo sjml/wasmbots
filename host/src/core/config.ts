@@ -1,6 +1,5 @@
 const config = {
     version: [0, 0, 1],
-    webRoot: "/",
     // @ts-ignore
     environment: typeof Deno !== "undefined" ? "Deno" : "Web",
     minimumTickTime: 100,

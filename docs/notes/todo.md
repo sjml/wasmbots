@@ -1,3 +1,8 @@
+## bugs
+* in Chrome, sometimes the worker hangs and doesn't get killed (especially when running the C bot)
+  * hard to reproduce, of course :(
+
+## dev
 * some basic display niceties
   * push bot consoles to verticals on opposite sides of page
   * stub out a "world display" in the middle
