@@ -1,0 +1,4 @@
+# for the most part, each sub-project has its own .gitignore
+
+/.vscode
+/scripts/deploy_frontend.sh
