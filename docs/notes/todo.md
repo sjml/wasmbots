@@ -40,6 +40,7 @@
 ## horizon
 * add convenience functions to libraries for writing/reading byte array
 * with the move away from extern linking, maybe more libraries can use normal strings in their BotMetadata structs
+* readmes for individual libraries
 
 ## far-flung future
 * clang-format for c? (prettier or biome for TS / AssemblyScript?)
