@@ -18,7 +18,6 @@ func clientSetup(params wasmbot_client.GameParameters) wasmbot_client.BotMetadat
 		Ready:   true,
 	}
 
-	wasmbot_client.Log("Good to go!")
 	return botMeta
 }
 

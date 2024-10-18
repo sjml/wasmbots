@@ -44,6 +44,5 @@ wsmbt_BotMetadata clientSetup(wsmbt_GameParameters params) {
 
     botMeta.ready = true;
 
-    wsmbt_log("Good to go!");
     return botMeta;
 }

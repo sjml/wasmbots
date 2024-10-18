@@ -18,7 +18,6 @@ fn clientSetup(pars: params.GameParameters) params.BotMetadata {
         .ready = true,
     };
 
-    wasmbotClient.log("Good to go!");
     return botMeta;
 }
 

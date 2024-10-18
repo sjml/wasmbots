@@ -32,7 +32,6 @@ fn client_setup(_params: &params::GameParameters) -> params::BotMetadata {
     bot_meta.version = [major, minor, patch];
     bot_meta.ready = true;
 
-    wasmbots_client::log("Good to go!");
     bot_meta
 }
 

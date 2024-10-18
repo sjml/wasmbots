@@ -9,7 +9,6 @@ const VERSION: u16[] = [0, 1, 0];
 
 function clientSetup(params: GameParameters): BotMetadata {
     const botMeta = new BotMetadata(BOT_NAME, VERSION, true);
-    log("Good to go!");
     return botMeta;
 }
 
