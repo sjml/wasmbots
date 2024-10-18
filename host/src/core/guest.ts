@@ -8,8 +8,9 @@ interface WasmBotsExports {
     setup: (requestReserve: number) => number;
     receiveGameParams: (offset: number, resultLocation: number) => boolean;
     tick: (offset: number) => void;
-    _start?: () => void;
+    clientInitialize?: () => void;
     _initialize?: () => void;
+    _start?: () => void;
 }
 
 export class GuestProgram {
@@ -118,12 +119,23 @@ export class GuestProgram {
 
         this.exports = this.instance.exports as unknown as WasmBotsExports;
 
-        // Emscripten setup functions
+        // built-in setup function from various compilers
+        //   (TinyGo uses this to set up the heap, for example)
+        if (this.exports?._initialize) {
+            this.exports._initialize();
+        }
+        // same as above; usually only exists if you've built
+        //   it as an "application" instead of a library,
+        //   but let's play along
         if (this.exports?._start) {
             this.exports._start();
         }
-        if (this.exports?._initialize) {
-            this.exports._initialize();
+
+        // optional export from client code;
+        //   should only be used for things like registering
+        //   callbacks and the like; very minimal
+        if (this.exports?.clientInitialize) {
+            this.exports.clientInitialize();
         }
     }
 

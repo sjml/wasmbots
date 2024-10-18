@@ -11,6 +11,9 @@ pub struct MemoryExpectEntry {
 #[derive(Debug, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct FunctionExpectEntry {
+    #[serde(default)] // false
+    pub optional: bool,
+
     pub wasm_params: Vec<String>,
     pub wasm_return: Option<String>,
 }

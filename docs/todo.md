@@ -1,9 +1,10 @@
 * tech break: 
   * other languages...
-    * tinygo example bot?
     * C# w/blazor?
+  * check for and call a "clientInit" or some kind of function, **solely** for callback registrations
+    * (I mean, I can't *stop* you from doing other things there, but you're still on a timer)
+    * get rid of magic "extern and pray" invocations
   * examine todos
-  * think about some kind of test harness that checks all reads/writes work properly? 
   * update readme, document the interface
     * also library readmes
 * some basic display niceties
@@ -49,3 +50,4 @@
 * clang-format for c? (prettier or biome for TS / AssemblyScript?)
   * integrate with commit hook?
 * look at all the exports in all the languages; see if we can organize/cleanup/hide stuff as needed
+* think about some kind of test harness that checks all reads/writes work properly? 

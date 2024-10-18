@@ -193,6 +193,9 @@ fn _validate_wasm(wasm_bytes: &[u8], expect_json: &str) -> Result<(), WatParserE
         let exported_data = if let Some(exported_data) = exported_functions.get(&*func_name) {
             exported_data
         } else {
+            if sig_data.optional {
+                continue;
+            }
             return Err(WatParserError::MissingExportedFunction(func_name.to_string()));
         };
         validate_func(&func_name, &sig_data, exported_data)?;
