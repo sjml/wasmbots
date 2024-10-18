@@ -1,3 +1,5 @@
+const std = @import("std");
+
 const wasmbotClient = @import("wasmbot_client");
 const params = @import("wasmbot_client").params;
 const hostReserve = @import("wasmbot_client").host_reserve;
@@ -20,7 +22,14 @@ fn clientSetup(pars: params.GameParameters) params.BotMetadata {
     return botMeta;
 }
 
-fn clientTick() void {
+var CURRENT_FIB: u64 = 35;
+fn clientTick(lastDuration: u32) void {
+    if (lastDuration < 250) {
+        CURRENT_FIB += 1;
+        var output: [45]u8 = undefined;
+        const result = std.fmt.bufPrintZ(&output, "Incrementing fib to {d}", .{CURRENT_FIB}) catch unreachable;
+        wasmbotClient.log(result);
+    }
     _ = fib(40);
 }
 

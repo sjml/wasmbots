@@ -7,8 +7,8 @@ export { BotMetadata, GameParameters, receiveGameParams, registerClientSetup } f
 @external("env", "logFunction")
 declare function logFunction(logLevel: usize, msgPtr: usize, msgLen: usize): void;
 
-export type TickFunction = () => void;
-let CLIENT_TICK: TickFunction = () => {};
+export type TickFunction = (lastDuration: u32) => void;
+let CLIENT_TICK: TickFunction = (_: u32) => {};
 
 export function as_abort(msg: usize, file: usize, line: u32, col: u32): void {
     logErr(`FATAL ERROR: ${file}:${line}:${col}\n${msg}`);
@@ -37,5 +37,6 @@ export function registerTickCallback(cb: TickFunction): boolean {
 }
 
 export function tick(offset: usize): void {
-    CLIENT_TICK();
+    const lastDuration = HostReserve.read_u32(offset);
+    CLIENT_TICK(lastDuration);
 }

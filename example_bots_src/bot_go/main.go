@@ -1,6 +1,9 @@
 package main
 
-import "wasmbot_client"
+import (
+	"fmt"
+	"wasmbot_client"
+)
 
 //export clientInitialize
 func init() {
@@ -19,7 +22,13 @@ func clientSetup(params wasmbot_client.GameParameters) wasmbot_client.BotMetadat
 	return botMeta
 }
 
-func tick() {
+var CURRENT_FIB uint64 = 35
+
+func tick(lastDuration uint32) {
+	if lastDuration < 250 {
+		CURRENT_FIB += 1
+		wasmbot_client.Log(fmt.Sprintf("Incrementing fib to %d", CURRENT_FIB))
+	}
 	fib(40)
 }
 

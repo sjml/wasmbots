@@ -23,15 +23,16 @@ func setup(request uintptr) uintptr {
 	return uintptr(unsafe.Pointer(&hostReserve[0]))
 }
 
-type TickFunction func()
+type TickFunction func(uint32)
 
 var clientTick TickFunction = _noop
 
-func _noop() {}
+func _noop(_ uint32) {}
 
 //export tick
 func tick(offset uintptr) {
-	clientTick()
+	lastDuration := ReadNumber[uint32](offset)
+	clientTick(lastDuration)
 }
 
 func RegisterTickCallback(cb TickFunction) {

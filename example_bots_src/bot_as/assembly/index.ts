@@ -18,7 +18,12 @@ export function clientInitialize(): void {
     registerTickCallback(tick);
 }
 
-function tick(): void {
+let CURRENT_FIB: u64 = 35;
+function tick(lastDuration: u32): void {
+    if (lastDuration < 250) {
+        CURRENT_FIB += 1;
+        log(`Incrementing fib to ${CURRENT_FIB}`);
+    }
     fib(40);
 }
 

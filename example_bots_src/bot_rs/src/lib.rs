@@ -36,8 +36,18 @@ fn client_setup(_params: &params::GameParameters) -> params::BotMetadata {
     bot_meta
 }
 
-fn tick() {
-    fib(40);
+// can also do this safely with std::sync::atomic, but we know this
+//   is always single-threaded, and I'm going for simplicity right now.
+static mut CURRENT_FIB: u64 = 35;
+
+fn tick(last_duration: u32) {
+    unsafe {
+        if last_duration < 250 {
+            CURRENT_FIB += 1;
+            wasmbots_client::log(&format!("Incrementing fib to {}", CURRENT_FIB));
+        }
+        fib(CURRENT_FIB);
+    }
 }
 
 // intentionally inefficient fibonacci calculator

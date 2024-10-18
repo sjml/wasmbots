@@ -20,8 +20,13 @@ uint64_t fib(uint64_t n) {
     }
 }
 
-void clientTick() {
-    fib(40);
+uint64_t CURRENT_FIB = 35;
+void clientTick(uint32_t lastDuration) {
+    if (lastDuration < 250) {
+        CURRENT_FIB += 1;
+        wsmbt_logf("Incrementing fib to %lu", CURRENT_FIB);
+    }
+    fib(CURRENT_FIB);
 }
 
 wsmbt_BotMetadata clientSetup(wsmbt_GameParameters params) {

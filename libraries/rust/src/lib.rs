@@ -4,9 +4,9 @@ mod host_reserve;
 pub mod params;
 pub use host_reserve::HostReserve;
 
-pub type TickFn = fn();
+pub type TickFn = fn(u32);
 static CLIENT_TICK: Mutex<TickFn> = Mutex::new(_noop);
-fn _noop() {}
+fn _noop(_: u32) {}
 
 extern "C" {
     #[link_name = "logFunction"]
@@ -41,7 +41,10 @@ pub fn register_tick_callback(cb: TickFn) {
 }
 
 #[no_mangle]
-extern "C" fn tick(_offset: usize) {
+extern "C" fn tick(offset: usize) {
+    let reserve = HostReserve::new();
+    let last_duration: u32 = reserve.read(offset);
+
     let ct = CLIENT_TICK.lock().unwrap();
-    ct();
+    ct(last_duration);
 }
