@@ -32,7 +32,7 @@ pub fn make_bot_name(name: &str) -> [u8; MAX_NAME_LEN] {
 extern "C" fn receiveGameParams(mut offset: usize, mut info_offset: usize) -> bool {
     let res = HostReserve::new();
 
-    let gp_version = res.read_u16(offset);
+    let gp_version = res.read::<u16>(offset);
     offset += std::mem::size_of::<u16>();
     if gp_version != GP_VERSION {
         log_err(&format!(
@@ -43,11 +43,11 @@ extern "C" fn receiveGameParams(mut offset: usize, mut info_offset: usize) -> bo
     }
 
     let mut eng_version = [0u16; 3];
-    eng_version[0] = res.read_u16(offset);
+    eng_version[0] = res.read::<u16>(offset);
     offset += std::mem::size_of::<u16>();
-    eng_version[1] = res.read_u16(offset);
+    eng_version[1] = res.read::<u16>(offset);
     offset += std::mem::size_of::<u16>();
-    eng_version[2] = res.read_u16(offset);
+    eng_version[2] = res.read::<u16>(offset);
 
     let gp = GameParameters {
         params_version: gp_version,
@@ -69,10 +69,10 @@ extern "C" fn receiveGameParams(mut offset: usize, mut info_offset: usize) -> bo
         std::str::from_utf8(&bot_data.name[..valid_len]).expect("Invalid UTF-8 in bot name");
     info_offset = reserve.write_string(info_offset, name_str);
     while info_offset < info_zero + MAX_NAME_LEN {
-        info_offset = reserve.write_u8(info_offset, 0);
+        info_offset = reserve.write::<u8>(info_offset, 0);
     }
     bot_data.version.iter().for_each(|ve| {
-        info_offset = reserve.write_u16(info_offset, *ve);
+        info_offset = reserve.write::<u16>(info_offset, *ve);
     });
 
     bot_data.ready

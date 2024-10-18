@@ -16,9 +16,21 @@ pub extern "C" fn client_setup(_params: &params::GameParameters) -> params::BotM
         wasmbots_client::log_err("CLIENT ERROR: version must be semver");
         return bot_meta;
     }
-    let major = version_parts.next().unwrap().parse::<u16>().expect("Semver parts must fit in u16");
-    let minor = version_parts.next().unwrap().parse::<u16>().expect("Semver parts must fit in u16");
-    let patch = version_parts.next().unwrap().parse::<u16>().expect("Semver parts must fit in u16");
+    let major = version_parts
+        .next()
+        .unwrap()
+        .parse::<u16>()
+        .expect("Semver parts must fit in u16");
+    let minor = version_parts
+        .next()
+        .unwrap()
+        .parse::<u16>()
+        .expect("Semver parts must fit in u16");
+    let patch = version_parts
+        .next()
+        .unwrap()
+        .parse::<u16>()
+        .expect("Semver parts must fit in u16");
 
     bot_meta.version = [major, minor, patch];
     bot_meta.ready = true;
@@ -27,17 +39,15 @@ pub extern "C" fn client_setup(_params: &params::GameParameters) -> params::BotM
     bot_meta
 }
 
-
 fn tick() {
-    fib(41);
+    fib(40);
 }
 
 // intentionally inefficient fibonacci calculator
 fn fib(n: u64) -> u64 {
     if n < 2 {
         n
-    }
-    else {
-        fib(n-2) + fib(n-1)
+    } else {
+        fib(n - 2) + fib(n - 1)
     }
 }

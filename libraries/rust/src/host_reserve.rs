@@ -16,8 +16,8 @@ pub fn reserve_host_memory(size: usize) -> bool {
         Ok(vm) => {
             HOST_RESERVE.get_or_init(|| vm);
             true
-        },
-        Err(_) => false
+        }
+        Err(_) => false,
     }
 }
 
@@ -32,6 +32,30 @@ impl From<std::str::Utf8Error> for StringReadError {
         StringReadError::Utf8Error(err)
     }
 }
+
+pub trait ReserveMemoryIO: Copy + Default {
+    type Bytes: AsRef<[u8]> + AsMut<[u8]> + Sized;
+    fn to_le_bytes(self) -> Self::Bytes;
+    fn from_le_bytes(bytes: Self::Bytes) -> Self;
+}
+
+macro_rules! impl_write_to_reserve_memory {
+    ($($t:ty),*) => {
+        $(
+            impl ReserveMemoryIO for $t {
+                type Bytes = [u8; size_of::<$t>()];
+                fn to_le_bytes(self) -> Self::Bytes {
+                    <$t>::to_le_bytes(self)
+                }
+                fn from_le_bytes(bytes: Self::Bytes) -> Self {
+                    <$t>::from_le_bytes(bytes)
+                }
+            }
+        )*
+    }
+}
+
+impl_write_to_reserve_memory!(u8, i8, u16, i16, u32, i32, u64, i64, f32, f64);
 
 pub struct HostReserve {
     res: &'static Mutex<Box<[u8]>>,
@@ -64,146 +88,22 @@ impl HostReserve {
         offset + msg.len()
     }
 
-    pub fn write_u8(&mut self, offset: usize, value: u8) -> usize {
+    pub fn write<T: ReserveMemoryIO>(&mut self, offset: usize, value: T) -> usize {
         let mut slice = self.res.lock().unwrap();
-
-        #[cfg(feature = "bounds_checking")]
-        if offset >= slice.len() {
-            log_err("CLIENT ERROR: Writing u8 outside of reserve memory");
-            return offset;
-        }
-
-        slice[offset] = value;
-        offset + std::mem::size_of::<u8>()
-    }
-
-    // Rust generics should be helpful here, but they're kinda not
-    pub fn write_i8(&mut self, offset: usize, value: i8) -> usize {
-        let mut slice = self.res.lock().unwrap();
-
-        #[cfg(feature = "bounds_checking")]
-        if offset >= slice.len() {
-            log_err("CLIENT ERROR: Writing i8 outside of reserve memory");
-            return offset;
-        }
-
-        const INT_SIZE: usize = std::mem::size_of::<i8>();
         let bytes = value.to_le_bytes();
-        slice[offset..offset + INT_SIZE].clone_from_slice(&bytes);
-        offset + INT_SIZE
-    }
-
-    pub fn write_u16(&mut self, offset: usize, value: u16) -> usize {
-        const INT_SIZE: usize = std::mem::size_of::<u16>();
-        let mut slice = self.res.lock().unwrap();
+        let size = bytes.as_ref().len();
 
         #[cfg(feature = "bounds_checking")]
-        if offset + INT_SIZE >= slice.len() {
-            log_err("CLIENT slice: Writing u16 outside of reserve memory");
+        if offset + size >= slice.len() {
+            log_err(&format!(
+                "CLIENT ERROR: Writing {} outside of reserve memory",
+                std::any::type_name::<T>()
+            ));
             return offset;
         }
 
-        let bytes = value.to_le_bytes();
-        slice[offset..offset + INT_SIZE].clone_from_slice(&bytes);
-        offset + INT_SIZE
-    }
-    pub fn write_i16(&mut self, offset: usize, value: i16) -> usize {
-        const INT_SIZE: usize = std::mem::size_of::<i16>();
-        let mut slice = self.res.lock().unwrap();
-
-        #[cfg(feature = "bounds_checking")]
-        if offset + INT_SIZE >= slice.len() {
-            log_err("CLIENT ERROR: Writing i16 outside of reserve memory");
-            return offset;
-        }
-
-        let bytes = value.to_le_bytes();
-        slice[offset..offset + INT_SIZE].clone_from_slice(&bytes);
-        offset + INT_SIZE
-    }
-    pub fn write_u32(&mut self, offset: usize, value: u32) -> usize {
-        const INT_SIZE: usize = std::mem::size_of::<u32>();
-        let mut slice = self.res.lock().unwrap();
-
-        #[cfg(feature = "bounds_checking")]
-        if offset + INT_SIZE >= slice.len() {
-            log_err("CLIENT ERROR: Writing u32 outside of reserve memory");
-            return offset;
-        }
-
-        let bytes = value.to_le_bytes();
-        slice[offset..offset + INT_SIZE].clone_from_slice(&bytes);
-        offset + INT_SIZE
-    }
-    pub fn write_i32(&mut self, offset: usize, value: i32) -> usize {
-        const INT_SIZE: usize = std::mem::size_of::<i32>();
-        let mut slice = self.res.lock().unwrap();
-
-        #[cfg(feature = "bounds_checking")]
-        if offset + INT_SIZE >= slice.len() {
-            log_err("CLIENT ERROR: Writing i32 outside of reserve memory");
-            return offset;
-        }
-
-        let bytes = value.to_le_bytes();
-        slice[offset..offset + INT_SIZE].clone_from_slice(&bytes);
-        offset + INT_SIZE
-    }
-    pub fn write_u64(&mut self, offset: usize, value: u64) -> usize {
-        const INT_SIZE: usize = std::mem::size_of::<u64>();
-        let mut slice = self.res.lock().unwrap();
-
-        #[cfg(feature = "bounds_checking")]
-        if offset + INT_SIZE >= slice.len() {
-            log_err("CLIENT ERROR: Writing u64 outside of reserve memory");
-            return offset;
-        }
-
-        let bytes = value.to_le_bytes();
-        slice[offset..offset + INT_SIZE].clone_from_slice(&bytes);
-        offset + INT_SIZE
-    }
-    pub fn write_i64(&mut self, offset: usize, value: i64) -> usize {
-        const INT_SIZE: usize = std::mem::size_of::<i64>();
-        let mut slice = self.res.lock().unwrap();
-
-        #[cfg(feature = "bounds_checking")]
-        if offset + INT_SIZE >= slice.len() {
-            log_err("CLIENT ERROR: Writing i64 outside of reserve memory");
-            return offset;
-        }
-
-        let bytes = value.to_le_bytes();
-        slice[offset..offset + INT_SIZE].clone_from_slice(&bytes);
-        offset + INT_SIZE
-    }
-    pub fn write_f32(&mut self, offset: usize, value: f32) -> usize {
-        const FLOAT_SIZE: usize = std::mem::size_of::<f32>();
-        let mut slice = self.res.lock().unwrap();
-
-        #[cfg(feature = "bounds_checking")]
-        if offset + FLOAT_SIZE >= slice.len() {
-            log_err("CLIENT ERROR: Writing f32 outside of reserve memory");
-            return offset;
-        }
-
-        let bytes = value.to_le_bytes();
-        slice[offset..offset + FLOAT_SIZE].clone_from_slice(&bytes);
-        offset + FLOAT_SIZE
-    }
-    pub fn write_f64(&mut self, offset: usize, value: f64) -> usize {
-        const FLOAT_SIZE: usize = std::mem::size_of::<f64>();
-        let mut slice = self.res.lock().unwrap();
-
-        #[cfg(feature = "bounds_checking")]
-        if offset + FLOAT_SIZE >= slice.len() {
-            log_err("CLIENT ERROR: Writing f64 outside of reserve memory");
-            return offset;
-        }
-
-        let bytes = value.to_le_bytes();
-        slice[offset..offset + FLOAT_SIZE].clone_from_slice(&bytes);
-        offset + FLOAT_SIZE
+        slice[offset..offset + size].copy_from_slice(bytes.as_ref());
+        offset + size
     }
 
     pub fn read_string(&self, offset: usize, len: usize) -> Result<String, StringReadError> {
@@ -220,148 +120,22 @@ impl HostReserve {
         Ok(res.to_string())
     }
 
-    pub fn read_u8(&self, offset: usize) -> u8 {
+    pub fn read<T: ReserveMemoryIO>(&self, offset: usize) -> T {
         let slice = self.res.lock().unwrap();
+        let size = std::mem::size_of::<T>();
 
         #[cfg(feature = "bounds_checking")]
-        if offset >= slice.len() {
-            log_err("CLIENT ERROR: u8 read will overrun reserve memory");
-            return 0;
+        if offset + size >= slice.len() {
+            log_err(&format!(
+                "CLIENT ERROR: {} read will overrun reserve memory",
+                std::any::type_name::<T>()
+            ));
+            return Default::default()
         }
 
-        slice[offset]
-    }
+        let mut bytes = T::default().to_le_bytes();
+        bytes.as_mut().copy_from_slice(&slice[offset..offset + size]);
 
-    pub fn read_i8(&self, offset: usize) -> i8 {
-        let slice = self.res.lock().unwrap();
-
-        #[cfg(feature = "bounds_checking")]
-        if offset >= slice.len() {
-            log_err("CLIENT ERROR: i8 read will overrun reserve memory");
-            return 0;
-        }
-
-        slice[offset] as i8
-    }
-
-    pub fn read_u16(&self, offset: usize) -> u16 {
-        const INT_SIZE: usize = std::mem::size_of::<u16>();
-        let slice = self.res.lock().unwrap();
-
-        #[cfg(feature = "bounds_checking")]
-        if offset + INT_SIZE >= slice.len() {
-            log_err("CLIENT ERROR: u16 read will overrun reserve memory");
-            return 0;
-        }
-
-        let bytes: [u8; INT_SIZE] = slice[offset..offset + INT_SIZE]
-            .try_into()
-            .expect("couldn't convert to u16");
-        u16::from_le_bytes(bytes)
-    }
-    pub fn read_i16(&self, offset: usize) -> i16 {
-        const INT_SIZE: usize = std::mem::size_of::<i16>();
-        let slice = self.res.lock().unwrap();
-
-        #[cfg(feature = "bounds_checking")]
-        if offset + INT_SIZE >= slice.len() {
-            log_err("CLIENT ERROR: i16 read will overrun reserve memory");
-            return 0;
-        }
-
-        let bytes: [u8; INT_SIZE] = slice[offset..offset + INT_SIZE]
-            .try_into()
-            .expect("couldn't convert to i16");
-        i16::from_le_bytes(bytes)
-    }
-    pub fn read_u32(&self, offset: usize) -> u32 {
-        const INT_SIZE: usize = std::mem::size_of::<u32>();
-        let slice = self.res.lock().unwrap();
-
-        #[cfg(feature = "bounds_checking")]
-        if offset + INT_SIZE >= slice.len() {
-            log_err("CLIENT ERROR: u32 read will overrun reserve memory");
-            return 0;
-        }
-
-        let bytes: [u8; INT_SIZE] = slice[offset..offset + INT_SIZE]
-            .try_into()
-            .expect("couldn't convert to u32");
-        u32::from_le_bytes(bytes)
-    }
-    pub fn read_i32(&self, offset: usize) -> i32 {
-        const INT_SIZE: usize = std::mem::size_of::<i32>();
-        let slice = self.res.lock().unwrap();
-
-        #[cfg(feature = "bounds_checking")]
-        if offset + INT_SIZE >= slice.len() {
-            log_err("CLIENT ERROR: i32 read will overrun reserve memory");
-            return 0;
-        }
-
-        let bytes: [u8; INT_SIZE] = slice[offset..offset + INT_SIZE]
-            .try_into()
-            .expect("couldn't convert to i32");
-        i32::from_le_bytes(bytes)
-    }
-    pub fn read_u64(&self, offset: usize) -> u64 {
-        const INT_SIZE: usize = std::mem::size_of::<u64>();
-        let slice = self.res.lock().unwrap();
-
-        #[cfg(feature = "bounds_checking")]
-        if offset + INT_SIZE >= slice.len() {
-            log_err("CLIENT ERROR: u64 read will overrun reserve memory");
-            return 0;
-        }
-
-        let bytes: [u8; INT_SIZE] = slice[offset..offset + INT_SIZE]
-            .try_into()
-            .expect("couldn't convert to u64");
-        u64::from_le_bytes(bytes)
-    }
-    pub fn read_i64(&self, offset: usize) -> i64 {
-        const INT_SIZE: usize = std::mem::size_of::<i64>();
-        let slice = self.res.lock().unwrap();
-
-        #[cfg(feature = "bounds_checking")]
-        if offset + INT_SIZE >= slice.len() {
-            log_err("CLIENT ERROR: i64 read will overrun reserve memory");
-            return 0;
-        }
-
-        let bytes: [u8; INT_SIZE] = slice[offset..offset + INT_SIZE]
-            .try_into()
-            .expect("couldn't convert to i64");
-        i64::from_le_bytes(bytes)
-    }
-    pub fn read_f32(&self, offset: usize) -> f32 {
-        const FLOAT_SIZE: usize = std::mem::size_of::<f32>();
-        let slice = self.res.lock().unwrap();
-
-        #[cfg(feature = "bounds_checking")]
-        if offset + FLOAT_SIZE >= slice.len() {
-            log_err("CLIENT ERROR: f32 read will overrun reserve memory");
-            return 0.0;
-        }
-
-        let bytes: [u8; FLOAT_SIZE] = slice[offset..offset + FLOAT_SIZE]
-            .try_into()
-            .expect("coudn't convert to f32");
-        f32::from_le_bytes(bytes)
-    }
-    pub fn read_f64(&self, offset: usize) -> f64 {
-        const FLOAT_SIZE: usize = std::mem::size_of::<f64>();
-        let slice = self.res.lock().unwrap();
-
-        #[cfg(feature = "bounds_checking")]
-        if offset + FLOAT_SIZE >= slice.len() {
-            log_err("CLIENT ERROR: f64 read will overrun reserve memory");
-            return 0.0;
-        }
-
-        let bytes: [u8; FLOAT_SIZE] = slice[offset..offset + FLOAT_SIZE]
-            .try_into()
-            .expect("coudn't convert to f64");
-        f64::from_le_bytes(bytes)
+        T::from_le_bytes(bytes)
     }
 }
