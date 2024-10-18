@@ -7,12 +7,12 @@
   (type (;5;) (func (param i32)))
   (type (;6;) (func (param i32 i32 i32 i32 i32) (result i32)))
   (type (;7;) (func (param i32 i32 i32 i32 i32)))
-  (type (;8;) (func (param i32) (result i32)))
-  (type (;9;) (func (param i64 i32) (result i32)))
-  (type (;10;) (func (param i32 i32 i32 i32)))
+  (type (;8;) (func (param i64) (result i64)))
+  (type (;9;) (func (param i32) (result i32)))
+  (type (;10;) (func (param i64 i32) (result i32)))
+  (type (;11;) (func (param i32 i32 i32 i32)))
   (import "env" "logFunction" (func (;0;) (type 4)))
-  (import "env" "shutdown" (func (;1;) (type 3)))
-  (func (;2;) (type 1) (param i32 i32) (result i32)
+  (func (;1;) (type 1) (param i32 i32) (result i32)
     local.get 1
     i32.load offset=20
     local.get 0
@@ -32,7 +32,7 @@
     i32.load offset=24
     i32.load offset=12
     call_indirect (type 0))
-  (func (;3;) (type 2) (param i32 i32)
+  (func (;2;) (type 2) (param i32 i32)
     (local i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32 i32)
     i32.const 0
     local.set 2
@@ -542,9 +542,9 @@
       return
     end
     local.get 8
-    call 4
+    call 3
     unreachable)
-  (func (;4;) (type 5) (param i32)
+  (func (;3;) (type 5) (param i32)
     (local i32 i64)
     global.get 0
     i32.const 48
@@ -595,7 +595,7 @@
     i32.const 1048716
     call 21
     unreachable)
-  (func (;5;) (type 1) (param i32 i32) (result i32)
+  (func (;4;) (type 1) (param i32 i32) (result i32)
     (local i32 i32 i32)
     global.get 0
     i32.const 16
@@ -632,7 +632,7 @@
     i32.const 4
     i32.add
     i32.const 2
-    call 6
+    call 5
     local.set 3
     local.get 2
     i32.load8_u offset=13
@@ -687,7 +687,7 @@
     local.get 1
     i32.const 1
     i32.and)
-  (func (;6;) (type 6) (param i32 i32 i32 i32 i32) (result i32)
+  (func (;5;) (type 6) (param i32 i32 i32 i32 i32) (result i32)
     (local i32 i32 i32 i32 i32 i64)
     global.get 0
     i32.const 64
@@ -862,7 +862,7 @@
     i32.add
     global.set 0
     local.get 0)
-  (func (;7;) (type 2) (param i32 i32)
+  (func (;6;) (type 2) (param i32 i32)
     (local i32 i32 i32 i32 i32 i32 i32 i32)
     global.get 0
     i32.const 144
@@ -947,7 +947,7 @@
       local.get 2
       i32.const 76
       i32.add
-      call 3
+      call 2
       local.get 2
       i32.load offset=24
       br_if 0 (;@1;)
@@ -972,7 +972,7 @@
                         local.get 2
                         i32.const 36
                         i32.add
-                        call 3
+                        call 2
                         local.get 2
                         i32.load offset=16
                         local.tee 3
@@ -1066,7 +1066,7 @@
                       br 8 (;@1;)
                     end
                     i32.const 1048756
-                    call 8
+                    call 7
                     unreachable
                   end
                   local.get 5
@@ -1171,13 +1171,13 @@
             local.get 2
             i32.const 36
             i32.add
-            call 3
+            call 2
             local.get 2
             i32.load offset=8
             local.tee 3
             br_if 2 (;@2;)
             i32.const 1048772
-            call 8
+            call 7
             unreachable
           end
           i32.const 1
@@ -1198,7 +1198,7 @@
         i32.add
         i32.const 1048816
         i32.const 1048892
-        call 9
+        call 8
         unreachable
       end
       i32.const 0
@@ -1347,13 +1347,13 @@
             local.get 2
             i32.const 36
             i32.add
-            call 3
+            call 2
             local.get 2
             i32.load
             local.tee 3
             br_if 2 (;@2;)
             i32.const 1048788
-            call 8
+            call 7
             unreachable
           end
           i32.const 1
@@ -1374,7 +1374,7 @@
         i32.add
         i32.const 1048816
         i32.const 1048876
-        call 9
+        call 8
         unreachable
       end
       i32.const 0
@@ -1588,20 +1588,20 @@
       i32.add
       i32.const 1048816
       i32.const 1048860
-      call 9
+      call 8
       unreachable
     end
     local.get 2
     i32.const 144
     i32.add
     global.set 0)
-  (func (;8;) (type 5) (param i32)
+  (func (;7;) (type 5) (param i32)
     i32.const 1049228
     i32.const 43
     local.get 0
     call 18
     unreachable)
-  (func (;9;) (type 7) (param i32 i32 i32 i32 i32)
+  (func (;8;) (type 7) (param i32 i32 i32 i32 i32)
     (local i32)
     global.get 0
     i32.const 64
@@ -1662,8 +1662,47 @@
     local.get 4
     call 21
     unreachable)
-  (func (;10;) (type 3)
-    call 1)
+  (func (;9;) (type 3)
+    i64.const 40
+    call 10
+    drop)
+  (func (;10;) (type 8) (param i64) (result i64)
+    (local i64)
+    i64.const 0
+    local.set 1
+    block  ;; label = @1
+      local.get 0
+      i64.const 2
+      i64.lt_u
+      br_if 0 (;@1;)
+      local.get 0
+      i64.const 1
+      i64.add
+      local.set 0
+      i64.const 0
+      local.set 1
+      loop  ;; label = @2
+        local.get 0
+        i64.const -3
+        i64.add
+        call 10
+        local.get 1
+        i64.add
+        local.set 1
+        local.get 0
+        i64.const -1
+        i64.add
+        local.tee 0
+        i64.const 2
+        i64.gt_u
+        br_if 0 (;@2;)
+      end
+      i64.const 1
+      local.set 0
+    end
+    local.get 0
+    local.get 1
+    i64.add)
   (func (;11;) (type 3)
     (local i32 i32)
     global.get 0
@@ -2733,7 +2772,7 @@
       i32.store
       return
     end)
-  (func (;16;) (type 8) (param i32) (result i32)
+  (func (;16;) (type 9) (param i32) (result i32)
     (local i32 i32 i32 i32 i32 i32 i32 i32 i64)
     block  ;; label = @1
       block  ;; label = @2
@@ -5802,7 +5841,7 @@
           i32.add
           i32.const 1049080
           i32.const 1049200
-          call 9
+          call 8
           unreachable
         end
         call 20
@@ -6576,7 +6615,7 @@
     i64.load32_u
     local.get 1
     call 34)
-  (func (;34;) (type 9) (param i64 i32) (result i32)
+  (func (;34;) (type 10) (param i64 i32) (result i32)
     (local i32 i32 i64 i32 i32 i32)
     global.get 0
     i32.const 48
@@ -8817,7 +8856,7 @@
     i32.load8_u offset=29
     call 54
     unreachable)
-  (func (;54;) (type 10) (param i32 i32 i32 i32)
+  (func (;54;) (type 11) (param i32 i32 i32 i32)
     (local i32 i32)
     global.get 0
     i32.const 16
@@ -9469,7 +9508,7 @@
         return
       end
       i32.const 1050804
-      call 8
+      call 7
       unreachable
     end
     local.get 1
@@ -10190,7 +10229,7 @@
                               i32.add
                               i32.const 1051096
                               i32.const 1051140
-                              call 9
+                              call 8
                               unreachable
                             end
                             local.get 0
@@ -10626,14 +10665,14 @@
     i32.const 11
     local.get 0
     i32.const 12
-    call 6
+    call 5
     i32.const 1051008
     i32.const 9
     local.get 2
     i32.const 4
     i32.add
     i32.const 13
-    call 6
+    call 5
     local.set 4
     local.get 2
     i32.load8_u offset=13
@@ -11154,7 +11193,7 @@
     i32.add
     global.set 0
     local.get 0)
-  (func (;68;) (type 8) (param i32) (result i32)
+  (func (;68;) (type 9) (param i32) (result i32)
     (local i32 i32 i32 i32)
     global.get 0
     i32.const 32
@@ -11718,6 +11757,6 @@
   (export "tick" (func 70))
   (export "__data_end" (global 1))
   (export "__heap_base" (global 2))
-  (elem (;0;) (i32.const 1) func 33 2 40 41 7 10 42 50 55 57 47 65 66 5 27 28 29 31 26 43 44 45 59 62 64 69)
+  (elem (;0;) (i32.const 1) func 33 1 40 41 6 9 42 50 55 57 47 65 66 4 27 28 29 31 26 43 44 45 59 62 64 69)
   (data (;0;) (i32.const 1048576) "/rustc/f6e511eec7342f59a25f7c0534f1dbea00d01b14/library/core/src/str/pattern.rsEmptyInvalidDigitPosOverflowNegOverflowZeroParseIntErrorkind\00\00\00\10\00O\00\00\00\be\01\00\007\00\00\00bot_rs0.1.0src/lib.rs\00\00\00\a7\00\10\00\0a\00\00\00\12\00\00\00\0a\00\00\00\a7\00\10\00\0a\00\00\00\17\00\00\00\0a\00\00\00\a7\00\10\00\0a\00\00\00\1c\00\00\00\0a\00\00\00Good to go!\00\00\00\00\00\01\00\00\00\01\00\00\00\0e\00\00\00Semver parts must fit in u16\a7\00\10\00\0a\00\00\00\1e\00\00\00\0a\00\00\00\a7\00\10\00\0a\00\00\00\19\00\00\00\0a\00\00\00\a7\00\10\00\0a\00\00\00\14\00\00\00\0a\00\00\00CLIENT ERROR: version must be semver\05\00\00\00\0c\00\00\00\0b\00\00\00\0b\00\00\00\04\00\00\00O\00\10\00T\00\10\00`\00\10\00k\00\10\00v\00\10\00Error\00\00\00\0f\00\00\00\0c\00\00\00\04\00\00\00\10\00\00\00\11\00\00\00\12\00\00\00capacity overflow\00\00\00\b8\01\10\00\11\00\00\00alloc/src/raw_vec.rs\d4\01\10\00\14\00\00\00\18\00\00\00\05\00\00\00\00\00\00\00\00\00\00\00\01\00\00\00\13\00\00\00a formatting trait implementation returned an error when the underlying stream did notalloc/src/fmt.rs\00\00^\02\10\00\10\00\00\00~\02\00\00\0e\00\00\00)\00\00\00\01\00\00\00\00\00\00\00called `Option::unwrap()` on a `None` value==assertion `left  right` failed\0a  left: \0a right: \00\00\00\b9\02\10\00\10\00\00\00\c9\02\10\00\17\00\00\00\e0\02\10\00\09\00\00\00 right` failed: \0a  left: \00\00\00\b9\02\10\00\10\00\00\00\04\03\10\00\10\00\00\00\14\03\10\00\09\00\00\00\e0\02\10\00\09\00\00\00: \00\00\01\00\00\00\00\00\00\00@\03\10\00\02\00\00\00\00\00\00\00\0c\00\00\00\04\00\00\00\14\00\00\00\15\00\00\00\16\00\00\00     { ,  {\0a,\0a} }((\0acore/src/fmt/num.rs\00\80\03\10\00\13\00\00\00f\00\00\00\17\00\00\000x00010203040506070809101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899falsetruerange start index  out of range for slice of length \00w\04\10\00\12\00\00\00\89\04\10\00\22\00\00\00range end index \bc\04\10\00\10\00\00\00\89\04\10\00\22\00\00\00slice index starts at  but ends at \00\dc\04\10\00\16\00\00\00\f2\04\10\00\0d\00\00\00\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\01\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\00\02\02\02\02\02\02\02\02\02\02\02\02\02\02\02\02\02\02\02\02\02\02\02\02\02\02\02\02\02\02\03\03\03\03\03\03\03\03\03\03\03\03\03\03\03\03\04\04\04\04\04\00\00\00\00\00\00\00\00\00\00\00/rust/deps/dlmalloc-0.2.6/src/dlmalloc.rsassertion failed: psize >= size + min_overhead\00\10\06\10\00)\00\00\00\a8\04\00\00\09\00\00\00assertion failed: psize <= size + max_overhead\00\00\10\06\10\00)\00\00\00\ae\04\00\00\0d\00\00\00Reserve memory not initialized/Users/shane/Projects/wasmbots/libraries/Rust/src/host_reserve.rs\00\d6\06\10\00A\00\00\00B\00\00\00&\00\00\00\d6\06\10\00A\00\00\00W\00\00\00\0e\00\00\00CLIENT ERROR: String too long to write to reserve memory\d6\06\10\00A\00\00\00i\00\00\00\0e\00\00\00u16CLIENT ERROR: Writing  outside of reserve memory\00\83\07\10\00\16\00\00\00\99\07\10\00\1a\00\00\00u8\00\00\d6\06\10\00A\00\00\00\89\00\00\00.\00\00\00CLIENT ERROR:  read will overrun reserve memory\00\d8\07\10\00\0e\00\00\00\e6\07\10\00!\00\00\00one-time initialization may not be performed recursively\18\08\10\008\00\00\00/rustc/f6e511eec7342f59a25f7c0534f1dbea00d01b14/library/std/src/sync/once.rsX\08\10\00L\00\00\00\d9\00\00\00\14\00\00\00X\08\10\00L\00\00\00\d9\00\00\001\00\00\00cannot recursively acquire mutex\c4\08\10\00 \00\00\00\00/rustc/f6e511eec7342f59a25f7c0534f1dbea00d01b14/library/std/src/sys/sync/mutex/no_threads.rs\00\00\00\ed\08\10\00\5c\00\00\00\14\00\00\00\09\00\00\00\00\00\00\00\04\00\00\00\04\00\00\00\17\00\00\00Utf8Errorvalid_up_toerror_lenNoneSome[INVALID]/Users/shane/Projects/wasmbots/libraries/Rust/src/params.rs\00\00\00\00\00\00\00\08\00\00\00\04\00\00\00\19\00\00\00Invalid UTF-8 in bot name\00\00\00\9a\09\10\00;\00\00\00N\00\00\00:\00\00\00\07\00ERROR: Can't parse GameParams v; only prepared for v\00\00\16\0a\10\00\1f\00\00\005\0a\10\00\15\00\00\00")
   (data (;1;) (i32.const 1051228) "\18\00\00\00\1a\00\00\00"))

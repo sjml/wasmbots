@@ -18,10 +18,10 @@ The host, in turn, offers just a single export to the WASM program:
 
 Prereqs on macOS; modify this appropriately if you're using something else: 
 ```
-brew install emscripten wabt deno zig rust node
+brew install emscripten wabt deno zig rust node go tinygo-org/tools/tinygo
 ```
 
-Run [`scripts/_build_wasms.sh`](./scripts/_build_wasms.sh) and then [`scripts/_validate_wasms.sh`](./scripts/_validate_wasms.sh). 
+[[testing procedure]]
 
 ## (Lack of) Memory Constraints
 

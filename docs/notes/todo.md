@@ -1,6 +1,3 @@
-* tech break: 
-  * update readme, document the interface
-    * also library readmes
 * some basic display niceties
   * push bot consoles to verticals on opposite sides of page
   * stub out a "world display" in the middle
@@ -42,6 +39,7 @@
 
 ## horizon
 * add convenience functions to libraries for writing/reading byte array
+* with the move away from extern linking, maybe more libraries can use normal strings in their BotMetadata structs
 
 ## far-flung future
 * clang-format for c? (prettier or biome for TS / AssemblyScript?)

@@ -5,11 +5,10 @@ import "wasmbot_client"
 //export clientInitialize
 func init() {
 	wasmbot_client.RegisterClientSetup(clientSetup)
+	wasmbot_client.RegisterTickCallback(tick)
 }
 
 func clientSetup(params wasmbot_client.GameParameters) wasmbot_client.BotMetadata {
-	wasmbot_client.RegisterTickCallback(tick)
-
 	botMeta := wasmbot_client.BotMetadata{
 		Name:    "bot_go",
 		Version: [3]uint16{0, 1, 0},

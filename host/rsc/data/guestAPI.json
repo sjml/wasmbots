@@ -23,7 +23,7 @@
       "wasmReturn": "i32"
     },
     "receiveGameParams": {
-      "doc": "called after the setup function; the initial game parameters (specced in `circumstances.json`) are currently sitting in the reserved memory block. they won't stay there, so copy out anything you need.",
+      "doc": "called after the setup function; the initial game parameters (specced in `gameParameters.json`) are currently sitting in the reserved memory block. they won't stay there, so copy out anything you need.",
       "paramsDoc": [
         "the offset in the shared memory where the parameters begin",
         "the offset in the shared memory where the client should write its data"

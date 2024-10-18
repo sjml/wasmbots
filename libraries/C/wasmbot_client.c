@@ -457,6 +457,7 @@ bool receiveGameParams(size_t offset, size_t infoOffset) {
     offset += sizeof(uint16_t);
 
     const wsmbt_BotMetadata botData = clientSetup(params);
+
     memcpy((char*)(WSMBT_HOST_RESERVE + infoOffset), botData.name, WSMBT_BOT_MAX_NAME_LEN);
     infoOffset += WSMBT_BOT_MAX_NAME_LEN;
     infoOffset = wsmbt_write_u16(infoOffset, botData.version[0]);

@@ -36,13 +36,8 @@ fn client_setup(_params: &params::GameParameters) -> params::BotMetadata {
     bot_meta
 }
 
-extern "C" {
-    fn shutdown();
-}
-
 fn tick() {
-    unsafe { shutdown(); }
-    // fib(40);
+    fib(40);
 }
 
 // intentionally inefficient fibonacci calculator
