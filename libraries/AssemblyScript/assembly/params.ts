@@ -10,7 +10,7 @@ export class GameParameters {
 
     constructor(paramsVersion: u16, engineVersion: u16[]) {
         if (engineVersion.length != 3) {
-            // TODO: throw?
+            throw new Error("RUNTIME ERROR: Invalid engine version; must match semver major.minor.patch");
         }
         this.paramsVersion = paramsVersion;
         this.engineVersion = StaticArray.fromArray(engineVersion);
@@ -24,7 +24,7 @@ export class BotMetadata {
 
     constructor(name: string, botVersion: u16[], ready: boolean) {
         if (botVersion.length != 3) {
-            // TODO: throw?
+            throw new Error("RUNTIME ERROR: Invalid bot version; must match semver major.minor.patch");
         }
         this.botVersion = StaticArray.fromArray(botVersion);
 

@@ -168,14 +168,6 @@ export class WasmCoordinator {
         this.tickResolve();
     }
 
-    // TODO
-    handleCrash(payload: Msg.ProgramCrashedPayload) {
-        // clear all timeouts
-        // set to shutdown
-        // terminate worker
-        // log error message
-    }
-
     private async onMessage(evt: MessageEvent<Msg.GuestToHostMessage<Msg.GuestToHostMessageType>>) {
         const { type, payload } = evt.data;
         switch (type) {
@@ -187,9 +179,6 @@ export class WasmCoordinator {
                 break;
             case Msg.GuestToHostMessageType.RunTickDone:
                 await this.runTickDone(payload as Msg.RunTickDonePayload);
-                break;
-            case Msg.GuestToHostMessageType.ProgramCrashed:
-                this.handleCrash(payload as Msg.ProgramCrashedPayload);
                 break;
             case Msg.GuestToHostMessageType.LogMessage:
                 const logPayload = payload as Msg.LogMessagePayload;

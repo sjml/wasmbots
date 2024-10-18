@@ -1,5 +1,4 @@
 * tech break: 
-  * examine todos
   * update readme, document the interface
     * also library readmes
 * some basic display niceties

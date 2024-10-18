@@ -25,7 +25,7 @@
  (global $~lib/wasmbots_client/assembly/hostReserve/HostReserve.MEMORY_DV (mut i32) (i32.const 0))
  (global $~lib/wasmbots_client/assembly/params/CLIENT_SETUP (mut i32) (i32.const 0))
  (global $~lib/wasmbots_client/assembly/index/CLIENT_TICK (mut i32) (i32.const 3728))
- (global $~lib/memory/__stack_pointer (mut i32) (i32.const 37216))
+ (global $~lib/memory/__stack_pointer (mut i32) (i32.const 37904))
  (memory $0 1)
  (data $0 (i32.const 1036) ",")
  (data $0.1 (i32.const 1048) "\02\00\00\00\1a\00\00\00F\00A\00T\00A\00L\00 \00E\00R\00R\00O\00R\00:\00 ")
@@ -75,28 +75,38 @@
  (data $26.1 (i32.const 3784) "\01\00\00\00\06\00\00\00\00\00\01")
  (data $27 (i32.const 3804) ",")
  (data $27.1 (i32.const 3816) "\t\00\00\00\10\00\00\00\d0\0e\00\00\d0\0e\00\00\06\00\00\00\03")
- (data $28 (i32.const 3852) "<")
- (data $28.1 (i32.const 3864) "\02\00\00\00&\00\00\00~\00l\00i\00b\00/\00s\00t\00a\00t\00i\00c\00a\00r\00r\00a\00y\00.\00t\00s")
- (data $29 (i32.const 3916) "<")
- (data $29.1 (i32.const 3928) "\02\00\00\00$\00\00\00~\00l\00i\00b\00/\00t\00y\00p\00e\00d\00a\00r\00r\00a\00y\00.\00t\00s")
- (data $30 (i32.const 3980) ",")
- (data $30.1 (i32.const 3992) "\02\00\00\00\16\00\00\00G\00o\00o\00d\00 \00t\00o\00 \00g\00o\00!")
- (data $31 (i32.const 4028) "\1c")
- (data $31.1 (i32.const 4040) "\r\00\00\00\08\00\00\00\02")
- (data $32 (i32.const 4060) "\1c")
- (data $32.1 (i32.const 4072) "\0c\00\00\00\08\00\00\00\03")
- (data $33 (i32.const 4092) "\\")
- (data $33.1 (i32.const 4104) "\02\00\00\00>\00\00\00E\00R\00R\00O\00R\00:\00 \00C\00a\00n\00\'\00t\00 \00p\00a\00r\00s\00e\00 \00G\00a\00m\00e\00P\00a\00r\00a\00m\00s\00 \00v")
- (data $34 (i32.const 4188) "<")
- (data $34.1 (i32.const 4200) "\02\00\00\00*\00\00\00;\00 \00o\00n\00l\00y\00 \00p\00r\00e\00p\00a\00r\00e\00d\00 \00f\00o\00r\00 \00v")
- (data $35 (i32.const 4252) ",\00\00\00\03\00\00\00\00\00\00\00\05\00\00\00\10\00\00\00\10\10\00\00\00\00\00\00p\10")
- (data $36 (i32.const 4300) "\1c")
- (data $36.1 (i32.const 4312) "\01")
- (data $37 (i32.const 4332) ",")
- (data $37.1 (i32.const 4344) "\02\00\00\00\1a\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00.\00t\00s")
- (data $38 (i32.const 4384) "\0f\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00A\00\00\00\04A")
- (data $38.1 (i32.const 4420) "\a4\00\00\00\82\00\00\00\00\00\00\00d")
- (data $38.2 (i32.const 4444) "\02\t")
+ (data $28 (i32.const 3852) "\ac")
+ (data $28.1 (i32.const 3864) "\02\00\00\00\8e\00\00\00R\00U\00N\00T\00I\00M\00E\00 \00E\00R\00R\00O\00R\00:\00 \00I\00n\00v\00a\00l\00i\00d\00 \00b\00o\00t\00 \00v\00e\00r\00s\00i\00o\00n\00;\00 \00m\00u\00s\00t\00 \00m\00a\00t\00c\00h\00 \00s\00e\00m\00v\00e\00r\00 \00m\00a\00j\00o\00r\00.\00m\00i\00n\00o\00r\00.\00p\00a\00t\00c\00h")
+ (data $29 (i32.const 4028) "l")
+ (data $29.1 (i32.const 4040) "\02\00\00\00N\00\00\00~\00l\00i\00b\00/\00w\00a\00s\00m\00b\00o\00t\00s\00_\00c\00l\00i\00e\00n\00t\00/\00a\00s\00s\00e\00m\00b\00l\00y\00/\00p\00a\00r\00a\00m\00s\00.\00t\00s")
+ (data $30 (i32.const 4140) "<")
+ (data $30.1 (i32.const 4152) "\02\00\00\00&\00\00\00~\00l\00i\00b\00/\00s\00t\00a\00t\00i\00c\00a\00r\00r\00a\00y\00.\00t\00s")
+ (data $31 (i32.const 4204) "<")
+ (data $31.1 (i32.const 4216) "\02\00\00\00$\00\00\00~\00l\00i\00b\00/\00t\00y\00p\00e\00d\00a\00r\00r\00a\00y\00.\00t\00s")
+ (data $32 (i32.const 4268) ",")
+ (data $32.1 (i32.const 4280) "\02\00\00\00\16\00\00\00G\00o\00o\00d\00 \00t\00o\00 \00g\00o\00!")
+ (data $33 (i32.const 4316) "\1c")
+ (data $33.1 (i32.const 4328) "\r\00\00\00\08\00\00\00\02")
+ (data $34 (i32.const 4348) "\1c")
+ (data $34.1 (i32.const 4360) "\0c\00\00\00\08\00\00\00\03")
+ (data $35 (i32.const 4380) "l")
+ (data $35.1 (i32.const 4392) "\02\00\00\00V\00\00\00R\00U\00N\00T\00I\00M\00E\00 \00E\00R\00R\00O\00R\00:\00 \00A\00l\00r\00e\00a\00d\00y\00 \00r\00e\00s\00e\00r\00v\00e\00d\00 \00h\00o\00s\00t\00 \00m\00e\00m\00o\00r\00y")
+ (data $36 (i32.const 4492) "l")
+ (data $36.1 (i32.const 4504) "\02\00\00\00X\00\00\00~\00l\00i\00b\00/\00w\00a\00s\00m\00b\00o\00t\00s\00_\00c\00l\00i\00e\00n\00t\00/\00a\00s\00s\00e\00m\00b\00l\00y\00/\00h\00o\00s\00t\00R\00e\00s\00e\00r\00v\00e\00.\00t\00s")
+ (data $37 (i32.const 4604) "\\")
+ (data $37.1 (i32.const 4616) "\02\00\00\00>\00\00\00E\00R\00R\00O\00R\00:\00 \00C\00a\00n\00\'\00t\00 \00p\00a\00r\00s\00e\00 \00G\00a\00m\00e\00P\00a\00r\00a\00m\00s\00 \00v")
+ (data $38 (i32.const 4700) "<")
+ (data $38.1 (i32.const 4712) "\02\00\00\00*\00\00\00;\00 \00o\00n\00l\00y\00 \00p\00r\00e\00p\00a\00r\00e\00d\00 \00f\00o\00r\00 \00v")
+ (data $39 (i32.const 4764) ",\00\00\00\03\00\00\00\00\00\00\00\05\00\00\00\10\00\00\00\10\12\00\00\00\00\00\00p\12")
+ (data $40 (i32.const 4812) "\1c")
+ (data $40.1 (i32.const 4824) "\01")
+ (data $41 (i32.const 4844) ",")
+ (data $41.1 (i32.const 4856) "\02\00\00\00\1a\00\00\00~\00l\00i\00b\00/\00a\00r\00r\00a\00y\00.\00t\00s")
+ (data $42 (i32.const 4892) "\ac")
+ (data $42.1 (i32.const 4904) "\02\00\00\00\94\00\00\00R\00U\00N\00T\00I\00M\00E\00 \00E\00R\00R\00O\00R\00:\00 \00I\00n\00v\00a\00l\00i\00d\00 \00e\00n\00g\00i\00n\00e\00 \00v\00e\00r\00s\00i\00o\00n\00;\00 \00m\00u\00s\00t\00 \00m\00a\00t\00c\00h\00 \00s\00e\00m\00v\00e\00r\00 \00m\00a\00j\00o\00r\00.\00m\00i\00n\00o\00r\00.\00p\00a\00t\00c\00h")
+ (data $43 (i32.const 5072) "\0f\00\00\00 \00\00\00 \00\00\00 \00\00\00\00\00\00\00A\00\00\00\04A")
+ (data $43.1 (i32.const 5108) "\a4\00\00\00\82\00\00\00\00\00\00\00d")
+ (data $43.2 (i32.const 5132) "\02\t")
  (table $0 4 4 funcref)
  (elem $0 (i32.const 1) $start:~lib/wasmbots_client/assembly/index~anonymous|0 $assembly/index/clientSetup $assembly/index/tick)
  (export "clientInitialize" (func $assembly/index/clientInitialize))
@@ -209,7 +219,7 @@
     i32.load offset=8
     i32.eqz
     local.get $0
-    i32.const 37216
+    i32.const 37904
     i32.lt_u
     i32.and
     i32.eqz
@@ -258,7 +268,7 @@
    i32.const 1
   else
    local.get $1
-   i32.const 4384
+   i32.const 5072
    i32.load
    i32.gt_u
    if
@@ -272,7 +282,7 @@
    local.get $1
    i32.const 2
    i32.shl
-   i32.const 4388
+   i32.const 5076
    i32.add
    i32.load
    i32.const 32
@@ -856,10 +866,10 @@
   if
    unreachable
   end
-  i32.const 37216
+  i32.const 37904
   i32.const 0
   i32.store
-  i32.const 38784
+  i32.const 39472
   i32.const 0
   i32.store
   loop $for-loop|0
@@ -870,7 +880,7 @@
     local.get $0
     i32.const 2
     i32.shl
-    i32.const 37216
+    i32.const 37904
     i32.add
     i32.const 0
     i32.store offset=4
@@ -888,7 +898,7 @@
       i32.add
       i32.const 2
       i32.shl
-      i32.const 37216
+      i32.const 37904
       i32.add
       i32.const 0
       i32.store offset=96
@@ -906,14 +916,14 @@
     br $for-loop|0
    end
   end
-  i32.const 37216
-  i32.const 38788
+  i32.const 37904
+  i32.const 39476
   memory.size
   i64.extend_i32_s
   i64.const 16
   i64.shl
   call $~lib/rt/tlsf/addMemory
-  i32.const 37216
+  i32.const 37904
   global.set $~lib/rt/tlsf/ROOT
  )
  (func $~lib/rt/itcms/step (result i32)
@@ -998,7 +1008,7 @@
      local.set $0
      loop $while-continue|0
       local.get $0
-      i32.const 37216
+      i32.const 37904
       i32.lt_u
       if
        local.get $0
@@ -1094,7 +1104,7 @@
      unreachable
     end
     local.get $0
-    i32.const 37216
+    i32.const 37904
     i32.lt_u
     if
      local.get $0
@@ -1117,7 +1127,7 @@
      i32.const 4
      i32.add
      local.tee $0
-     i32.const 37216
+     i32.const 37904
      i32.ge_u
      if
       global.get $~lib/rt/tlsf/ROOT
@@ -1715,7 +1725,7 @@
   global.set $~lib/memory/__stack_pointer
   block $folding-inner0
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 5136
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -1727,7 +1737,16 @@
    i32.store
    local.get $1
    i32.load offset=8
-   drop
+   i32.const 0
+   i32.gt_s
+   if
+    i32.const 4400
+    i32.const 4512
+    i32.const 9
+    i32.const 13
+    call $~lib/wasmbots_client/assembly/index/as_abort
+    unreachable
+   end
    local.get $0
    call $~lib/typedarray/Uint8Array#constructor
    global.set $~lib/wasmbots_client/assembly/hostReserve/HostReserve.MEMORY
@@ -1754,7 +1773,7 @@
    i32.sub
    global.set $~lib/memory/__stack_pointer
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 5136
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -1774,8 +1793,8 @@
    local.get $0
    return
   end
-  i32.const 37248
-  i32.const 37296
+  i32.const 37936
+  i32.const 37984
   i32.const 1
   i32.const 1
   call $~lib/wasmbots_client/assembly/index/as_abort
@@ -1794,11 +1813,11 @@
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i32.const 4448
+  i32.const 5136
   i32.lt_s
   if
-   i32.const 37248
-   i32.const 37296
+   i32.const 37936
+   i32.const 37984
    i32.const 1
    i32.const 1
    call $~lib/wasmbots_client/assembly/index/as_abort
@@ -1824,11 +1843,11 @@
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i32.const 4448
+  i32.const 5136
   i32.lt_s
   if
-   i32.const 37248
-   i32.const 37296
+   i32.const 37936
+   i32.const 37984
    i32.const 1
    i32.const 1
    call $~lib/wasmbots_client/assembly/index/as_abort
@@ -1960,11 +1979,11 @@
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i32.const 4448
+  i32.const 5136
   i32.lt_s
   if
-   i32.const 37248
-   i32.const 37296
+   i32.const 37936
+   i32.const 37984
    i32.const 1
    i32.const 1
    call $~lib/wasmbots_client/assembly/index/as_abort
@@ -1976,7 +1995,7 @@
   memory.size
   i32.const 16
   i32.shl
-  i32.const 37216
+  i32.const 37904
   i32.sub
   i32.const 1
   i32.shr_u
@@ -2038,11 +2057,11 @@
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i32.const 4448
+  i32.const 5136
   i32.lt_s
   if
-   i32.const 37248
-   i32.const 37296
+   i32.const 37936
+   i32.const 37984
    i32.const 1
    i32.const 1
    call $~lib/wasmbots_client/assembly/index/as_abort
@@ -2250,11 +2269,11 @@
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i32.const 4448
+  i32.const 5136
   i32.lt_s
   if
-   i32.const 37248
-   i32.const 37296
+   i32.const 37936
+   i32.const 37984
    i32.const 1
    i32.const 1
    call $~lib/wasmbots_client/assembly/index/as_abort
@@ -2298,7 +2317,7 @@
   global.set $~lib/memory/__stack_pointer
   block $folding-inner0
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 5136
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -2321,7 +2340,7 @@
    i32.sub
    global.set $~lib/memory/__stack_pointer
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 5136
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -2595,8 +2614,8 @@
    local.get $0
    return
   end
-  i32.const 37248
-  i32.const 37296
+  i32.const 37936
+  i32.const 37984
   i32.const 1
   i32.const 1
   call $~lib/wasmbots_client/assembly/index/as_abort
@@ -2608,11 +2627,11 @@
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i32.const 4448
+  i32.const 5136
   i32.lt_s
   if
-   i32.const 37248
-   i32.const 37296
+   i32.const 37936
+   i32.const 37984
    i32.const 1
    i32.const 1
    call $~lib/wasmbots_client/assembly/index/as_abort
@@ -2652,11 +2671,11 @@
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i32.const 4448
+  i32.const 5136
   i32.lt_s
   if
-   i32.const 37248
-   i32.const 37296
+   i32.const 37936
+   i32.const 37984
    i32.const 1
    i32.const 1
    call $~lib/wasmbots_client/assembly/index/as_abort
@@ -2764,7 +2783,7 @@
   global.set $~lib/memory/__stack_pointer
   block $folding-inner0
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 5136
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -2786,7 +2805,7 @@
    i32.sub
    global.set $~lib/memory/__stack_pointer
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 5136
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -2883,8 +2902,8 @@
    local.get $1
    return
   end
-  i32.const 37248
-  i32.const 37296
+  i32.const 37936
+  i32.const 37984
   i32.const 1
   i32.const 1
   call $~lib/wasmbots_client/assembly/index/as_abort
@@ -2899,7 +2918,7 @@
   global.set $~lib/memory/__stack_pointer
   block $folding-inner0
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 5136
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -2935,7 +2954,7 @@
    i32.sub
    global.set $~lib/memory/__stack_pointer
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 5136
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -3029,8 +3048,8 @@
    local.get $1
    return
   end
-  i32.const 37248
-  i32.const 37296
+  i32.const 37936
+  i32.const 37984
   i32.const 1
   i32.const 1
   call $~lib/wasmbots_client/assembly/index/as_abort
@@ -3042,11 +3061,11 @@
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i32.const 4448
+  i32.const 5136
   i32.lt_s
   if
-   i32.const 37248
-   i32.const 37296
+   i32.const 37936
+   i32.const 37984
    i32.const 1
    i32.const 1
    call $~lib/wasmbots_client/assembly/index/as_abort
@@ -3075,11 +3094,11 @@
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i32.const 4448
+  i32.const 5136
   i32.lt_s
   if
-   i32.const 37248
-   i32.const 37296
+   i32.const 37936
+   i32.const 37984
    i32.const 1
    i32.const 1
    call $~lib/wasmbots_client/assembly/index/as_abort
@@ -3129,7 +3148,7 @@
   global.set $~lib/memory/__stack_pointer
   block $folding-inner0
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 5136
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -3173,7 +3192,16 @@
    i32.store offset=4
    i32.const 3824
    call $~lib/array/Array<u16>#get:length
-   drop
+   i32.const 3
+   i32.ne
+   if
+    i32.const 3872
+    i32.const 4048
+    i32.const 27
+    i32.const 13
+    call $~lib/wasmbots_client/assembly/index/as_abort
+    unreachable
+   end
    global.get $~lib/memory/__stack_pointer
    local.get $0
    i32.store offset=4
@@ -3201,7 +3229,7 @@
    i32.sub
    global.set $~lib/memory/__stack_pointer
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 5136
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -3249,7 +3277,7 @@
    i32.sub
    global.set $~lib/memory/__stack_pointer
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 5136
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -3263,7 +3291,7 @@
    i32.sub
    global.set $~lib/memory/__stack_pointer
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 5136
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -3355,7 +3383,7 @@
      i32.sub
      global.set $~lib/memory/__stack_pointer
      global.get $~lib/memory/__stack_pointer
-     i32.const 4448
+     i32.const 5136
      i32.lt_s
      br_if $folding-inner0
      global.get $~lib/memory/__stack_pointer
@@ -3370,7 +3398,7 @@
      i32.ge_u
      if
       i32.const 1648
-      i32.const 3936
+      i32.const 4224
       i32.const 167
       i32.const 45
       call $~lib/wasmbots_client/assembly/index/as_abort
@@ -3394,7 +3422,7 @@
      i32.sub
      global.set $~lib/memory/__stack_pointer
      global.get $~lib/memory/__stack_pointer
-     i32.const 4448
+     i32.const 5136
      i32.lt_s
      br_if $folding-inner0
      global.get $~lib/memory/__stack_pointer
@@ -3411,7 +3439,7 @@
      i32.ge_u
      if
       i32.const 1648
-      i32.const 3872
+      i32.const 4160
       i32.const 93
       i32.const 41
       call $~lib/wasmbots_client/assembly/index/as_abort
@@ -3451,7 +3479,7 @@
    i32.sub
    global.set $~lib/memory/__stack_pointer
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 5136
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -3465,7 +3493,7 @@
    i32.sub
    global.set $~lib/memory/__stack_pointer
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 5136
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -3526,8 +3554,8 @@
    local.get $0
    return
   end
-  i32.const 37248
-  i32.const 37296
+  i32.const 37936
+  i32.const 37984
   i32.const 1
   i32.const 1
   call $~lib/wasmbots_client/assembly/index/as_abort
@@ -3541,7 +3569,7 @@
   global.set $~lib/memory/__stack_pointer
   block $folding-inner0
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 5136
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -3561,26 +3589,26 @@
    local.tee $1
    i32.store offset=8
    global.get $~lib/memory/__stack_pointer
-   i32.const 4000
+   i32.const 4288
    i32.store
    global.get $~lib/memory/__stack_pointer
    i32.const 8
    i32.sub
    global.set $~lib/memory/__stack_pointer
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 5136
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
    i64.const 0
    i64.store
    global.get $~lib/memory/__stack_pointer
-   i32.const 4000
+   i32.const 4288
    i32.store
    i32.const 1
    global.set $~argumentsLength
    global.get $~lib/memory/__stack_pointer
-   i32.const 4000
+   i32.const 4288
    call $~lib/string/String.UTF8.encode@varargs
    local.tee $0
    i32.store offset=4
@@ -3605,8 +3633,8 @@
    local.get $1
    return
   end
-  i32.const 37248
-  i32.const 37296
+  i32.const 37936
+  i32.const 37984
   i32.const 1
   i32.const 1
   call $~lib/wasmbots_client/assembly/index/as_abort
@@ -3618,11 +3646,11 @@
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i32.const 4448
+  i32.const 5136
   i32.lt_s
   if
-   i32.const 37248
-   i32.const 37296
+   i32.const 37936
+   i32.const 37984
    i32.const 1
    i32.const 1
    call $~lib/wasmbots_client/assembly/index/as_abort
@@ -3632,14 +3660,14 @@
   i32.const 0
   i32.store
   global.get $~lib/memory/__stack_pointer
-  i32.const 4048
+  i32.const 4336
   i32.store
-  i32.const 4048
+  i32.const 4336
   global.set $~lib/wasmbots_client/assembly/params/CLIENT_SETUP
   global.get $~lib/memory/__stack_pointer
-  i32.const 4080
+  i32.const 4368
   i32.store
-  i32.const 4080
+  i32.const 4368
   global.set $~lib/wasmbots_client/assembly/index/CLIENT_TICK
   global.get $~lib/memory/__stack_pointer
   i32.const 4
@@ -3654,7 +3682,7 @@
   global.set $~lib/memory/__stack_pointer
   block $folding-inner0
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 5136
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -3669,7 +3697,7 @@
    i32.sub
    global.set $~lib/memory/__stack_pointer
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 5136
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -3716,8 +3744,8 @@
    local.get $0
    return
   end
-  i32.const 37248
-  i32.const 37296
+  i32.const 37936
+  i32.const 37984
   i32.const 1
   i32.const 1
   call $~lib/wasmbots_client/assembly/index/as_abort
@@ -3736,7 +3764,7 @@
   global.set $~lib/memory/__stack_pointer
   block $folding-inner0
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 5136
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -3757,7 +3785,7 @@
    i32.sub
    global.set $~lib/memory/__stack_pointer
    global.get $~lib/memory/__stack_pointer
-   i32.const 4448
+   i32.const 5136
    i32.lt_s
    br_if $folding-inner0
    global.get $~lib/memory/__stack_pointer
@@ -3779,7 +3807,7 @@
     i32.gt_u
     if
      i32.const 3552
-     i32.const 4352
+     i32.const 4864
      i32.const 19
      i32.const 48
      call $~lib/wasmbots_client/assembly/index/as_abort
@@ -3895,8 +3923,8 @@
    global.set $~lib/memory/__stack_pointer
    return
   end
-  i32.const 37248
-  i32.const 37296
+  i32.const 37936
+  i32.const 37984
   i32.const 1
   i32.const 1
   call $~lib/wasmbots_client/assembly/index/as_abort
@@ -3915,7 +3943,7 @@
   block $folding-inner1
    block $folding-inner0
     global.get $~lib/memory/__stack_pointer
-    i32.const 4448
+    i32.const 5136
     i32.lt_s
     br_if $folding-inner0
     global.get $~lib/memory/__stack_pointer
@@ -3942,38 +3970,38 @@
      local.tee $1
      i32.store offset=8
      global.get $~lib/memory/__stack_pointer
-     i32.const 4272
+     i32.const 4784
      i32.store offset=12
      global.get $~lib/memory/__stack_pointer
      local.get $0
      i32.store offset=16
-     i32.const 4276
+     i32.const 4788
      local.get $0
      i32.store
-     i32.const 4272
+     i32.const 4784
      local.get $0
      i32.const 1
      call $~lib/rt/itcms/__link
      global.get $~lib/memory/__stack_pointer
-     i32.const 4272
+     i32.const 4784
      i32.store offset=12
      global.get $~lib/memory/__stack_pointer
      local.get $1
      i32.store offset=16
-     i32.const 4284
+     i32.const 4796
      local.get $1
      i32.store
-     i32.const 4272
+     i32.const 4784
      local.get $1
      i32.const 1
      call $~lib/rt/itcms/__link
      global.get $~lib/memory/__stack_pointer
-     i32.const 4272
+     i32.const 4784
      i32.store offset=12
      global.get $~lib/memory/__stack_pointer
      i32.const 3408
      i32.store offset=16
-     i32.const 4272
+     i32.const 4784
      call $~lib/staticarray/StaticArray<~lib/string/String>#join
      local.set $0
      global.get $~lib/memory/__stack_pointer
@@ -3989,60 +4017,60 @@
      return
     end
     global.get $~lib/memory/__stack_pointer
-    local.set $5
+    local.set $3
     global.get $~lib/memory/__stack_pointer
     i32.const 4
     i32.sub
     global.set $~lib/memory/__stack_pointer
     global.get $~lib/memory/__stack_pointer
-    i32.const 4448
+    i32.const 5136
     i32.lt_s
     br_if $folding-inner0
     global.get $~lib/memory/__stack_pointer
     i32.const 0
     i32.store
     global.get $~lib/memory/__stack_pointer
-    local.set $6
+    local.set $5
     i32.const 0
     i32.const 1
     call $~lib/rt/itcms/__new
-    local.tee $3
-    i32.const 4320
+    local.tee $6
+    i32.const 4832
     i32.const 0
     memory.copy
+    local.get $5
     local.get $6
-    local.get $3
     i32.store
     i32.const 16
     i32.const 9
     call $~lib/rt/itcms/__new
-    local.tee $6
-    local.get $3
-    i32.store
+    local.tee $5
     local.get $6
-    local.get $3
+    i32.store
+    local.get $5
+    local.get $6
     i32.const 0
     call $~lib/rt/itcms/__link
+    local.get $5
     local.get $6
-    local.get $3
     i32.store offset=4
-    local.get $6
+    local.get $5
     i32.const 0
     i32.store offset=8
-    local.get $6
+    local.get $5
     i32.const 0
     i32.store offset=12
     global.get $~lib/memory/__stack_pointer
     i32.const 4
     i32.add
     global.set $~lib/memory/__stack_pointer
+    local.get $3
     local.get $5
-    local.get $6
     i32.store offset=20
     global.get $~lib/memory/__stack_pointer
-    local.get $6
+    local.get $5
     i32.store
-    local.get $6
+    local.get $5
     local.get $0
     i32.const 2
     i32.add
@@ -4050,9 +4078,9 @@
     call $~lib/wasmbots_client/assembly/hostReserve/HostReserve.read_u16
     call $~lib/array/Array<u16>#push
     global.get $~lib/memory/__stack_pointer
-    local.get $6
+    local.get $5
     i32.store
-    local.get $6
+    local.get $5
     local.get $0
     i32.const 2
     i32.add
@@ -4060,9 +4088,9 @@
     call $~lib/wasmbots_client/assembly/hostReserve/HostReserve.read_u16
     call $~lib/array/Array<u16>#push
     global.get $~lib/memory/__stack_pointer
-    local.get $6
+    local.get $5
     i32.store
-    local.get $6
+    local.get $5
     local.get $0
     i32.const 2
     i32.add
@@ -4071,14 +4099,14 @@
     global.get $~lib/memory/__stack_pointer
     local.set $0
     global.get $~lib/memory/__stack_pointer
-    local.get $6
+    local.get $5
     i32.store
     global.get $~lib/memory/__stack_pointer
     i32.const 16
     i32.sub
     global.set $~lib/memory/__stack_pointer
     global.get $~lib/memory/__stack_pointer
-    i32.const 4448
+    i32.const 5136
     i32.lt_s
     br_if $folding-inner0
     global.get $~lib/memory/__stack_pointer
@@ -4110,11 +4138,20 @@
     i32.const 0
     call $~lib/rt/itcms/__link
     global.get $~lib/memory/__stack_pointer
-    local.get $6
+    local.get $5
     i32.store offset=4
-    local.get $6
+    local.get $5
     call $~lib/array/Array<u16>#get:length
-    drop
+    i32.const 3
+    i32.ne
+    if
+     i32.const 4912
+     i32.const 4048
+     i32.const 13
+     i32.const 13
+     call $~lib/wasmbots_client/assembly/index/as_abort
+     unreachable
+    end
     global.get $~lib/memory/__stack_pointer
     local.get $3
     i32.store offset=4
@@ -4125,9 +4162,9 @@
     local.get $3
     i32.store offset=4
     global.get $~lib/memory/__stack_pointer
-    local.get $6
+    local.get $5
     i32.store offset=12
-    local.get $6
+    local.get $5
     call $~lib/staticarray/StaticArray.fromArray<u16>
     local.set $4
     global.get $~lib/memory/__stack_pointer
@@ -4190,7 +4227,7 @@
        i32.sub
        global.set $~lib/memory/__stack_pointer
        global.get $~lib/memory/__stack_pointer
-       i32.const 4448
+       i32.const 5136
        i32.lt_s
        br_if $folding-inner0
        global.get $~lib/memory/__stack_pointer
@@ -4220,7 +4257,7 @@
        i32.sub
        global.set $~lib/memory/__stack_pointer
        global.get $~lib/memory/__stack_pointer
-       i32.const 4448
+       i32.const 5136
        i32.lt_s
        br_if $folding-inner0
        global.get $~lib/memory/__stack_pointer
@@ -4235,7 +4272,7 @@
        i32.sub
        global.set $~lib/memory/__stack_pointer
        global.get $~lib/memory/__stack_pointer
-       i32.const 4448
+       i32.const 5136
        i32.lt_s
        br_if $folding-inner0
        global.get $~lib/memory/__stack_pointer
@@ -4250,7 +4287,7 @@
        i32.ge_u
        if
         i32.const 1648
-        i32.const 3936
+        i32.const 4224
         i32.const 178
         i32.const 45
         call $~lib/wasmbots_client/assembly/index/as_abort
@@ -4317,7 +4354,7 @@
        i32.sub
        global.set $~lib/memory/__stack_pointer
        global.get $~lib/memory/__stack_pointer
-       i32.const 4448
+       i32.const 5136
        i32.lt_s
        br_if $folding-inner0
        global.get $~lib/memory/__stack_pointer
@@ -4351,7 +4388,7 @@
        i32.sub
        global.set $~lib/memory/__stack_pointer
        global.get $~lib/memory/__stack_pointer
-       i32.const 4448
+       i32.const 5136
        i32.lt_s
        br_if $folding-inner0
        global.get $~lib/memory/__stack_pointer
@@ -4366,7 +4403,7 @@
        i32.sub
        global.set $~lib/memory/__stack_pointer
        global.get $~lib/memory/__stack_pointer
-       i32.const 4448
+       i32.const 5136
        i32.lt_s
        br_if $folding-inner0
        global.get $~lib/memory/__stack_pointer
@@ -4444,15 +4481,15 @@
     local.get $0
     return
    end
-   i32.const 37248
-   i32.const 37296
+   i32.const 37936
+   i32.const 37984
    i32.const 1
    i32.const 1
    call $~lib/wasmbots_client/assembly/index/as_abort
    unreachable
   end
   i32.const 1648
-  i32.const 3872
+  i32.const 4160
   i32.const 78
   i32.const 41
   call $~lib/wasmbots_client/assembly/index/as_abort
@@ -4467,11 +4504,11 @@
   i32.sub
   global.set $~lib/memory/__stack_pointer
   global.get $~lib/memory/__stack_pointer
-  i32.const 4448
+  i32.const 5136
   i32.lt_s
   if
-   i32.const 37248
-   i32.const 37296
+   i32.const 37936
+   i32.const 37984
    i32.const 1
    i32.const 1
    call $~lib/wasmbots_client/assembly/index/as_abort

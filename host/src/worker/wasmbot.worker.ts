@@ -92,7 +92,16 @@ async function initModule(payload: Msg.InitModulePayload) {
 
 async function instantiate(payload: Msg.InstantiatePayload) {
     program = new GuestProgram(logger);
-    await program.init(module);
+    const initSuccess = await program.init(module);
+    if (!initSuccess) {
+        self.postMessage({
+            type: Msg.GuestToHostMessageType.InstantiateDone,
+            payload: {
+                success: false,
+            } as Msg.InstantiateDonePayload
+        });
+        return;
+    }
     const ready = program.runSetup(config.memorySize);
     self.postMessage({
         type: Msg.GuestToHostMessageType.InstantiateDone,

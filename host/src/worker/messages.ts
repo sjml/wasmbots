@@ -5,7 +5,6 @@ export enum GuestToHostMessageType {
     InstantiateDone,
     RunTickDone,
     LogMessage,
-    ProgramCrashed,
 }
 
 export interface InitModuleDonePayload {
@@ -22,10 +21,6 @@ export interface RunTickDonePayload {
 export interface LogMessagePayload {
     logLevel: LogLevel;
     message: string;
-}
-
-export interface ProgramCrashedPayload {
-    errorMsg: string;
 }
 
 
@@ -60,7 +55,6 @@ export interface GuestToHostMessageMap {
     [GuestToHostMessageType.InitModuleDone]: InitModuleDonePayload;
     [GuestToHostMessageType.InstantiateDone]: InstantiateDonePayload;
     [GuestToHostMessageType.LogMessage]: LogMessagePayload;
-    [GuestToHostMessageType.ProgramCrashed]: ProgramCrashedPayload;
     [GuestToHostMessageType.RunTickDone]: RunTickDonePayload;
 }
 

@@ -21,15 +21,11 @@ export class GuestProgram {
     private reserveLength: number = 0;
     private reserveBlock = new Uint8Array();
     isShutDown: boolean = false;
+    botName: string = "";
 
     constructor(logger?: ILogger) {
         logger ||= console;
         this.logger = logger;
-    }
-
-    private abort(msg: string, file: string, line: number, col: number) {
-        this.logger.error(`FATAL ERROR: ${file}:${line}:${col}\n${msg}`);
-        this.isShutDown = true;
     }
 
     private readString(msgPtr: number, msgLen: number): string {
@@ -100,43 +96,51 @@ export class GuestProgram {
         }
     }
 
-    // TODO: expose this to the modules
-    private shutdown() {
+    shutdown() {
+        console.info(`Shutting down ${this.botName} on request`)
         this.isShutDown = true;
     }
 
-    // TODO: error handling, reject promise
     // have to do a separate init function because can't have async constructor
-    async init(module: WebAssembly.Module) {
-        this.instance = await WebAssembly.instantiate(module, {
+    async init(module: WebAssembly.Module): Promise<boolean> {
+        const instPromise = WebAssembly.instantiate(module, {
             env: {
-                abort: this.abort,
+                shutdown: () => this.shutdown(),
                 logFunction: (logLevel: number, msgPtr: number, msgLen: number) => {
                     this.log(logLevel, msgPtr, msgLen);
                 }
             }
         });
 
-        this.exports = this.instance.exports as unknown as WasmBotsExports;
+        try {
+            this.instance = await instPromise;
 
-        // built-in setup function from various compilers
-        //   (TinyGo uses this to set up the heap, for example)
-        if (this.exports?._initialize) {
-            this.exports._initialize();
-        }
-        // same as above; usually only exists if you've built
-        //   it as an "application" instead of a library,
-        //   but let's play along
-        if (this.exports?._start) {
-            this.exports._start();
+            this.exports = this.instance.exports as unknown as WasmBotsExports;
+
+            // built-in setup function from various compilers
+            //   (TinyGo uses this to set up the heap, for example)
+            if (this.exports?._initialize) {
+                this.exports._initialize();
+            }
+            // same as above; usually only exists if you've built
+            //   it as an "application" instead of a library,
+            //   but let's play along
+            if (this.exports?._start) {
+                this.exports._start();
+            }
+
+            // optional export from client code;
+            //   should only be used for things like registering
+            //   callbacks and the like; very minimal
+            if (this.exports?.clientInitialize) {
+                this.exports.clientInitialize();
+            }
+        } catch (err) {
+            this.logger.error(`CLIENT ERROR: Intitialization failed:\n  ${err}`);
+            return false;
         }
 
-        // optional export from client code;
-        //   should only be used for things like registering
-        //   callbacks and the like; very minimal
-        if (this.exports?.clientInitialize) {
-            this.exports.clientInitialize();
-        }
+        return true;
     }
 
     runSetup(reserveMemSize: number): boolean {
@@ -189,7 +193,12 @@ export class GuestProgram {
         offset += 2;
         const versionPatch = this.readUint16(offset);
         offset += 2;
-        this.logger.log(`### program info -- ${botName} v${versionMajor}.${versionMinor}.${versionPatch} ###`);
+        this.botName = `${botName} v${versionMajor}.${versionMinor}.${versionPatch}`;
+        this.logger.log(`### program info -- ${this.botName} ###`);
+
+        if (this.isShutDown) {
+            return false;
+        }
 
         this.isShutDown = !ready;
         return ready;

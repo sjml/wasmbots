@@ -6,7 +6,7 @@ export class HostReserve {
 
     static reserveHostMemory(size: usize): void {
         if (HostReserve.MEMORY.byteLength > 0) {
-            // TODO: fail loudly
+            throw new Error("RUNTIME ERROR: Already reserved host memory");
         }
         HostReserve.MEMORY = new Uint8Array(size as i32);
         HostReserve.MEMORY_DV = new DataView(HostReserve.MEMORY.buffer);
