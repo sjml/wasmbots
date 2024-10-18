@@ -1,6 +1,4 @@
 * tech break: 
-  * other languages...
-    * C# w/blazor?
   * check for and call a "clientInit" or some kind of function, **solely** for callback registrations
     * (I mean, I can't *stop* you from doing other things there, but you're still on a timer)
     * get rid of magic "extern and pray" invocations
