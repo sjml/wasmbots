@@ -4,7 +4,7 @@ import (
 	"unsafe"
 )
 
-//export logFunction
+//go:wasmimport env logFunction
 func hostLogFunction(logLevel int32, msgPtr uintptr, msgLen uint)
 
 func Log(msg string) {

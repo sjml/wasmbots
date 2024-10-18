@@ -31,7 +31,7 @@
   (type (;29;) (func (param i32 f64 f64 i32 i32)))
   (type (;30;) (func (param i32 f64 i32 i32)))
   (type (;31;) (func (param i64) (result i64)))
-  (import "env" "logFunction" (func $logFunction (type 1)))
+  (import "env" "logFunction" (func $wasmbot_client.hostLogFunction (type 1)))
   (func $__wasm_call_ctors (type 11))
   (func $memcpy (type 5) (param i32 i32 i32) (result i32)
     (local i32 i32 i32 i32 i32)
@@ -20934,7 +20934,7 @@
       i32.const 0
       local.get 0
       local.get 1
-      call $logFunction
+      call $wasmbot_client.hostLogFunction
       return
     end
     unreachable)
@@ -20950,7 +20950,7 @@
       i32.const 2
       local.get 0
       local.get 1
-      call $logFunction
+      call $wasmbot_client.hostLogFunction
       return
     end
     unreachable)
