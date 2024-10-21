@@ -45,12 +45,14 @@
 
 <style>
     .console {
-        background-color: black;
+        background-color: rgb(0, 0, 0, 0.7);
         color: white;
         font-family: 'Courier New', Courier, monospace;
+        font-size: 70%;
         white-space: pre;
+        flex-grow: 2;
 
-        height: 450px;
+        height: 100%;
         overflow-y: auto;
 
         padding: 10px;

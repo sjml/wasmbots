@@ -2,8 +2,5 @@
   "extends": "assemblyscript/std/assembly.json",
   "include": [
     "./**/*.ts"
-  ],
-  "compilerOptions": {
-    "allowImportingTsExtensions": true
-  }
+  ]
 }

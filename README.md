@@ -23,7 +23,11 @@ At the moment you can verify everything is working as expected by running:
 That will build, validate, and run all the example bots. As of this writing, each one just starts at 35 and calculates increasingly large Fibonacci indexes until it gets killed for overrunning the tick time limit. 
 
 
-## (Lack of) Memory Constraints
+## Caveats
+
+I was learning WebAssembly tools while I was doing this (in fact, said learning was a big part of the motivation **for** doing this) so it's probably got a bunch of sub-optimal or unrecommended practices. Same goes for a few of the libraries, where I was having to dust off old knowledge. The libraries are not all consistently implemented because certain things like passing dynamic strings across `extern` barriers are FAR more convoluted in Rust so I usually went with the easier option (like a known-size buffer) in those cases.
+
+### (Lack of) Memory Constraints
 
 My original idea was to limit the memory sizes of the WASM programs to something very small, just as an exercise in old-school parsimony. At first just a single page of memory (64k) then I went up to a megabyte... but what I found was that when the WASM **host** manages memory, the programs themselves have to be compiled with directives to import their memory, and you also have to manually tell them how much to expect to have. Seems simple enough EXCEPT most programming languages these days don't seem to play well with such restrictions, at least not if I make them low enough to be interesting. Rust's default allocator in particular [doesn't work if it can't grow the memory](https://github.com/rustwasm/wasm-bindgen/issues/1389#issuecomment-476224477). 
 

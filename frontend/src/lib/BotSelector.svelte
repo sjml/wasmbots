@@ -6,7 +6,7 @@
     $: botData = chosen in botInfo ? botInfo[chosen] : null;
 </script>
 
-<select bind:value={chosen}>
+<select class="botSelector" bind:value={chosen}>
     {#if chosen.length == 0}
         <option disabled selected value>— Choose a Bot —</option>
     {/if}
@@ -22,3 +22,12 @@
         <br>
     {/if}
 </div>
+
+<style>
+    .botSelector {
+        margin-bottom: 10px;
+    }
+    .botInfo   {
+        margin-bottom: 10px;
+    }
+</style>
