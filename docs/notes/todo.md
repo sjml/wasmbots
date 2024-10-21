@@ -56,7 +56,7 @@
     * This should take 1.995 seconds (+ some startup/shutdown overhead) at the absolute most (assuming all the pre-warnings took 249ms), but the terminal reported it as 10.54 seconds. There are weird pauses in between prints. I would suspect GC shenanigans but (a) that doesn't make a ton of sense in this scope and (b) why would C run into it but not the others? 
 
         ```
-        %> deno run --allow-read ./host/src/deno-cli/host.ts ./example_bots/bot_c.wasm
+        %> deno run --allow-read ./engine/src/deno-cli/host.ts ./example_bots/bot_c.wasm
         ### program info -- bot_c v0.1.0 ###
         2024-10-18T15:42:11.562Z: Incrementing fib to 36
         2024-10-18T15:42:11.664Z: Incrementing fib to 37

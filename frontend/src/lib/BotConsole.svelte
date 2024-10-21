@@ -1,7 +1,7 @@
 <script lang="ts">
     import { tick as svelteTick } from "svelte";
 
-    import { Loader, Logger, WasmCoordinator, WorkerStatus } from "../host";
+    import { Loader, Logger, WasmCoordinator, WorkerStatus } from "../engine";
 
     let coordinator!: WasmCoordinator;
 

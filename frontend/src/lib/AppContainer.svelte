@@ -50,9 +50,9 @@
 </script>
 
 <div class="appContainer">
-    <BotPanel side="left"  isOpened={leftPanelVisible } on:toggle={() => togglePanel("left")}/>
+    <!-- <BotPanel side="left"  isOpened={leftPanelVisible } on:toggle={() => togglePanel("left")}/> -->
     <WorldCanvas/>
-    <BotPanel side="right" isOpened={rightPanelVisible} on:toggle={() => togglePanel("right")}/>
+    <!-- <BotPanel side="right" isOpened={rightPanelVisible} on:toggle={() => togglePanel("right")}/> -->
 </div>
 
 <style>

@@ -16,7 +16,7 @@
         //   or the like
         const ctx = canvas.getContext("2d");
         const bg = new Image();
-        bg.src = "./cat1024x640.jpg";
+        bg.src = "./img/cat1024x640.jpg";
         bg.onload = () => {
             ctx?.drawImage(bg, 0, 0, canvas.width, canvas.height);
         };

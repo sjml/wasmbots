@@ -1,5 +1,5 @@
-import { writeGameParameters, writeCircumstances } from "./circumstances.ts";
 import { type ILogger } from "./logger.ts";
+import { writeGameParameters, writeCircumstances } from "../game/circumstances.ts";
 
 const MIN_NAME_LEN = 4;
 

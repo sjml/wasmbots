@@ -2,7 +2,7 @@ BIN_NAME = wasmbots_validator
 BIN = $(BIN_NAME).wasm
 EMBED = $(BIN).ts
 BIN_PATH = target/wasm32-unknown-unknown/release/
-INSTALL_PATH = ../host/rsc/lib/
+INSTALL_PATH = ../engine/rsc/lib/
 WASM_OPT_FLAGS = -Oz --zero-filled-memory --strip-producers
 
 $(BIN_PATH)$(BIN): $(wildcard ./src/*.rs) ./Cargo.toml

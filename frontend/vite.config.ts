@@ -6,7 +6,7 @@ export default defineConfig({
   plugins: [svelte()],
   server: {
     fs: {
-        allow: ["../host", "."]
+        allow: ["../engine", "."]
     }
   }
 })
