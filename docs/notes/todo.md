@@ -1,6 +1,15 @@
 ## dev
 * game stuff
-  * show players if bots are there
+  * integrate seedable rng
+    * https://www.npmjs.com/package/pure-rand
+  * player class
+    * maybe is vis/ui exclusive; guest doing most of the work on the engine side
+    * pick from the spawn points
+    * draw once validation is done
+    * once two players, pick one to go first and then start ticking them both
+    * when one dies, replace with tombstone
+    * report to ui which then clears it
+    * game over when only one living bot
   * input and output
     * dust off beschi
     * communicate world to player
