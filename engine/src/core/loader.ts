@@ -51,5 +51,5 @@ function getRscPath(): string {
         return pathJoin(dirname, "..", "..", "rsc");
     }
     // @ts-ignore
-    return pathJoin(import.meta.env.BASE_URL, "rsc");
+    return pathJoin("/", __APP_BASE_PATH__, "rsc");
 }

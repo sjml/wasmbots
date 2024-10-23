@@ -16,7 +16,7 @@ const config = {
     paths: {
       base: process.argv.includes('dev') ? '' : '/projects/wasmbots'
     }
-	}
+	},
 };
 
 export default config;
