@@ -5,8 +5,6 @@
   * 404 and about pages?
     * does the .htaccess need to think about caching on the wasm? 
 * game stuff
-  * generate world
-    * just pre-authored text files to start
   * input and output
     * communicate world to player
       * situation
@@ -23,13 +21,9 @@
         * 
     * player navigation (both receiving and executing)
     * line of sight and vision area
-  * visualization
-    - https://phaser.io/
-    - https://github.com/KilledByAPixel/LittleJS
-    - https://excaliburjs.com
-    - http://pixijs.com/
-    - https://ondras.github.io/rot.js/hp/
   * items, weapons, armor, spells
+* map variations
+    * Tiled authoring (figure out how to represent data in CLI version; can export as JSON so maybe don't need to get too fancy on the Tiled side and "just" parse that)
 * add getElapsedTime function (since loading? )
 * trainer
   * single executable that hosts webpage
@@ -51,6 +45,11 @@
 * with the move away from extern linking, maybe more libraries can use normal strings in their BotMetadata structs
 * readmes for individual libraries
 * custom Phaser3 build to trim down export size
+  * (other vis libraries that may be simpler/smaller than Phaser)
+    - https://github.com/KilledByAPixel/LittleJS
+    - https://excaliburjs.com
+    - http://pixijs.com/
+    - https://ondras.github.io/rot.js/hp/
 
 ## far-flung future
 * clang-format for c? (prettier or biome for TS / AssemblyScript?)
