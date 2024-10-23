@@ -1,6 +1,5 @@
 ## dev
-* migrate to svelte 5 (and SvelteKit while we're biting bullets?)
-  * basically just want to do some docs/about page kind of stuff, but need to figure out how all that works in the new reality
+* web
   * see about reserving a strip along the top of the viewport for nav/menu stuff
     * drawers and buttons should be under it
   * 404 and about pages?
@@ -51,6 +50,7 @@
 * add convenience functions to libraries for writing/reading byte array
 * with the move away from extern linking, maybe more libraries can use normal strings in their BotMetadata structs
 * readmes for individual libraries
+* custom Phaser3 build to trim down export size
 
 ## far-flung future
 * clang-format for c? (prettier or biome for TS / AssemblyScript?)

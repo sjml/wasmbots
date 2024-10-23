@@ -1,15 +1,53 @@
-import config from "../engine/core/config";
-import { MapScene } from "./map";
+import { Game, Scene, WEBGL } from "phaser";
 
-// import { Game, AUTO } from "phaser";
+import { WorldMap, TileType } from "../engine/game/worldMap";
 
-// export function startGame(canvas: HTMLCanvasElement): Game {
+class MapScene extends Scene {
+    private _map?: WorldMap;
 //     return new Game({
 //         width: config.gameWidth,
-//         height: config.gameHeight,
-//         type: AUTO,
-//         backgroundColor: "#032300",
-//         canvas,
-//         scene: [MapScene],
-//     });
-// }
+    private constructor() {
+        super("MapScene");
+    }
+
+    static async init(name: string): Promise<MapScene> {
+        const ms = new MapScene();
+        ms._map = await WorldMap.loadStatic(name);
+        return ms;
+    }
+
+    preload() {
+    }
+
+    create() {
+        this.add.text(512, 320, "Hello, world!", {
+            align: "center",
+            fontFamily: "Lucida Grande",
+            fontSize: 72,
+            color: "white",
+        }).setOrigin(0.5);
+    }
+}
+
+export class WasmBotsGame {
+    private _game: Game;
+
+    constructor(canvas: HTMLCanvasElement) {
+        this._game = new Game({
+            width: canvas.width,
+            height: canvas.height,
+            type: WEBGL,
+            pixelArt: true,
+            backgroundColor: "#032300",
+            canvas,
+            audio: {
+                noAudio: true,
+            }
+        });
+    }
+
+    async loadMap(mapName: string) {
+        const mapScene = await MapScene.init(mapName);
+        this._game.scene.add(`${mapName}_Scene`, mapScene, true);
+    }
+}

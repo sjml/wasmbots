@@ -22,7 +22,7 @@ export class WorldMap {
     tiles: TileType[][] = Array.from({length: MAP_HEIGHT}, () => Array(MAP_WIDTH).fill(TileType.Empty));
     spawnPoints: Point[] = [];
 
-    static async loadStatic(mapName): Promise<WorldMap> {
+    static async loadStatic(mapName: string): Promise<WorldMap> {
         const newMap = new WorldMap();
         const mapText = await readTextFile(pathJoin("$rsc/maps/static", `${mapName}.txt`));
         mapText.split("\n").forEach((rowStr: string, y: number) => {
