@@ -1,11 +1,8 @@
 ## dev
-* web
-  * see about reserving a strip along the top of the viewport for nav/menu stuff
-    * drawers and buttons should be under it
-  * 404 and about pages?
-    * does the .htaccess need to think about caching on the wasm? 
 * game stuff
+  * show players if bots are there
   * input and output
+    * dust off beschi
     * communicate world to player
       * situation
         * current HP

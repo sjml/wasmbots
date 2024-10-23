@@ -1,5 +1,6 @@
 import { Game, Scene, WEBGL } from "phaser";
 
+import config from "../engine/core/config";
 import { WorldMap, TileType } from "../engine/game/worldMap";
 
 class MapScene extends Scene {
@@ -76,15 +77,16 @@ export class WasmBotsGame {
 
     constructor(canvas: HTMLCanvasElement) {
         this._game = new Game({
-            width: canvas.width,
-            height: canvas.height,
+            width: config.gameWidth,
+            height: config.gameHeight,
             type: WEBGL,
             pixelArt: true,
             backgroundColor: "#032300",
             canvas,
             audio: {
                 noAudio: true,
-            }
+            },
+            banner: false,
         });
     }
 
