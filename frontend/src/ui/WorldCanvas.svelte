@@ -1,24 +1,30 @@
 <script lang="ts">
     import { onMount } from "svelte";
 
+    import config from "../engine/core/config";
+    // import { startGame } from "../vis/game";
+    // import { MapScene } from "../vis/map";
+
     // aspect is not calculated automatically and also manually copied
     //   below instead of doing some magic with CSS variables.
     //   we don't need to get too fancy. just remember to update things
     //     down in the style section if anything changes.
-    const width: number = 1024;
-    const height: number = 640;
+    const width: number = config.gameWidth;
+    const height: number = config.gameHeight;
     let canvas: HTMLCanvasElement;
+    // let gameHandle: MapScene;
 
-    onMount(() => {
+    $effect(() => {
+        // gameHandle = startGame(canvas);
         // just stubbing this out for now to have
         //   *some* kind of canvas thing happening here;
         //   eventually will get handed to a game engine
         //   or the like
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d")!;
         const bg = new Image();
         bg.src = "./img/cat1024x640.jpg";
         bg.onload = () => {
-            ctx?.drawImage(bg, 0, 0, canvas.width, canvas.height);
+            ctx.drawImage(bg, 0, 0, canvas.width, canvas.height);
         };
     });
 </script>

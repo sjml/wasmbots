@@ -3,8 +3,8 @@
     import BotPanel from "./BotPanel.svelte";
     import { onMount } from "svelte";
 
-    let leftPanelVisible = false;
-    let rightPanelVisible = false;
+    let leftPanelVisible = $state(false);
+    let rightPanelVisible = $state(false);
 
     onMount(() => {
         if (!isSmallScreen()) {
@@ -50,9 +50,9 @@
 </script>
 
 <div class="appContainer">
-    <!-- <BotPanel side="left"  isOpened={leftPanelVisible } on:toggle={() => togglePanel("left")}/> -->
+    <BotPanel side="left"  isOpened={leftPanelVisible } toggle={() => togglePanel("left")}/>
     <WorldCanvas/>
-    <!-- <BotPanel side="right" isOpened={rightPanelVisible} on:toggle={() => togglePanel("right")}/> -->
+    <BotPanel side="right" isOpened={rightPanelVisible} toggle={() => togglePanel("right")}/>
 </div>
 
 <style>

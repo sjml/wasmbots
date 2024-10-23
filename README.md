@@ -1,6 +1,6 @@
 # WasmBots
 
-A multi-player arena where all the competitors are bots! The challenge is the clever coding...
+A multi-wizard arena where all the competitors are bots! The challenge is the clever coding...
 
 [The programming interface is described here](./docs/interface.md), and there are [pre-made libraries in a bunch of languages](./libraries/) to get you started. You can also peruse [the code for the example bots](./example_bots_src/), which is pretty boring at the moment, but also straightforward. 
 
@@ -9,7 +9,7 @@ A multi-player arena where all the competitors are bots! The challenge is the cl
 
 Prereqs on macOS; modify this appropriately if you're using something else: 
 ```
-brew install emscripten wabt deno zig rust node go tinygo-org/tools/tinygo
+brew install deno wabt rust zig emscripten node go tinygo-org/tools/tinygo
 ```
 
 At the moment you can verify everything is working as expected by running:

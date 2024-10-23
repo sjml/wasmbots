@@ -1,4 +1,10 @@
 ## dev
+* migrate to svelte 5 (and SvelteKit while we're biting bullets?)
+  * basically just want to do some docs/about page kind of stuff, but need to figure out how all that works in the new reality
+  * see about reserving a strip along the top of the viewport for nav/menu stuff
+    * drawers and buttons should be under it
+  * 404 and about pages?
+    * does the .htaccess need to think about caching on the wasm? 
 * game stuff
   * generate world
     * just pre-authored text files to start
@@ -37,6 +43,9 @@
 ## polish
 * UI: buttons should fade between state
 * UI: add button to console to copy it to clipboard
+* UI: landscape view on iPhone - the drawers don't extend into the island areas
+* UI: align drawer title with button, but margin it out away from it
+* UI: text size on bot name? 
 
 ## horizon
 * add convenience functions to libraries for writing/reading byte array

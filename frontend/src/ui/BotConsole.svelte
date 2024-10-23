@@ -9,7 +9,7 @@
         level: Logger.LogLevel;
         msg: string;
     };
-    let logs: LogEntry[] = [];
+    let logs: LogEntry[] = $state([]);
     let consoleDiv: HTMLDivElement;
 
     async function runBot(fpath: string) {
@@ -33,8 +33,14 @@
             count += 1;
         }
     }
-    export let selectedFile: string;
-    $: runBot(selectedFile);
+
+    interface Props {
+        selectedFile: string;
+    }
+    let { selectedFile }: Props = $props();
+    $effect(() => {
+        runBot(selectedFile);
+    });
 </script>
 
 <div class="console" bind:this={consoleDiv}>

@@ -1,9 +1,13 @@
 <script lang="ts">
-    import rawBotInfo from "../../public/example_bots/bots.json";
+    import rawBotInfo from "../../static/example_bots/bots.json";
     const botInfo: { [key: string]: any } = rawBotInfo;
 
-    export let chosen: string = "";
-    $: botData = chosen in botInfo ? botInfo[chosen] : null;
+    interface Props {
+        chosen?: string;
+    }
+
+    let { chosen = $bindable("") }: Props = $props();
+    let botData = $derived(chosen in botInfo ? botInfo[chosen] : null);
 </script>
 
 <select class="botSelector" bind:value={chosen}>
