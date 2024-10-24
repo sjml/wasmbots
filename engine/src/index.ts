@@ -7,4 +7,4 @@ export * as Messages from "./worker/messages.ts";
 export * from "./worker/coordinator.ts";
 
 export * as Circumstances from "./game/circumstances.ts";
-export { WorldMap, TileType } from "./game/worldMap.ts";
+export { WorldMap, TileType } from "./game/map.ts";

@@ -2,5 +2,6 @@
   "tasks": {
   },
   "imports": {
+    "pure-rand": "npm:pure-rand@6.1.0"
   }
 }

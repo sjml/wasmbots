@@ -11,6 +11,7 @@ const config = {
     memorySize: 2048,
 
     // GameParameters
+    startingHitPoints: 10,
 
     // visualization stuff
     gameWidth: 1024,

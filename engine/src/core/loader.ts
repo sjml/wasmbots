@@ -21,6 +21,11 @@ export async function readTextFile(filepath: string): Promise<string> {
     }
 }
 
+export async function readJsonFile(filepath: string): Promise<any> {
+    const text = await readTextFile(filepath);
+    return JSON.parse(text);
+}
+
 export async function readBinaryFile(filepath: string): Promise<Uint8Array> {
     if (filepath.startsWith("$rsc/")) {
         filepath = pathJoin(getRscPath(), filepath.substring(4));

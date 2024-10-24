@@ -1,14 +1,9 @@
 ## dev
 * game stuff
-  * integrate seedable rng
-    * https://www.npmjs.com/package/pure-rand
   * player class
-    * maybe is vis/ui exclusive; guest doing most of the work on the engine side
-    * pick from the spawn points
-    * draw once validation is done
-    * once two players, pick one to go first and then start ticking them both
+    * draw player layer
     * when one dies, replace with tombstone
-    * report to ui which then clears it
+    * report to ui which died?
     * game over when only one living bot
   * input and output
     * dust off beschi
@@ -24,9 +19,23 @@
           * number of events
           * array of events
       * move submission
-        * 
+        * ??
     * player navigation (both receiving and executing)
-    * line of sight and vision area
+      * just have them randomly move around in diagonal lines for now
+        * pick direction, go until failed move, reflect
+  * UI: debugger-style interface
+    * play: ticks until done, changes to pause button, disabled if game not ready
+    * pause: stops ticks, changes to play button
+    * step: one tick at a time, grayed out during play
+    * stop: shuts down everything, sets game to not ready
+    * reset: reloads bots and world to initial state, re-seeds RNG
+  * testing
+    * player class
+      * feeding non-wasm byte array
+      * feeding invalid wasm
+      * feeding program that refuses start
+      * feeding program that crashes on setup
+  * line of sight and vision area
   * items, weapons, armor, spells
 * map variations
     * Tiled authoring (figure out how to represent data in CLI version; can export as JSON so maybe don't need to get too fancy on the Tiled side and "just" parse that)
@@ -45,6 +54,7 @@
 * UI: landscape view on iPhone - the drawers don't extend into the island areas
 * UI: align drawer title with button, but margin it out away from it
 * UI: text size on bot name? 
+* Game: ability to zoom in on single bot
 
 ## horizon
 * add convenience functions to libraries for writing/reading byte array
@@ -62,6 +72,7 @@
   * integrate with commit hook?
 * look at all the exports in all the languages; see if we can organize/cleanup/hide stuff as needed
 * think about some kind of test harness that checks all reads/writes work properly? 
+* allow teams? hooboy, whole other layer of functionality
 
 ## bugs
 * in web ui: switching bot while still running: gotta fully detach and dispose of the old one

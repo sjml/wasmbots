@@ -7,10 +7,13 @@
     let canvas: HTMLCanvasElement;
     let gameHandle: WasmBotsGame;
 
-    $effect(() => {
+    async function gameSetup() {
         gameHandle = new WasmBotsGame(canvas);
+        await gameHandle.untilBootloaderDone();
         gameHandle.loadMap("arena");
-    });
+    }
+
+    $effect(() => { gameSetup(); });
 </script>
 
 <div class="canvasContainer">

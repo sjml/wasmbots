@@ -11,7 +11,7 @@ export enum WorkerStatus {
     Shutdown,
 }
 
-type LogFunction = (level: LogLevel, message: string) => void;
+export type LogFunction = (level: LogLevel, message: string) => void;
 
 export class WasmCoordinator {
     private worker: Worker;
