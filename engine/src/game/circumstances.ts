@@ -6,7 +6,7 @@ type GameParameters = {
     layout: { doc: string, type: string }[],
 }
 
-import { default as __rawGP } from "../../rsc/data/gameParameters.json" with { type: "json" };
+import { default as __rawGP } from "../data/gameParameters.json" with { type: "json" };
 const gameParameters: GameParameters = __rawGP;
 
 export function writeGameParameters(buff: Uint8Array, offset: number): number {

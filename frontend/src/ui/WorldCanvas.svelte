@@ -10,7 +10,8 @@
     async function gameSetup() {
         gameHandle = new WasmBotsGame(canvas);
         await gameHandle.untilBootloaderDone();
-        gameHandle.loadMap("arena");
+        await gameHandle.loadMap("arena");
+        await gameHandle.addPlayer();
     }
 
     $effect(() => { gameSetup(); });

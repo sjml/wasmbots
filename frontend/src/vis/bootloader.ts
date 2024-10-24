@@ -12,7 +12,11 @@ export class GameBootloader extends Phaser.Scene {
         this.setLoadEvents();
         this.load.setPath("rsc");
 
-        this.load.image("tiles-dungeon", "img/kenny_tiny-dungeon_tilemap.png");
+        this.load.spritesheet("tiles-dungeon", "img/kenny_tiny-dungeon_tilemap.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+
         this.load.tilemapTiledJSON("map-arena", "maps/static/arena.tmj");
     }
 

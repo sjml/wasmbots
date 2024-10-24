@@ -1,18 +1,21 @@
 import Phaser from "phaser";
 
 import config from "../engine/core/config";
+import { RNG } from "../engine/game/random";
 import { GameMap } from "./map";
 import { GameBootloader } from "./bootloader";
+import { GamePlayer } from "./player";
 import { EventBus } from "./events";
 
-export class WasmBotsGame {
-    private _game: Phaser.Game;
+export class WasmBotsGame extends Phaser.Game {
     private _booloaderPromise: Promise<void>;
     private _bootloaderResolve!: () => void;
     private _bootloaderReject!: () => void;
+    private _currentMapScene?: Phaser.Scene;
+    rng: RNG = new RNG(null);
 
     constructor(canvas: HTMLCanvasElement) {
-        this._game = new Phaser.Game({
+        super({
             width: config.gameWidth,
             height: config.gameHeight,
             type: Phaser.WEBGL,
@@ -44,7 +47,12 @@ export class WasmBotsGame {
     }
 
     async loadMap(mapName: string) {
-        const mapScene = await GameMap.loadFrom(mapName);
-        this._game.scene.add(`${mapName}_Scene`, mapScene, true);
+        this._currentMapScene = await GameMap.loadFrom(mapName);
+        this.scene.add(`${mapName}_Scene`, this._currentMapScene, true);
+    }
+
+    async addPlayer() {
+        const player1 = new GamePlayer(this._currentMapScene!, {x: 10, y: 10});
+        const player2 = new GamePlayer(this._currentMapScene!, {x: 20, y: 20});
     }
 }

@@ -61,6 +61,7 @@
 * with the move away from extern linking, maybe more libraries can use normal strings in their BotMetadata structs
 * readmes for individual libraries
 * custom Phaser3 build to trim down export size
+  * then lower the `chunkSizeWarningLimit`
   * (other vis libraries that may be simpler/smaller than Phaser)
     - https://github.com/KilledByAPixel/LittleJS
     - https://excaliburjs.com

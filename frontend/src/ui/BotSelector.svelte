@@ -1,10 +1,19 @@
 <script lang="ts">
-    import rawBotInfo from "../../static/example_bots/bots.json";
-    const botInfo: { [key: string]: any } = rawBotInfo;
+    import { onMount } from "svelte";
 
     interface Props {
         chosen?: string;
     }
+
+    let botInfo: { [key: string]: any } = $state({});
+    onMount(async () => {
+        const res = await fetch("/example_bots/bots.json");
+        if (!res.ok) {
+            console.error(`ERROR: Could not load bot list!: ${res.status} - ${res.statusText}`);
+            return;
+        }
+        botInfo = await res.json();
+    });
 
     let { chosen = $bindable("") }: Props = $props();
     let botData = $derived(chosen in botInfo ? botInfo[chosen] : null);

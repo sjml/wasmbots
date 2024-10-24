@@ -16,5 +16,6 @@ const config = {
     // visualization stuff
     gameWidth: 1024,
     gameHeight: 640,
+    tileSize: 16,
 }
 export default config;

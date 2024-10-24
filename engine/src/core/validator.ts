@@ -1,9 +1,10 @@
-import { readTextFile, readBinaryFile } from "./loader.ts";
+import { readBinaryFile } from "./loader.ts";
 import { type ILogger } from "./logger.ts";
+
+import parsedApi from "../data/guestAPI.json" with { type: "json" };
 
 let validatorProgramBytes: Uint8Array = new Uint8Array(0);
 let validatorProgram: WebAssembly.Module|null = null;
-let expectationsJson: string = "";
 
 // assuming that the wasm was already able to be compiled;
 export async function validateWasm(buff: Uint8Array|ArrayBuffer, logger?: ILogger): Promise<boolean> {
@@ -15,10 +16,8 @@ export async function validateWasm(buff: Uint8Array|ArrayBuffer, logger?: ILogge
         validatorProgramBytes = await readBinaryFile("$rsc/lib/wasmbots_validator.wasm");
         validatorProgram = await WebAssembly.compile(validatorProgramBytes);
     }
-    if (expectationsJson.length == 0) {
-        expectationsJson = await readTextFile("$rsc/data/guestAPI.json");
-    }
-    const jsonBuff = new TextEncoder().encode(expectationsJson);
+
+    const jsonBuff = new TextEncoder().encode(JSON.stringify(parsedApi));
     const validator = await WebAssembly.instantiate(validatorProgram, {
         env: {
             validatorError: (ptr: number, len: number) => {
