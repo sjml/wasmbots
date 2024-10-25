@@ -5,6 +5,7 @@ import { WorldMap } from "../engine/game/map";
 export class GameMap extends Phaser.Scene {
     worldMap?: WorldMap;
     private _backgroundLayer: Phaser.Tilemaps.TilemapLayer | null = null;
+    private _itemLayer: Phaser.Tilemaps.TilemapLayer | null = null;
 
     private constructor() {
         super("MapScene");
@@ -23,6 +24,7 @@ export class GameMap extends Phaser.Scene {
     create() {
         const tm = this.make.tilemap({key: `map-${this.worldMap!.name}`});
         const tmi = tm.addTilesetImage("KennyDungeonTiles", "tiles-dungeon")!;
-        this._backgroundLayer = tm.createLayer(0, tmi, 0, 0);
+        this._backgroundLayer = tm.createLayer("terrain", tmi, 0, 0);
+        this._itemLayer = tm.createLayer("items", tmi, 0, 0);
     }
 }

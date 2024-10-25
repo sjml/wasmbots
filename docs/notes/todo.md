@@ -1,9 +1,11 @@
 ## dev
 * game stuff
-  * player class
-    * when dropping, if game hasn't started, put spawn point back in the pool
   * input and output
-    * dust off beschi
+    * first just do a basic goldspike
+      * have them randomly move around in diagonal lines
+        * pick direction, go until failed move, reflect
+    * then make communication more real: dust off beschi
+      * (needs Zig output too, but maybe not right away)
     * communicate world to player
       * situation
         * current HP
@@ -18,8 +20,6 @@
       * move submission
         * ??
     * player navigation (both receiving and executing)
-      * just have them randomly move around in diagonal lines for now
-        * pick direction, go until failed move, reflect
   * UI: 
     * add spinners while validating/loading wasm
     * add player image to panel once spawned
@@ -49,6 +49,8 @@
 * CI to build/validate/deploy
 
 ## polish
+* player class
+    * when dropping, if game hasn't started, put spawn point back in the pool
 * UI: buttons should fade between state
 * UI: add button to console to copy it to clipboard
 * UI: landscape view on iPhone - the drawers don't extend into the island areas
