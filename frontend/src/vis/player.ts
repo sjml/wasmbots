@@ -12,17 +12,17 @@ export enum PlayerFacing {
     Left,
 }
 
-export class GamePlayer extends Phaser.GameObjects.Sprite {
+export class VisPlayer extends Phaser.GameObjects.Sprite {
     static playerImageDeck?: Deck<number>;
 
     constructor(scene: Phaser.Scene, tilePos: Point) {
-        if (!GamePlayer.playerImageDeck) {
-            GamePlayer.playerImageDeck = new Deck(PLAYER_IMG_FRAMES, (scene.game as WasmBotsVisualizer).visualRNG)
+        if (!VisPlayer.playerImageDeck) {
+            VisPlayer.playerImageDeck = new Deck(PLAYER_IMG_FRAMES, (scene.game as WasmBotsVisualizer).visualRNG)
         }
         super(
             scene,
             tilePos.x * config.tileSize, tilePos.y * config.tileSize,
-            "tiles-dungeon", GamePlayer.playerImageDeck.draw()
+            "tiles-dungeon", VisPlayer.playerImageDeck.draw()
         );
 
         this.setOrigin(0, 0);

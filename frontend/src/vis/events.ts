@@ -1,3 +1,3 @@
 import Phaser from "phaser";
 
-export const EventBus = new Phaser.Events.EventEmitter();
+export const VisEventBus = new Phaser.Events.EventEmitter();

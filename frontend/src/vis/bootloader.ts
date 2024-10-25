@@ -1,8 +1,8 @@
 import Phaser from "phaser";
 
-import { EventBus } from "./events";
+import { VisEventBus } from "./events";
 
-export class GameBootloader extends Phaser.Scene {
+export class VisBootloader extends Phaser.Scene {
 
     constructor() {
         super({key: "bootloader"});
@@ -22,11 +22,11 @@ export class GameBootloader extends Phaser.Scene {
 
     setLoadEvents() {
         this.load.on("complete", () => {
-            EventBus.emit("bootloader-done");
+            VisEventBus.emit("bootloader-done");
         });
         this.load.on("loaderror", (erroredFile: Phaser.Loader.File) => {
             console.error(`ERROR: Bootloader could not load ${erroredFile.src}`);
-            EventBus.emit("bootloader-error");
+            VisEventBus.emit("bootloader-error");
         });
     }
 }

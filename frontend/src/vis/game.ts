@@ -4,16 +4,16 @@ import config from "../engine/core/config";
 import { RNG } from "../engine/game/random";
 import { World } from "../engine/game/world";
 import { Player as WorldPlayer } from "../engine/game/player";
-import { GameMap } from "./map";
-import { GameBootloader } from "./bootloader";
-import { GamePlayer, PlayerFacing } from "./player";
-import { EventBus } from "./events";
+import { VisMap } from "./map";
+import { VisBootloader } from "./bootloader";
+import { VisPlayer, PlayerFacing } from "./player";
+import { VisEventBus } from "./events";
 
 export class WasmBotsVisualizer extends Phaser.Game {
     private _booloaderPromise: Promise<void>;
     private _bootloaderResolve!: () => void;
     private _bootloaderReject!: () => void;
-    private _currentMapScene?: GameMap;
+    private _currentMapScene?: VisMap;
     visualRNG: RNG = new RNG(null);
     worldObject: World;
 
@@ -29,7 +29,7 @@ export class WasmBotsVisualizer extends Phaser.Game {
                 noAudio: true,
             },
             banner: false,
-            scene: [GameBootloader],
+            scene: [VisBootloader],
         });
 
         this.worldObject = world;
@@ -39,10 +39,10 @@ export class WasmBotsVisualizer extends Phaser.Game {
             this._bootloaderReject = reject;
         })
 
-        EventBus.on("bootloader-done", () => {
+        VisEventBus.on("bootloader-done", () => {
             this._bootloaderResolve();
         });
-        EventBus.on("bootloder-error", () => {
+        VisEventBus.on("bootloder-error", () => {
             this._bootloaderReject();
         });
     }
@@ -52,13 +52,13 @@ export class WasmBotsVisualizer extends Phaser.Game {
     }
 
     async loadMap(mapName: string) {
-        this._currentMapScene = await GameMap.loadFrom(mapName);
+        this._currentMapScene = await VisMap.loadFrom(mapName);
         this.worldObject.setMap(this._currentMapScene.worldMap!);
         this.scene.add(`${mapName}_Scene`, this._currentMapScene, true);
     }
 
     async addPlayer(p: WorldPlayer) {
-        const pvis = new GamePlayer(this._currentMapScene!, p.location);
+        const pvis = new VisPlayer(this._currentMapScene!, p.location);
         if (p.location.x > (config.gameWidth / config.tileSize * 0.5)) {
             pvis.setFacing(PlayerFacing.Left);
         }

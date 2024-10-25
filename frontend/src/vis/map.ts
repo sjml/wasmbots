@@ -2,7 +2,7 @@ import Phaser from "phaser";
 
 import { WorldMap } from "../engine/game/map";
 
-export class GameMap extends Phaser.Scene {
+export class VisMap extends Phaser.Scene {
     worldMap?: WorldMap;
     private _backgroundLayer: Phaser.Tilemaps.TilemapLayer | null = null;
     private _itemLayer: Phaser.Tilemaps.TilemapLayer | null = null;
@@ -11,8 +11,8 @@ export class GameMap extends Phaser.Scene {
         super("MapScene");
     }
 
-    static async loadFrom(name: string): Promise<GameMap> {
-        const ms = new GameMap();
+    static async loadFrom(name: string): Promise<VisMap> {
+        const ms = new VisMap();
         ms.worldMap = await WorldMap.loadTiled(name);
         return ms;
     }
