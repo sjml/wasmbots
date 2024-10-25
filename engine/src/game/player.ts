@@ -12,9 +12,9 @@ export class Player {
     location: Point;
     hitPoints: number;
 
-    constructor(logger: LogFunction) {
+    constructor(logger: LogFunction, rngSeed: number) {
         this.location = {x: -1, y: -1};
-        this.coordinator = new WasmCoordinator(logger);
+        this.coordinator = new WasmCoordinator(logger, rngSeed);
         this.hitPoints = config.startingHitPoints;
     }
 

@@ -91,7 +91,7 @@ async function initModule(payload: Msg.InitModulePayload) {
 }
 
 async function instantiate(payload: Msg.InstantiatePayload) {
-    program = new GuestProgram(logger);
+    program = new GuestProgram(logger, payload.rngSeed);
     const initSuccess = await program.init(module);
     if (!initSuccess) {
         self.postMessage({

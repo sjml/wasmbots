@@ -39,7 +39,9 @@ export interface InitModulePayload {
     tickKillTimeLimit: number;
 }
 
-export interface InstantiatePayload {}
+export interface InstantiatePayload {
+    rngSeed: number;
+}
 export interface RunTickPayload {
     lastTickDuration: number;
 }

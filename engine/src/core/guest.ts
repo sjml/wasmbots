@@ -1,5 +1,6 @@
 import { type ILogger } from "./logger.ts";
 import { writeGameParameters, writeCircumstances } from "../game/circumstances.ts";
+import { RNG } from "../game/random.ts";
 
 const MIN_NAME_LEN = 4;
 
@@ -22,10 +23,12 @@ export class GuestProgram {
     private reserveBlock = new Uint8Array();
     isShutDown: boolean = false;
     botName: string = "";
+    localRng: RNG;
 
-    constructor(logger?: ILogger) {
+    constructor(logger: ILogger | null, rngSeed: number) {
         logger ||= console;
         this.logger = logger;
+        this.localRng = new RNG(rngSeed);
     }
 
     private readString(msgPtr: number, msgLen: number): string {
@@ -108,7 +111,13 @@ export class GuestProgram {
                 shutdown: () => this.shutdown(),
                 logFunction: (logLevel: number, msgPtr: number, msgLen: number) => {
                     this.log(logLevel, msgPtr, msgLen);
-                }
+                },
+                getRandomInt: (min: number, max: number) => {
+                    if (max < min) {
+                        return 0;
+                    }
+                    return this.localRng.randInt(min, max);
+                },
             }
         });
 

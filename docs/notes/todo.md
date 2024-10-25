@@ -2,8 +2,6 @@
 * game stuff
   * input and output
     * first just do a basic goldspike
-      * add getRandom call to module imports
-        * (while we're in there, check that all the imported functions are async if possible)
       * have them randomly move around in diagonal lines
         * pick direction, go until failed move, reflect
     * then make communication more real: dust off beschi

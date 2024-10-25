@@ -47,6 +47,11 @@ void wsmbt_logfErr(const char* fmt, ...) {
 //// \LOGGING
 
 
+//// RANDOM NUMBERS
+extern int32_t getRandomInt(int32_t min, int32_t max);
+//// \RANDOM NUMBERS
+
+
 //// MEMORY CREATION + READING AND WRITING
 #if !defined(WSMBT_BOUNDS_CHECKING)
     #define WSMBT_BOUNDS_CHECKING 1

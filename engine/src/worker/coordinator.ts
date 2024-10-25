@@ -17,6 +17,7 @@ export class WasmCoordinator {
     private worker: Worker;
     workerStatus: WorkerStatus;
     logFunction: LogFunction;
+    rngSeed: number;
 
     private setupTimeout: number = -1;
     private tickTimeout: number = -1;
@@ -32,8 +33,9 @@ export class WasmCoordinator {
     private readyResolve!: () => void;
     private readyReject!: () => void;
 
-    constructor(logFunc: LogFunction) {
+    constructor(logFunc: LogFunction, rngSeed: number) {
         this.logFunction = logFunc;
+        this.rngSeed = rngSeed;
 
         this.worker = new Worker(
             new URL("./wasmbot.worker.ts", import.meta.url).href,
@@ -81,7 +83,9 @@ export class WasmCoordinator {
         }
         this.worker.postMessage({
             type: Msg.HostToGuestMessageType.Instantiate,
-            payload: {},
+            payload: {
+                rngSeed: this.rngSeed
+            },
         });
         this.setupTimeout = setTimeout(() => {
             if (this.workerStatus == WorkerStatus.Uninitialized) {

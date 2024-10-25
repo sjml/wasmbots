@@ -10,6 +10,8 @@
 typedef float float32_t;
 typedef double float64_t;
 
+int32_t getRandomInt(int32_t min, int32_t max);
+
 void wsmbt_log(const char* msg);
 void wsmbt_logErr(const char* msg);
 void wsmbt_logf(const char* fmt, ...);

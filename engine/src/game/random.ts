@@ -26,12 +26,17 @@ export class RNG {
     private _seedStr: string | null;
     private _rng: prand.RandomGenerator;
 
-    constructor(seed: string | null) {
-        this._seedStr = seed;
-        if (this._seedStr != null) {
+    constructor(seed: string | number | null) {
+        if (typeof seed == "string") {
+            this._seedStr = seed;
             this._seed = stringToSeed(this._seedStr, CONFOUNDER);
         }
+        else if (typeof seed == "number") {
+            this._seedStr = null;
+            this._seed = seed;
+        }
         else {
+            this._seedStr = null;
             this._seed = Date.now() ^ (Math.random() * 0x100000000);
         }
         this._rng = prand.xoroshiro128plus(this._seed);
