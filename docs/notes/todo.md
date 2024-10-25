@@ -6,6 +6,7 @@
         * pick direction, go until failed move, reflect
     * doesn't look like much, but once `moveByte` is getting passed up and `lastMoveSucceeded` is getting passed down, we can swap them out for full messages in either direction
       * lotta stuff getting wired up now...
+    * fix timestamp situation with logging (hide or put under tooltip or something)
     * then make communication more real: dust off beschi
       * (needs Zig output too, but maybe not right away)
     * communicate world to player

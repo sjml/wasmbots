@@ -11,11 +11,13 @@ export class Player {
     // remember that anything added here needs to be dealt with in the reset
     location: Point;
     hitPoints: number;
+    lastMoveSucceeded: boolean;
 
     constructor(logger: LogFunction, rngSeed: number) {
         this.location = {x: -1, y: -1};
-        this.coordinator = new WasmCoordinator(logger, rngSeed);
+        this.coordinator = new WasmCoordinator(this, logger, rngSeed);
         this.hitPoints = config.startingHitPoints;
+        this.lastMoveSucceeded = true;
     }
 
     async init(programBytes: Uint8Array, cloneProgram: boolean = true): Promise<boolean> {
@@ -34,14 +36,15 @@ export class Player {
         const logger = this.coordinator.logFunction;
         const seed = this.coordinator.rngSeed;
         logger(LogLevel.Info, "-------- RESETTING");
-        this.coordinator = new WasmCoordinator(logger, seed);
+        this.coordinator = new WasmCoordinator(this, logger, seed);
         this.hitPoints = config.startingHitPoints;
+        this.lastMoveSucceeded = true;
         return await this.init(this._programBytes, false);
     }
 
-    async tickTurn() {
+    async tickTurn(): Promise<number> {
         const moveByte = await this.coordinator.tick();
 
-        now we have this moveByte, need to move in the world
+        return moveByte;
     }
 }

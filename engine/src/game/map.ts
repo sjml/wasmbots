@@ -136,6 +136,10 @@ export class WorldMap {
 
         return slice;
     }
+
+    getTile(x: number, y: number): TileType {
+        return this.tiles[y][x];
+    }
 }
 
 // const m = await WorldMap.loadTiled("arena");

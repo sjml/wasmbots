@@ -2,6 +2,7 @@ import config from "../core/config.ts";
 import { LogLevel } from "../core/logger.ts";
 import * as Msg from "./messages.ts";
 import { sleep } from "../core/util.ts";
+import { Player } from "../game/player.ts";
 
 export enum WorkerStatus {
     Uninitialized,
@@ -15,6 +16,7 @@ export type LogFunction = (level: LogLevel, message: string) => void;
 
 export class WasmCoordinator {
     private worker: Worker;
+    private player: Player;
     workerStatus: WorkerStatus;
     logFunction: LogFunction;
     rngSeed: number;
@@ -24,7 +26,6 @@ export class WasmCoordinator {
     private inTick: boolean = false;
     private tickStartTime: number = 0;
     private lastTickDuration: number = 0;
-    private lastMoveSucceeded: boolean = true;
     private tickPromise!: Promise<number>;
     private tickResolve!: (val: number) => void;
     private tickReject!: () => void;
@@ -34,7 +35,8 @@ export class WasmCoordinator {
     private readyResolve!: () => void;
     private readyReject!: () => void;
 
-    constructor(logFunc: LogFunction, rngSeed: number) {
+    constructor(parent: Player, logFunc: LogFunction, rngSeed: number) {
+        this.player = parent;
         this.logFunction = logFunc;
         this.rngSeed = rngSeed;
 
@@ -133,7 +135,7 @@ export class WasmCoordinator {
                 type: Msg.HostToGuestMessageType.RunTick,
                 payload: {
                     lastTickDuration: this.lastTickDuration,
-                    lastMoveSucceeded: this.lastMoveSucceeded,
+                    lastMoveSucceeded: this.player.lastMoveSucceeded,
                 } as Msg.RunTickPayload
             });
 

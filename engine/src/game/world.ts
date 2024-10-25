@@ -1,7 +1,7 @@
 import { RNG, Deck } from "./random.ts";
 import { Player } from "./player.ts";
 import { WorkerStatus } from "../worker/coordinator.ts";
-import { WorldMap, type Point } from "./map.ts";
+import { TileType, WorldMap, type Point } from "./map.ts";
 
 // trying to build with the idea that these numbers might change,
 //   but not testing that at all, so probably some lurking bugs
@@ -14,6 +14,28 @@ type WorldEvents = {
     playerAdded: { newPlayer: Player };
     playerDropped: { leavingPlayer: Player };
 }
+
+export enum Direction {
+    East,
+    Southeast,
+    South,
+    Southwest,
+    West,
+    Northwest,
+    North,
+    Northeast,
+}
+
+const OFFSETS: Map<Direction, Point> = new Map([
+    [Direction.East,      { x:  1, y:  0 }],
+    [Direction.Southeast, { x:  1, y:  1 }],
+    [Direction.South,     { x:  0, y:  1 }],
+    [Direction.Southwest, { x: -1, y:  1 }],
+    [Direction.West,      { x: -1, y:  0 }],
+    [Direction.Northwest, { x: -1, y: -1 }],
+    [Direction.North,     { x:  0, y: -1 }],
+    [Direction.Northeast, { x:  1, y: -1 }],
+]);
 
 export enum GameState {
     Setup,
@@ -176,7 +198,8 @@ export class World extends EventTarget {
         for (const player of this._players) {
             if (player == null) { continue; }
             if (World._playerIsValid(player)) {
-                await player.tickTurn();
+                const moveByte = await player.tickTurn();
+                player.lastMoveSucceeded = this.processMove(player, moveByte);
             }
         }
 
@@ -190,5 +213,21 @@ export class World extends EventTarget {
             // errybody dead
             this.setState(GameState.Shutdown);
         }
+    }
+
+    processMove(player: Player, moveByte: number): boolean {
+        const direction = moveByte as Direction;
+        const offset = OFFSETS.get(direction)!;
+        const peekLoc = {
+            x: player.location.x + offset.x,
+            y: player.location.y + offset.y,
+        };
+        const peek = this._currentMap!.getTile(peekLoc.x, peekLoc.y);
+        if (peek == TileType.Wall) {
+            console.log(`ENGINE: player hit wall at ${peekLoc.x}, ${peekLoc.y}`);
+            return false;
+        }
+        player.location = peekLoc;
+        return true;
     }
 }
