@@ -17,6 +17,7 @@ export interface InstantiateDonePayload {
 }
 export interface RunTickDonePayload {
     hadError: boolean;
+    moveByte: number;
 }
 export interface LogMessagePayload {
     logLevel: LogLevel;
@@ -44,6 +45,7 @@ export interface InstantiatePayload {
 }
 export interface RunTickPayload {
     lastTickDuration: number;
+    lastMoveSucceeded: boolean;
 }
 
 

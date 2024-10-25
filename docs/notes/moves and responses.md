@@ -8,7 +8,7 @@ SetBotInfo
     - semver (u16 * 3; 6 bytes)
     - only valid during setup? (why tho)
 Move
-    - direction UP, RIGHT, DOWN, LEFT (one byte)
+    - direction EAST, SOUTHEAST, SOUTH, SOUTHWEST, WEST, NORTHWEST, NORTH, NORTHEAST (one byte)
     - number of spaces (one byte)
 Attack
     - square relative to you (i16 x and i16 y; 4 bytes)

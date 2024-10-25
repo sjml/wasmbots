@@ -10,7 +10,7 @@
 typedef float float32_t;
 typedef double float64_t;
 
-int32_t getRandomInt(int32_t min, int32_t max);
+int32_t wsmbt_getRandomInt(int32_t min, int32_t max);
 
 void wsmbt_log(const char* msg);
 void wsmbt_logErr(const char* msg);
@@ -54,7 +54,7 @@ typedef struct wsmbt_BotMetadata {
     bool ready;
 } wsmbt_BotMetadata;
 
-typedef void (*wsmbt_TickFunction)(uint32_t);
+typedef void (*wsmbt_TickFunction)(uint32_t, bool);
 void wsmbt_registerTickCallback(wsmbt_TickFunction tickFunc);
 
 #endif // \WASMBOT_CLIENT_H

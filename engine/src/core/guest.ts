@@ -1,5 +1,5 @@
 import { type ILogger } from "./logger.ts";
-import { writeGameParameters, writeCircumstances } from "../game/circumstances.ts";
+import { writeGameParameters, writeCircumstances, readMoveBuffer } from "../game/circumstances.ts";
 import { RNG } from "../game/random.ts";
 
 const MIN_NAME_LEN = 4;
@@ -213,15 +213,16 @@ export class GuestProgram {
         return ready;
     }
 
-    runTick(lastTickDuration: number) {
+    runTick(lastTickDuration: number, lastMoveSucceeded: boolean): number {
         this.reserveBlock.fill(0);
-        const circOffset = 0;
-        writeCircumstances(this.reserveBlock, circOffset, lastTickDuration);
+        const circOffset = 1024;
+        writeCircumstances(this.reserveBlock, circOffset, lastTickDuration, lastMoveSucceeded);
         try {
             this.exports!.tick(circOffset);
         } catch (error) {
             this.logger.error(`FATAL ERROR: Crash during tick function:\n  ${error}`);
             this.isShutDown = true;
         }
+        return readMoveBuffer(this.reserveBlock, 0);
     }
 }

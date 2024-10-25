@@ -112,11 +112,12 @@ async function instantiate(payload: Msg.InstantiatePayload) {
 }
 
 async function runTick(payload: Msg.RunTickPayload) {
-    program.runTick(payload.lastTickDuration);
+    const moveByte = program.runTick(payload.lastTickDuration, payload.lastMoveSucceeded);
     self.postMessage({
         type: Msg.GuestToHostMessageType.RunTickDone,
         payload: {
             hadError: program.isShutDown,
+            moveByte: moveByte,
         } as Msg.RunTickDonePayload,
     });
 }

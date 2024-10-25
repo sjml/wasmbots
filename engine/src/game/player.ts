@@ -32,13 +32,16 @@ export class Player {
 
     async reset(): Promise<boolean> {
         const logger = this.coordinator.logFunction;
+        const seed = this.coordinator.rngSeed;
         logger(LogLevel.Info, "-------- RESETTING");
-        this.coordinator = new WasmCoordinator(logger);
+        this.coordinator = new WasmCoordinator(logger, seed);
         this.hitPoints = config.startingHitPoints;
         return await this.init(this._programBytes, false);
     }
 
-    async processTurn() {
-        await this.coordinator.tick();
+    async tickTurn() {
+        const moveByte = await this.coordinator.tick();
+
+        now we have this moveByte, need to move in the world
     }
 }

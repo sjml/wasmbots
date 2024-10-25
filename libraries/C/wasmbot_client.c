@@ -49,6 +49,9 @@ void wsmbt_logfErr(const char* fmt, ...) {
 
 //// RANDOM NUMBERS
 extern int32_t getRandomInt(int32_t min, int32_t max);
+int32_t wsmbt_getRandomInt(int32_t min, int32_t max) {
+    return getRandomInt(min, max);
+}
 //// \RANDOM NUMBERS
 
 
@@ -482,7 +485,7 @@ size_t setup(size_t requestReserve) {
     return (size_t)WSMBT_HOST_RESERVE;
 }
 
-void _noop(uint32_t lastDuration) {}
+void _noop(uint32_t lastDuration, bool lastMoveSucceeded) {}
 wsmbt_TickFunction _clientTick = &_noop;
 
 void wsmbt_registerTickCallback(wsmbt_TickFunction tickFunc) {
@@ -491,6 +494,8 @@ void wsmbt_registerTickCallback(wsmbt_TickFunction tickFunc) {
 
 void tick(size_t offset) {
     uint32_t lastDuration = wsmbt_read_u32(offset);
-    _clientTick(lastDuration);
+    offset += 4;
+    bool lastMoveSucceeded = (bool)wsmbt_read_u8(offset);
+    _clientTick(lastDuration, lastMoveSucceeded);
 }
 //// \SETUP AND LOOP

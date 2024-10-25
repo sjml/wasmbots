@@ -1,5 +1,6 @@
 import { WasmCoordinator, WorkerStatus } from "../worker/coordinator.ts";
 import { LogLevel } from "../core/logger.ts";
+import { RNG } from "../game/random.ts";
 
 if (Deno.args.length == 0) {
     console.error("Give a file path.")
@@ -27,7 +28,8 @@ function log(level: LogLevel, msg: string) {
 }
 
 const program = await Deno.readFile(Deno.args[0]);
-const coord = new WasmCoordinator(log);
+const rng = new RNG(null);
+const coord = new WasmCoordinator(log, rng.randInt(0, Number.MAX_SAFE_INTEGER));
 
 coord.kickoff(program);
 try {

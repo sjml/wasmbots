@@ -3,6 +3,7 @@
 
     import { Loader, Logger } from "../engine";
     import { Player } from "../engine/game/player";
+    import { globalState } from "../state.svelte";
 
     interface LogEntry {
         level: Logger.LogLevel;
@@ -31,7 +32,7 @@
         logs = [];
         fpath = `./example_bots/${fpath}`;
         const wasmBytes = await Loader.readBinaryFile(fpath);
-        const p = new Player(logToMe);
+        const p = new Player(logToMe, globalState.world!.rng.randInt(0, Number.MAX_SAFE_INTEGER));
         await p.init(wasmBytes);
         newPlayerObj(p);
     }

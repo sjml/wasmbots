@@ -4,6 +4,8 @@
     * first just do a basic goldspike
       * have them randomly move around in diagonal lines
         * pick direction, go until failed move, reflect
+    * doesn't look like much, but once `moveByte` is getting passed up and `lastMoveSucceeded` is getting passed down, we can swap them out for full messages in either direction
+      * lotta stuff getting wired up now...
     * then make communication more real: dust off beschi
       * (needs Zig output too, but maybe not right away)
     * communicate world to player
@@ -51,6 +53,7 @@
 * UI: align drawer title with button, but margin it out away from it
 * UI: text size on bot name? 
 * Game: ability to zoom in on single bot
+* Tech: ability to reseed player on reset
 
 ## horizon
 * add convenience functions to libraries for writing/reading byte array

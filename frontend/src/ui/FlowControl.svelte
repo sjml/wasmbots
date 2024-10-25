@@ -26,7 +26,6 @@
     // more clever ways to do this probably but explicit is better than implicit
     onMount(() => {
         globalState.world!.on("gameStateChange", (evt) => {
-            console.log("new game state:", evt.detail);
             currentGameState = evt.detail.newState;
             updateButtonStates();
         });

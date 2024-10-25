@@ -24,8 +24,9 @@ export class WasmCoordinator {
     private inTick: boolean = false;
     private tickStartTime: number = 0;
     private lastTickDuration: number = 0;
-    private tickPromise!: Promise<void>;
-    private tickResolve!: () => void;
+    private lastMoveSucceeded: boolean = true;
+    private tickPromise!: Promise<number>;
+    private tickResolve!: (val: number) => void;
     private tickReject!: () => void;
     private workerWarningsCount = 0;
 
@@ -111,8 +112,8 @@ export class WasmCoordinator {
         this.readyResolve();
     }
 
-    tick(): Promise<void> {
-        this.tickPromise = new Promise<void>((resolve, reject) => {
+    tick(): Promise<number> {
+        this.tickPromise = new Promise<number>((resolve, reject) => {
             this.tickResolve = resolve;
             this.tickReject = reject;
         });
@@ -132,9 +133,9 @@ export class WasmCoordinator {
                 type: Msg.HostToGuestMessageType.RunTick,
                 payload: {
                     lastTickDuration: this.lastTickDuration,
+                    lastMoveSucceeded: this.lastMoveSucceeded,
                 } as Msg.RunTickPayload
             });
-            // this.logFunction(LogLevel.Info, `last tick duration: ${this.lastTickDuration}`);
 
             this.tickTimeout = setTimeout(() => {
                 this.logFunction(LogLevel.Error, `Module timed out on tick (limit: ${config.tickKillTimeLimit}ms)`);
@@ -169,7 +170,7 @@ export class WasmCoordinator {
         if (remainder > 0) {
             await sleep(remainder);
         }
-        this.tickResolve();
+        this.tickResolve(payload.moveByte);
     }
 
     private async onMessage(evt: MessageEvent<Msg.GuestToHostMessage<Msg.GuestToHostMessageType>>) {

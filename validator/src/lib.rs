@@ -263,7 +263,7 @@ mod tests {
 
     #[test]
     fn validate() {
-        let wasm = include_bytes!("../../example_bots/bot_as.wasm");
+        let wasm = include_bytes!("../../example_bots/random_bounce_c.wasm");
         let exp = include_str!("../../engine/src/data/guestAPI.json");
         match _validate_wasm(wasm, exp) {
             Ok(()) => {},
