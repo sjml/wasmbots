@@ -1,5 +1,6 @@
 import { RNG, Deck } from "./random.ts";
 import { Player } from "./player.ts";
+import { WorkerStatus } from "../worker/coordinator.ts";
 import { WorldMap, type Point } from "./map.ts";
 
 // trying to build with the idea that these numbers might change,
@@ -9,12 +10,12 @@ const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 2;
 
 type WorldEvents = {
-    readinessChange: { isReady: boolean };
+    gameStateChange: { newState: GameState, oldState: GameState };
     playerAdded: { newPlayer: Player };
     playerDropped: { leavingPlayer: Player };
 }
 
-enum GameState {
+export enum GameState {
     Setup,
     Ready,
     Running,
@@ -35,6 +36,18 @@ export class World extends EventTarget {
         this._currentMap = null;
     }
 
+    get gameState(): GameState {
+        return this._gameState;
+    }
+
+    private setState(gs: GameState) {
+        const old = this._gameState;
+        this._gameState = gs;
+        if (gs != old) {
+            this.emit("gameStateChange", { newState: gs, oldState: old });
+        }
+    }
+
     emit<K extends keyof WorldEvents>(
         type: K, detail: WorldEvents[K]
     ) {
@@ -46,10 +59,6 @@ export class World extends EventTarget {
         callback: (evt: CustomEvent<WorldEvents[K]>) => void
     ) {
         this.addEventListener(type, callback as EventListener);
-    }
-
-    get isRunning(): boolean {
-        return this._gameState == GameState.Running;
     }
 
     registerPlayer(newPlayer: Player) {
@@ -70,11 +79,10 @@ export class World extends EventTarget {
 
         const loc = this._spawnPointDeck.drawNoReshuffle();
         if (loc == null) {
-            throw new Error(`Not enough spawn points in map for ${this.playerCount} players!`)
+            throw new Error(`Not enough spawn points in map for ${this.playerCount} players!`);
         }
         newPlayer.location = loc;
 
-        console.log("Registered player", this.playerCount);
         this.emit("playerAdded", {newPlayer});
         this.checkReady();
     }
@@ -85,7 +93,6 @@ export class World extends EventTarget {
             throw new Error("Player not registered!");
         }
 
-        console.log("Dropping player", idx+1);
         this._players[idx] = null;
 
         this.emit("playerDropped", {leavingPlayer});
@@ -97,8 +104,8 @@ export class World extends EventTarget {
     }
 
     setMap(map: WorldMap) {
-        if (this._gameState >= GameState.Running) {
-            throw new Error("Cannot change map during running game!");
+        if (this._gameState > GameState.Setup) {
+            throw new Error("Cannot change map after game start!");
         }
         this._currentMap = map;
         this._spawnPointDeck = new Deck(this._currentMap.spawnPoints, this.rng);
@@ -108,12 +115,11 @@ export class World extends EventTarget {
 
     checkReady() {
         if (this.isReadyToStart()) {
-            this._gameState = GameState.Ready;
+            this.setState(GameState.Ready);
         }
         else {
-            this._gameState = GameState.Setup;
+            this.setState(GameState.Setup);
         }
-        this.emit("readinessChange", {isReady: this._gameState == GameState.Ready});
     }
 
     isReadyToStart(): boolean {
@@ -124,10 +130,41 @@ export class World extends EventTarget {
         if (!this.isReadyToStart()) {
             throw new Error("Game is not ready yet");
         }
-        console.log("starting game!");
 
-        this._gameState = GameState.Running;
         this.rng.shuffle(this._players); // randomizes turn order
+
+        this.setState(GameState.Running);
+    }
+
+    stopGame() {
+        this.setState(GameState.Shutdown);
+    }
+
+    resetGame() {
+        this.setState(GameState.Setup);
+        this._spawnPointDeck.reset();
+        for (const p of this._players) {
+            if (p != null) {
+                p.reset();
+                const loc = this._spawnPointDeck.drawNoReshuffle();
+                if (loc == null) {
+                    throw new Error(`Not enough spawn points in map for ${this.playerCount} players!`);
+                }
+                p.location = loc;
+            }
+        }
+        this.checkReady();
+    }
+
+    private static _playerIsValid(p: Player|null): boolean {
+        return (
+                p != null
+            &&  (
+                       p.coordinator.workerStatus == WorkerStatus.Ready
+                    || p.coordinator.workerStatus == WorkerStatus.Running
+                )
+            && p.hitPoints > 0
+        );
     }
 
     async runTurn(): Promise<void> {
@@ -138,16 +175,20 @@ export class World extends EventTarget {
 
         for (const player of this._players) {
             if (player == null) { continue; }
-            if (player.hitPoints > 0) {
+            if (World._playerIsValid(player)) {
                 await player.processTurn();
             }
         }
 
-        const playersAlive = this._players.filter(p => p && p.hitPoints > 0);
+        const playersAlive = this._players.filter(p => World._playerIsValid(p));
         if (playersAlive.length == 1) {
             // winner winner
             // TODO: report winners and losers
-            this._gameState = GameState.Shutdown;
+            this.setState(GameState.Shutdown);
+        }
+        else if (playersAlive.length == 0) {
+            // errybody dead
+            this.setState(GameState.Shutdown);
         }
     }
 }

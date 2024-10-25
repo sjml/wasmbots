@@ -2,7 +2,7 @@
 * There's a lot of indirection at the moment based on how this grew organically.
     * Maybe it's necessary? 
     * Still bothers me, though.
-    * WebAssembly Module <-> `GuestProgram` Object <-> Web Worker <-> `WasmCoordinator` Object <-> `Player` Object <-> (Phaser Engine <-> Svelte UI Code)
+    * WebAssembly Module ⇄ `GuestProgram` Object ⇄ Web Worker ⇄ `WasmCoordinator` Object ⇄ `Player` Object ⇄ (Phaser Engine ⇄ Svelte UI Code)
     * Thinking through it from bottom to top...
       * WebAssembly Module to `GuestProgram` is intrinsic to how wasm works, so that's necessary
       * Web Worker **has** to be separate from the rest of the code based on how Web Workers do their thing, so indirection to `WasmCoordinator` Object is necessary

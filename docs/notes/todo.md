@@ -2,6 +2,8 @@
 * game stuff
   * input and output
     * first just do a basic goldspike
+      * add getRandom call to module imports
+        * (while we're in there, check that all the imported functions are async if possible)
       * have them randomly move around in diagonal lines
         * pick direction, go until failed move, reflect
     * then make communication more real: dust off beschi
@@ -23,12 +25,6 @@
   * UI: 
     * add spinners while validating/loading wasm
     * add player image to panel once spawned
-    * debugger-style interface
-      * play: ticks until done, changes to pause button, disabled if game not ready
-      * pause: stops ticks, changes to play button
-      * step: one tick at a time, grayed out during play
-      * stop: shuts down everything, sets game to not ready
-      * reset: reloads bots and world to initial state, re-seeds RNG
   * testing
     * player class
       * feeding non-wasm byte array

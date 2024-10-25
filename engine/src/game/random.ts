@@ -114,13 +114,17 @@ export class Deck<T> {
             this._rng.shuffle(this._deck);
             this._discards = [];
         }
-        return this._deck.pop()!;
+        const drawn = this._deck.pop()!;
+        this._discards.push(drawn);
+        return drawn;
     }
 
     drawNoReshuffle(): T | null {
         if (this._deck.length == 0) {
             return null;
         }
-        return this._deck.pop()!;
+        const drawn = this._deck.pop()!;
+        this._discards.push(drawn);
+        return drawn;
     }
 }

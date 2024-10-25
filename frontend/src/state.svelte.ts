@@ -11,7 +11,7 @@ interface WasmBotsUIState {
     vis: WasmBotsVisualizer|null;
 }
 
-export const global: WasmBotsUIState = $state({
+export const globalState: WasmBotsUIState = $state({
     world: null,
     leftPlayer: null,
     rightPlayer: null,

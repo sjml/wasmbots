@@ -4,7 +4,7 @@
 
     import { Player } from "../engine/game/player";
 
-    import { global } from "../state.svelte";
+    import { globalState } from "../state.svelte";
 
     interface Props {
         side: string;
@@ -14,18 +14,18 @@
 
     function newPlayerObj(p: Player) {
         if (side == "left") {
-            if (global.leftPlayer != null) {
-                global.world?.dropPlayer(global.leftPlayer);
+            if (globalState.leftPlayer != null) {
+                globalState.world?.dropPlayer(globalState.leftPlayer);
             }
-            global.leftPlayer = p;
+            globalState.leftPlayer = p;
         }
         else {
-            if (global.rightPlayer != null) {
-                global.world?.dropPlayer(global.rightPlayer);
+            if (globalState.rightPlayer != null) {
+                globalState.world?.dropPlayer(globalState.rightPlayer);
             }
-            global.rightPlayer = p;
+            globalState.rightPlayer = p;
         }
-        global.world?.registerPlayer(p);
+        globalState.world?.registerPlayer(p);
     }
 
     let selectedBotFile: string = $state("");

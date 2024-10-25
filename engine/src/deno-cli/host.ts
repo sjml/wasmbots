@@ -6,8 +6,6 @@ if (Deno.args.length == 0) {
     Deno.exit(1);
 }
 
-const program = await Deno.readFile(Deno.args[0]);
-
 function log(level: LogLevel, msg: string) {
     switch (level) {
         case LogLevel.Error:
@@ -28,6 +26,7 @@ function log(level: LogLevel, msg: string) {
     }
 }
 
+const program = await Deno.readFile(Deno.args[0]);
 const coord = new WasmCoordinator(log);
 
 coord.kickoff(program);
