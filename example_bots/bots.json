@@ -3,10 +3,6 @@
     "source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/bot_as",
     "name": "BasicBot (AssemblyScript)"
   },
-  "bot_c.wasm": {
-    "source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/bot_c",
-    "name": "BasicBot (C)"
-  },
   "bot_go.wasm": {
     "source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/bot_go",
     "name": "BasicBot (Go)"
