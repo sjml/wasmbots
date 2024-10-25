@@ -1,6 +1,7 @@
 <script lang="ts">
     import config from "../engine/core/config";
     import { World } from "../engine/game/world";
+    import { Player } from "../engine/game/player";
     import { WasmBotsVisualizer } from "../vis/game";
     import { global } from "../state.svelte";
     import { onMount } from "svelte";
@@ -9,9 +10,23 @@
     const height: number = config.gameHeight;
     let canvas: HTMLCanvasElement;
 
+    async function playerAdd(p: Player) {
+        await global.vis?.addPlayer(p);
+    }
+
+    async function playerDrop(p: Player) {
+        // TODO: implement
+    }
+
     async function gameSetup() {
         if (global.world == null) {
             global.world = new World(null);
+            global.world.on("playerAdded", (evt) => {
+                playerAdd(evt.detail.newPlayer);
+            });
+            global.world.on("playerDropped", (evt) => {
+                playerAdd(evt.detail.leavingPlayer);
+            });
             global.vis = new WasmBotsVisualizer(canvas, global.world);
             await global.vis.untilBootloaderDone();
             await global.vis.loadMap("arena");

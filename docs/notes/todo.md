@@ -1,10 +1,7 @@
 ## dev
 * game stuff
   * player class
-    * set player add to emit event that vis listens for
-    * when one dies, replace with tombstone
-    * report to ui which died?
-    * game over when only one living bot
+    * when dropping, if game hasn't started, put spawn point back in the pool
   * input and output
     * dust off beschi
     * communicate world to player
@@ -23,12 +20,15 @@
     * player navigation (both receiving and executing)
       * just have them randomly move around in diagonal lines for now
         * pick direction, go until failed move, reflect
-  * UI: debugger-style interface
-    * play: ticks until done, changes to pause button, disabled if game not ready
-    * pause: stops ticks, changes to play button
-    * step: one tick at a time, grayed out during play
-    * stop: shuts down everything, sets game to not ready
-    * reset: reloads bots and world to initial state, re-seeds RNG
+  * UI: 
+    * add spinners while validating/loading wasm
+    * add player image to panel once spawned
+    * debugger-style interface
+      * play: ticks until done, changes to pause button, disabled if game not ready
+      * pause: stops ticks, changes to play button
+      * step: one tick at a time, grayed out during play
+      * stop: shuts down everything, sets game to not ready
+      * reset: reloads bots and world to initial state, re-seeds RNG
   * testing
     * player class
       * feeding non-wasm byte array

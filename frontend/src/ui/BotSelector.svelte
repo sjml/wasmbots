@@ -7,7 +7,7 @@
 
     let botInfo: { [key: string]: any } = $state({});
     onMount(async () => {
-        const res = await fetch("/example_bots/bots.json");
+        const res = await fetch("./example_bots/bots.json");
         if (!res.ok) {
             console.error(`ERROR: Could not load bot list!: ${res.status} - ${res.statusText}`);
             return;

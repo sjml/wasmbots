@@ -7,6 +7,11 @@ import { WasmBotsVisualizer } from "./game.ts";
 
 const PLAYER_IMG_FRAMES = [84, 111];
 
+export enum PlayerFacing {
+    Right,
+    Left,
+}
+
 export class GamePlayer extends Phaser.GameObjects.Sprite {
     static playerImageDeck?: Deck<number>;
 
@@ -20,6 +25,16 @@ export class GamePlayer extends Phaser.GameObjects.Sprite {
             "tiles-dungeon", GamePlayer.playerImageDeck.draw()
         );
 
+        this.setOrigin(0, 0);
         scene.add.existing(this);
+    }
+
+    setFacing(facing: PlayerFacing) {
+        if (facing == PlayerFacing.Left) {
+            this.setFlipX(true);
+        }
+        else {
+            this.setFlipX(false);
+        }
     }
 }

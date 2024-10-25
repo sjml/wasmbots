@@ -6,7 +6,7 @@ import { World } from "../engine/game/world";
 import { Player as WorldPlayer } from "../engine/game/player";
 import { GameMap } from "./map";
 import { GameBootloader } from "./bootloader";
-import { GamePlayer } from "./player";
+import { GamePlayer, PlayerFacing } from "./player";
 import { EventBus } from "./events";
 
 export class WasmBotsVisualizer extends Phaser.Game {
@@ -58,7 +58,12 @@ export class WasmBotsVisualizer extends Phaser.Game {
     }
 
     async addPlayer(p: WorldPlayer) {
-        console.log("adding vis player at", p.location);
         const pvis = new GamePlayer(this._currentMapScene!, p.location);
+        if (p.location.x > (config.gameWidth / config.tileSize * 0.5)) {
+            pvis.setFacing(PlayerFacing.Left);
+        }
+        else {
+            pvis.setFacing(PlayerFacing.Right);
+        }
     }
 }

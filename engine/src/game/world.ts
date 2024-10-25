@@ -10,17 +10,28 @@ const MAX_PLAYERS = 2;
 
 type WorldEvents = {
     readinessChange: { isReady: boolean };
+    playerAdded: { newPlayer: Player };
+    playerDropped: { leavingPlayer: Player };
+}
+
+enum GameState {
+    Setup,
+    Ready,
+    Running,
+    Shutdown,
 }
 
 export class World extends EventTarget {
-    private _gameRunning: boolean = false;
+    private _gameState: GameState = GameState.Setup;
     private _players: (Player|null)[] = Array(MAX_PLAYERS).fill(null);
     private _currentMap: WorldMap | null;
     rng: RNG;
+    private _spawnPointDeck: Deck<Point>;
 
     constructor(randomSeed: string | null) {
         super();
         this.rng = new RNG(randomSeed);
+        this._spawnPointDeck = new Deck([{x: -1, y: -1}], this.rng);
         this._currentMap = null;
     }
 
@@ -38,7 +49,7 @@ export class World extends EventTarget {
     }
 
     get isRunning(): boolean {
-        return this._gameRunning;
+        return this._gameState == GameState.Running;
     }
 
     registerPlayer(newPlayer: Player) {
@@ -57,7 +68,14 @@ export class World extends EventTarget {
             throw new Error("Cannot register more than two players!");
         }
 
+        const loc = this._spawnPointDeck.drawNoReshuffle();
+        if (loc == null) {
+            throw new Error(`Not enough spawn points in map for ${this.playerCount} players!`)
+        }
+        newPlayer.location = loc;
+
         console.log("Registered player", this.playerCount);
+        this.emit("playerAdded", {newPlayer});
         this.checkReady();
     }
 
@@ -70,6 +88,7 @@ export class World extends EventTarget {
         console.log("Dropping player", idx+1);
         this._players[idx] = null;
 
+        this.emit("playerDropped", {leavingPlayer});
         this.checkReady();
     }
 
@@ -78,21 +97,23 @@ export class World extends EventTarget {
     }
 
     setMap(map: WorldMap) {
-        if (this._gameRunning) {
+        if (this._gameState >= GameState.Running) {
             throw new Error("Cannot change map during running game!");
         }
         this._currentMap = map;
+        this._spawnPointDeck = new Deck(this._currentMap.spawnPoints, this.rng);
 
         this.checkReady();
     }
 
     checkReady() {
         if (this.isReadyToStart()) {
-            this.emit("readinessChange", {isReady: true});
+            this._gameState = GameState.Ready;
         }
         else {
-            this.emit("readinessChange", {isReady: false});
+            this._gameState = GameState.Setup;
         }
+        this.emit("readinessChange", {isReady: this._gameState == GameState.Ready});
     }
 
     isReadyToStart(): boolean {
@@ -105,22 +126,12 @@ export class World extends EventTarget {
         }
         console.log("starting game!");
 
-        this._gameRunning = true;
-        this.rng.shuffle(this._players); // randomizes both turn order and spawn point placement
-
-        let spawnDeck = new Deck<Point>(this._currentMap!.spawnPoints, this.rng);
-        for (const p of this._players) {
-            if (p == null) { continue; }
-            const loc = spawnDeck.drawNoReshuffle();
-            if (loc == null) {
-                throw new Error(`Not enough spawn points in map for ${this.playerCount} players!`)
-            }
-            p.location = loc;
-        }
+        this._gameState = GameState.Running;
+        this.rng.shuffle(this._players); // randomizes turn order
     }
 
     async runTurn(): Promise<void> {
-        if (!this._gameRunning) {
+        if (this._gameState != GameState.Running) {
             console.error("ERROR: Trying to process turn on non-running game");
             return;
         }
@@ -136,7 +147,7 @@ export class World extends EventTarget {
         if (playersAlive.length == 1) {
             // winner winner
             // TODO: report winners and losers
-            this._gameRunning = false;
+            this._gameState = GameState.Shutdown;
         }
     }
 }
