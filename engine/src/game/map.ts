@@ -138,3 +138,5 @@ export class WorldMap {
     }
 }
 
+// const m = await WorldMap.loadTiled("arena");
+// WorldMap.debugDrawSlice(m.tiles);

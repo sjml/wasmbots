@@ -1,6 +1,6 @@
 import { RNG, Deck } from "./random.ts";
 import { Player } from "./player.ts";
-import { WorldMap, Point } from "./map.ts";
+import { WorldMap, type Point } from "./map.ts";
 
 // trying to build with the idea that these numbers might change,
 //   but not testing that at all, so probably some lurking bugs
