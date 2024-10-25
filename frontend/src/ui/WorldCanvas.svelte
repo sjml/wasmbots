@@ -1,23 +1,26 @@
 <script lang="ts">
     import config from "../engine/core/config";
     import { World } from "../engine/game/world";
-    import { WasmBotsGame } from "../vis/game";
-    import { globalWorld } from "../stores";
+    import { WasmBotsVisualizer } from "../vis/game";
+    import { global } from "../state.svelte";
+    import { onMount } from "svelte";
 
     const width: number = config.gameWidth;
     const height: number = config.gameHeight;
     let canvas: HTMLCanvasElement;
-    let gameHandle: WasmBotsGame;
 
     async function gameSetup() {
-        globalWorld.set(new World(null));
-        gameHandle = new WasmBotsGame(canvas, $globalWorld);
-        await gameHandle.untilBootloaderDone();
-        await gameHandle.loadMap("arena");
-        await gameHandle.addPlayer();
+        if (global.world == null) {
+            global.world = new World(null);
+            global.vis = new WasmBotsVisualizer(canvas, global.world);
+            await global.vis.untilBootloaderDone();
+            await global.vis.loadMap("arena");
+        }
     }
 
-    $effect(() => { gameSetup(); });
+    onMount(() => {
+        gameSetup();
+    })
 </script>
 
 <div class="canvasContainer">

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { tick as svelteTick } from "svelte";
 
-    import { Loader, Logger, WorkerStatus } from "../engine";
+    import { Loader, Logger } from "../engine";
     import { Player } from "../engine/game/player";
 
     interface LogEntry {
@@ -20,25 +20,22 @@
         });
     }
 
+    interface Props {
+        selectedFile: string;
+        newPlayerObj: (p: Player) => void;
+    }
+    let { selectedFile, newPlayerObj }: Props = $props();
+
     async function createPlayerObject(fpath: string) {
         if (!fpath || fpath.length == 0) return;
         logs = [];
         fpath = `./example_bots/${fpath}`;
         const wasmBytes = await Loader.readBinaryFile(fpath);
-        playerObject = new Player(logToMe);
-        await playerObject.init(wasmBytes);
-        let count = 0;
-        while (count < 10 && playerObject.coordinator.workerStatus != WorkerStatus.Shutdown) {
-            await playerObject.processTurn();
-            count += 1;
-        }
+        const p = new Player(logToMe);
+        await p.init(wasmBytes);
+        newPlayerObj(p);
     }
 
-    interface Props {
-        selectedFile: string;
-        playerObject: Player | null;
-    }
-    let { selectedFile, playerObject = $bindable(null) }: Props = $props();
     $effect(() => {
         createPlayerObject(selectedFile);
     });

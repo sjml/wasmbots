@@ -4,12 +4,29 @@
 
     import { Player } from "../engine/game/player";
 
+    import { global } from "../state.svelte";
+
     interface Props {
         side: string;
         isOpened: boolean;
-        playerObject: Player | null;
     }
-    let { side, isOpened, playerObject = $bindable(null) }: Props = $props();
+    let { side, isOpened }: Props = $props();
+
+    function newPlayerObj(p: Player) {
+        if (side == "left") {
+            if (global.leftPlayer != null) {
+                global.world?.dropPlayer(global.leftPlayer);
+            }
+            global.leftPlayer = p;
+        }
+        else {
+            if (global.rightPlayer != null) {
+                global.world?.dropPlayer(global.rightPlayer);
+            }
+            global.rightPlayer = p;
+        }
+        global.world?.registerPlayer(p);
+    }
 
     let selectedBotFile: string = $state("");
 </script>
@@ -18,7 +35,7 @@
 <div class="botPanel {side}Panel" class:panelOpened={isOpened}>
     <div class="botChoice">
         <BotSelector bind:chosen={selectedBotFile}/>
-        <BotConsole selectedFile={selectedBotFile} playerObject={playerObject}/>
+        <BotConsole selectedFile={selectedBotFile} newPlayerObj={newPlayerObj} />
     </div>
 </div>
 

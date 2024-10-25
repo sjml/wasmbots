@@ -1,7 +1,7 @@
 ## dev
 * game stuff
   * player class
-    * draw player layer
+    * set player add to emit event that vis listens for
     * when one dies, replace with tombstone
     * report to ui which died?
     * game over when only one living bot

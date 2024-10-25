@@ -8,22 +8,40 @@ import { WorldMap, type Point } from "./map.ts";
 const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 2;
 
-export class World {
+type WorldEvents = {
+    readinessChange: { isReady: boolean };
+}
+
+export class World extends EventTarget {
     private _gameRunning: boolean = false;
     private _players: (Player|null)[] = Array(MAX_PLAYERS).fill(null);
-    private _rng: RNG;
     private _currentMap: WorldMap | null;
+    rng: RNG;
 
     constructor(randomSeed: string | null) {
-        this._rng = new RNG(randomSeed);
+        super();
+        this.rng = new RNG(randomSeed);
         this._currentMap = null;
+    }
+
+    emit<K extends keyof WorldEvents>(
+        type: K, detail: WorldEvents[K]
+    ) {
+        this.dispatchEvent(new CustomEvent(type, { detail }));
+    }
+
+    on<K extends keyof WorldEvents>(
+        type: K,
+        callback: (evt: CustomEvent<WorldEvents[K]>) => void
+    ) {
+        this.addEventListener(type, callback as EventListener);
     }
 
     get isRunning(): boolean {
         return this._gameRunning;
     }
 
-    registerPlayer(newPlayer: Player): boolean {
+    registerPlayer(newPlayer: Player) {
         if (this._players.includes(newPlayer)) {
             throw new Error("Player already registered!");
         }
@@ -38,29 +56,21 @@ export class World {
         if (!registered) {
             throw new Error("Cannot register more than two players!");
         }
+
         console.log("Registered player", this.playerCount);
-
-        if (this.playerCount < MIN_PLAYERS) {
-            return false;
-        }
-
-        return true;
+        this.checkReady();
     }
 
-    dropPlayer(leavingPlayer: Player): boolean {
+    dropPlayer(leavingPlayer: Player) {
         const idx = this._players.indexOf(leavingPlayer);
         if (idx == -1) {
             throw new Error("Player not registered!");
         }
 
-        console.log("Dropping player", idx);
+        console.log("Dropping player", idx+1);
         this._players[idx] = null;
 
-        if (this.playerCount < MIN_PLAYERS) {
-            return false;
-        }
-
-        return true;
+        this.checkReady();
     }
 
     get playerCount(): number {
@@ -72,6 +82,17 @@ export class World {
             throw new Error("Cannot change map during running game!");
         }
         this._currentMap = map;
+
+        this.checkReady();
+    }
+
+    checkReady() {
+        if (this.isReadyToStart()) {
+            this.emit("readinessChange", {isReady: true});
+        }
+        else {
+            this.emit("readinessChange", {isReady: false});
+        }
     }
 
     isReadyToStart(): boolean {
@@ -82,11 +103,12 @@ export class World {
         if (!this.isReadyToStart()) {
             throw new Error("Game is not ready yet");
         }
+        console.log("starting game!");
 
         this._gameRunning = true;
-        this._rng.shuffle(this._players); // randomizes both turn order and spawn point placement
+        this.rng.shuffle(this._players); // randomizes both turn order and spawn point placement
 
-        let spawnDeck = new Deck<Point>(this._currentMap!.spawnPoints, this._rng);
+        let spawnDeck = new Deck<Point>(this._currentMap!.spawnPoints, this.rng);
         for (const p of this._players) {
             if (p == null) { continue; }
             const loc = spawnDeck.drawNoReshuffle();

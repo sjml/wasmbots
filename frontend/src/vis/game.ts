@@ -3,16 +3,17 @@ import Phaser from "phaser";
 import config from "../engine/core/config";
 import { RNG } from "../engine/game/random";
 import { World } from "../engine/game/world";
+import { Player as WorldPlayer } from "../engine/game/player";
 import { GameMap } from "./map";
 import { GameBootloader } from "./bootloader";
 import { GamePlayer } from "./player";
 import { EventBus } from "./events";
 
-export class WasmBotsGame extends Phaser.Game {
+export class WasmBotsVisualizer extends Phaser.Game {
     private _booloaderPromise: Promise<void>;
     private _bootloaderResolve!: () => void;
     private _bootloaderReject!: () => void;
-    private _currentMapScene?: Phaser.Scene;
+    private _currentMapScene?: GameMap;
     visualRNG: RNG = new RNG(null);
     worldObject: World;
 
@@ -52,11 +53,12 @@ export class WasmBotsGame extends Phaser.Game {
 
     async loadMap(mapName: string) {
         this._currentMapScene = await GameMap.loadFrom(mapName);
+        this.worldObject.setMap(this._currentMapScene.worldMap!);
         this.scene.add(`${mapName}_Scene`, this._currentMapScene, true);
     }
 
-    async addPlayer() {
-        const player1 = new GamePlayer(this._currentMapScene!, {x: 10, y: 10});
-        const player2 = new GamePlayer(this._currentMapScene!, {x: 20, y: 20});
+    async addPlayer(p: WorldPlayer) {
+        console.log("adding vis player at", p.location);
+        const pvis = new GamePlayer(this._currentMapScene!, p.location);
     }
 }
