@@ -12,7 +12,7 @@ export class GamePlayer extends Phaser.GameObjects.Sprite {
 
     constructor(scene: Phaser.Scene, tilePos: Point) {
         if (!GamePlayer.playerImageDeck) {
-            GamePlayer.playerImageDeck = new Deck(PLAYER_IMG_FRAMES, (scene.game as WasmBotsGame).rng)
+            GamePlayer.playerImageDeck = new Deck(PLAYER_IMG_FRAMES, (scene.game as WasmBotsGame).visualRNG)
         }
         super(
             scene,

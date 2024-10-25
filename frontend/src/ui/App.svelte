@@ -1,13 +1,18 @@
 <script lang="ts">
+    import { onMount } from "svelte";
+
     import WorldCanvas from "./WorldCanvas.svelte";
     import BotPanel from "./BotPanel.svelte";
     import Navbar from "./Navbar.svelte";
     import ToggleButton from "./ToggleButton.svelte";
 
-    import { onMount } from "svelte";
+    import { Player } from "../engine/game/player";
 
     let leftPanelVisible = $state(false);
     let rightPanelVisible = $state(false);
+
+    let leftPlayerObject : Player | null = $state(null);
+    let rightPlayerObject: Player | null = $state(null);
 
     onMount(() => {
         if (!isSmallScreen()) {
@@ -65,8 +70,8 @@
         <div class="spacer"></div>
         <ToggleButton side="right" isOpened={rightPanelVisible} toggle={togglePanel} />
     </Navbar>
-    <BotPanel side="left"  isOpened={leftPanelVisible } />
-    <BotPanel side="right" isOpened={rightPanelVisible} />
+    <BotPanel side="left"  isOpened={leftPanelVisible } playerObject={leftPlayerObject } />
+    <BotPanel side="right" isOpened={rightPanelVisible} playerObject={rightPlayerObject} />
     <WorldCanvas/>
 </div>
 

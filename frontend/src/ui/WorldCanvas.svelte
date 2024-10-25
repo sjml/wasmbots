@@ -1,6 +1,8 @@
 <script lang="ts">
     import config from "../engine/core/config";
+    import { World } from "../engine/game/world";
     import { WasmBotsGame } from "../vis/game";
+    import { globalWorld } from "../stores";
 
     const width: number = config.gameWidth;
     const height: number = config.gameHeight;
@@ -8,7 +10,8 @@
     let gameHandle: WasmBotsGame;
 
     async function gameSetup() {
-        gameHandle = new WasmBotsGame(canvas);
+        globalWorld.set(new World(null));
+        gameHandle = new WasmBotsGame(canvas, $globalWorld);
         await gameHandle.untilBootloaderDone();
         await gameHandle.loadMap("arena");
         await gameHandle.addPlayer();

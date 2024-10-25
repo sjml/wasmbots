@@ -2,6 +2,7 @@ import Phaser from "phaser";
 
 import config from "../engine/core/config";
 import { RNG } from "../engine/game/random";
+import { World } from "../engine/game/world";
 import { GameMap } from "./map";
 import { GameBootloader } from "./bootloader";
 import { GamePlayer } from "./player";
@@ -12,9 +13,10 @@ export class WasmBotsGame extends Phaser.Game {
     private _bootloaderResolve!: () => void;
     private _bootloaderReject!: () => void;
     private _currentMapScene?: Phaser.Scene;
-    rng: RNG = new RNG(null);
+    visualRNG: RNG = new RNG(null);
+    worldObject: World;
 
-    constructor(canvas: HTMLCanvasElement) {
+    constructor(canvas: HTMLCanvasElement, world: World) {
         super({
             width: config.gameWidth,
             height: config.gameHeight,
@@ -28,6 +30,8 @@ export class WasmBotsGame extends Phaser.Game {
             banner: false,
             scene: [GameBootloader],
         });
+
+        this.worldObject = world;
 
         this._booloaderPromise = new Promise<void>((resolve, reject) => {
             this._bootloaderResolve = resolve;

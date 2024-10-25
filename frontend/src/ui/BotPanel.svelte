@@ -2,11 +2,14 @@
     import BotSelector from "./BotSelector.svelte";
     import BotConsole from "./BotConsole.svelte";
 
+    import { Player } from "../engine/game/player";
+
     interface Props {
         side: string;
         isOpened: boolean;
+        playerObject: Player | null;
     }
-    let { side, isOpened }: Props = $props();
+    let { side, isOpened, playerObject = $bindable(null) }: Props = $props();
 
     let selectedBotFile: string = $state("");
 </script>
@@ -15,7 +18,7 @@
 <div class="botPanel {side}Panel" class:panelOpened={isOpened}>
     <div class="botChoice">
         <BotSelector bind:chosen={selectedBotFile}/>
-        <BotConsole selectedFile={selectedBotFile}/>
+        <BotConsole selectedFile={selectedBotFile} playerObject={playerObject}/>
     </div>
 </div>
 

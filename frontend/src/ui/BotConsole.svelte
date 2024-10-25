@@ -1,9 +1,8 @@
 <script lang="ts">
     import { tick as svelteTick } from "svelte";
 
-    import { Loader, Logger, WasmCoordinator, WorkerStatus } from "../engine";
-
-    let coordinator!: WasmCoordinator;
+    import { Loader, Logger, WorkerStatus } from "../engine";
+    import { Player } from "../engine/game/player";
 
     interface LogEntry {
         level: Logger.LogLevel;
@@ -12,34 +11,36 @@
     let logs: LogEntry[] = $state([]);
     let consoleDiv: HTMLDivElement;
 
-    async function runBot(fpath: string) {
+    async function logToMe(level: Logger.LogLevel, msg: string) {
+        logs = [...logs, {level, msg}];
+        await svelteTick();
+        consoleDiv.scroll({
+            top: consoleDiv.scrollHeight,
+            behavior: "smooth",
+        });
+    }
+
+    async function createPlayerObject(fpath: string) {
         if (!fpath || fpath.length == 0) return;
         logs = [];
         fpath = `./example_bots/${fpath}`;
         const wasmBytes = await Loader.readBinaryFile(fpath);
-        coordinator = new WasmCoordinator(async (level: Logger.LogLevel, msg: string) => {
-            logs = [...logs, {level, msg}];
-            await svelteTick();
-            consoleDiv.scroll({
-                top: consoleDiv.scrollHeight,
-                behavior: "smooth",
-            });
-        });
-        coordinator.kickoff(wasmBytes);
-        await coordinator.untilReady();
+        playerObject = new Player(logToMe);
+        await playerObject.init(wasmBytes);
         let count = 0;
-        while (count < 10 && coordinator.workerStatus != WorkerStatus.Shutdown) {
-            await coordinator.tick();
+        while (count < 10 && playerObject.coordinator.workerStatus != WorkerStatus.Shutdown) {
+            await playerObject.processTurn();
             count += 1;
         }
     }
 
     interface Props {
         selectedFile: string;
+        playerObject: Player | null;
     }
-    let { selectedFile }: Props = $props();
+    let { selectedFile, playerObject = $bindable(null) }: Props = $props();
     $effect(() => {
-        runBot(selectedFile);
+        createPlayerObject(selectedFile);
     });
 </script>
 

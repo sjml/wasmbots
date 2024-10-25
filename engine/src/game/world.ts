@@ -10,7 +10,7 @@ const MAX_PLAYERS = 2;
 
 export class World {
     private _gameRunning: boolean = false;
-    private _players: Player[] = Array(MAX_PLAYERS).fill(null);
+    private _players: (Player|null)[] = Array(MAX_PLAYERS).fill(null);
     private _rng: RNG;
     private _currentMap: WorldMap | null;
 
@@ -38,6 +38,23 @@ export class World {
         if (!registered) {
             throw new Error("Cannot register more than two players!");
         }
+        console.log("Registered player", this.playerCount);
+
+        if (this.playerCount < MIN_PLAYERS) {
+            return false;
+        }
+
+        return true;
+    }
+
+    dropPlayer(leavingPlayer: Player): boolean {
+        const idx = this._players.indexOf(leavingPlayer);
+        if (idx == -1) {
+            throw new Error("Player not registered!");
+        }
+
+        console.log("Dropping player", idx);
+        this._players[idx] = null;
 
         if (this.playerCount < MIN_PLAYERS) {
             return false;
@@ -93,7 +110,7 @@ export class World {
             }
         }
 
-        const playersAlive = this._players.filter(p => p.hitPoints > 0);
+        const playersAlive = this._players.filter(p => p && p.hitPoints > 0);
         if (playersAlive.length == 1) {
             // winner winner
             // TODO: report winners and losers
