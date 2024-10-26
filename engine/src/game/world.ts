@@ -9,12 +9,6 @@ import { TileType, WorldMap, type Point } from "./map.ts";
 const MIN_PLAYERS = 2;
 const MAX_PLAYERS = 2;
 
-type WorldEvents = {
-    gameStateChange: { newState: GameState, oldState: GameState };
-    playerAdded: { newPlayer: Player };
-    playerDropped: { leavingPlayer: Player };
-}
-
 export enum Direction {
     East,
     Southeast,
@@ -44,6 +38,12 @@ export enum GameState {
     Shutdown,
 }
 
+type WorldEvents = {
+    gameStateChange: { newState: GameState, oldState: GameState };
+    playerAdded: { newPlayer: Player };
+    playerDropped: { leavingPlayer: Player };
+}
+
 export class World extends EventTarget {
     private _gameState: GameState = GameState.Setup;
     private _players: (Player|null)[] = Array(MAX_PLAYERS).fill(null);
@@ -58,18 +58,6 @@ export class World extends EventTarget {
         this._currentMap = null;
     }
 
-    get gameState(): GameState {
-        return this._gameState;
-    }
-
-    private setState(gs: GameState) {
-        const old = this._gameState;
-        this._gameState = gs;
-        if (gs != old) {
-            this.emit("gameStateChange", { newState: gs, oldState: old });
-        }
-    }
-
     emit<K extends keyof WorldEvents>(
         type: K, detail: WorldEvents[K]
     ) {
@@ -81,6 +69,18 @@ export class World extends EventTarget {
         callback: (evt: CustomEvent<WorldEvents[K]>) => void
     ) {
         this.addEventListener(type, callback as EventListener);
+    }
+
+    get gameState(): GameState {
+        return this._gameState;
+    }
+
+    private setState(gs: GameState) {
+        const old = this._gameState;
+        this._gameState = gs;
+        if (gs != old) {
+            this.emit("gameStateChange", { newState: gs, oldState: old });
+        }
     }
 
     registerPlayer(newPlayer: Player) {

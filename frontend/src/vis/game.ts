@@ -58,12 +58,7 @@ export class WasmBotsVisualizer extends Phaser.Game {
     }
 
     async addPlayer(p: WorldPlayer) {
-        const pvis = new VisPlayer(this._currentMapScene!, p.location);
-        if (p.location.x > (config.gameWidth / config.tileSize * 0.5)) {
-            pvis.setFacing(PlayerFacing.Left);
-        }
-        else {
-            pvis.setFacing(PlayerFacing.Right);
-        }
+        const pvis = new VisPlayer(this._currentMapScene!, p);
+
     }
 }
