@@ -59,6 +59,5 @@ export class WasmBotsVisualizer extends Phaser.Game {
 
     async addPlayer(p: WorldPlayer) {
         const pvis = new VisPlayer(this._currentMapScene!, p);
-
     }
 }

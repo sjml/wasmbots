@@ -10,7 +10,7 @@ export async function readTextFile(filepath: string): Promise<string> {
             // @ts-ignore
             return await Deno.readTextFile(filepath);
         }
-        const resp = await fetch(filepath);
+        const resp = await fetch(filepath, {cache: "no-cache"});
         if (!resp.ok) {
             throw new Error(`Failed to fetch ${filepath}: (${resp.status}) ${resp.statusText}`);
         }
@@ -35,7 +35,7 @@ export async function readBinaryFile(filepath: string): Promise<Uint8Array> {
             // @ts-ignore
             return await Deno.readFile(filepath);
         }
-        const resp = await fetch(filepath);
+        const resp = await fetch(filepath, {cache: "no-cache"});
         if (!resp.ok) {
             throw new Error(`Failed to fetch ${filepath}: (${resp.status}) ${resp.statusText}`);
         }

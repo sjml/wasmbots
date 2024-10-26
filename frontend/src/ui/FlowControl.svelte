@@ -87,6 +87,7 @@
         if (globalState.world?.gameState == GameState.Ready) {
             globalState.world?.startGame();
         }
+        updateButtonStates();
         while (runningContinuous && currentGameState == GameState.Running) {
             await stepGame();
         }
@@ -146,10 +147,13 @@
         background-color: #00000000;
         border: none;
         cursor: pointer;
+        display: flex;
+        align-items: center;
     }
     .flowControlButton svg {
         width: 27px;
         height: 27px;
+        flex-shrink: 0;
     }
     .flowControlButton:disabled {
         opacity: 0.3;

@@ -56,10 +56,10 @@ export class RNG {
 
         if (min) {
           if (!max) {
-            throw new Error(`Can't have a min range of random double without a max!!`);
+            throw new Error(`Can't have a min range of random double without a max!`);
           }
           if (min >= max) {
-            throw new Error(`${min} is not less than ${max}!!`);
+            throw new Error(`${min} is not less than ${max}!`);
           }
           return min + value * (max - min);
         }

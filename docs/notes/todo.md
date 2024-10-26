@@ -1,5 +1,7 @@
 ## dev
 * game stuff
+  * deal with:
+    * player dropping when bot selector changes
   * input and output
     * then make communication more real: dust off beschi
       * (needs Zig output too, but maybe not right away)

@@ -224,7 +224,6 @@ export class World extends EventTarget {
         };
         const peek = this._currentMap!.getTile(peekLoc.x, peekLoc.y);
         if (peek == TileType.Wall) {
-            console.log(`ENGINE: player hit wall at ${peekLoc.x}, ${peekLoc.y}`);
             return false;
         }
         player.location = peekLoc;

@@ -56,6 +56,12 @@ export class VisPlayer extends Phaser.GameObjects.Sprite {
         if (   this.tilePosition.x != this.playerObject.location.x
             || this.tilePosition.y != this.playerObject.location.y
         ) {
+            if (this.tilePosition.x < this.playerObject.location.x) {
+                this.setFacing(PlayerFacing.Right);
+            }
+            else if (this.tilePosition.x > this.playerObject.location.x) {
+                this.setFacing(PlayerFacing.Left);
+            }
             this.tilePosition = this.playerObject.location;
             this.setPosition(
                 this.tilePosition.x * config.tileSize,

@@ -3,6 +3,8 @@ const config = {
     version: [0, 0, 1],
     // @ts-ignore
     environment: typeof Deno !== "undefined" ? "Deno" : "Web",
+
+    // module hosting
     minimumTickTime: 50,
     tickWarnTimeLimit: 250,
     tickKillTimeLimit: 500,
