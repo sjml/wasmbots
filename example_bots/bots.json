@@ -1,20 +1,4 @@
 {
-  "bot_as.wasm": {
-    "source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/bot_as",
-    "name": "BasicBot (AssemblyScript)"
-  },
-  "bot_go.wasm": {
-    "source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/bot_go",
-    "name": "BasicBot (Go)"
-  },
-  "bot_rs.wasm": {
-    "source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/bot_rs",
-    "name": "BasicBot (Rust)"
-  },
-  "bot_zig.wasm": {
-    "source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/bot_zig",
-    "name": "BasicBot (Zig)"
-  },
   "random_bounce_c.wasm": {
     "source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/random_bounce_c",
     "name": "C Bouncer"
