@@ -3,19 +3,19 @@ CFLAGS = -s WASM=1 -s EXPORTED_FUNCTIONS='["_setup", "_receiveGameParams", "_tic
 LIBDIR = ../../libraries/C
 EXE_NAME = random_bounce
 
-random_bounce.wasm: random_bounce.c $(LIBDIR)/wasmbot_client.c
+random_bounce.wasm: $(EXE_NAME).c $(LIBDIR)/wasmbot_client.c
 	$(CC) $(CFLAGS) -I$(LIBDIR) $^ -o $@
 	chmod -x $@
 
 .PHONY: all
-all: random_bounce.wasm
+all: $(EXE_NAME).wasm
 
 .PHONY: clean
 clean:
-	rm -rf random_bounce.wasm
+	rm -rf $(EXE_NAME).wasm
 
 .PHONY: install
 install: all
-	rsync -u -t -p random_bounce.wasm ../../example_bots/random_bounce_c.wasm
+	rsync -u -t -p $(EXE_NAME).wasm ../../example_bots/$(EXE_NAME)_c.wasm
 
 .DEFAULT_GOAL = all

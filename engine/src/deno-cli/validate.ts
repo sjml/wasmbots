@@ -19,4 +19,4 @@ if (!await validateWasm(wasmBytes)) {
     console.error(`❌ WebAssembly binary ${Deno.args[0]} does not conform to spec`)
     Deno.exit(1);
 }
-console.log(`✅ WebAssembly binary file ${Deno.args[0]} appears to be valid and conforms to spec`)
+console.log(`✅ ${Deno.args[0]}`)
