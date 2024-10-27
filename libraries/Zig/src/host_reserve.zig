@@ -48,14 +48,14 @@ pub fn read_string(allocator: Allocator, offset: usize, len: usize) []const u8 {
 }
 
 fn _numberTypeIsValid(comptime T: type) bool {
-    const validIntTypes = [_]type{
+    const validNumericTypes = [_]type{
         u8,  i8,
         u16, i16,
         u32, i32,
         u64, i64,
         f32, f64,
     };
-    for (validIntTypes) |vt| {
+    for (validNumericTypes) |vt| {
         if (T == vt) {
             return true;
         }
@@ -77,7 +77,11 @@ pub fn write_number(comptime T: type, offset: usize, value: T) usize {
         }
     }
     const slice = HOST_RESERVE[offset..][0..@sizeOf(T)];
-    std.mem.writeInt(T, @constCast(slice), value, .little);
+    switch (T) {
+        f32 => std.mem.writeInt(u32, @constCast(slice), @bitCast(value), .little),
+        f64 => std.mem.writeInt(u64, @constCast(slice), @bitCast(value), .little),
+        else => std.mem.writeInt(T, @constCast(slice), value, .little),
+    }
     return offset + @sizeOf(T);
 }
 
@@ -95,5 +99,9 @@ pub fn read_number(comptime T: type, offset: usize) T {
         }
     }
 
-    return std.mem.readInt(T, HOST_RESERVE[offset..][0..@sizeOf(T)], .little);
+    switch (T) {
+        f32 => return @bitCast(std.mem.readInt(u32, HOST_RESERVE[offset..][0..@sizeOf(T)], .little)),
+        f64 => return @bitCast(std.mem.readInt(u64, HOST_RESERVE[offset..][0..@sizeOf(T)], .little)),
+        else => return std.mem.readInt(T, HOST_RESERVE[offset..][0..@sizeOf(T)], .little),
+    }
 }

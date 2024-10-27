@@ -70,4 +70,6 @@ fn clientTick(lastDuration: u32, lastMoveSucceeded: bool) void {
         wasmbotClient.log("bounce");
     }
     _ = hostReserve.write_number(u8, 0, @intFromEnum(CURRENT_DIR));
+    const f = hostReserve.read_number(f32, 0);
+    _ = hostReserve.write_number(f32, 200, f);
 }

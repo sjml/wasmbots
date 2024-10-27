@@ -1,18 +1,22 @@
 ## dev
 * game stuff
   * deal with:
+    * put a limit on length of web logs
     * player dropping when bot selector changes
+    * move to library for phosphor icons?
+      * https://github.com/haruaki07/phosphor-svelte
+      * https://github.com/babakfp/phosphor-icons-svelte
   * input and output
     * then make communication more real: dust off beschi
       * (needs Zig output too, but maybe not right away)
     * communicate world to player
       * situation
-        * current HP
         * result of last action
         * how many milliseconds elapsed during last tick
+        * current HP
+        * status (1 byte, flags)
         * surroundings
           * NxN grid of what is visible
-        * status (1 byte, flags)
         * events that happened last round?
           * number of events
           * array of events
