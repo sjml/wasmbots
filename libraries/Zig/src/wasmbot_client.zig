@@ -19,22 +19,19 @@ export fn setup(requestReserve: usize) usize {
 }
 
 pub const TickFn = fn (u32, bool) void;
-var _clientTick: *const TickFn = _noop;
-fn _noop(_: u32, _: bool) void {}
+var _client_tick: *const TickFn = _clienTickNoop;
+fn _clienTickNoop(_: u32, _: bool) void {}
 
 pub fn registerTickCallback(cb: *const TickFn) void {
-    _clientTick = cb;
+    _client_tick = cb;
 }
 
 export fn tick(offset: usize) void {
-    var localOffset = offset;
-    const lastDuration = host_reserve.read_number(u32, localOffset);
-    localOffset += 4;
-    const lastMoveSucceeded: bool = host_reserve.read_number(u8, localOffset) != 0;
-    _clientTick(lastDuration, lastMoveSucceeded);
+    var local_offset = offset;
+    const last_duration = host_reserve.readNumber(u32, local_offset);
+    local_offset += 4;
+    const last_move_succeeded: bool = host_reserve.readNumber(u8, local_offset) != 0;
+    _client_tick(last_duration, last_move_succeeded);
 }
 
 pub extern fn getRandomInt(min: i32, max: i32) i32;
-// comptime {
-//     @export(getRandomInt, .{ .name = "getRandomInt", .linkage = .strong });
-// }

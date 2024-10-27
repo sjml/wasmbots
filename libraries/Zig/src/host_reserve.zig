@@ -22,7 +22,7 @@ pub fn reserveMemory(request: usize) bool {
     return true;
 }
 
-pub fn write_string(offset: usize, msg: []const u8) usize {
+pub fn writeString(offset: usize, msg: []const u8) usize {
     if (config.bounds_checking) {
         if (offset + msg.len >= HOST_RESERVE.len) {
             logErr("CLIENT ERROR: String too long to write to reserve memory");
@@ -33,7 +33,7 @@ pub fn write_string(offset: usize, msg: []const u8) usize {
     return offset + msg.len;
 }
 
-pub fn read_string(allocator: Allocator, offset: usize, len: usize) []const u8 {
+pub fn readString(allocator: Allocator, offset: usize, len: usize) []const u8 {
     if (config.bounds_checking) {
         if (offset + len >= HOST_RESERVE.len) {
             logErr("CLIENT ERROR: String read will overrun reserve memory");
@@ -63,7 +63,7 @@ fn _numberTypeIsValid(comptime T: type) bool {
     return false;
 }
 
-pub fn write_number(comptime T: type, offset: usize, value: T) usize {
+pub fn writeNumber(comptime T: type, offset: usize, value: T) usize {
     comptime {
         if (!_numberTypeIsValid(T)) {
             @compileError("Invalid number type");
@@ -85,7 +85,7 @@ pub fn write_number(comptime T: type, offset: usize, value: T) usize {
     return offset + @sizeOf(T);
 }
 
-pub fn read_number(comptime T: type, offset: usize) T {
+pub fn readNumber(comptime T: type, offset: usize) T {
     comptime {
         if (!_numberTypeIsValid(T)) {
             @compileError("Invalid number type");

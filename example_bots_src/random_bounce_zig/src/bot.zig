@@ -32,10 +32,10 @@ const Direction = enum(u8) {
 var CURRENT_DIR: Direction = Direction.East;
 
 fn chooseNewDirection() void {
-    var randomDir: u8 = @intCast(wasmbotClient.getRandomInt(0, 3));
-    randomDir *= 2;
-    randomDir += 1;
-    CURRENT_DIR = @enumFromInt(randomDir);
+    var random_dir: u8 = @intCast(wasmbotClient.getRandomInt(0, 3));
+    random_dir *= 2;
+    random_dir += 1;
+    CURRENT_DIR = @enumFromInt(random_dir);
 }
 
 fn reflect() void {
@@ -51,7 +51,7 @@ fn reflect() void {
 
 fn clientSetup(pars: params.GameParameters) params.BotMetadata {
     _ = pars;
-    const botMeta = params.BotMetadata{
+    const bot_meta = params.BotMetadata{
         .name = params.makeBotName(BOT_NAME),
         .version = BOT_VERSION,
         .ready = true,
@@ -59,17 +59,17 @@ fn clientSetup(pars: params.GameParameters) params.BotMetadata {
 
     chooseNewDirection();
 
-    return botMeta;
+    return bot_meta;
 }
 
-fn clientTick(lastDuration: u32, lastMoveSucceeded: bool) void {
-    _ = lastDuration;
+fn clientTick(last_duration: u32, last_move_succeeded: bool) void {
+    _ = last_duration;
 
-    if (!lastMoveSucceeded) {
+    if (!last_move_succeeded) {
         reflect();
         wasmbotClient.log("bounce");
     }
-    _ = hostReserve.write_number(u8, 0, @intFromEnum(CURRENT_DIR));
-    const f = hostReserve.read_number(f32, 0);
-    _ = hostReserve.write_number(f32, 200, f);
+    _ = hostReserve.writeNumber(u8, 0, @intFromEnum(CURRENT_DIR));
+    const f = hostReserve.readNumber(f32, 0);
+    _ = hostReserve.writeNumber(f32, 200, f);
 }
