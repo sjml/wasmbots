@@ -1,5 +1,6 @@
 import config from "../core/config.ts";
 import * as Msg from "./messages.ts";
+import * as CoreMsg from "../core/messages.ts";
 import { GuestProgram } from "../core/guest.ts";
 import { validateWasm } from "../core/validator.ts";
 import { LogLevel, type ILogger } from "../core/logger.ts";
@@ -112,7 +113,12 @@ async function instantiate(payload: Msg.InstantiatePayload) {
 }
 
 async function runTick(payload: Msg.RunTickPayload) {
-    const moveByte = program.runTick(payload.lastTickDuration, payload.lastMoveSucceeded);
+    // reconstruct the full message object from its properties
+    //   after it was serialized to cross the Web Worker barrier
+    const workerCirc = new CoreMsg.GameCircumstances();
+    Object.assign(workerCirc, payload.circumstances);
+
+    const moveByte = program.runTick(workerCirc);
     self.postMessage({
         type: Msg.GuestToHostMessageType.RunTickDone,
         payload: {

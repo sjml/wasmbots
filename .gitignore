@@ -2,3 +2,4 @@
 
 /.vscode
 /scripts/deploy_frontend.sh
+/.envrc

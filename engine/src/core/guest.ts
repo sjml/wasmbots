@@ -1,5 +1,6 @@
 import { type ILogger } from "./logger.ts";
 import { writeGameParameters, writeCircumstances, readMoveBuffer } from "../game/circumstances.ts";
+import * as CoreMsg from "./messages.ts";
 import { RNG } from "../game/random.ts";
 
 const MIN_NAME_LEN = 4;
@@ -214,10 +215,17 @@ export class GuestProgram {
         return ready;
     }
 
-    runTick(lastTickDuration: number, lastMoveSucceeded: boolean): number {
+    runTick(circumstances: CoreMsg.GameCircumstances): number {
         this.reserveBlock.fill(0);
+
         const circOffset = 1024;
-        writeCircumstances(this.reserveBlock, circOffset, lastTickDuration, lastMoveSucceeded);
+        const dv = new DataView(
+            this.reserveBlock.buffer,
+            this.reserveBlock.byteOffset + circOffset,
+            this.reserveBlock.byteLength - circOffset
+        );
+        circumstances.writeBytes(dv, false);
+
         try {
             this.exports!.tick(circOffset);
         } catch (error) {

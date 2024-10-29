@@ -1,0 +1,16 @@
+# Processed by beschi <https://github.com/sjml/beschi> to generate
+#    message-parsing code for the host and all the client libraries.
+
+[meta]
+namespace = "WasmBotsMessage"
+list_size_type = "uint16"
+string_size_type = "byte"
+
+[[messages]]
+_name = "GameCircumstances"
+lastTickDuration = "uint32"
+lastMoveSucceeded = "bool"
+
+[[messages]]
+_name = "PlayerMove"
+moveByte = "byte"

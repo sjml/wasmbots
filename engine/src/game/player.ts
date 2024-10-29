@@ -1,4 +1,5 @@
 import { WasmCoordinator, WorkerStatus, type LogFunction } from "../worker/coordinator.ts";
+import * as CoreMsg from "../core/messages.ts";
 
 import config from "../core/config.ts";
 import { type Point } from "./map.ts";
@@ -42,8 +43,10 @@ export class Player {
         return await this.init(this._programBytes, false);
     }
 
-    async tickTurn(): Promise<number> {
-        const moveByte = await this.coordinator.tick();
+    async tickTurn(circumstances: CoreMsg.GameCircumstances): Promise<number> {
+        circumstances.lastMoveSucceeded = this.lastMoveSucceeded;
+
+        const moveByte = await this.coordinator.tick(circumstances);
 
         return moveByte;
     }

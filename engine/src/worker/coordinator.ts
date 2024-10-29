@@ -1,6 +1,7 @@
 import config from "../core/config.ts";
 import { LogLevel } from "../core/logger.ts";
 import * as Msg from "./messages.ts";
+import * as CoreMsg from "../core/messages.ts";
 import { sleep } from "../core/util.ts";
 import { Player } from "../game/player.ts";
 
@@ -114,7 +115,7 @@ export class WasmCoordinator {
         this.readyResolve();
     }
 
-    tick(): Promise<number> {
+    tick(circumstances: CoreMsg.GameCircumstances): Promise<number> {
         this.tickPromise = new Promise<number>((resolve, reject) => {
             this.tickResolve = resolve;
             this.tickReject = reject;
@@ -131,11 +132,12 @@ export class WasmCoordinator {
             this.inTick = true;
 
             this.tickStartTime = performance.now();
+
+            circumstances.lastTickDuration = this.lastTickDuration;
             this.worker.postMessage({
                 type: Msg.HostToGuestMessageType.RunTick,
                 payload: {
-                    lastTickDuration: this.lastTickDuration,
-                    lastMoveSucceeded: this.player.lastMoveSucceeded,
+                    circumstances: circumstances,
                 } as Msg.RunTickPayload
             });
 

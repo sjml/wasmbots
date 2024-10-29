@@ -1,4 +1,5 @@
 import { LogLevel } from "../core/logger.ts";
+import * as CoreMsg from "../core/messages.ts";
 
 export enum GuestToHostMessageType {
     InitModuleDone,
@@ -44,8 +45,7 @@ export interface InstantiatePayload {
     rngSeed: number;
 }
 export interface RunTickPayload {
-    lastTickDuration: number;
-    lastMoveSucceeded: boolean;
+    circumstances: CoreMsg.GameCircumstances;
 }
 
 

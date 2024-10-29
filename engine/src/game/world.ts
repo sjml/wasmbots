@@ -2,6 +2,7 @@ import { RNG, Deck } from "./random.ts";
 import { Player } from "./player.ts";
 import { WorkerStatus } from "../worker/coordinator.ts";
 import { TileType, WorldMap, type Point } from "./map.ts";
+import * as CoreMsg from "../core/messages.ts";
 
 // trying to build with the idea that these numbers might change,
 //   but not testing that at all, so probably some lurking bugs
@@ -198,7 +199,10 @@ export class World extends EventTarget {
         for (const player of this._players) {
             if (player == null) { continue; }
             if (World._playerIsValid(player)) {
-                const moveByte = await player.tickTurn();
+                const circumstances = new CoreMsg.GameCircumstances();
+
+                const moveByte = await player.tickTurn(circumstances);
+
                 player.lastMoveSucceeded = this.processMove(player, moveByte);
             }
         }

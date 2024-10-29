@@ -6,9 +6,8 @@
     * move to library for phosphor icons?
       * https://github.com/haruaki07/phosphor-svelte
       * https://github.com/babakfp/phosphor-icons-svelte
+  * seems to be a one-frame lag between when I think the message is being delivered and when it is
   * input and output
-    * then make communication more real: dust off beschi
-      * (needs Zig output too, but maybe not right away)
     * communicate world to player
       * situation
         * result of last action
@@ -35,23 +34,26 @@
   * line of sight and vision area
   * items, weapons, armor, spells
 * map variations
-    * Tiled authoring (figure out how to represent data in CLI version; can export as JSON so maybe don't need to get too fancy on the Tiled side and "just" parse that)
 * add getElapsedTime function (since loading? )
 * trainer
   * single executable that hosts webpage
+    * https://github.com/NfNitLoop/deno-embedder
   * visualization of memory, enter options from dropdown
     * edit memory
+  * author + load JSON files of message sequences
+    * means generating code to serialize/deserialize messages from JSON 😬
   * load a wasm file, let it take a turn
+* component that is mountable in regular page with urls to wasm files in attributes; no chooser, etc. 
 * build out a few different example bots (./bot_concepts.md)
 * CI to build/validate/deploy
 
 ## polish
 * player class
     * when dropping, if game hasn't started, put spawn point back in the pool
+    * set facing when reset
 * UI: buttons should fade between state
 * UI: add button to console to copy it to clipboard
 * UI: landscape view on iPhone - the drawers don't extend into the island areas
-* UI: align drawer title with button, but margin it out away from it
 * UI: text size on bot name? 
 * Game: ability to zoom in on single bot
 * Tech: ability to reseed player on reset
