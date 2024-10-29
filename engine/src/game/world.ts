@@ -201,9 +201,9 @@ export class World extends EventTarget {
             if (World._playerIsValid(player)) {
                 const circumstances = new CoreMsg.GameCircumstances();
 
-                const moveByte = await player.tickTurn(circumstances);
+                const move = await player.tickTurn(circumstances);
 
-                player.lastMoveSucceeded = this.processMove(player, moveByte);
+                player.lastMoveSucceeded = this.processMove(player, move);
             }
         }
 
@@ -219,8 +219,8 @@ export class World extends EventTarget {
         }
     }
 
-    processMove(player: Player, moveByte: number): boolean {
-        const direction = moveByte as Direction;
+    processMove(player: Player, move: CoreMsg.PlayerMove): boolean {
+        const direction = move.moveByte as Direction;
         const offset = OFFSETS.get(direction)!;
         const peekLoc = {
             x: player.location.x + offset.x,

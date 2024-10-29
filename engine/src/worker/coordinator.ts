@@ -27,8 +27,8 @@ export class WasmCoordinator {
     private inTick: boolean = false;
     private tickStartTime: number = 0;
     private lastTickDuration: number = 0;
-    private tickPromise!: Promise<number>;
-    private tickResolve!: (val: number) => void;
+    private tickPromise!: Promise<CoreMsg.PlayerMove>;
+    private tickResolve!: (val: CoreMsg.PlayerMove) => void;
     private tickReject!: () => void;
     private workerWarningsCount = 0;
 
@@ -115,8 +115,8 @@ export class WasmCoordinator {
         this.readyResolve();
     }
 
-    tick(circumstances: CoreMsg.GameCircumstances): Promise<number> {
-        this.tickPromise = new Promise<number>((resolve, reject) => {
+    tick(circumstances: CoreMsg.GameCircumstances): Promise<CoreMsg.PlayerMove> {
+        this.tickPromise = new Promise<CoreMsg.PlayerMove>((resolve, reject) => {
             this.tickResolve = resolve;
             this.tickReject = reject;
         });
@@ -174,7 +174,7 @@ export class WasmCoordinator {
         if (remainder > 0) {
             await sleep(remainder);
         }
-        this.tickResolve(payload.moveByte);
+        this.tickResolve(payload.playerMove);
     }
 
     private async onMessage(evt: MessageEvent<Msg.GuestToHostMessage<Msg.GuestToHostMessageType>>) {

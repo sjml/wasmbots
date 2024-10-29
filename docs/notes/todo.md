@@ -8,6 +8,7 @@
       * https://github.com/babakfp/phosphor-icons-svelte
   * seems to be a one-frame lag between when I think the message is being delivered and when it is
   * input and output
+    * hang on to the dataviews between ticks
     * communicate world to player
       * situation
         * result of last action

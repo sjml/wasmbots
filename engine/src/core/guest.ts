@@ -215,7 +215,7 @@ export class GuestProgram {
         return ready;
     }
 
-    runTick(circumstances: CoreMsg.GameCircumstances): number {
+    runTick(circumstances: CoreMsg.GameCircumstances): CoreMsg.PlayerMove {
         this.reserveBlock.fill(0);
 
         const circOffset = 1024;
@@ -232,6 +232,14 @@ export class GuestProgram {
             this.logger.error(`FATAL ERROR: Crash during tick function:\n  ${error}`);
             this.isShutDown = true;
         }
-        return readMoveBuffer(this.reserveBlock, 0);
+
+        const readView = new DataView(
+            this.reserveBlock.buffer,
+            this.reserveBlock.byteOffset,
+            this.reserveBlock.byteLength
+        )
+
+        const move = CoreMsg.PlayerMove.fromBytes(readView);
+        return move;
     }
 }

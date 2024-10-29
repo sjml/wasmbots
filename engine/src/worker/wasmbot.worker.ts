@@ -118,12 +118,12 @@ async function runTick(payload: Msg.RunTickPayload) {
     const workerCirc = new CoreMsg.GameCircumstances();
     Object.assign(workerCirc, payload.circumstances);
 
-    const moveByte = program.runTick(workerCirc);
+    const move = program.runTick(workerCirc);
     self.postMessage({
         type: Msg.GuestToHostMessageType.RunTickDone,
         payload: {
             hadError: program.isShutDown,
-            moveByte: moveByte,
+            playerMove: move,
         } as Msg.RunTickDonePayload,
     });
 }
