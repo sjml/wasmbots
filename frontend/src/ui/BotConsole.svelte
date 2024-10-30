@@ -4,7 +4,9 @@
     import { Loader, Logger } from "../engine";
     import { Player } from "../engine/game/player";
     import { globalState } from "../state.svelte";
+    import { sleep } from "../engine/core/util";
 
+    const MAX_LOG_ENTRIES = 1000;
     interface LogEntry {
         level: Logger.LogLevel;
         msg: string;
@@ -13,7 +15,7 @@
     let consoleDiv: HTMLDivElement;
 
     async function logToMe(level: Logger.LogLevel, msg: string) {
-        logs = [...logs, {level, msg}];
+        logs = [...logs, {level, msg}].slice(-MAX_LOG_ENTRIES);
         await svelteTick();
         consoleDiv.scroll({
             top: consoleDiv.scrollHeight,
@@ -24,17 +26,23 @@
     interface Props {
         selectedFile: string;
         newPlayerObj: (p: Player) => void;
+        reportLoading: (isLoading: boolean) => void;
     }
-    let { selectedFile, newPlayerObj }: Props = $props();
+    let { selectedFile, newPlayerObj, reportLoading }: Props = $props();
 
+    let localLoading = false;
     async function createPlayerObject(fpath: string) {
-        if (!fpath || fpath.length == 0) return;
+        if (!fpath || fpath.length == 0 || localLoading) return;
+        localLoading = true;
+        reportLoading(localLoading);
         logs = [];
         fpath = `./example_bots/${fpath}`;
         const wasmBytes = await Loader.readBinaryFile(fpath);
         const p = new Player(logToMe, globalState.world!.rng.randInt(0, Number.MAX_SAFE_INTEGER));
         await p.init(wasmBytes);
         newPlayerObj(p);
+        localLoading = false;
+        reportLoading(false);
     }
 
     $effect(() => {

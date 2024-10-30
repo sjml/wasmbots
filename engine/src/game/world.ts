@@ -7,7 +7,7 @@ import * as CoreMsg from "../core/messages.ts";
 // trying to build with the idea that these numbers might change,
 //   but not testing that at all, so probably some lurking bugs
 //   for > 2 players.
-const MIN_PLAYERS = 2;
+const MIN_PLAYERS = 1;
 const MAX_PLAYERS = 2;
 
 export enum Direction {
@@ -207,16 +207,16 @@ export class World extends EventTarget {
             }
         }
 
-        const playersAlive = this._players.filter(p => World._playerIsValid(p));
-        if (playersAlive.length == 1) {
-            // winner winner
-            // TODO: report winners and losers
-            this.setState(GameState.Shutdown);
-        }
-        else if (playersAlive.length == 0) {
-            // errybody dead
-            this.setState(GameState.Shutdown);
-        }
+        // const playersAlive = this._players.filter(p => World._playerIsValid(p));
+        // if (playersAlive.length == 1) {
+        //     // winner winner
+        //     // TODO: report winners and losers
+        //     this.setState(GameState.Shutdown);
+        // }
+        // else if (playersAlive.length == 0) {
+        //     // errybody dead
+        //     this.setState(GameState.Shutdown);
+        // }
     }
 
     processMove(player: Player, move: CoreMsg.Message): boolean {

@@ -1,22 +1,13 @@
 ## dev
 * game stuff
   * deal with:
-    * put a limit on length of web logs
     * player dropping when bot selector changes
     * move to library for phosphor icons?
       * https://github.com/haruaki07/phosphor-svelte
       * https://github.com/babakfp/phosphor-icons-svelte
-  * input and output
-    * game player objects should have labels that world can see
-      * update world.ts processMove error handler once they do
-    * communicate world to player
-      * clear out old read/write functions in bot libraries
-      * situation
-      * move submission
-    * player navigation (both receiving and executing)
   * UI: 
-    * add spinners while validating/loading wasm
     * add player image to panel once spawned
+    * upload wasm with drag-n-drop (or at least a file selector)
   * testing
     * player class
       * feeding non-wasm byte array
@@ -26,7 +17,7 @@
   * line of sight and vision area
   * items, weapons, armor, spells
 * map variations
-* add getElapsedTime function (since loading? )
+* component that is mountable in regular page with urls to wasm files in attributes; no chooser, etc. 
 * trainer
   * single executable that hosts webpage
     * https://github.com/NfNitLoop/deno-embedder
@@ -35,9 +26,11 @@
   * author + load JSON files of message sequences
     * means generating code to serialize/deserialize messages from JSON 😬
   * load a wasm file, let it take a turn
-* component that is mountable in regular page with urls to wasm files in attributes; no chooser, etc. 
 * build out a few different example bots (./bot_concepts.md)
 * CI to build/validate/deploy
+
+# procgen
+* https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/
 
 ## polish
 * player class
@@ -51,7 +44,8 @@
 * Tech: ability to reseed player on reset
 
 ## horizon
-* add convenience functions to libraries for writing/reading byte array
+* game player objects should have labels that world can see
+  * update world.ts processMove error handler once they do
 * with the move away from extern linking, maybe more libraries can use normal strings in their BotMetadata structs
 * readmes for individual libraries
 * custom Phaser3 build to trim down export size
