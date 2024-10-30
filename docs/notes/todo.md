@@ -7,20 +7,12 @@
       * https://github.com/haruaki07/phosphor-svelte
       * https://github.com/babakfp/phosphor-icons-svelte
   * input and output
+    * game player objects should have labels that world can see
+      * update world.ts processMove error handler once they do
     * communicate world to player
       * clear out old read/write functions in bot libraries
       * situation
-        * result of last action
-        * how many milliseconds elapsed during last tick
-        * current HP
-        * status (1 byte, flags)
-        * surroundings
-          * NxN grid of what is visible
-        * events that happened last round?
-          * number of events
-          * array of events
       * move submission
-        * ??
     * player navigation (both receiving and executing)
   * UI: 
     * add spinners while validating/loading wasm

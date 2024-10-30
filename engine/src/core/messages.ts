@@ -147,9 +147,11 @@ export class DataAccess {
         this.currentOffset += strBuffer.byteLength;
     }
 }
+
 export enum MessageType {
-  GameCircumstancesType = 1,
-  PlayerMoveType = 2,
+  _ErrorType = 1,
+  GameCircumstancesType = 2,
+  MoveType = 3,
 }
 
 export interface Message {
@@ -171,31 +173,87 @@ export function ProcessRawBytes(dv: DataView): Message[] {
   while (!da.isFinished()) {
     const msgType: number = da.getByte();
     switch (msgType) {
+      case 0:
+        return msgList;
+      case MessageType._ErrorType:
+        msgList.push(_Error.fromBytes(da));
+        break;
       case MessageType.GameCircumstancesType:
         msgList.push(GameCircumstances.fromBytes(da));
         break;
-      case MessageType.PlayerMoveType:
-        msgList.push(PlayerMove.fromBytes(da));
+      case MessageType.MoveType:
+        msgList.push(Move.fromBytes(da));
         break;
       default:
         throw new Error(`Unknown message type: ${msgType}`);
-    }
-    if (msgList[msgList.length - 1] == null) {
-      break;
     }
   }
   return msgList;
 }
 
 @staticImplements<MessageStatic>()
+export class _Error implements Message {
+  description: string = "";
+
+  getMessageType() : MessageType { return MessageType._ErrorType; }
+
+  getSizeInBytes(): number {
+    let size: number = 0;
+    size += _textEnc.encode(this.description).byteLength;
+    size += 1;
+    return size;
+  }
+
+  static fromBytes(data: DataView|DataAccess): _Error {
+    let da: DataAccess;
+    if (data instanceof DataView) {
+      da = new DataAccess(data);
+    }
+    else {
+      da = data;
+    }
+    try {
+      const n_Error = new _Error();
+      n_Error.description = da.getString();
+      return n_Error;
+    }
+    catch (err) {
+      throw new Error(`Could not read _Error from offset ${da.currentOffset} (${err.name})`);
+    }
+  }
+
+  writeBytes(data: DataView|DataAccess, tag: boolean): void {
+    let da: DataAccess;
+    if (data instanceof DataView) {
+      da = new DataAccess(data);
+    }
+    else {
+      da = data;
+    }
+    if (tag) {
+      da.setByte(MessageType._ErrorType);
+    }
+    da.setString(this.description);
+  }
+
+}
+
+@staticImplements<MessageStatic>()
 export class GameCircumstances implements Message {
   lastTickDuration: number = 0;
   lastMoveSucceeded: boolean = false;
+  currentHitPoints: number = 0;
+  currentStatus: number = 0;
+  surroundings: number[] = [];
+  surroundingsRadius: number = 0;
 
   getMessageType() : MessageType { return MessageType.GameCircumstancesType; }
 
   getSizeInBytes(): number {
-    return 5;
+    let size: number = 0;
+    size += this.surroundings.length * 2;
+    size += 11;
+    return size;
   }
 
   static fromBytes(data: DataView|DataAccess): GameCircumstances {
@@ -210,6 +268,14 @@ export class GameCircumstances implements Message {
       const nGameCircumstances = new GameCircumstances();
       nGameCircumstances.lastTickDuration = da.getUint32();
       nGameCircumstances.lastMoveSucceeded = da.getBool();
+      nGameCircumstances.currentHitPoints = da.getUint16();
+      nGameCircumstances.currentStatus = da.getByte();
+      const surroundings_Length = da.getUint16();
+      nGameCircumstances.surroundings = Array<number>(surroundings_Length);
+      for (let i3 = 0; i3 < surroundings_Length; i3++) {
+        nGameCircumstances.surroundings[i3] = da.getUint16();
+      }
+      nGameCircumstances.surroundingsRadius = da.getByte();
       return nGameCircumstances;
     }
     catch (err) {
@@ -230,21 +296,30 @@ export class GameCircumstances implements Message {
     }
     da.setUint32(this.lastTickDuration);
     da.setBool(this.lastMoveSucceeded);
+    da.setUint16(this.currentHitPoints);
+    da.setByte(this.currentStatus);
+    da.setUint16(this.surroundings.length);
+    for (let i = 0; i < this.surroundings.length; i++) {
+      let el = this.surroundings[i];
+      da.setUint16(el);
+    }
+    da.setByte(this.surroundingsRadius);
   }
 
 }
 
 @staticImplements<MessageStatic>()
-export class PlayerMove implements Message {
-  moveByte: number = 0;
+export class Move implements Message {
+  direction: number = 0;
+  distance: number = 0;
 
-  getMessageType() : MessageType { return MessageType.PlayerMoveType; }
+  getMessageType() : MessageType { return MessageType.MoveType; }
 
   getSizeInBytes(): number {
-    return 1;
+    return 2;
   }
 
-  static fromBytes(data: DataView|DataAccess): PlayerMove {
+  static fromBytes(data: DataView|DataAccess): Move {
     let da: DataAccess;
     if (data instanceof DataView) {
       da = new DataAccess(data);
@@ -253,12 +328,13 @@ export class PlayerMove implements Message {
       da = data;
     }
     try {
-      const nPlayerMove = new PlayerMove();
-      nPlayerMove.moveByte = da.getByte();
-      return nPlayerMove;
+      const nMove = new Move();
+      nMove.direction = da.getByte();
+      nMove.distance = da.getByte();
+      return nMove;
     }
     catch (err) {
-      throw new Error(`Could not read PlayerMove from offset ${da.currentOffset} (${err.name})`);
+      throw new Error(`Could not read Move from offset ${da.currentOffset} (${err.name})`);
     }
   }
 
@@ -271,10 +347,17 @@ export class PlayerMove implements Message {
       da = data;
     }
     if (tag) {
-      da.setByte(MessageType.PlayerMoveType);
+      da.setByte(MessageType.MoveType);
     }
-    da.setByte(this.moveByte);
+    da.setByte(this.direction);
+    da.setByte(this.distance);
   }
 
 }
+
+export const MessageTypeMap = new Map<MessageType, { new(): Message }>([
+  [MessageType._ErrorType, _Error],
+  [MessageType.GameCircumstancesType, GameCircumstances],
+  [MessageType.MoveType, Move],
+]);
 

@@ -31,7 +31,7 @@ fn _typeIsSimple(comptime T: type) bool {
         return true;
     }
     const simpleTypes = [_]type{
-        GameCircumstances, PlayerMove,
+        Move,
     };
     for (simpleTypes) |vt| {
         if (T == vt) {
@@ -183,14 +183,22 @@ pub fn writeList(comptime T: type, offset: usize, buffer: []u8, value: []T) usiz
     return local_offset - offset;
 }
 
+pub fn writeBytes(m: *const Message, offset: usize, buffer: []u8, tag: bool) usize {
+    switch (m.*) {
+        inline else => |inner| return inner.writeBytes(offset, buffer, tag),
+    }
+}
+
 pub const MessageType = enum(u8) {
+    _Error,
     GameCircumstances,
-    PlayerMove,
+    Move,
 };
 
 pub const Message = union(MessageType) {
+    _Error: _Error,
     GameCircumstances: GameCircumstances,
-    PlayerMove: PlayerMove,
+    Move: Move,
 };
 
 pub fn processRawBytes(allocator: std.mem.Allocator, buffer: []const u8) ![]Message {
@@ -201,76 +209,168 @@ pub fn processRawBytes(allocator: std.mem.Allocator, buffer: []const u8) ![]Mess
     while (local_offset < buffer.len) {
         const msg_type_byte = (try readNumber(u8, local_offset, buffer)).value;
         local_offset += 1;
+        if (msg_type_byte == 0) {
+            return msg_list.toOwnedSlice();
+        }
         const msg_type: MessageType = std.meta.intToEnum(MessageType, msg_type_byte - 1) catch return DataReaderError.InvalidData;
         switch(msg_type) {
+            ._Error => {
+                const msg_read = try _Error.fromBytes(allocator, local_offset, buffer);
+                local_offset += msg_read.bytes_read;
+                try msg_list.append(Message{ ._Error = msg_read.value });
+            },
             .GameCircumstances => {
-                const msg_read = try GameCircumstances.fromBytes(local_offset, buffer);
+                const msg_read = try GameCircumstances.fromBytes(allocator, local_offset, buffer);
                 local_offset += msg_read.bytes_read;
                 try msg_list.append(Message{ .GameCircumstances = msg_read.value });
             },
-            .PlayerMove => {
-                const msg_read = try PlayerMove.fromBytes(local_offset, buffer);
+            .Move => {
+                const msg_read = try Move.fromBytes(local_offset, buffer);
                 local_offset += msg_read.bytes_read;
-                try msg_list.append(Message{ .PlayerMove = msg_read.value });
+                try msg_list.append(Message{ .Move = msg_read.value });
             },
         }
     }
     return msg_list.toOwnedSlice();
 }
 
+pub const _Error = struct {
+    description: []const u8 = "",
+
+    pub fn getSizeInBytes(self: *const _Error) usize {
+        var size: usize = 0;
+        size += self.description.len;
+        size += 1;
+        return size;
+    }
+
+    pub fn fromBytes(allocator: std.mem.Allocator, offset: usize, buffer: []const u8) !struct { value: _Error, bytes_read: usize } {
+        var local_offset = offset;
+
+        const _Error_description_read = try readString(allocator, local_offset, buffer);
+        const _Error_description = _Error_description_read.value;
+        local_offset += _Error_description_read.bytes_read;
+
+        return .{ .value = _Error{
+            .description = _Error_description,
+        }, .bytes_read = local_offset - offset };
+    }
+
+    pub fn writeBytes(self: *const _Error, offset: usize, buffer: []u8, tag: bool) usize {
+        var local_offset = offset;
+        if (tag) {
+            local_offset += writeNumber(u8, local_offset, buffer, 1);
+        }
+
+        local_offset += writeString(local_offset, buffer, self.description);
+
+        return local_offset - offset;
+    }
+
+    pub fn deinit(self: *_Error, allocator: std.mem.Allocator) void {
+        allocator.free(self.description);
+    }
+};
+
 pub const GameCircumstances = struct {
     lastTickDuration: u32 = 0,
     lastMoveSucceeded: bool = false,
+    currentHitPoints: u16 = 0,
+    currentStatus: u8 = 0,
+    surroundings: []u16 = &.{},
+    surroundingsRadius: u8 = 0,
 
     pub fn getSizeInBytes(self: *const GameCircumstances) usize {
-        _ = self;
-        return 5;
+        var size: usize = 0;
+        size += self.surroundings.len * 2;
+        size += 11;
+        return size;
     }
 
-    pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: GameCircumstances, bytes_read: usize } {
-        const GameCircumstances_lastTickDuration = (try readNumber(u32, offset + 0, buffer)).value;
-        const GameCircumstances_lastMoveSucceeded = (try readNumber(bool, offset + 4, buffer)).value;
+    pub fn fromBytes(allocator: std.mem.Allocator, offset: usize, buffer: []const u8) !struct { value: GameCircumstances, bytes_read: usize } {
+        var local_offset = offset;
+
+        const GameCircumstances_lastTickDuration_read = try readNumber(u32, local_offset, buffer);
+        const GameCircumstances_lastTickDuration = GameCircumstances_lastTickDuration_read.value;
+        local_offset += GameCircumstances_lastTickDuration_read.bytes_read;
+
+        const GameCircumstances_lastMoveSucceeded_read = try readNumber(bool, local_offset, buffer);
+        const GameCircumstances_lastMoveSucceeded = GameCircumstances_lastMoveSucceeded_read.value;
+        local_offset += GameCircumstances_lastMoveSucceeded_read.bytes_read;
+
+        const GameCircumstances_currentHitPoints_read = try readNumber(u16, local_offset, buffer);
+        const GameCircumstances_currentHitPoints = GameCircumstances_currentHitPoints_read.value;
+        local_offset += GameCircumstances_currentHitPoints_read.bytes_read;
+
+        const GameCircumstances_currentStatus_read = try readNumber(u8, local_offset, buffer);
+        const GameCircumstances_currentStatus = GameCircumstances_currentStatus_read.value;
+        local_offset += GameCircumstances_currentStatus_read.bytes_read;
+
+        const GameCircumstances_surroundings_read = try readList(u16, allocator, local_offset, buffer);
+        const GameCircumstances_surroundings = GameCircumstances_surroundings_read.value;
+        local_offset += GameCircumstances_surroundings_read.bytes_read;
+
+        const GameCircumstances_surroundingsRadius_read = try readNumber(u8, local_offset, buffer);
+        const GameCircumstances_surroundingsRadius = GameCircumstances_surroundingsRadius_read.value;
+        local_offset += GameCircumstances_surroundingsRadius_read.bytes_read;
+
         return .{ .value = GameCircumstances{
             .lastTickDuration = GameCircumstances_lastTickDuration,
             .lastMoveSucceeded = GameCircumstances_lastMoveSucceeded,
-        }, .bytes_read = 5 };
+            .currentHitPoints = GameCircumstances_currentHitPoints,
+            .currentStatus = GameCircumstances_currentStatus,
+            .surroundings = GameCircumstances_surroundings,
+            .surroundingsRadius = GameCircumstances_surroundingsRadius,
+        }, .bytes_read = local_offset - offset };
     }
 
     pub fn writeBytes(self: *const GameCircumstances, offset: usize, buffer: []u8, tag: bool) usize {
         var local_offset = offset;
-
-        if (tag) {
-            local_offset += writeNumber(u8, local_offset, buffer, 1);
-        }
-        local_offset += writeNumber(u32, local_offset, buffer, self.lastTickDuration);
-        local_offset += writeNumber(bool, local_offset, buffer, self.lastMoveSucceeded);
-
-        return local_offset - offset;
-    }
-};
-
-pub const PlayerMove = struct {
-    moveByte: u8 = 0,
-
-    pub fn getSizeInBytes(self: *const PlayerMove) usize {
-        _ = self;
-        return 1;
-    }
-
-    pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: PlayerMove, bytes_read: usize } {
-        const PlayerMove_moveByte = (try readNumber(u8, offset + 0, buffer)).value;
-        return .{ .value = PlayerMove{
-            .moveByte = PlayerMove_moveByte,
-        }, .bytes_read = 1 };
-    }
-
-    pub fn writeBytes(self: *const PlayerMove, offset: usize, buffer: []u8, tag: bool) usize {
-        var local_offset = offset;
-
         if (tag) {
             local_offset += writeNumber(u8, local_offset, buffer, 2);
         }
-        local_offset += writeNumber(u8, local_offset, buffer, self.moveByte);
+
+        local_offset += writeNumber(u32, local_offset, buffer, self.lastTickDuration);
+        local_offset += writeNumber(bool, local_offset, buffer, self.lastMoveSucceeded);
+        local_offset += writeNumber(u16, local_offset, buffer, self.currentHitPoints);
+        local_offset += writeNumber(u8, local_offset, buffer, self.currentStatus);
+        local_offset += writeList(u16, local_offset, buffer, self.surroundings);
+        local_offset += writeNumber(u8, local_offset, buffer, self.surroundingsRadius);
+
+        return local_offset - offset;
+    }
+
+    pub fn deinit(self: *GameCircumstances, allocator: std.mem.Allocator) void {
+        allocator.free(self.surroundings);
+    }
+};
+
+pub const Move = struct {
+    direction: u8 = 0,
+    distance: u8 = 0,
+
+    pub fn getSizeInBytes(self: *const Move) usize {
+        _ = self;
+        return 2;
+    }
+
+    pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: Move, bytes_read: usize } {
+        const Move_direction = (try readNumber(u8, offset + 0, buffer)).value;
+        const Move_distance = (try readNumber(u8, offset + 1, buffer)).value;
+        return .{ .value = Move{
+            .direction = Move_direction,
+            .distance = Move_distance,
+        }, .bytes_read = 2 };
+    }
+
+    pub fn writeBytes(self: *const Move, offset: usize, buffer: []u8, tag: bool) usize {
+        var local_offset = offset;
+
+        if (tag) {
+            local_offset += writeNumber(u8, local_offset, buffer, 3);
+        }
+        local_offset += writeNumber(u8, local_offset, buffer, self.direction);
+        local_offset += writeNumber(u8, local_offset, buffer, self.distance);
 
         return local_offset - offset;
     }

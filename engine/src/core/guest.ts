@@ -22,8 +22,8 @@ export class GuestProgram {
     private logger: ILogger;
     private reservePtr: number = 0;
     private reserveBlock = new Uint8Array();
-    private reserveReadBlock!: DataView;
-    private reserveWriteBlock!: DataView;
+    private reserveReadBlock!: CoreMsg.DataAccess;
+    private reserveWriteBlock!: CoreMsg.DataAccess;
     isShutDown: boolean = false;
     botName: string = "";
     localRng: RNG;
@@ -179,15 +179,19 @@ export class GuestProgram {
             this.reservePtr,
             config.memorySize
         );
-        this.reserveReadBlock = new DataView(
-            this.reserveBlock.buffer,
-            this.reserveBlock.byteOffset,
-            this.reserveBlock.byteLength
+        this.reserveReadBlock = new CoreMsg.DataAccess(
+            new DataView(
+                this.reserveBlock.buffer,
+                this.reserveBlock.byteOffset,
+                this.reserveBlock.byteLength
+            )
         );
-        this.reserveWriteBlock = new DataView(
-            this.reserveBlock.buffer,
-            this.reserveBlock.byteOffset + config.writeBlockOffset,
-            this.reserveBlock.byteLength - config.writeBlockOffset
+        this.reserveWriteBlock = new CoreMsg.DataAccess(
+            new DataView(
+                this.reserveBlock.buffer,
+                this.reserveBlock.byteOffset + config.writeBlockOffset,
+                this.reserveBlock.byteLength - config.writeBlockOffset
+            )
         );
 
         this.reserveBlock.fill(0);
@@ -236,20 +240,32 @@ export class GuestProgram {
     //    - each side knows how to read what they get based on the spec
     //    - each side knows how to write what the other can read based on the same spec
     //    - I imagine them holding hands and dancing in a circle
-    runTick(circumstances: CoreMsg.GameCircumstances): CoreMsg.PlayerMove {
+    runTick(circumstances: CoreMsg.GameCircumstances): CoreMsg.Message {
         // wipe the shared block before every tick
         this.reserveBlock.fill(0);
 
+        this.reserveWriteBlock.currentOffset = 0;
         circumstances.writeBytes(this.reserveWriteBlock, false);
 
         try {
             this.exports!.tick(config.writeBlockOffset);
         } catch (error) {
-            this.logger.error(`FATAL ERROR: Crash during tick function:\n  ${error}`);
+            const msg = `FATAL ERROR: Crash during tick function:\n  ${error}`;
+            this.logger.error(msg);
             this.isShutDown = true;
+
+            const err = new CoreMsg._Error();
+            err.description = msg;
+            return err;
         }
 
-        const move = CoreMsg.PlayerMove.fromBytes(this.reserveReadBlock);
-        return move;
+        this.reserveReadBlock.currentOffset = 0;
+        const msgList = CoreMsg.ProcessRawBytes(this.reserveReadBlock.buffer);
+        if (msgList.length != 1) {
+            const err = new CoreMsg._Error();
+            err.description = `Unexpected number of submitted player moves: ${msgList}`;
+            return err;
+        }
+        return msgList[0];
     }
 }

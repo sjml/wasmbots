@@ -485,7 +485,7 @@ size_t setup(size_t requestReserve) {
     return (size_t)WSMBT_HOST_RESERVE;
 }
 
-WasmBotsMessage_PlayerMove* _noop(WasmBotsMessage_GameCircumstances* circumstances) { return NULL; }
+void* _noop(WasmBotsMessage_GameCircumstances* circumstances) { return NULL; }
 wsmbt_TickFunction _clientTick = &_noop;
 
 void wsmbt_registerTickCallback(wsmbt_TickFunction tickFunc) {
@@ -493,15 +493,28 @@ void wsmbt_registerTickCallback(wsmbt_TickFunction tickFunc) {
 }
 
 void tick(size_t offset) {
+    WasmBotsMessage_err_t err = WASMBOTSMESSAGE_ERR_OK;
+    void* playerMove = NULL;
+
     _dataAccess.position = offset;
     WasmBotsMessage_GameCircumstances* circumstances = malloc(sizeof(WasmBotsMessage_GameCircumstances));
-    WasmBotsMessage_GameCircumstances_FromBytes(&_dataAccess, circumstances);
+    err = WasmBotsMessage_GameCircumstances_FromBytes(&_dataAccess, circumstances);
+    if (err != WASMBOTSMESSAGE_ERR_OK) {
+        WasmBotsMessage_GameCircumstances_Destroy(circumstances);
+        WasmBotsMessage__Error* errMsg = WasmBotsMessage__Error_Create();
+        errMsg->description = "Could not read GameCircumstances message";
+        errMsg->description_len = strlen(errMsg->description);
+        wsmbt_logErr(errMsg->description);
+        playerMove = errMsg;
+    }
+    else {
+        playerMove = _clientTick(circumstances);
+    }
 
-    WasmBotsMessage_PlayerMove* playerMove = _clientTick(circumstances);
     if (playerMove != NULL) {
         _dataAccess.position = 0;
-        WasmBotsMessage_PlayerMove_WriteBytes(&_dataAccess, playerMove, false);
-        WasmBotsMessage_PlayerMove_Destroy(playerMove);
+        err = WasmBotsMessage_WriteBytes(&_dataAccess, playerMove, true);
+        err = WasmBotsMessage_Destroy(playerMove);
     }
 
     WasmBotsMessage_GameCircumstances_Destroy(circumstances);

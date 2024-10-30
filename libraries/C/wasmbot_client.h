@@ -56,7 +56,7 @@ typedef struct wsmbt_BotMetadata {
     bool ready;
 } wsmbt_BotMetadata;
 
-typedef WasmBotsMessage_PlayerMove* (*wsmbt_TickFunction)(WasmBotsMessage_GameCircumstances*);
+typedef void* (*wsmbt_TickFunction)(WasmBotsMessage_GameCircumstances*);
 void wsmbt_registerTickCallback(wsmbt_TickFunction tickFunc);
 
 #endif // \WASMBOT_CLIENT_H

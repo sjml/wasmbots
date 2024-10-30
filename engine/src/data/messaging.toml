@@ -6,11 +6,49 @@ namespace = "WasmBotsMessage"
 list_size_type = "uint16"
 string_size_type = "byte"
 
+# used internally for handling host <-> module mishaps
+[[messages]]
+_name = "_Error"
+description = "string"
+
+# player receives every tick
 [[messages]]
 _name = "GameCircumstances"
 lastTickDuration = "uint32"
 lastMoveSucceeded = "bool"
+currentHitPoints = "uint16"
+currentStatus = "byte"
+surroundings = "[uint16]"
+surroundingsRadius = "byte"
+
+
+### moves that the player submits
+
+# [[messages]]
+# _name = "Wait"
+
+# [[messages]]
+# _name = "Resign"
 
 [[messages]]
-_name = "PlayerMove"
-moveByte = "byte"
+_name = "Move"
+direction = "byte"
+distance = "byte"
+
+# [[messages]]
+# _name = "Attack"
+# targetX = "int16"
+# targetY = "int16"
+
+# [[messages]]
+# _name = "CastSpell"
+# spellID = "byte"
+# params = "[byte]"
+# targetX = "int16"
+# targetY = "int16"
+
+# [[messages]]
+# _name = "Examine"
+
+# [[messages]]
+# _name = "Take"

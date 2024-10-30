@@ -219,18 +219,29 @@ export class World extends EventTarget {
         }
     }
 
-    processMove(player: Player, move: CoreMsg.PlayerMove): boolean {
-        const direction = move.moveByte as Direction;
-        const offset = OFFSETS.get(direction)!;
-        const peekLoc = {
-            x: player.location.x + offset.x,
-            y: player.location.y + offset.y,
-        };
-        const peek = this._currentMap!.getTile(peekLoc.x, peekLoc.y);
-        if (peek == TileType.Wall) {
-            return false;
+    processMove(player: Player, move: CoreMsg.Message): boolean {
+        switch (move.getMessageType()) {
+            case CoreMsg.MessageType._ErrorType:
+                const errMsg = move as CoreMsg._Error;
+                console.error(`Invalid move from player ${player}: ${errMsg.description}`);
+                break;
+            case CoreMsg.MessageType.MoveType:
+                const playerMove = move as CoreMsg.Move;
+                const direction = playerMove.direction as Direction;
+                const offset = OFFSETS.get(direction)!;
+                const peekLoc = {
+                    x: player.location.x + offset.x,
+                    y: player.location.y + offset.y,
+                };
+                const peek = this._currentMap!.getTile(peekLoc.x, peekLoc.y);
+                if (peek == TileType.Wall) {
+                    return false;
+                }
+                player.location = peekLoc;
+                break;
+            default:
+                throw new Error("Invalid player move! (Should be unreachable.)");
         }
-        player.location = peekLoc;
         return true;
     }
 }

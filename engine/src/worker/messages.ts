@@ -18,7 +18,8 @@ export interface InstantiateDonePayload {
 }
 export interface RunTickDonePayload {
     hadError: boolean;
-    playerMove: CoreMsg.PlayerMove;
+    playerMove: CoreMsg.Message;
+    playerMoveType: CoreMsg.MessageType;
 }
 export interface LogMessagePayload {
     logLevel: LogLevel;

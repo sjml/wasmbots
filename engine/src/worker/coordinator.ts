@@ -27,8 +27,8 @@ export class WasmCoordinator {
     private inTick: boolean = false;
     private tickStartTime: number = 0;
     private lastTickDuration: number = 0;
-    private tickPromise!: Promise<CoreMsg.PlayerMove>;
-    private tickResolve!: (val: CoreMsg.PlayerMove) => void;
+    private tickPromise!: Promise<CoreMsg.Message>;
+    private tickResolve!: (val: CoreMsg.Message) => void;
     private tickReject!: () => void;
     private workerWarningsCount = 0;
 
@@ -115,8 +115,8 @@ export class WasmCoordinator {
         this.readyResolve();
     }
 
-    tick(circumstances: CoreMsg.GameCircumstances): Promise<CoreMsg.PlayerMove> {
-        this.tickPromise = new Promise<CoreMsg.PlayerMove>((resolve, reject) => {
+    tick(circumstances: CoreMsg.GameCircumstances): Promise<CoreMsg.Message> {
+        this.tickPromise = new Promise<CoreMsg.Message>((resolve, reject) => {
             this.tickResolve = resolve;
             this.tickReject = reject;
         });
@@ -174,7 +174,18 @@ export class WasmCoordinator {
         if (remainder > 0) {
             await sleep(remainder);
         }
-        this.tickResolve(payload.playerMove);
+
+        let restoredMessage: CoreMsg.Message;
+        let restoredConstructor = CoreMsg.MessageTypeMap.get(payload.playerMoveType) || CoreMsg._Error;
+        restoredMessage = new restoredConstructor();
+        if (restoredMessage instanceof CoreMsg._Error) {
+            restoredMessage.description = `Invalid message type submitted: ${payload.playerMoveType}`;
+        }
+        else {
+            Object.assign(restoredMessage, payload.playerMove);
+        }
+
+        this.tickResolve(restoredMessage);
     }
 
     private async onMessage(evt: MessageEvent<Msg.GuestToHostMessage<Msg.GuestToHostMessageType>>) {

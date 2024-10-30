@@ -124,6 +124,7 @@ async function runTick(payload: Msg.RunTickPayload) {
         payload: {
             hadError: program.isShutDown,
             playerMove: move,
+            playerMoveType: move.getMessageType(),
         } as Msg.RunTickDonePayload,
     });
 }

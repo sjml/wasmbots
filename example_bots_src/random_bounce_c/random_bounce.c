@@ -24,16 +24,17 @@ void chooseNewDirection(bool allowRepeat) {
     CURRENT_DIR = randomDir;
 }
 
-WasmBotsMessage_PlayerMove* clientTick(WasmBotsMessage_GameCircumstances* circumstances) {
+void* clientTick(WasmBotsMessage_GameCircumstances* circumstances) {
     if (!circumstances->lastMoveSucceeded) {
         chooseNewDirection(false);
         wsmbt_logf("choosing new direction: %d", CURRENT_DIR);
     }
 
-    WasmBotsMessage_PlayerMove* move = WasmBotsMessage_PlayerMove_Create();
-    move->moveByte = (uint8_t)CURRENT_DIR;
+    WasmBotsMessage_Move* move = WasmBotsMessage_Move_Create();
+    move->direction = (uint8_t)CURRENT_DIR;
+    move->distance = 1;
 
-    return move;
+    return (void*)move;
 }
 
 wsmbt_BotMetadata clientSetup(wsmbt_GameParameters params) {

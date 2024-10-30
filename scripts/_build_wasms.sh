@@ -7,7 +7,7 @@ cd ..
 
 for bot_dir in $(ls -d ./example_bots_src/*); do
   pushd $bot_dir
-  # make clean
+  make clean
   make install
   popd
 done
