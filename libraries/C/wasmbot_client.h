@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
+#include "./wasmbot_messages.h"
+
 // should hold true on the vast majority of modern platforms,
 //   but if you're on something unusual, check this
 typedef float float32_t;
@@ -54,7 +56,7 @@ typedef struct wsmbt_BotMetadata {
     bool ready;
 } wsmbt_BotMetadata;
 
-typedef void (*wsmbt_TickFunction)(uint32_t, bool);
+typedef WasmBotsMessage_PlayerMove* (*wsmbt_TickFunction)(WasmBotsMessage_GameCircumstances*);
 void wsmbt_registerTickCallback(wsmbt_TickFunction tickFunc);
 
 #endif // \WASMBOT_CLIENT_H

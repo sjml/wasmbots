@@ -21,7 +21,7 @@ export class WasmBotsVisualizer extends Phaser.Game {
         super({
             width: config.gameWidth,
             height: config.gameHeight,
-            type: Phaser.CANVAS, // not doing anything fancy for now; let's save some battery
+            type: Phaser.WEBGL,
             pixelArt: true,
             backgroundColor: "#032300",
             canvas,

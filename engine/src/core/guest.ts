@@ -1,5 +1,6 @@
+import config from "./config.ts";
 import { type ILogger } from "./logger.ts";
-import { writeGameParameters, writeCircumstances, readMoveBuffer } from "../game/circumstances.ts";
+import { writeGameParameters } from "../game/circumstances.ts";
 import * as CoreMsg from "./messages.ts";
 import { RNG } from "../game/random.ts";
 
@@ -20,8 +21,9 @@ export class GuestProgram {
     exports: WasmBotsExports|null = null;
     private logger: ILogger;
     private reservePtr: number = 0;
-    private reserveLength: number = 0;
     private reserveBlock = new Uint8Array();
+    private reserveReadBlock!: DataView;
+    private reserveWriteBlock!: DataView;
     isShutDown: boolean = false;
     botName: string = "";
     localRng: RNG;
@@ -154,14 +156,14 @@ export class GuestProgram {
         return true;
     }
 
-    runSetup(reserveMemSize: number): boolean {
+    runSetup(): boolean {
         if (!this.exports) {
             this.logger.error("RUNTIME ERROR: calling `runSetup` on uninitialized GuestProgram.");
             this.isShutDown = true;
             return false;
         }
         try {
-            this.reservePtr = this.exports.setup(reserveMemSize);
+            this.reservePtr = this.exports.setup(config.memorySize);
         } catch (error) {
             this.logger.error(`RUNTIME ERROR: Crash during initial setup call\n  ${error}`);
             this.isShutDown = true;
@@ -172,8 +174,21 @@ export class GuestProgram {
             this.isShutDown = true;
             return false;
         }
-        this.reserveLength = reserveMemSize;
-        this.reserveBlock = new Uint8Array(this.exports.memory.buffer, this.reservePtr, this.reserveLength);
+        this.reserveBlock = new Uint8Array(
+            this.exports.memory.buffer,
+            this.reservePtr,
+            config.memorySize
+        );
+        this.reserveReadBlock = new DataView(
+            this.reserveBlock.buffer,
+            this.reserveBlock.byteOffset,
+            this.reserveBlock.byteLength
+        );
+        this.reserveWriteBlock = new DataView(
+            this.reserveBlock.buffer,
+            this.reserveBlock.byteOffset + config.writeBlockOffset,
+            this.reserveBlock.byteLength - config.writeBlockOffset
+        );
 
         this.reserveBlock.fill(0);
 
@@ -215,31 +230,26 @@ export class GuestProgram {
         return ready;
     }
 
+    // "This where the magic happens"
+    //    - predefined messages pass swapped back and forth in shared memory
+    //        - from the spec in data/messaging.toml
+    //    - each side knows how to read what they get based on the spec
+    //    - each side knows how to write what the other can read based on the same spec
+    //    - I imagine them holding hands and dancing in a circle
     runTick(circumstances: CoreMsg.GameCircumstances): CoreMsg.PlayerMove {
+        // wipe the shared block before every tick
         this.reserveBlock.fill(0);
 
-        const circOffset = 1024;
-        const dv = new DataView(
-            this.reserveBlock.buffer,
-            this.reserveBlock.byteOffset + circOffset,
-            this.reserveBlock.byteLength - circOffset
-        );
-        circumstances.writeBytes(dv, false);
+        circumstances.writeBytes(this.reserveWriteBlock, false);
 
         try {
-            this.exports!.tick(circOffset);
+            this.exports!.tick(config.writeBlockOffset);
         } catch (error) {
             this.logger.error(`FATAL ERROR: Crash during tick function:\n  ${error}`);
             this.isShutDown = true;
         }
 
-        const readView = new DataView(
-            this.reserveBlock.buffer,
-            this.reserveBlock.byteOffset,
-            this.reserveBlock.byteLength
-        )
-
-        const move = CoreMsg.PlayerMove.fromBytes(readView);
+        const move = CoreMsg.PlayerMove.fromBytes(this.reserveReadBlock);
         return move;
     }
 }

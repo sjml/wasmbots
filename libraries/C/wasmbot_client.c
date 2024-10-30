@@ -1,3 +1,4 @@
+#define WASMBOTSMESSAGE_IMPLEMENTATION
 #include "./wasmbot_client.h"
 
 #include <stdarg.h>
@@ -56,13 +57,6 @@ int32_t wsmbt_getRandomInt(int32_t min, int32_t max) {
 
 
 //// MEMORY CREATION + READING AND WRITING
-#if !defined(WSMBT_BOUNDS_CHECKING)
-    #define WSMBT_BOUNDS_CHECKING 1
-#endif
-#if !defined(WSMBT_DEV_BIG_ENDIAN)
-    #define WSMBT_DEV_BIG_ENDIAN 0
-#endif
-
 uint8_t* WSMBT_HOST_RESERVE = NULL;
 size_t WSMBT_HOST_RESERVE_SIZE = 0;
 
@@ -477,15 +471,21 @@ bool receiveGameParams(size_t offset, size_t infoOffset) {
 
 
 //// SETUP AND LOOP
+WasmBotsMessage_DataAccess _dataAccess;
+
 size_t setup(size_t requestReserve) {
     if (!_reserveMemory(requestReserve)) {
         return 0;
     }
 
+    _dataAccess.buffer = WSMBT_HOST_RESERVE;
+    _dataAccess.bufferSize = requestReserve;
+    _dataAccess.position = 0;
+
     return (size_t)WSMBT_HOST_RESERVE;
 }
 
-void _noop(uint32_t lastDuration, bool lastMoveSucceeded) {}
+WasmBotsMessage_PlayerMove* _noop(WasmBotsMessage_GameCircumstances* circumstances) { return NULL; }
 wsmbt_TickFunction _clientTick = &_noop;
 
 void wsmbt_registerTickCallback(wsmbt_TickFunction tickFunc) {
@@ -493,9 +493,17 @@ void wsmbt_registerTickCallback(wsmbt_TickFunction tickFunc) {
 }
 
 void tick(size_t offset) {
-    uint32_t lastDuration = wsmbt_read_u32(offset);
-    offset += 4;
-    bool lastMoveSucceeded = (bool)wsmbt_read_u8(offset);
-    _clientTick(lastDuration, lastMoveSucceeded);
+    _dataAccess.position = offset;
+    WasmBotsMessage_GameCircumstances* circumstances = malloc(sizeof(WasmBotsMessage_GameCircumstances));
+    WasmBotsMessage_GameCircumstances_FromBytes(&_dataAccess, circumstances);
+
+    WasmBotsMessage_PlayerMove* playerMove = _clientTick(circumstances);
+    if (playerMove != NULL) {
+        _dataAccess.position = 0;
+        WasmBotsMessage_PlayerMove_WriteBytes(&_dataAccess, playerMove, false);
+        WasmBotsMessage_PlayerMove_Destroy(playerMove);
+    }
+
+    WasmBotsMessage_GameCircumstances_Destroy(circumstances);
 }
 //// \SETUP AND LOOP

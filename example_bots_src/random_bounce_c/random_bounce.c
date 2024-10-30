@@ -8,7 +8,7 @@
 #include "wasmbot_client.h"
 
 const char* BOT_NAME = "randBounce C";
-const uint16_t BOT_VERSION[3] = {0, 0, 1};
+const uint16_t BOT_VERSION[3] = {0, 0, 2};
 
 typedef enum {
     DIR_EAST, DIR_SOUTHEAST, DIR_SOUTH, DIR_SOUTHWEST, DIR_WEST, DIR_NORTHWEST, DIR_NORTH, DIR_NORTHEAST
@@ -24,12 +24,16 @@ void chooseNewDirection(bool allowRepeat) {
     CURRENT_DIR = randomDir;
 }
 
-void clientTick(uint32_t lastDuration, bool lastMoveSucceeded) {
-    if (!lastMoveSucceeded) {
+WasmBotsMessage_PlayerMove* clientTick(WasmBotsMessage_GameCircumstances* circumstances) {
+    if (!circumstances->lastMoveSucceeded) {
         chooseNewDirection(false);
         wsmbt_logf("choosing new direction: %d", CURRENT_DIR);
     }
-    wsmbt_write_u8(0, (uint8_t)CURRENT_DIR);
+
+    WasmBotsMessage_PlayerMove* move = WasmBotsMessage_PlayerMove_Create();
+    move->moveByte = (uint8_t)CURRENT_DIR;
+
+    return move;
 }
 
 wsmbt_BotMetadata clientSetup(wsmbt_GameParameters params) {

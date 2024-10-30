@@ -103,7 +103,7 @@ async function instantiate(payload: Msg.InstantiatePayload) {
         });
         return;
     }
-    const ready = program.runSetup(config.memorySize);
+    const ready = program.runSetup();
     self.postMessage({
         type: Msg.GuestToHostMessageType.InstantiateDone,
         payload: {

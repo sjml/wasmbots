@@ -23,19 +23,3 @@ export function writeGameParameters(buff: Uint8Array, offset: number): number {
 
     return offset - origOffset;
 }
-
-export function writeCircumstances(buff: Uint8Array, offset: number, lastTickDuration: number, lastMoveSucceeded: boolean) {
-    const dv = new DataView(buff.buffer, buff.byteOffset, buff.byteLength);
-    dv.setUint32(offset, lastTickDuration, true);
-    offset += 4;
-    dv.setUint8(offset, lastMoveSucceeded ? 1 : 0);
-    offset += 1;
-}
-
-export function readMoveBuffer(buff: Uint8Array, offset: number): number {
-    const dv = new DataView(buff.buffer, buff.byteOffset, buff.byteLength);
-    const moveByte = dv.getUint8(offset);
-    offset += 1;
-
-    return moveByte;
-}

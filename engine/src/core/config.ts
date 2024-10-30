@@ -11,6 +11,7 @@ const config = {
     setupTimeLimit: 1000,
     numTimeLimitStrikes: 3,
     memorySize: 2048,
+    writeBlockOffset: 1024,
 
     // GameParameters
     startingHitPoints: 10,
