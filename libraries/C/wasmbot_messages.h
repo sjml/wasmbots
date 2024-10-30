@@ -88,7 +88,7 @@ extern const WasmBotsMessage_GameCircumstances WasmBotsMessage_GameCircumstances
 WasmBotsMessage_err_t WasmBotsMessage_GameCircumstances_WriteBytes(WasmBotsMessage_DataAccess* w, const WasmBotsMessage_GameCircumstances* src, bool tag);
 WasmBotsMessage_err_t WasmBotsMessage_GameCircumstances_FromBytes(WasmBotsMessage_DataAccess* r, WasmBotsMessage_GameCircumstances* dst);
 WasmBotsMessage_err_t WasmBotsMessage_GameCircumstances_GetSizeInBytes(const WasmBotsMessage_GameCircumstances* m, size_t* size);
-WasmBotsMessage_GameCircumstances* WasmBotsMessage_GameCircumstances_Create();
+WasmBotsMessage_GameCircumstances* WasmBotsMessage_GameCircumstances_Create(void);
 void WasmBotsMessage_GameCircumstances_Destroy(WasmBotsMessage_GameCircumstances *m);
 
 
@@ -101,7 +101,7 @@ extern const WasmBotsMessage_PlayerMove WasmBotsMessage_PlayerMove_default;
 WasmBotsMessage_err_t WasmBotsMessage_PlayerMove_WriteBytes(WasmBotsMessage_DataAccess* w, const WasmBotsMessage_PlayerMove* src, bool tag);
 WasmBotsMessage_err_t WasmBotsMessage_PlayerMove_FromBytes(WasmBotsMessage_DataAccess* r, WasmBotsMessage_PlayerMove* dst);
 WasmBotsMessage_err_t WasmBotsMessage_PlayerMove_GetSizeInBytes(const WasmBotsMessage_PlayerMove* m, size_t* size);
-WasmBotsMessage_PlayerMove* WasmBotsMessage_PlayerMove_Create();
+WasmBotsMessage_PlayerMove* WasmBotsMessage_PlayerMove_Create(void);
 void WasmBotsMessage_PlayerMove_Destroy(WasmBotsMessage_PlayerMove *m);
 
 
@@ -447,8 +447,8 @@ WasmBotsMessage_err_t WasmBotsMessage_GameCircumstances_GetSizeInBytes(const Was
     return WASMBOTSMESSAGE_ERR_OK;
 }
 
-WasmBotsMessage_GameCircumstances* WasmBotsMessage_GameCircumstances_Create() {
-    WasmBotsMessage_GameCircumstances* out = malloc(sizeof(WasmBotsMessage_GameCircumstances));
+WasmBotsMessage_GameCircumstances* WasmBotsMessage_GameCircumstances_Create(void) {
+    WasmBotsMessage_GameCircumstances* out = (WasmBotsMessage_GameCircumstances*)malloc(sizeof(WasmBotsMessage_GameCircumstances));
     if (out == NULL) { return NULL; }
     out->_mt = WasmBotsMessage_MessageType_GameCircumstances;
     out->lastTickDuration = WasmBotsMessage_GameCircumstances_default.lastTickDuration;
@@ -503,8 +503,8 @@ WasmBotsMessage_err_t WasmBotsMessage_PlayerMove_GetSizeInBytes(const WasmBotsMe
     return WASMBOTSMESSAGE_ERR_OK;
 }
 
-WasmBotsMessage_PlayerMove* WasmBotsMessage_PlayerMove_Create() {
-    WasmBotsMessage_PlayerMove* out = malloc(sizeof(WasmBotsMessage_PlayerMove));
+WasmBotsMessage_PlayerMove* WasmBotsMessage_PlayerMove_Create(void) {
+    WasmBotsMessage_PlayerMove* out = (WasmBotsMessage_PlayerMove*)malloc(sizeof(WasmBotsMessage_PlayerMove));
     if (out == NULL) { return NULL; }
     out->_mt = WasmBotsMessage_MessageType_PlayerMove;
     out->moveByte = WasmBotsMessage_PlayerMove_default.moveByte;
