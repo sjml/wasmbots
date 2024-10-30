@@ -8,6 +8,7 @@
       * https://github.com/babakfp/phosphor-icons-svelte
   * input and output
     * communicate world to player
+      * clear out old read/write functions in bot libraries
       * situation
         * result of last action
         * how many milliseconds elapsed during last tick

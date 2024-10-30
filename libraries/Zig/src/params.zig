@@ -1,9 +1,9 @@
 const std = @import("std");
 
-const host_reserve = @import("./host_reserve.zig");
+const host_reserve = @import("host_reserve.zig");
 
-const log = @import("./wasmbot_client.zig").log;
-const logErr = @import("./wasmbot_client.zig").logErr;
+const log = @import("wasmbot_client.zig").log;
+const logErr = @import("wasmbot_client.zig").logErr;
 
 const GP_VERSION: u16 = 7;
 const MAX_NAME_LEN: usize = 26;

@@ -3,8 +3,8 @@ const Allocator = std.mem.Allocator;
 
 const config = @import("config");
 
-const log = @import("./wasmbot_client.zig").log;
-const logErr = @import("./wasmbot_client.zig").logErr;
+const log = @import("wasmbot_client.zig").log;
+const logErr = @import("wasmbot_client.zig").logErr;
 
 pub var HOST_RESERVE: []u8 = undefined; //&[0]u8{};
 

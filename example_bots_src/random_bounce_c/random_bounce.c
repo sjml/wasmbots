@@ -8,7 +8,7 @@
 #include "wasmbot_client.h"
 
 const char* BOT_NAME = "randBounce C";
-const uint16_t BOT_VERSION[3] = {0, 0, 2};
+const uint16_t BOT_VERSION[3] = {0, 2, 0};
 
 typedef enum {
     DIR_EAST, DIR_SOUTHEAST, DIR_SOUTH, DIR_SOUTHWEST, DIR_WEST, DIR_NORTHWEST, DIR_NORTH, DIR_NORTHEAST

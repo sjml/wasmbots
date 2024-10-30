@@ -1,13 +1,13 @@
 const std = @import("std");
 
 const wasmbotClient = @import("wasmbot_client");
-const params = @import("wasmbot_client").params;
-const hostReserve = @import("wasmbot_client").host_reserve;
+const params = wasmbotClient.params;
+const msg = wasmbotClient.messages;
 
 // would be nice to pull these from the build.zig.zon,
 //   but can't import just yet
 const BOT_NAME = "zagger by zig";
-const BOT_VERSION = [3]u16{ 0, 1, 0 };
+const BOT_VERSION = [3]u16{ 0, 2, 0 };
 const GP_VERSION: u16 = 7;
 
 export fn clientInitialize() void {
@@ -62,14 +62,11 @@ fn clientSetup(pars: params.GameParameters) params.BotMetadata {
     return bot_meta;
 }
 
-fn clientTick(last_duration: u32, last_move_succeeded: bool) void {
-    _ = last_duration;
-
-    if (!last_move_succeeded) {
+fn clientTick(circumstances: msg.GameCircumstances) msg.PlayerMove {
+    if (!circumstances.lastMoveSucceeded) {
         reflect();
         wasmbotClient.log("bounce");
     }
-    _ = hostReserve.writeNumber(u8, 0, @intFromEnum(CURRENT_DIR));
-    const f = hostReserve.readNumber(f32, 0);
-    _ = hostReserve.writeNumber(f32, 200, f);
+
+    return msg.PlayerMove{ .moveByte = @intFromEnum(CURRENT_DIR) };
 }

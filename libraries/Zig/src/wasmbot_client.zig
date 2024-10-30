@@ -1,5 +1,6 @@
-pub const host_reserve = @import("./host_reserve.zig");
-pub const params = @import("./params.zig");
+pub const host_reserve = @import("host_reserve.zig");
+pub const params = @import("params.zig");
+pub const messages = @import("wasmbot_messages.zig");
 
 extern fn logFunction(logLevel: i32, msgPtr: usize, msgLen: usize) void;
 pub fn log(msg: []const u8) void {
@@ -18,20 +19,26 @@ export fn setup(requestReserve: usize) usize {
     return @intFromPtr(host_reserve.HOST_RESERVE.ptr);
 }
 
-pub const TickFn = fn (u32, bool) void;
+pub const TickFn = fn (messages.GameCircumstances) messages.PlayerMove;
 var _client_tick: *const TickFn = _clienTickNoop;
-fn _clienTickNoop(_: u32, _: bool) void {}
+fn _clienTickNoop(_: messages.GameCircumstances) messages.PlayerMove {
+    return messages.PlayerMove{};
+}
 
 pub fn registerTickCallback(cb: *const TickFn) void {
     _client_tick = cb;
 }
 
 export fn tick(offset: usize) void {
-    var local_offset = offset;
-    const last_duration = host_reserve.readNumber(u32, local_offset);
-    local_offset += 4;
-    const last_move_succeeded: bool = host_reserve.readNumber(u8, local_offset) != 0;
-    _client_tick(last_duration, last_move_succeeded);
+    const circumstances_read = messages.GameCircumstances.fromBytes(offset, host_reserve.HOST_RESERVE) catch {
+        logErr("Could not parse GameCircumstances in host reserve");
+        return;
+    };
+    const circumstances = circumstances_read.value;
+
+    const move = _client_tick(circumstances);
+
+    _ = move.writeBytes(0, host_reserve.HOST_RESERVE, false);
 }
 
 pub extern fn getRandomInt(min: i32, max: i32) i32;
