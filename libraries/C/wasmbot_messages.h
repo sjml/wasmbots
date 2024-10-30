@@ -48,17 +48,17 @@ WasmBotsMessage_err_t WasmBotsMessage__ReadFloat(WasmBotsMessage_DataAccess *r, 
 WasmBotsMessage_err_t WasmBotsMessage__ReadDouble(WasmBotsMessage_DataAccess *r, double *d);
 WasmBotsMessage_err_t WasmBotsMessage__ReadString(WasmBotsMessage_DataAccess *r, char **s, uint8_t *len);
 
-WasmBotsMessage_err_t WasmBotsMessage__WriteUInt8(WasmBotsMessage_DataAccess *w, const uint8_t *ui8);
-WasmBotsMessage_err_t WasmBotsMessage__WriteBool(WasmBotsMessage_DataAccess *w, const bool *b);
-WasmBotsMessage_err_t WasmBotsMessage__WriteInt16(WasmBotsMessage_DataAccess *w, const int16_t *i16);
-WasmBotsMessage_err_t WasmBotsMessage__WriteUInt16(WasmBotsMessage_DataAccess *w, const uint16_t *ui16);
-WasmBotsMessage_err_t WasmBotsMessage__WriteInt32(WasmBotsMessage_DataAccess *w, const int32_t *i32);
-WasmBotsMessage_err_t WasmBotsMessage__WriteUInt32(WasmBotsMessage_DataAccess *w, const uint32_t *ui32);
-WasmBotsMessage_err_t WasmBotsMessage__WriteInt64(WasmBotsMessage_DataAccess *w, const int64_t *i64);
-WasmBotsMessage_err_t WasmBotsMessage__WriteUInt64(WasmBotsMessage_DataAccess *w, const uint64_t *ui32);
-WasmBotsMessage_err_t WasmBotsMessage__WriteFloat(WasmBotsMessage_DataAccess *w, const float *f);
-WasmBotsMessage_err_t WasmBotsMessage__WriteDouble(WasmBotsMessage_DataAccess *w, const double *d);
-WasmBotsMessage_err_t WasmBotsMessage__WriteString(WasmBotsMessage_DataAccess *w, char* const *s, const uint8_t *len);
+WasmBotsMessage_err_t WasmBotsMessage__WriteUInt8(WasmBotsMessage_DataAccess *w, const uint8_t ui8);
+WasmBotsMessage_err_t WasmBotsMessage__WriteBool(WasmBotsMessage_DataAccess *w, const bool b);
+WasmBotsMessage_err_t WasmBotsMessage__WriteInt16(WasmBotsMessage_DataAccess *w, const int16_t i16);
+WasmBotsMessage_err_t WasmBotsMessage__WriteUInt16(WasmBotsMessage_DataAccess *w, const uint16_t ui16);
+WasmBotsMessage_err_t WasmBotsMessage__WriteInt32(WasmBotsMessage_DataAccess *w, const int32_t i32);
+WasmBotsMessage_err_t WasmBotsMessage__WriteUInt32(WasmBotsMessage_DataAccess *w, const uint32_t ui32);
+WasmBotsMessage_err_t WasmBotsMessage__WriteInt64(WasmBotsMessage_DataAccess *w, const int64_t i64);
+WasmBotsMessage_err_t WasmBotsMessage__WriteUInt64(WasmBotsMessage_DataAccess *w, const uint64_t ui32);
+WasmBotsMessage_err_t WasmBotsMessage__WriteFloat(WasmBotsMessage_DataAccess *w, const float f);
+WasmBotsMessage_err_t WasmBotsMessage__WriteDouble(WasmBotsMessage_DataAccess *w, const double d);
+WasmBotsMessage_err_t WasmBotsMessage__WriteString(WasmBotsMessage_DataAccess *w, char* const *s, const uint8_t len);
 
 // end of standard utility declarations
 ///////////////////////////////////////
@@ -256,108 +256,107 @@ WasmBotsMessage_err_t WasmBotsMessage__ReadString(WasmBotsMessage_DataAccess *r,
 
 
 
-WasmBotsMessage_err_t WasmBotsMessage__WriteUInt8(WasmBotsMessage_DataAccess *w, const uint8_t *ui8) {
+WasmBotsMessage_err_t WasmBotsMessage__WriteUInt8(WasmBotsMessage_DataAccess *w, const uint8_t ui8) {
     if (w->bufferSize < w->position + 1) {
         return WASMBOTSMESSAGE_ERR_EOF;
     }
-    memcpy(w->buffer + w->position, ui8, 1);
+    w->buffer[w->position] = ui8;
     w->position += 1;
     return WASMBOTSMESSAGE_ERR_OK;
 }
 
-WasmBotsMessage_err_t WasmBotsMessage__WriteBool(WasmBotsMessage_DataAccess *w, const bool *b) {
+WasmBotsMessage_err_t WasmBotsMessage__WriteBool(WasmBotsMessage_DataAccess *w, const bool b) {
     WasmBotsMessage_err_t err;
-    uint8_t byteVal = (uint8_t)(*b ? 1 : 0);
-    err = WasmBotsMessage__WriteUInt8(w, &byteVal);
+    err = WasmBotsMessage__WriteUInt8(w, (uint8_t)(b ? 1 : 0));
     if (err != WASMBOTSMESSAGE_ERR_OK) {
         return err;
     }
     return WASMBOTSMESSAGE_ERR_OK;
 }
 
-WasmBotsMessage_err_t WasmBotsMessage__WriteInt16(WasmBotsMessage_DataAccess *w, const int16_t *i16) {
+WasmBotsMessage_err_t WasmBotsMessage__WriteInt16(WasmBotsMessage_DataAccess *w, const int16_t i16) {
     if (w->bufferSize < w->position + 2) {
         return WASMBOTSMESSAGE_ERR_EOF;
     }
-    memcpy(w->buffer + w->position, i16, 2);
+    memcpy(w->buffer + w->position, &i16, 2);
     w->position += 2;
     return WASMBOTSMESSAGE_ERR_OK;
 }
 
-WasmBotsMessage_err_t WasmBotsMessage__WriteUInt16(WasmBotsMessage_DataAccess *w, const uint16_t *ui16) {
+WasmBotsMessage_err_t WasmBotsMessage__WriteUInt16(WasmBotsMessage_DataAccess *w, const uint16_t ui16) {
     if (w->bufferSize < w->position + 2) {
         return WASMBOTSMESSAGE_ERR_EOF;
     }
-    memcpy(w->buffer + w->position, ui16, 2);
+    memcpy(w->buffer + w->position, &ui16, 2);
     w->position += 2;
     return WASMBOTSMESSAGE_ERR_OK;
 }
 
-WasmBotsMessage_err_t WasmBotsMessage__WriteInt32(WasmBotsMessage_DataAccess *w, const int32_t *i32) {
+WasmBotsMessage_err_t WasmBotsMessage__WriteInt32(WasmBotsMessage_DataAccess *w, const int32_t i32) {
     if (w->bufferSize < w->position + 4) {
         return WASMBOTSMESSAGE_ERR_EOF;
     }
-    memcpy(w->buffer + w->position, i32, 4);
+    memcpy(w->buffer + w->position, &i32, 4);
     w->position += 4;
     return WASMBOTSMESSAGE_ERR_OK;
 }
 
-WasmBotsMessage_err_t WasmBotsMessage__WriteUInt32(WasmBotsMessage_DataAccess *w, const uint32_t *ui32) {
+WasmBotsMessage_err_t WasmBotsMessage__WriteUInt32(WasmBotsMessage_DataAccess *w, const uint32_t ui32) {
     if (w->bufferSize < w->position + 4) {
         return WASMBOTSMESSAGE_ERR_EOF;
     }
-    memcpy(w->buffer + w->position, ui32, 4);
+    memcpy(w->buffer + w->position, &ui32, 4);
     w->position += 4;
     return WASMBOTSMESSAGE_ERR_OK;
 }
 
-WasmBotsMessage_err_t WasmBotsMessage__WriteInt64(WasmBotsMessage_DataAccess *w, const int64_t *i64) {
+WasmBotsMessage_err_t WasmBotsMessage__WriteInt64(WasmBotsMessage_DataAccess *w, const int64_t i64) {
     if (w->bufferSize < w->position + 8) {
         return WASMBOTSMESSAGE_ERR_EOF;
     }
-    memcpy(w->buffer + w->position, i64, 8);
+    memcpy(w->buffer + w->position, &i64, 8);
     w->position += 8;
     return WASMBOTSMESSAGE_ERR_OK;
 }
 
-WasmBotsMessage_err_t WasmBotsMessage__WriteUInt64(WasmBotsMessage_DataAccess *w, const uint64_t *ui64) {
+WasmBotsMessage_err_t WasmBotsMessage__WriteUInt64(WasmBotsMessage_DataAccess *w, const uint64_t ui64) {
     if (w->bufferSize < w->position + 8) {
         return WASMBOTSMESSAGE_ERR_EOF;
     }
-    memcpy(w->buffer + w->position, ui64, 8);
+    memcpy(w->buffer + w->position, &ui64, 8);
     w->position += 8;
     return WASMBOTSMESSAGE_ERR_OK;
 }
 
-WasmBotsMessage_err_t WasmBotsMessage__WriteFloat(WasmBotsMessage_DataAccess *w, const float *f) {
+WasmBotsMessage_err_t WasmBotsMessage__WriteFloat(WasmBotsMessage_DataAccess *w, const float f) {
     if (w->bufferSize < w->position + 4) {
         return WASMBOTSMESSAGE_ERR_EOF;
     }
-    memcpy(w->buffer + w->position, f, 4);
+    memcpy(w->buffer + w->position, &f, 4);
     w->position += 4;
     return WASMBOTSMESSAGE_ERR_OK;
 }
 
-WasmBotsMessage_err_t WasmBotsMessage__WriteDouble(WasmBotsMessage_DataAccess *w, const double *d) {
+WasmBotsMessage_err_t WasmBotsMessage__WriteDouble(WasmBotsMessage_DataAccess *w, const double d) {
     if (w->bufferSize < w->position + 8) {
         return WASMBOTSMESSAGE_ERR_EOF;
     }
-    memcpy(w->buffer + w->position, d, 8);
+    memcpy(w->buffer + w->position, &d, 8);
     w->position += 8;
     return WASMBOTSMESSAGE_ERR_OK;
 }
 
-WasmBotsMessage_err_t WasmBotsMessage__WriteString(WasmBotsMessage_DataAccess *w, char* const *s, const uint8_t *len) {
+WasmBotsMessage_err_t WasmBotsMessage__WriteString(WasmBotsMessage_DataAccess *w, char* const *s, const uint8_t len) {
     WasmBotsMessage_err_t err;
     err = WasmBotsMessage__WriteUInt8(w, len);
     if (err != WASMBOTSMESSAGE_ERR_OK) {
         return err;
     }
-    if (w->bufferSize < w->position + *len) {
+    if (w->bufferSize < w->position + len) {
         return WASMBOTSMESSAGE_ERR_EOF;
     }
-    memcpy(w->buffer + w->position, *s, *len);
-    w->position += *len;
+    memcpy(w->buffer + w->position, *s, len);
+    w->position += len;
     return WASMBOTSMESSAGE_ERR_OK;
 }
 
@@ -546,12 +545,12 @@ WasmBotsMessage_err_t WasmBotsMessage__Error_FromBytes(WasmBotsMessage_DataAcces
 WasmBotsMessage_err_t WasmBotsMessage__Error_WriteBytes(WasmBotsMessage_DataAccess* w, const WasmBotsMessage__Error* src, bool tag) {
     WasmBotsMessage_err_t err;
     if (tag) {
-        err = WasmBotsMessage__WriteUInt8(w, (const uint8_t *)&(src->_mt));
+        err = WasmBotsMessage__WriteUInt8(w, (const uint8_t)(src->_mt));
         if (err != WASMBOTSMESSAGE_ERR_OK) {
             return err;
         }
     }
-    err = WasmBotsMessage__WriteString(w, &(src->description), &(src->description_len));
+    err = WasmBotsMessage__WriteString(w, &(src->description), (src->description_len));
     if (err != WASMBOTSMESSAGE_ERR_OK) {
         return err;
     }
@@ -638,33 +637,33 @@ WasmBotsMessage_err_t WasmBotsMessage_GameCircumstances_FromBytes(WasmBotsMessag
 WasmBotsMessage_err_t WasmBotsMessage_GameCircumstances_WriteBytes(WasmBotsMessage_DataAccess* w, const WasmBotsMessage_GameCircumstances* src, bool tag) {
     WasmBotsMessage_err_t err;
     if (tag) {
-        err = WasmBotsMessage__WriteUInt8(w, (const uint8_t *)&(src->_mt));
+        err = WasmBotsMessage__WriteUInt8(w, (const uint8_t)(src->_mt));
         if (err != WASMBOTSMESSAGE_ERR_OK) {
             return err;
         }
     }
-    err = WasmBotsMessage__WriteUInt32(w, &(src->lastTickDuration));
+    err = WasmBotsMessage__WriteUInt32(w, (src->lastTickDuration));
     if (err != WASMBOTSMESSAGE_ERR_OK) {
         return err;
     }
-    err = WasmBotsMessage__WriteBool(w, &(src->lastMoveSucceeded));
+    err = WasmBotsMessage__WriteBool(w, (src->lastMoveSucceeded));
     if (err != WASMBOTSMESSAGE_ERR_OK) {
         return err;
     }
-    err = WasmBotsMessage__WriteUInt16(w, &(src->currentHitPoints));
+    err = WasmBotsMessage__WriteUInt16(w, (src->currentHitPoints));
     if (err != WASMBOTSMESSAGE_ERR_OK) {
         return err;
     }
-    err = WasmBotsMessage__WriteUInt8(w, &(src->currentStatus));
+    err = WasmBotsMessage__WriteUInt8(w, (src->currentStatus));
     if (err != WASMBOTSMESSAGE_ERR_OK) {
         return err;
     }
-    err = WasmBotsMessage__WriteUInt16(w, &(src->surroundings_len));
+    err = WasmBotsMessage__WriteUInt16(w, (src->surroundings_len));
     if (err != WASMBOTSMESSAGE_ERR_OK) {
         return err;
     }
     for (uint16_t i1 = 0; i1 < src->surroundings_len; i1++) {
-        err = WasmBotsMessage__WriteUInt16(w, &(src->surroundings[i1]));
+        err = WasmBotsMessage__WriteUInt16(w, (src->surroundings[i1]));
         if (err != WASMBOTSMESSAGE_ERR_OK) {
             return err;
         }
@@ -672,7 +671,7 @@ WasmBotsMessage_err_t WasmBotsMessage_GameCircumstances_WriteBytes(WasmBotsMessa
     if (err != WASMBOTSMESSAGE_ERR_OK) {
         return err;
     }
-    err = WasmBotsMessage__WriteUInt8(w, &(src->surroundingsRadius));
+    err = WasmBotsMessage__WriteUInt8(w, (src->surroundingsRadius));
     if (err != WASMBOTSMESSAGE_ERR_OK) {
         return err;
     }
@@ -720,16 +719,16 @@ WasmBotsMessage_err_t WasmBotsMessage_Move_FromBytes(WasmBotsMessage_DataAccess*
 WasmBotsMessage_err_t WasmBotsMessage_Move_WriteBytes(WasmBotsMessage_DataAccess* w, const WasmBotsMessage_Move* src, bool tag) {
     WasmBotsMessage_err_t err;
     if (tag) {
-        err = WasmBotsMessage__WriteUInt8(w, (const uint8_t *)&(src->_mt));
+        err = WasmBotsMessage__WriteUInt8(w, (const uint8_t)(src->_mt));
         if (err != WASMBOTSMESSAGE_ERR_OK) {
             return err;
         }
     }
-    err = WasmBotsMessage__WriteUInt8(w, &(src->direction));
+    err = WasmBotsMessage__WriteUInt8(w, (src->direction));
     if (err != WASMBOTSMESSAGE_ERR_OK) {
         return err;
     }
-    err = WasmBotsMessage__WriteUInt8(w, &(src->distance));
+    err = WasmBotsMessage__WriteUInt8(w, (src->distance));
     if (err != WASMBOTSMESSAGE_ERR_OK) {
         return err;
     }
