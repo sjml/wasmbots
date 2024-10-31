@@ -240,7 +240,7 @@ export class GuestProgram {
     //    - each side knows how to read what they get based on the spec
     //    - each side knows how to write what the other can read based on the same spec
     //    - I imagine them holding hands and dancing in a circle
-    runTick(circumstances: CoreMsg.GameCircumstances): CoreMsg.Message {
+    runTick(circumstances: CoreMsg.PresentCircumstances): CoreMsg.Message {
         // wipe the shared block before every tick
         this.reserveBlock.fill(0);
 

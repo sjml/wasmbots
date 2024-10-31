@@ -150,8 +150,11 @@ export class DataAccess {
 
 export enum MessageType {
   _ErrorType = 1,
-  GameCircumstancesType = 2,
-  MoveType = 3,
+  InitialParametersType = 2,
+  PresentCircumstancesType = 3,
+  WaitType = 4,
+  ResignType = 5,
+  MoveType = 6,
 }
 
 export interface Message {
@@ -178,8 +181,17 @@ export function ProcessRawBytes(dv: DataView): Message[] {
       case MessageType._ErrorType:
         msgList.push(_Error.fromBytes(da));
         break;
-      case MessageType.GameCircumstancesType:
-        msgList.push(GameCircumstances.fromBytes(da));
+      case MessageType.InitialParametersType:
+        msgList.push(InitialParameters.fromBytes(da));
+        break;
+      case MessageType.PresentCircumstancesType:
+        msgList.push(PresentCircumstances.fromBytes(da));
+        break;
+      case MessageType.WaitType:
+        msgList.push(Wait.fromBytes(da));
+        break;
+      case MessageType.ResignType:
+        msgList.push(Resign.fromBytes(da));
         break;
       case MessageType.MoveType:
         msgList.push(Move.fromBytes(da));
@@ -239,24 +251,19 @@ export class _Error implements Message {
 }
 
 @staticImplements<MessageStatic>()
-export class GameCircumstances implements Message {
-  lastTickDuration: number = 0;
-  lastMoveSucceeded: boolean = false;
-  currentHitPoints: number = 0;
-  currentStatus: number = 0;
-  surroundings: number[] = [];
-  surroundingsRadius: number = 0;
+export class InitialParameters implements Message {
+  paramsVersion: number = 0;
+  engineVersionMajor: number = 0;
+  engineVersionMinor: number = 0;
+  engineVersionPatch: number = 0;
 
-  getMessageType() : MessageType { return MessageType.GameCircumstancesType; }
+  getMessageType() : MessageType { return MessageType.InitialParametersType; }
 
   getSizeInBytes(): number {
-    let size: number = 0;
-    size += this.surroundings.length * 2;
-    size += 11;
-    return size;
+    return 8;
   }
 
-  static fromBytes(data: DataView|DataAccess): GameCircumstances {
+  static fromBytes(data: DataView|DataAccess): InitialParameters {
     let da: DataAccess;
     if (data instanceof DataView) {
       da = new DataAccess(data);
@@ -265,21 +272,15 @@ export class GameCircumstances implements Message {
       da = data;
     }
     try {
-      const nGameCircumstances = new GameCircumstances();
-      nGameCircumstances.lastTickDuration = da.getUint32();
-      nGameCircumstances.lastMoveSucceeded = da.getBool();
-      nGameCircumstances.currentHitPoints = da.getUint16();
-      nGameCircumstances.currentStatus = da.getByte();
-      const surroundings_Length = da.getUint16();
-      nGameCircumstances.surroundings = Array<number>(surroundings_Length);
-      for (let i3 = 0; i3 < surroundings_Length; i3++) {
-        nGameCircumstances.surroundings[i3] = da.getUint16();
-      }
-      nGameCircumstances.surroundingsRadius = da.getByte();
-      return nGameCircumstances;
+      const nInitialParameters = new InitialParameters();
+      nInitialParameters.paramsVersion = da.getUint16();
+      nInitialParameters.engineVersionMajor = da.getUint16();
+      nInitialParameters.engineVersionMinor = da.getUint16();
+      nInitialParameters.engineVersionPatch = da.getUint16();
+      return nInitialParameters;
     }
     catch (err) {
-      throw new Error(`Could not read GameCircumstances from offset ${da.currentOffset} (${err.name})`);
+      throw new Error(`Could not read InitialParameters from offset ${da.currentOffset} (${err.name})`);
     }
   }
 
@@ -292,7 +293,71 @@ export class GameCircumstances implements Message {
       da = data;
     }
     if (tag) {
-      da.setByte(MessageType.GameCircumstancesType);
+      da.setByte(MessageType.InitialParametersType);
+    }
+    da.setUint16(this.paramsVersion);
+    da.setUint16(this.engineVersionMajor);
+    da.setUint16(this.engineVersionMinor);
+    da.setUint16(this.engineVersionPatch);
+  }
+
+}
+
+@staticImplements<MessageStatic>()
+export class PresentCircumstances implements Message {
+  lastTickDuration: number = 0;
+  lastMoveSucceeded: boolean = false;
+  currentHitPoints: number = 0;
+  currentStatus: number = 0;
+  surroundings: number[] = [];
+  surroundingsRadius: number = 0;
+
+  getMessageType() : MessageType { return MessageType.PresentCircumstancesType; }
+
+  getSizeInBytes(): number {
+    let size: number = 0;
+    size += this.surroundings.length * 2;
+    size += 11;
+    return size;
+  }
+
+  static fromBytes(data: DataView|DataAccess): PresentCircumstances {
+    let da: DataAccess;
+    if (data instanceof DataView) {
+      da = new DataAccess(data);
+    }
+    else {
+      da = data;
+    }
+    try {
+      const nPresentCircumstances = new PresentCircumstances();
+      nPresentCircumstances.lastTickDuration = da.getUint32();
+      nPresentCircumstances.lastMoveSucceeded = da.getBool();
+      nPresentCircumstances.currentHitPoints = da.getUint16();
+      nPresentCircumstances.currentStatus = da.getByte();
+      const surroundings_Length = da.getUint16();
+      nPresentCircumstances.surroundings = Array<number>(surroundings_Length);
+      for (let i3 = 0; i3 < surroundings_Length; i3++) {
+        nPresentCircumstances.surroundings[i3] = da.getUint16();
+      }
+      nPresentCircumstances.surroundingsRadius = da.getByte();
+      return nPresentCircumstances;
+    }
+    catch (err) {
+      throw new Error(`Could not read PresentCircumstances from offset ${da.currentOffset} (${err.name})`);
+    }
+  }
+
+  writeBytes(data: DataView|DataAccess, tag: boolean): void {
+    let da: DataAccess;
+    if (data instanceof DataView) {
+      da = new DataAccess(data);
+    }
+    else {
+      da = data;
+    }
+    if (tag) {
+      da.setByte(MessageType.PresentCircumstancesType);
     }
     da.setUint32(this.lastTickDuration);
     da.setBool(this.lastMoveSucceeded);
@@ -304,6 +369,88 @@ export class GameCircumstances implements Message {
       da.setUint16(el);
     }
     da.setByte(this.surroundingsRadius);
+  }
+
+}
+
+@staticImplements<MessageStatic>()
+export class Wait implements Message {
+
+  getMessageType() : MessageType { return MessageType.WaitType; }
+
+  getSizeInBytes(): number {
+    return 0;
+  }
+
+  static fromBytes(data: DataView|DataAccess): Wait {
+    let da: DataAccess;
+    if (data instanceof DataView) {
+      da = new DataAccess(data);
+    }
+    else {
+      da = data;
+    }
+    try {
+      const nWait = new Wait();
+      return nWait;
+    }
+    catch (err) {
+      throw new Error(`Could not read Wait from offset ${da.currentOffset} (${err.name})`);
+    }
+  }
+
+  writeBytes(data: DataView|DataAccess, tag: boolean): void {
+    let da: DataAccess;
+    if (data instanceof DataView) {
+      da = new DataAccess(data);
+    }
+    else {
+      da = data;
+    }
+    if (tag) {
+      da.setByte(MessageType.WaitType);
+    }
+  }
+
+}
+
+@staticImplements<MessageStatic>()
+export class Resign implements Message {
+
+  getMessageType() : MessageType { return MessageType.ResignType; }
+
+  getSizeInBytes(): number {
+    return 0;
+  }
+
+  static fromBytes(data: DataView|DataAccess): Resign {
+    let da: DataAccess;
+    if (data instanceof DataView) {
+      da = new DataAccess(data);
+    }
+    else {
+      da = data;
+    }
+    try {
+      const nResign = new Resign();
+      return nResign;
+    }
+    catch (err) {
+      throw new Error(`Could not read Resign from offset ${da.currentOffset} (${err.name})`);
+    }
+  }
+
+  writeBytes(data: DataView|DataAccess, tag: boolean): void {
+    let da: DataAccess;
+    if (data instanceof DataView) {
+      da = new DataAccess(data);
+    }
+    else {
+      da = data;
+    }
+    if (tag) {
+      da.setByte(MessageType.ResignType);
+    }
   }
 
 }
@@ -357,7 +504,10 @@ export class Move implements Message {
 
 export const MessageTypeMap = new Map<MessageType, { new(): Message }>([
   [MessageType._ErrorType, _Error],
-  [MessageType.GameCircumstancesType, GameCircumstances],
+  [MessageType.InitialParametersType, InitialParameters],
+  [MessageType.PresentCircumstancesType, PresentCircumstances],
+  [MessageType.WaitType, Wait],
+  [MessageType.ResignType, Resign],
   [MessageType.MoveType, Move],
 ]);
 

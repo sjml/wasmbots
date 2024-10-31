@@ -32,7 +32,7 @@ typedef struct wsmbt_BotMetadata {
     bool ready;
 } wsmbt_BotMetadata;
 
-typedef void* (*wsmbt_TickFunction)(WasmBotsMessage_GameCircumstances*);
+typedef void* (*wsmbt_TickFunction)(WasmBotsMessage_PresentCircumstances*);
 void wsmbt_registerTickCallback(wsmbt_TickFunction tickFunc);
 
 #endif // \WASMBOT_CLIENT_H

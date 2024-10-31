@@ -31,7 +31,7 @@ fn _typeIsSimple(comptime T: type) bool {
         return true;
     }
     const simpleTypes = [_]type{
-        Move,
+        InitialParameters, Wait, Resign, Move,
     };
     for (simpleTypes) |vt| {
         if (T == vt) {
@@ -191,13 +191,19 @@ pub fn writeBytes(m: *const Message, offset: usize, buffer: []u8, tag: bool) usi
 
 pub const MessageType = enum(u8) {
     _Error,
-    GameCircumstances,
+    InitialParameters,
+    PresentCircumstances,
+    Wait,
+    Resign,
     Move,
 };
 
 pub const Message = union(MessageType) {
     _Error: _Error,
-    GameCircumstances: GameCircumstances,
+    InitialParameters: InitialParameters,
+    PresentCircumstances: PresentCircumstances,
+    Wait: Wait,
+    Resign: Resign,
     Move: Move,
 };
 
@@ -219,10 +225,25 @@ pub fn processRawBytes(allocator: std.mem.Allocator, buffer: []const u8) ![]Mess
                 local_offset += msg_read.bytes_read;
                 try msg_list.append(Message{ ._Error = msg_read.value });
             },
-            .GameCircumstances => {
-                const msg_read = try GameCircumstances.fromBytes(allocator, local_offset, buffer);
+            .InitialParameters => {
+                const msg_read = try InitialParameters.fromBytes(local_offset, buffer);
                 local_offset += msg_read.bytes_read;
-                try msg_list.append(Message{ .GameCircumstances = msg_read.value });
+                try msg_list.append(Message{ .InitialParameters = msg_read.value });
+            },
+            .PresentCircumstances => {
+                const msg_read = try PresentCircumstances.fromBytes(allocator, local_offset, buffer);
+                local_offset += msg_read.bytes_read;
+                try msg_list.append(Message{ .PresentCircumstances = msg_read.value });
+            },
+            .Wait => {
+                const msg_read = try Wait.fromBytes(local_offset, buffer);
+                local_offset += msg_read.bytes_read;
+                try msg_list.append(Message{ .Wait = msg_read.value });
+            },
+            .Resign => {
+                const msg_read = try Resign.fromBytes(local_offset, buffer);
+                local_offset += msg_read.bytes_read;
+                try msg_list.append(Message{ .Resign = msg_read.value });
             },
             .Move => {
                 const msg_read = try Move.fromBytes(local_offset, buffer);
@@ -272,7 +293,46 @@ pub const _Error = struct {
     }
 };
 
-pub const GameCircumstances = struct {
+pub const InitialParameters = struct {
+    paramsVersion: u16 = 0,
+    engineVersionMajor: u16 = 0,
+    engineVersionMinor: u16 = 0,
+    engineVersionPatch: u16 = 0,
+
+    pub fn getSizeInBytes(self: *const InitialParameters) usize {
+        _ = self;
+        return 8;
+    }
+
+    pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: InitialParameters, bytes_read: usize } {
+        const InitialParameters_paramsVersion = (try readNumber(u16, offset + 0, buffer)).value;
+        const InitialParameters_engineVersionMajor = (try readNumber(u16, offset + 2, buffer)).value;
+        const InitialParameters_engineVersionMinor = (try readNumber(u16, offset + 4, buffer)).value;
+        const InitialParameters_engineVersionPatch = (try readNumber(u16, offset + 6, buffer)).value;
+        return .{ .value = InitialParameters{
+            .paramsVersion = InitialParameters_paramsVersion,
+            .engineVersionMajor = InitialParameters_engineVersionMajor,
+            .engineVersionMinor = InitialParameters_engineVersionMinor,
+            .engineVersionPatch = InitialParameters_engineVersionPatch,
+        }, .bytes_read = 8 };
+    }
+
+    pub fn writeBytes(self: *const InitialParameters, offset: usize, buffer: []u8, tag: bool) usize {
+        var local_offset = offset;
+
+        if (tag) {
+            local_offset += writeNumber(u8, local_offset, buffer, 2);
+        }
+        local_offset += writeNumber(u16, local_offset, buffer, self.paramsVersion);
+        local_offset += writeNumber(u16, local_offset, buffer, self.engineVersionMajor);
+        local_offset += writeNumber(u16, local_offset, buffer, self.engineVersionMinor);
+        local_offset += writeNumber(u16, local_offset, buffer, self.engineVersionPatch);
+
+        return local_offset - offset;
+    }
+};
+
+pub const PresentCircumstances = struct {
     lastTickDuration: u32 = 0,
     lastMoveSucceeded: bool = false,
     currentHitPoints: u16 = 0,
@@ -280,54 +340,54 @@ pub const GameCircumstances = struct {
     surroundings: []u16 = &.{},
     surroundingsRadius: u8 = 0,
 
-    pub fn getSizeInBytes(self: *const GameCircumstances) usize {
+    pub fn getSizeInBytes(self: *const PresentCircumstances) usize {
         var size: usize = 0;
         size += self.surroundings.len * 2;
         size += 11;
         return size;
     }
 
-    pub fn fromBytes(allocator: std.mem.Allocator, offset: usize, buffer: []const u8) !struct { value: GameCircumstances, bytes_read: usize } {
+    pub fn fromBytes(allocator: std.mem.Allocator, offset: usize, buffer: []const u8) !struct { value: PresentCircumstances, bytes_read: usize } {
         var local_offset = offset;
 
-        const GameCircumstances_lastTickDuration_read = try readNumber(u32, local_offset, buffer);
-        const GameCircumstances_lastTickDuration = GameCircumstances_lastTickDuration_read.value;
-        local_offset += GameCircumstances_lastTickDuration_read.bytes_read;
+        const PresentCircumstances_lastTickDuration_read = try readNumber(u32, local_offset, buffer);
+        const PresentCircumstances_lastTickDuration = PresentCircumstances_lastTickDuration_read.value;
+        local_offset += PresentCircumstances_lastTickDuration_read.bytes_read;
 
-        const GameCircumstances_lastMoveSucceeded_read = try readNumber(bool, local_offset, buffer);
-        const GameCircumstances_lastMoveSucceeded = GameCircumstances_lastMoveSucceeded_read.value;
-        local_offset += GameCircumstances_lastMoveSucceeded_read.bytes_read;
+        const PresentCircumstances_lastMoveSucceeded_read = try readNumber(bool, local_offset, buffer);
+        const PresentCircumstances_lastMoveSucceeded = PresentCircumstances_lastMoveSucceeded_read.value;
+        local_offset += PresentCircumstances_lastMoveSucceeded_read.bytes_read;
 
-        const GameCircumstances_currentHitPoints_read = try readNumber(u16, local_offset, buffer);
-        const GameCircumstances_currentHitPoints = GameCircumstances_currentHitPoints_read.value;
-        local_offset += GameCircumstances_currentHitPoints_read.bytes_read;
+        const PresentCircumstances_currentHitPoints_read = try readNumber(u16, local_offset, buffer);
+        const PresentCircumstances_currentHitPoints = PresentCircumstances_currentHitPoints_read.value;
+        local_offset += PresentCircumstances_currentHitPoints_read.bytes_read;
 
-        const GameCircumstances_currentStatus_read = try readNumber(u8, local_offset, buffer);
-        const GameCircumstances_currentStatus = GameCircumstances_currentStatus_read.value;
-        local_offset += GameCircumstances_currentStatus_read.bytes_read;
+        const PresentCircumstances_currentStatus_read = try readNumber(u8, local_offset, buffer);
+        const PresentCircumstances_currentStatus = PresentCircumstances_currentStatus_read.value;
+        local_offset += PresentCircumstances_currentStatus_read.bytes_read;
 
-        const GameCircumstances_surroundings_read = try readList(u16, allocator, local_offset, buffer);
-        const GameCircumstances_surroundings = GameCircumstances_surroundings_read.value;
-        local_offset += GameCircumstances_surroundings_read.bytes_read;
+        const PresentCircumstances_surroundings_read = try readList(u16, allocator, local_offset, buffer);
+        const PresentCircumstances_surroundings = PresentCircumstances_surroundings_read.value;
+        local_offset += PresentCircumstances_surroundings_read.bytes_read;
 
-        const GameCircumstances_surroundingsRadius_read = try readNumber(u8, local_offset, buffer);
-        const GameCircumstances_surroundingsRadius = GameCircumstances_surroundingsRadius_read.value;
-        local_offset += GameCircumstances_surroundingsRadius_read.bytes_read;
+        const PresentCircumstances_surroundingsRadius_read = try readNumber(u8, local_offset, buffer);
+        const PresentCircumstances_surroundingsRadius = PresentCircumstances_surroundingsRadius_read.value;
+        local_offset += PresentCircumstances_surroundingsRadius_read.bytes_read;
 
-        return .{ .value = GameCircumstances{
-            .lastTickDuration = GameCircumstances_lastTickDuration,
-            .lastMoveSucceeded = GameCircumstances_lastMoveSucceeded,
-            .currentHitPoints = GameCircumstances_currentHitPoints,
-            .currentStatus = GameCircumstances_currentStatus,
-            .surroundings = GameCircumstances_surroundings,
-            .surroundingsRadius = GameCircumstances_surroundingsRadius,
+        return .{ .value = PresentCircumstances{
+            .lastTickDuration = PresentCircumstances_lastTickDuration,
+            .lastMoveSucceeded = PresentCircumstances_lastMoveSucceeded,
+            .currentHitPoints = PresentCircumstances_currentHitPoints,
+            .currentStatus = PresentCircumstances_currentStatus,
+            .surroundings = PresentCircumstances_surroundings,
+            .surroundingsRadius = PresentCircumstances_surroundingsRadius,
         }, .bytes_read = local_offset - offset };
     }
 
-    pub fn writeBytes(self: *const GameCircumstances, offset: usize, buffer: []u8, tag: bool) usize {
+    pub fn writeBytes(self: *const PresentCircumstances, offset: usize, buffer: []u8, tag: bool) usize {
         var local_offset = offset;
         if (tag) {
-            local_offset += writeNumber(u8, local_offset, buffer, 2);
+            local_offset += writeNumber(u8, local_offset, buffer, 3);
         }
 
         local_offset += writeNumber(u32, local_offset, buffer, self.lastTickDuration);
@@ -340,8 +400,60 @@ pub const GameCircumstances = struct {
         return local_offset - offset;
     }
 
-    pub fn deinit(self: *GameCircumstances, allocator: std.mem.Allocator) void {
+    pub fn deinit(self: *PresentCircumstances, allocator: std.mem.Allocator) void {
         allocator.free(self.surroundings);
+    }
+};
+
+pub const Wait = struct {
+
+    pub fn getSizeInBytes(self: *const Wait) usize {
+        _ = self;
+        return 0;
+    }
+
+    pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: Wait, bytes_read: usize } {
+        _ = offset;
+        _ = buffer;
+        return .{ .value = Wait{
+        }, .bytes_read = 0 };
+    }
+
+    pub fn writeBytes(self: *const Wait, offset: usize, buffer: []u8, tag: bool) usize {
+        _ = self;
+        var local_offset = offset;
+
+        if (tag) {
+            local_offset += writeNumber(u8, local_offset, buffer, 4);
+        }
+
+        return local_offset - offset;
+    }
+};
+
+pub const Resign = struct {
+
+    pub fn getSizeInBytes(self: *const Resign) usize {
+        _ = self;
+        return 0;
+    }
+
+    pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: Resign, bytes_read: usize } {
+        _ = offset;
+        _ = buffer;
+        return .{ .value = Resign{
+        }, .bytes_read = 0 };
+    }
+
+    pub fn writeBytes(self: *const Resign, offset: usize, buffer: []u8, tag: bool) usize {
+        _ = self;
+        var local_offset = offset;
+
+        if (tag) {
+            local_offset += writeNumber(u8, local_offset, buffer, 5);
+        }
+
+        return local_offset - offset;
     }
 };
 
@@ -367,7 +479,7 @@ pub const Move = struct {
         var local_offset = offset;
 
         if (tag) {
-            local_offset += writeNumber(u8, local_offset, buffer, 3);
+            local_offset += writeNumber(u8, local_offset, buffer, 6);
         }
         local_offset += writeNumber(u8, local_offset, buffer, self.direction);
         local_offset += writeNumber(u8, local_offset, buffer, self.distance);

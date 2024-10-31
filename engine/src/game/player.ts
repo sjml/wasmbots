@@ -43,7 +43,7 @@ export class Player {
         return await this.init(this._programBytes, false);
     }
 
-    async tickTurn(circumstances: CoreMsg.GameCircumstances): Promise<CoreMsg.Message> {
+    async tickTurn(circumstances: CoreMsg.PresentCircumstances): Promise<CoreMsg.Message> {
         circumstances.lastMoveSucceeded = this.lastMoveSucceeded;
 
         const move = await this.coordinator.tick(circumstances);

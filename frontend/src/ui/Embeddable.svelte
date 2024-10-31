@@ -28,8 +28,9 @@
 
     interface Props {
         setup: string;
+        autoRun: boolean;
     }
-    let { setup = JSON.stringify(defaultSetup) }: Props = $props();
+    let { setup = JSON.stringify(defaultSetup), autoRun = false, }: Props = $props();
     async function setupFromProps() {
         const setupInfo: SetupInfo = JSON.parse(setup);
         for (const botUrl of setupInfo.botUrlList) {
@@ -40,13 +41,19 @@
         }
         if (gameState.world?.isReadyToStart()) {
             gameState.world.startGame();
-            runForever();
+            if (autoRun) {
+                runForever();
+            }
         }
     };
 
+    export async function step() {
+        await gameState.world?.runTurn();
+    }
+
     async function runForever() {
         while (true) {
-            await gameState.world?.runTurn();
+            await step();
         }
     }
 

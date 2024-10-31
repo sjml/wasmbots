@@ -199,7 +199,7 @@ export class World extends EventTarget {
         for (const player of this._players) {
             if (player == null) { continue; }
             if (World._playerIsValid(player)) {
-                const circumstances = new CoreMsg.GameCircumstances();
+                const circumstances = new CoreMsg.PresentCircumstances();
 
                 const move = await player.tickTurn(circumstances);
 

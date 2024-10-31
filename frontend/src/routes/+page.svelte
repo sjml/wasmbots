@@ -1,5 +1,5 @@
 <script lang="ts">
-    import App from "../ui/App.svelte";
+    import { goto } from "$app/navigation";
+    goto("./app", { replaceState: true });
 </script>
 
-<App />

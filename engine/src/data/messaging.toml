@@ -11,11 +11,20 @@ string_size_type = "byte"
 _name = "_Error"
 description = "string"
 
+# initial setup message that you can either accept or reject
+[[messages]]
+_name = "InitialParameters"
+paramsVersion = "uint16"
+engineVersionMajor = "uint16"
+engineVersionMinor = "uint16"
+engineVersionPatch = "uint16"
+
 # player receives every tick
 [[messages]]
-_name = "GameCircumstances"
+_name = "PresentCircumstances"
 lastTickDuration = "uint32"
-lastMoveSucceeded = "bool"
+lastMoveSucceeded = "bool" # these two would be better as an enum, but beschi doesn't do that yet
+lastMoveValid = "bool"
 currentHitPoints = "uint16"
 currentStatus = "byte"
 surroundings = "[uint16]"
@@ -24,11 +33,11 @@ surroundingsRadius = "byte"
 
 ### moves that the player submits
 
-# [[messages]]
-# _name = "Wait"
+[[messages]]
+_name = "Wait"
 
-# [[messages]]
-# _name = "Resign"
+[[messages]]
+_name = "Resign"
 
 [[messages]]
 _name = "Move"

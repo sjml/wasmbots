@@ -21,9 +21,9 @@ export fn setup(requestReserve: usize) usize {
     return @intFromPtr(host_reserve.HOST_RESERVE.ptr);
 }
 
-pub const TickFn = fn (messages.GameCircumstances) messages.Message;
+pub const TickFn = fn (messages.PresentCircumstances) messages.Message;
 var _client_tick: *const TickFn = _clienTickNoop;
-fn _clienTickNoop(_: messages.GameCircumstances) messages.Message {
+fn _clienTickNoop(_: messages.PresentCircumstances) messages.Message {
     return messages.Message{ ._Error = messages._Error{ .description = "No client tick function registered" } };
 }
 
@@ -37,8 +37,8 @@ pub fn setAllocator(allocator: Allocator) void {
 }
 
 export fn tick(offset: usize) void {
-    const circumstances_read = messages.GameCircumstances.fromBytes(_allocator, offset, host_reserve.HOST_RESERVE) catch {
-        logErr("Could not parse GameCircumstances in host reserve");
+    const circumstances_read = messages.PresentCircumstances.fromBytes(_allocator, offset, host_reserve.HOST_RESERVE) catch {
+        logErr("Could not parse PresentCircumstances in host reserve");
         return;
     };
     var circumstances = circumstances_read.value;

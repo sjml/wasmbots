@@ -128,7 +128,7 @@ size_t setup(size_t requestReserve) {
     return (size_t)WSMBT_HOST_RESERVE;
 }
 
-void* _noop(WasmBotsMessage_GameCircumstances* circumstances) { return NULL; }
+void* _noop(WasmBotsMessage_PresentCircumstances* circumstances) { return NULL; }
 wsmbt_TickFunction _clientTick = &_noop;
 
 void wsmbt_registerTickCallback(wsmbt_TickFunction tickFunc) {
@@ -140,12 +140,12 @@ void tick(size_t offset) {
     void* playerMove = NULL;
 
     _dataAccess.position = offset;
-    WasmBotsMessage_GameCircumstances* circumstances = malloc(sizeof(WasmBotsMessage_GameCircumstances));
-    err = WasmBotsMessage_GameCircumstances_FromBytes(&_dataAccess, circumstances);
+    WasmBotsMessage_PresentCircumstances* circumstances = malloc(sizeof(WasmBotsMessage_PresentCircumstances));
+    err = WasmBotsMessage_PresentCircumstances_FromBytes(&_dataAccess, circumstances);
     if (err != WASMBOTSMESSAGE_ERR_OK) {
-        WasmBotsMessage_GameCircumstances_Destroy(circumstances);
+        WasmBotsMessage_PresentCircumstances_Destroy(circumstances);
         WasmBotsMessage__Error* errMsg = WasmBotsMessage__Error_Create();
-        errMsg->description = "Could not read GameCircumstances message";
+        errMsg->description = "Could not read PresentCircumstances message";
         errMsg->description_len = strlen(errMsg->description);
         wsmbt_logErr(errMsg->description);
         playerMove = errMsg;
@@ -160,6 +160,6 @@ void tick(size_t offset) {
         err = WasmBotsMessage_Destroy(playerMove);
     }
 
-    WasmBotsMessage_GameCircumstances_Destroy(circumstances);
+    WasmBotsMessage_PresentCircumstances_Destroy(circumstances);
 }
 //// \SETUP AND LOOP

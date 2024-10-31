@@ -67,7 +67,7 @@ fn clientSetup(pars: params.GameParameters) params.BotMetadata {
     return bot_meta;
 }
 
-fn clientTick(circumstances: msg.GameCircumstances) msg.Message {
+fn clientTick(circumstances: msg.PresentCircumstances) msg.Message {
     if (!circumstances.lastMoveSucceeded) {
         reflect();
         wasmbotClient.log("bounce");

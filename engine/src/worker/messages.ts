@@ -46,7 +46,7 @@ export interface InstantiatePayload {
     rngSeed: number;
 }
 export interface RunTickPayload {
-    circumstances: CoreMsg.GameCircumstances;
+    circumstances: CoreMsg.PresentCircumstances;
 }
 
 

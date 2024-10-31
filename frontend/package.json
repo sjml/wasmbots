@@ -4,8 +4,9 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "npx tsx scripts/buildComponentDist.ts && vite build",
     "build:component": "npx tsx scripts/buildComponentDist.ts",
+    "build:site": "vite build",
+		"build": "npm run build:component && npm run build:site",
 		"preview": "vite preview",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"

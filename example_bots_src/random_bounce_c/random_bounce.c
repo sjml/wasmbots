@@ -24,7 +24,7 @@ void chooseNewDirection(bool allowRepeat) {
     CURRENT_DIR = randomDir;
 }
 
-void* clientTick(WasmBotsMessage_GameCircumstances* circumstances) {
+void* clientTick(WasmBotsMessage_PresentCircumstances* circumstances) {
     if (!circumstances->lastMoveSucceeded) {
         chooseNewDirection(false);
         wsmbt_logf("choosing new direction: %d", CURRENT_DIR);

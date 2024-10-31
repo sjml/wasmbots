@@ -19,7 +19,7 @@ export class WasmBotsVisualizer extends Phaser.Game {
 
     constructor(parentDiv: HTMLDivElement, world: World) {
         super({
-            type: Phaser.AUTO,
+            type: Phaser.WEBGL,
             scale: {
                 parent: parentDiv,
                 mode: Phaser.Scale.FIT,

@@ -115,7 +115,7 @@ async function instantiate(payload: Msg.InstantiatePayload) {
 async function runTick(payload: Msg.RunTickPayload) {
     // reconstruct the full message object from its properties
     //   after it was serialized to cross the Web Worker barrier
-    const workerCirc = new CoreMsg.GameCircumstances();
+    const workerCirc = new CoreMsg.PresentCircumstances();
     Object.assign(workerCirc, payload.circumstances);
 
     const move = program.runTick(workerCirc);

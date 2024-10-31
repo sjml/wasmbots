@@ -4,16 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WasmBots Embedding Demonstration</title>
-    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://shaneliesegang.com/style.css">
 
     <!--
-        Just include this script file and **make sure** to set
-        the data-script-id flag so that it can load its assets
-        relative to itself.
+        Include this script file and **make sure** to set
+        the data-script-id attribute so that it can load
+        its assets relative to itself.
     -->
     <script
         src="./wasmbots/wasmbots-embedded.iife.js"
-        data-script-id="wasmbotsEmbedScript">
+        data-script-id="wasmbotsEmbedScript"
+    >
     </script>
 </head>
 <body>
@@ -21,10 +22,16 @@
     <hr/>
     <p>
         This is just a simple example of how WasmBots can be embedded
-        in a webpage as a standalone element. Look at those little guys
-        running around! They get loaded from a list of module files set
-        as an attribute on the component. <a href="./index.html.txt"
-        target="_blank">Take a look at the source and see for yourself!</a>
+        in a webpage as a standalone element. Most of the page is
+        running as a <a href="https://svelte.dev/" target="_blank">SvelteKit</a>
+        app, but this one is just plain old HTML, loading the entire
+        engine as a single script and then hooking it to a custom element.
+    </p>
+
+    <p>Look at those little guys running around! They get loaded from a
+        list of module files set as an attribute on the component.
+        <a href="./index.html.txt" target="_blank">Take a look at the
+        source and see for yourself!</a>
     </p>
     <p>
         You can <a href="./wasmbots-embed.tar.gz">download
@@ -35,23 +42,27 @@
 
     <!--
         You can stick it in whatever div you want, obviously,
-        and style/size it to your liking
+        and style/size it to your liking.
     -->
     <div class="aquarium" style="margin: auto;">
         <!--
-            setup attribute is a string of JSON;
-            at the moment just a list of bots,
-            but you could imagine this specifying the map,
-            game parameters, etc.
-            maybe eventually you can pass a callback
-            here to get told when something happens in
-            the game? ¯\_(ツ)_/¯
+            autoRun -- makes it start and loop forever,
+                       otherwise you can call the step()
+                       function on the element to go one
+                       turn at a time
 
-            the urls need to either be absolute or relative
-            to the page that is loading them, much like
-            the src attribute on an img element.
+            setup -- is a string of JSON; at the moment
+                     just a list of bots, but you could
+                     imagine this specifying the map,
+                     game parameters, etc.
+
+                     the urls need to either be absolute
+                     or relative to the page that is
+                     loading them, much like the src
+                     attribute on an img element.
         -->
         <wasmbots-embed
+            autoRun
             setup='{
                 "botUrlList": [
                     "../example_bots/random_bounce_c.wasm",

@@ -115,7 +115,7 @@ export class WasmCoordinator {
         this.readyResolve();
     }
 
-    tick(circumstances: CoreMsg.GameCircumstances): Promise<CoreMsg.Message> {
+    tick(circumstances: CoreMsg.PresentCircumstances): Promise<CoreMsg.Message> {
         this.tickPromise = new Promise<CoreMsg.Message>((resolve, reject) => {
             this.tickResolve = resolve;
             this.tickReject = reject;
