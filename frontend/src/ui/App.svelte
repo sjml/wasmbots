@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+    import { onMount, setContext } from "svelte";
 
     import WorldCanvas from "./WorldCanvas.svelte";
     import BotPanel from "./BotPanel.svelte";
@@ -7,7 +7,14 @@
     import ToggleButton from "./ToggleButton.svelte";
     import FlowControl from "./FlowControl.svelte";
 
-    import { globalState } from "../state.svelte";
+    import { type WasmBotsState } from "../state.svelte";
+
+    const gameState: WasmBotsState = $state({
+        world: null,
+        players: [],
+        vis: null,
+    });
+    setContext("gameState", gameState);
 
     let leftPanelVisible = $state(false);
     let rightPanelVisible = $state(false);
@@ -72,7 +79,7 @@
             {/if}
             <div class="divider"></div>
         {/if}
-        {#if globalState.world }
+        {#if gameState.world }
             <FlowControl />
         {/if}
         <div class="divider"></div>

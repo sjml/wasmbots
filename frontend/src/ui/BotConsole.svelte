@@ -1,10 +1,11 @@
 <script lang="ts">
-    import { tick as svelteTick } from "svelte";
+    import { tick as svelteTick, getContext } from "svelte";
 
     import { Loader, Logger } from "../engine";
     import { Player } from "../engine/game/player";
-    import { globalState } from "../state.svelte";
-    import { sleep } from "../engine/core/util";
+    import { type WasmBotsState } from "../state.svelte";
+
+    const gameState: WasmBotsState = getContext("gameState");
 
     const MAX_LOG_ENTRIES = 1000;
     interface LogEntry {
@@ -38,7 +39,7 @@
         logs = [];
         fpath = `./example_bots/${fpath}`;
         const wasmBytes = await Loader.readBinaryFile(fpath);
-        const p = new Player(logToMe, globalState.world!.rng.randInt(0, Number.MAX_SAFE_INTEGER));
+        const p = new Player(logToMe, gameState.world!.rng.randInt(0, Number.MAX_SAFE_INTEGER));
         await p.init(wasmBytes);
         newPlayerObj(p);
         localLoading = false;

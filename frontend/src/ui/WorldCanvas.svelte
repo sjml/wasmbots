@@ -1,17 +1,20 @@
 <script lang="ts">
+    import { onMount, getContext } from "svelte";
+
     import config from "../engine/core/config";
     import { World } from "../engine/game/world";
     import { Player } from "../engine/game/player";
     import { WasmBotsVisualizer } from "../vis/game";
-    import { globalState } from "../state.svelte";
-    import { onMount } from "svelte";
+
+    import { type WasmBotsState } from "../state.svelte";
+    const gameState: WasmBotsState = getContext("gameState");
 
     const width: number = config.gameWidth;
     const height: number = config.gameHeight;
     let canvas: HTMLCanvasElement;
 
     async function playerAdd(p: Player) {
-        await globalState.vis?.addPlayer(p);
+        await gameState.vis?.addPlayer(p);
     }
 
     async function playerDrop(p: Player) {
@@ -19,17 +22,17 @@
     }
 
     async function gameSetup() {
-        if (globalState.world == null) {
-            globalState.world = new World(null);
-            globalState.world.on("playerAdded", (evt) => {
+        if (gameState.world == null) {
+            gameState.world = new World(null);
+            gameState.world.on("playerAdded", (evt) => {
                 playerAdd(evt.detail.newPlayer);
             });
-            globalState.world.on("playerDropped", (evt) => {
+            gameState.world.on("playerDropped", (evt) => {
                 playerDrop(evt.detail.leavingPlayer);
             });
-            globalState.vis = new WasmBotsVisualizer(canvas, globalState.world);
-            await globalState.vis.untilBootloaderDone();
-            await globalState.vis.loadMap("arena");
+            gameState.vis = new WasmBotsVisualizer(canvas, gameState.world);
+            await gameState.vis.untilBootloaderDone();
+            await gameState.vis.loadMap("arena");
         }
     }
 

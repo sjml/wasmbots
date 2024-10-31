@@ -1,5 +1,6 @@
 import Phaser from "phaser";
 
+import { Loader } from "../engine";
 import { VisEventBus } from "./events";
 
 export class VisBootloader extends Phaser.Scene {
@@ -10,7 +11,7 @@ export class VisBootloader extends Phaser.Scene {
 
     preload() {
         this.setLoadEvents();
-        this.load.setPath("rsc");
+        this.load.setPath(Loader.getRscPath());
 
         this.load.spritesheet("tiles-dungeon", "img/kenny_tiny-dungeon_tilemap.png", {
             frameWidth: 16,

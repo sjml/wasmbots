@@ -5,6 +5,8 @@ node_modules
 .vercel
 /.svelte-kit
 /build
+/static/embedded/*
+!/static/embedded/index.html
 
 # OS
 .DS_Store

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WasmBots Embedding Demonstration</title>
+    <script src="./wasmbots/wasmbots-embedded.iife.js" data-script-id="wasmbotsEmbedScript"></script>
+</head>
+<body>
+    <h1>WasmBots Embedding Demonstration</h1>
+    <wasmbots-embed
+        setup='{ "botUrlList": ["../example_bots/random_bounce_c.wasm", "../example_bots/random_bounce_zig.wasm"] }'
+    >
+    </wasmbots-embed>
+</body>
+</html>

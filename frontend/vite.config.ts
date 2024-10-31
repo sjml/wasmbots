@@ -2,7 +2,7 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 
 export default defineConfig({
-	plugins: [sveltekit()],
+    plugins: [sveltekit()],
     resolve: {
         preserveSymlinks: true
     },
@@ -16,6 +16,7 @@ export default defineConfig({
         chunkSizeWarningLimit: 2000,
     },
     define: {
-        '__APP_BASE_PATH__': process.argv.includes('dev') ? `''` : `'/projects/wasmbots'`
+        '__RSC_PATH__': process.argv.includes('dev') ? `'/rsc'` : `'/projects/wasmbots/rsc'`,
+        '__IIFE_BUILD__': 'false',
     }
 });

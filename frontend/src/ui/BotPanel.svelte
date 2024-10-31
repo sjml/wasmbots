@@ -1,10 +1,13 @@
 <script lang="ts">
+    import { getContext } from "svelte";
+
     import BotSelector from "./BotSelector.svelte";
     import BotConsole from "./BotConsole.svelte";
 
     import { Player } from "../engine/game/player";
 
-    import { globalState } from "../state.svelte";
+    import { type WasmBotsState } from "../state.svelte";
+    const gameState: WasmBotsState = getContext("gameState");
 
     interface Props {
         side: string;
@@ -16,20 +19,13 @@
         isLoading = val;
     }
 
+    let myPlayer: Player | null = null;
     function newPlayerObj(p: Player) {
-        if (side == "left") {
-            if (globalState.leftPlayer != null) {
-                globalState.world?.dropPlayer(globalState.leftPlayer);
-            }
-            globalState.leftPlayer = p;
+        if (myPlayer != null) {
+            gameState.world?.dropPlayer(myPlayer);
         }
-        else {
-            if (globalState.rightPlayer != null) {
-                globalState.world?.dropPlayer(globalState.rightPlayer);
-            }
-            globalState.rightPlayer = p;
-        }
-        globalState.world?.registerPlayer(p);
+        myPlayer = p;
+        gameState.world?.registerPlayer(p);
     }
 
     let selectedBotFile: string = $state("");

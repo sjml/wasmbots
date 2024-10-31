@@ -1,10 +1,11 @@
 <script lang="ts">
-    import { onMount } from "svelte";
+    import { onMount, getContext } from "svelte";
 
-    import { globalState } from "../state.svelte";
+    import { type WasmBotsState } from "../state.svelte";
     import { GameState } from "../engine/game/world";
     let currentGameState: GameState = $state(GameState.Setup);
 
+    const gameState: WasmBotsState = getContext("gameState");
 
     let playButtonVisible: boolean = $state(true);
     let playPauseEnabled: boolean = $state(false);
@@ -25,7 +26,7 @@
     */
     // more clever ways to do this probably but explicit is better than implicit
     onMount(() => {
-        globalState.world!.on("gameStateChange", (evt) => {
+        gameState.world!.on("gameStateChange", (evt) => {
             currentGameState = evt.detail.newState;
             updateButtonStates();
         });
@@ -84,8 +85,8 @@
     async function runGameContinuous() {
         runningContinuous = true;
         gameIsTicking = true;
-        if (globalState.world?.gameState == GameState.Ready) {
-            globalState.world?.startGame();
+        if (gameState.world?.gameState == GameState.Ready) {
+            gameState.world?.startGame();
         }
         updateButtonStates();
         while (runningContinuous && currentGameState == GameState.Running) {
@@ -98,21 +99,21 @@
         if (!runningContinuous) {
             gameIsTicking = true;
         }
-        if (globalState.world?.gameState == GameState.Ready) {
-            globalState.world?.startGame();
+        if (gameState.world?.gameState == GameState.Ready) {
+            gameState.world?.startGame();
         }
-        await globalState.world?.runTurn();
+        await gameState.world?.runTurn();
         if (!runningContinuous) {
             gameIsTicking = false;
         }
     }
 
     async function resetGame() {
-        globalState.world?.resetGame();
+        gameState.world?.resetGame();
     }
 
     async function haltGame() {
-        globalState.world?.stopGame();
+        gameState.world?.stopGame();
     }
 
     async function pauseGame() {

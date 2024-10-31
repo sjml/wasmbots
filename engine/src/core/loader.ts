@@ -49,12 +49,25 @@ export async function readBinaryFile(filepath: string): Promise<Uint8Array> {
 
 
 
-function getRscPath(): string {
+export function getRscPath(): string {
     if (config.environment == "Deno") {
         const filename = new URL('', import.meta.url).pathname;
         const dirname = pathDirname(filename);
         return pathJoin(dirname, "..", "..", "rsc");
     }
     // @ts-ignore
-    return pathJoin("/", __APP_BASE_PATH__, "rsc");
+    else if (__IIFE_BUILD__) {
+        if (typeof self !== "undefined" && self.constructor.name === "DedicatedWorkerGlobalScope") {
+            return new URL("rsc", self.location.href).pathname;
+        }
+
+        const script = document.querySelector<HTMLScriptElement>("script[data-script-id='wasmbotsEmbedScript']");
+        if (!script || !script.src) {
+            throw new Error("Could not find script with data-script-id='wasmbotsEmbedScript'. Make sure to add that attribute to your script tag!");
+        }
+
+        return new URL("rsc", script.src).pathname;
+    }
+    // @ts-ignore
+    return __RSC_PATH__;
 }

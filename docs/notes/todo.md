@@ -8,6 +8,15 @@
   * UI: 
     * add player image to panel once spawned
     * upload wasm with drag-n-drop (or at least a file selector)
+  * embedded component
+    * applies to app usage too, but fixing is important for embedded:
+      * fix the issue with canvas being sized directly; put it on the div
+      * then switch Phaser to take that div as its parent instead of canvas
+        * (then it can do AUTO instead of WEBGL)
+    * after above is done, add some simple styling to the page
+      * and a fullscreen button
+      * and instructions
+    * take map parameter (once there are multiple maps)
   * testing
     * player class
       * feeding non-wasm byte array
@@ -17,7 +26,6 @@
   * line of sight and vision area
   * items, weapons, armor, spells
 * map variations
-* component that is mountable in regular page with urls to wasm files in attributes; no chooser, etc. 
 * trainer
   * single executable that hosts webpage
     * https://github.com/NfNitLoop/deno-embedder
@@ -36,7 +44,6 @@
 * player class
     * when dropping, if game hasn't started, put spawn point back in the pool
     * set facing when reset
-* UI: buttons should fade between state
 * UI: add button to console to copy it to clipboard
 * UI: landscape view on iPhone - the drawers don't extend into the island areas
 * UI: text size on bot name? 
