@@ -17,3 +17,50 @@
             * **BUT** nice to kind of separate those concerns --- `Player` focused on interacting with the game world, `WasmCoordinator` handling the low-level machinery
             * _counterpoint_: it's an extra layer that is not strictly needed
     * **_Resolution for now:_** Leave it alone; all the bounces are aesthetically annoying but that's about the only real impact right now. Might actually become _less_ maintainable by attempting to collapse it. 
+
+
+## Diagram
+
+I spent a little time trying to make a useful chart with [Mermaid.JS](https://mermaid.js.org) but kept failing. Block diagrams have issues with width, and class diagrams or flowcharts can't figure out how to avoid overlap. 
+
+Anyway, here it is in text art for now. (Not ASCII art because Unicode arrows. 😏)
+
+```
++-----------------------+  +-------------------+
+|      Visualization    |  |                   |
+|+--------+   +--------+|  |       Deno        |
+|| Phaser | → | Svelte ||  |    Command-Line   |
+||  Game  | ← |   UI   ||  |       Tools       |
+|+--------+   +--------+|  |                   |
++-----------------------+  +-------------------+
+           ↑ ↓                     ↑ ↓
++-----------------------------------------------+
+|                    Engine                     |
+| +------------+ +----------+ +-------+ +-----+ |
+| | Randomness | | Monsters | | World | | Map | |
+| +------------+ +----------+ +-------+ +-----+ |
+|                                 ↑ ↓           |
+| +-------------------------------------------+ |
+| |                  Player                   | |
+| +-------------------------------------------+ |
+|                     ↑ |                       |
++---------------------|-|-----------------------+
+                      | ↓           
+    +---------------------------------------+ 
+    |            WasmCoordinator            |
+    +---------------------------------------+ 
+                                     ↑ |        
++------------------------------------|-|-------+
+|                   Web Worker       | ↓       |
+| +-------------------------------------------+|
+| |                Guest Program              ||
+| +-------------------------------------------+|
+|                      ↑ ↓                     |
+| +-------------------------------------------+|
+| |            WebAssembly Module             ||
+| | +-------------------------+ +-----------+ ||
+| | | Library Code (Optional) | | Your Code | ||
+| | +-------------------------+ +-----------+ ||
+| +-------------------------------------------+|
++----------------------------------------------+
+```
