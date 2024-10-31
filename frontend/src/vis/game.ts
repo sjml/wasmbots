@@ -17,14 +17,18 @@ export class WasmBotsVisualizer extends Phaser.Game {
     visualRNG: RNG = new RNG(null);
     worldObject: World;
 
-    constructor(canvas: HTMLCanvasElement, world: World) {
+    constructor(parentDiv: HTMLDivElement, world: World) {
         super({
-            width: config.gameWidth,
-            height: config.gameHeight,
-            type: Phaser.WEBGL,
+            type: Phaser.AUTO,
+            scale: {
+                parent: parentDiv,
+                mode: Phaser.Scale.FIT,
+                autoCenter: Phaser.Scale.CENTER_BOTH,
+                width: config.gameWidth,
+                height: config.gameHeight,
+            },
             pixelArt: true,
             backgroundColor: "#032300",
-            canvas,
             audio: {
                 noAudio: true,
             },

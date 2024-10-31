@@ -8,8 +8,8 @@
 
 <style>
     nav {
-        position: sticky;
-        top: 0;
+        height: 50px;
+        flex-shrink: 0;
         background-color: rgb(37, 37, 37);
         display: flex;
         justify-content: space-between;

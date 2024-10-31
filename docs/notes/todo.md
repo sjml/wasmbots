@@ -9,13 +9,6 @@
     * add player image to panel once spawned
     * upload wasm with drag-n-drop (or at least a file selector)
   * embedded component
-    * applies to app usage too, but fixing is important for embedded:
-      * fix the issue with canvas being sized directly; put it on the div
-      * then switch Phaser to take that div as its parent instead of canvas
-        * (then it can do AUTO instead of WEBGL)
-    * after above is done, add some simple styling to the page
-      * and a fullscreen button
-      * and instructions
     * take map parameter (once there are multiple maps)
   * testing
     * player class

@@ -63,6 +63,8 @@
 
 <svelte:window bind:innerWidth={windowWidth} />
 
+<BotPanel side="left"  isOpened={leftPanelVisible } />
+<BotPanel side="right" isOpened={rightPanelVisible} />
 <div class="appContainer">
     <Navbar>
         <ToggleButton side="left"  isOpened={leftPanelVisible } toggle={togglePanel} />
@@ -91,16 +93,15 @@
         <div class="spacer"></div>
         <ToggleButton side="right" isOpened={rightPanelVisible} toggle={togglePanel} />
     </Navbar>
-    <BotPanel side="left"  isOpened={leftPanelVisible } />
-    <BotPanel side="right" isOpened={rightPanelVisible} />
     <WorldCanvas/>
 </div>
 
 <style>
     .appContainer {
-        position: relative;
         height: 100%;
         overflow: hidden;
+        display: flex;
+        flex-direction: column;
     }
 
     .spacer {

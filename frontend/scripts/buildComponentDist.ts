@@ -5,7 +5,7 @@ import { execSync } from "child_process";
 
 const embeddedOutputBase = "static/embedded"
 const outputDirectory = `${embeddedOutputBase}/wasmbots`;
-const zipOutput = "wasmbots.tar.gz";
+const zipOutput = "wasmbots-embed.tar.gz";
 
 await build({
     configFile: "vite.component.config.js",
