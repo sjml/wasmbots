@@ -155,6 +155,7 @@ export enum MessageType {
   WaitType = 4,
   ResignType = 5,
   MoveType = 6,
+  OpenType = 7,
 }
 
 export interface Message {
@@ -195,6 +196,9 @@ export function ProcessRawBytes(dv: DataView): Message[] {
         break;
       case MessageType.MoveType:
         msgList.push(Move.fromBytes(da));
+        break;
+      case MessageType.OpenType:
+        msgList.push(Open.fromBytes(da));
         break;
       default:
         throw new Error(`Unknown message type: ${msgType}`);
@@ -307,6 +311,7 @@ export class InitialParameters implements Message {
 export class PresentCircumstances implements Message {
   lastTickDuration: number = 0;
   lastMoveSucceeded: boolean = false;
+  lastMoveValid: boolean = false;
   currentHitPoints: number = 0;
   currentStatus: number = 0;
   surroundings: number[] = [];
@@ -317,7 +322,7 @@ export class PresentCircumstances implements Message {
   getSizeInBytes(): number {
     let size: number = 0;
     size += this.surroundings.length * 2;
-    size += 11;
+    size += 12;
     return size;
   }
 
@@ -333,6 +338,7 @@ export class PresentCircumstances implements Message {
       const nPresentCircumstances = new PresentCircumstances();
       nPresentCircumstances.lastTickDuration = da.getUint32();
       nPresentCircumstances.lastMoveSucceeded = da.getBool();
+      nPresentCircumstances.lastMoveValid = da.getBool();
       nPresentCircumstances.currentHitPoints = da.getUint16();
       nPresentCircumstances.currentStatus = da.getByte();
       const surroundings_Length = da.getUint16();
@@ -361,6 +367,7 @@ export class PresentCircumstances implements Message {
     }
     da.setUint32(this.lastTickDuration);
     da.setBool(this.lastMoveSucceeded);
+    da.setBool(this.lastMoveValid);
     da.setUint16(this.currentHitPoints);
     da.setByte(this.currentStatus);
     da.setUint16(this.surroundings.length);
@@ -502,6 +509,53 @@ export class Move implements Message {
 
 }
 
+@staticImplements<MessageStatic>()
+export class Open implements Message {
+  targetX: number = 0;
+  targetY: number = 0;
+
+  getMessageType() : MessageType { return MessageType.OpenType; }
+
+  getSizeInBytes(): number {
+    return 4;
+  }
+
+  static fromBytes(data: DataView|DataAccess): Open {
+    let da: DataAccess;
+    if (data instanceof DataView) {
+      da = new DataAccess(data);
+    }
+    else {
+      da = data;
+    }
+    try {
+      const nOpen = new Open();
+      nOpen.targetX = da.getInt16();
+      nOpen.targetY = da.getInt16();
+      return nOpen;
+    }
+    catch (err) {
+      throw new Error(`Could not read Open from offset ${da.currentOffset} (${err.name})`);
+    }
+  }
+
+  writeBytes(data: DataView|DataAccess, tag: boolean): void {
+    let da: DataAccess;
+    if (data instanceof DataView) {
+      da = new DataAccess(data);
+    }
+    else {
+      da = data;
+    }
+    if (tag) {
+      da.setByte(MessageType.OpenType);
+    }
+    da.setInt16(this.targetX);
+    da.setInt16(this.targetY);
+  }
+
+}
+
 export const MessageTypeMap = new Map<MessageType, { new(): Message }>([
   [MessageType._ErrorType, _Error],
   [MessageType.InitialParametersType, InitialParameters],
@@ -509,5 +563,6 @@ export const MessageTypeMap = new Map<MessageType, { new(): Message }>([
   [MessageType.WaitType, Wait],
   [MessageType.ResignType, Resign],
   [MessageType.MoveType, Move],
+  [MessageType.OpenType, Open],
 ]);
 

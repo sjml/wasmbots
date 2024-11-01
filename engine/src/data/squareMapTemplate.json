@@ -1,0 +1,62 @@
+{
+  "version": "1.10",
+  "type": "map",
+  "compressionlevel": -1,
+  "width": 0,
+  "height": 0,
+  "tilewidth": 16,
+  "tileheight": 16,
+  "orientation": "orthogonal",
+  "renderorder": "right-down",
+  "infinite": false,
+  "layers": [
+    {
+      "id": 1,
+      "name": "terrain",
+      "type": "tilelayer",
+      "width": 0,
+      "height": 0,
+      "visible": true,
+      "opacity": 1,
+      "x": 0,
+      "y": 0,
+      "data": []
+    }
+  ],
+  "nextobjectid": 1,
+  "nextlayerid": 6,
+  "tiledversion": "1.11.0",
+  "tilesets": [
+    {
+      "name": "Grayscale",
+      "columns": 4,
+      "firstgid": 1,
+      "image": "../../img/grayscale.png",
+      "imageheight": 16,
+      "imagewidth": 64,
+      "margin": 0,
+      "spacing": 0,
+      "tilecount": 4,
+      "tileheight": 16,
+      "tilewidth": 16,
+      "tiles": [
+        {
+          "id": 0,
+          "type": "Empty"
+        },
+        {
+          "id": 1,
+          "type": "OpenDoor"
+        },
+        {
+          "id": 2,
+          "type": "ClosedDoor"
+        },
+        {
+          "id": 3,
+          "type": "Wall"
+        }
+      ]
+    }
+  ]
+}

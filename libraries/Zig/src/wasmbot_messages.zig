@@ -31,7 +31,7 @@ fn _typeIsSimple(comptime T: type) bool {
         return true;
     }
     const simpleTypes = [_]type{
-        InitialParameters, Wait, Resign, Move,
+        InitialParameters, Wait, Resign, Move, Open,
     };
     for (simpleTypes) |vt| {
         if (T == vt) {
@@ -196,6 +196,7 @@ pub const MessageType = enum(u8) {
     Wait,
     Resign,
     Move,
+    Open,
 };
 
 pub const Message = union(MessageType) {
@@ -205,6 +206,7 @@ pub const Message = union(MessageType) {
     Wait: Wait,
     Resign: Resign,
     Move: Move,
+    Open: Open,
 };
 
 pub fn processRawBytes(allocator: std.mem.Allocator, buffer: []const u8) ![]Message {
@@ -249,6 +251,11 @@ pub fn processRawBytes(allocator: std.mem.Allocator, buffer: []const u8) ![]Mess
                 const msg_read = try Move.fromBytes(local_offset, buffer);
                 local_offset += msg_read.bytes_read;
                 try msg_list.append(Message{ .Move = msg_read.value });
+            },
+            .Open => {
+                const msg_read = try Open.fromBytes(local_offset, buffer);
+                local_offset += msg_read.bytes_read;
+                try msg_list.append(Message{ .Open = msg_read.value });
             },
         }
     }
@@ -335,6 +342,7 @@ pub const InitialParameters = struct {
 pub const PresentCircumstances = struct {
     lastTickDuration: u32 = 0,
     lastMoveSucceeded: bool = false,
+    lastMoveValid: bool = false,
     currentHitPoints: u16 = 0,
     currentStatus: u8 = 0,
     surroundings: []u16 = &.{},
@@ -343,7 +351,7 @@ pub const PresentCircumstances = struct {
     pub fn getSizeInBytes(self: *const PresentCircumstances) usize {
         var size: usize = 0;
         size += self.surroundings.len * 2;
-        size += 11;
+        size += 12;
         return size;
     }
 
@@ -357,6 +365,10 @@ pub const PresentCircumstances = struct {
         const PresentCircumstances_lastMoveSucceeded_read = try readNumber(bool, local_offset, buffer);
         const PresentCircumstances_lastMoveSucceeded = PresentCircumstances_lastMoveSucceeded_read.value;
         local_offset += PresentCircumstances_lastMoveSucceeded_read.bytes_read;
+
+        const PresentCircumstances_lastMoveValid_read = try readNumber(bool, local_offset, buffer);
+        const PresentCircumstances_lastMoveValid = PresentCircumstances_lastMoveValid_read.value;
+        local_offset += PresentCircumstances_lastMoveValid_read.bytes_read;
 
         const PresentCircumstances_currentHitPoints_read = try readNumber(u16, local_offset, buffer);
         const PresentCircumstances_currentHitPoints = PresentCircumstances_currentHitPoints_read.value;
@@ -377,6 +389,7 @@ pub const PresentCircumstances = struct {
         return .{ .value = PresentCircumstances{
             .lastTickDuration = PresentCircumstances_lastTickDuration,
             .lastMoveSucceeded = PresentCircumstances_lastMoveSucceeded,
+            .lastMoveValid = PresentCircumstances_lastMoveValid,
             .currentHitPoints = PresentCircumstances_currentHitPoints,
             .currentStatus = PresentCircumstances_currentStatus,
             .surroundings = PresentCircumstances_surroundings,
@@ -392,6 +405,7 @@ pub const PresentCircumstances = struct {
 
         local_offset += writeNumber(u32, local_offset, buffer, self.lastTickDuration);
         local_offset += writeNumber(bool, local_offset, buffer, self.lastMoveSucceeded);
+        local_offset += writeNumber(bool, local_offset, buffer, self.lastMoveValid);
         local_offset += writeNumber(u16, local_offset, buffer, self.currentHitPoints);
         local_offset += writeNumber(u8, local_offset, buffer, self.currentStatus);
         local_offset += writeList(u16, local_offset, buffer, self.surroundings);
@@ -483,6 +497,37 @@ pub const Move = struct {
         }
         local_offset += writeNumber(u8, local_offset, buffer, self.direction);
         local_offset += writeNumber(u8, local_offset, buffer, self.distance);
+
+        return local_offset - offset;
+    }
+};
+
+pub const Open = struct {
+    targetX: i16 = 0,
+    targetY: i16 = 0,
+
+    pub fn getSizeInBytes(self: *const Open) usize {
+        _ = self;
+        return 4;
+    }
+
+    pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: Open, bytes_read: usize } {
+        const Open_targetX = (try readNumber(i16, offset + 0, buffer)).value;
+        const Open_targetY = (try readNumber(i16, offset + 2, buffer)).value;
+        return .{ .value = Open{
+            .targetX = Open_targetX,
+            .targetY = Open_targetY,
+        }, .bytes_read = 4 };
+    }
+
+    pub fn writeBytes(self: *const Open, offset: usize, buffer: []u8, tag: bool) usize {
+        var local_offset = offset;
+
+        if (tag) {
+            local_offset += writeNumber(u8, local_offset, buffer, 7);
+        }
+        local_offset += writeNumber(i16, local_offset, buffer, self.targetX);
+        local_offset += writeNumber(i16, local_offset, buffer, self.targetY);
 
         return local_offset - offset;
     }

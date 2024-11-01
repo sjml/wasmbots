@@ -1,6 +1,7 @@
 ## dev
 * UI: 
     * redo bot panel:
+      * have it read the JSON file from the loader
       * small, with expandable console (w/copy button)
       * as many slots as max player count
       * maps specify min player count and max player count
@@ -9,8 +10,10 @@
       * add player image to panel once spawned
       * button (not hooked up for now) to zoom on particular bot
     * player dropping when bot selector changes
+* systems:
+    * rename Move to MoveTo
+    * set params handshake to use messages
 * map variations
-    * just hand-make a maze for now
     * add map parameter to embedded component
 * ability to zoom in and follow a single bot
 * testing

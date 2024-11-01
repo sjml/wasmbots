@@ -22,10 +22,12 @@ export class VisMap extends Phaser.Scene {
     preload() {}
 
     create() {
+        console.log(this.worldMap);
         const tm = this.make.tilemap({key: `map-${this.worldMap!.name}`});
-        const tmi = tm.addTilesetImage("KennyDungeonTiles", "tiles-dungeon")!;
-        this._backgroundLayer = tm.createLayer("terrain", tmi, 0, 0);
-        this._itemLayer = tm.createLayer("items", tmi, 0, 0);
+        const tmi1 = tm.addTilesetImage("KennyDungeonTiles", "tiles-dungeon")!;
+        const tmi2 = tm.addTilesetImage("Grayscale", "tiles-grayscale")!;
+        this._backgroundLayer = tm.createLayer("terrain", [tmi1, tmi2], 0, 0);
+        this._itemLayer = tm.createLayer("items", [tmi1, tmi2], 0, 0);
     }
 
     update() {

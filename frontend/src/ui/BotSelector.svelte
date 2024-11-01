@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
+    import { Loader } from "../engine";
 
     interface Props {
         chosen?: string;
@@ -7,7 +8,7 @@
 
     let botInfo: { [key: string]: any } = $state({});
     onMount(async () => {
-        const res = await fetch("./example_bots/bots.json", {cache: "no-cache"});
+        const res = await fetch("../example_bots/bots.json", {cache: "no-cache"});
         if (!res.ok) {
             console.error(`ERROR: Could not load bot list!: ${res.status} - ${res.statusText}`);
             return;

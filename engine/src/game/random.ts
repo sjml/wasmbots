@@ -75,11 +75,15 @@ export class RNG {
         return array;
     }
 
-    pick<T>(array: T[]): T | null {
+    pick<T>(array: T[]): T {
         if (array.length == 0) {
-            return null;
+            throw new Error("Cannot pick from empty array!");
         }
         return array[this.randInt(0, array.length)];
+    }
+
+    oneIn(chance: number): boolean {
+        return this.randInt(0, chance) == 0;
     }
 }
 

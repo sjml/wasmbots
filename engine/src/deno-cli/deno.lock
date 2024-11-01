@@ -3,6 +3,8 @@
   "specifiers": {
     "jsr:@std/assert@*": "1.0.6",
     "jsr:@std/internal@^1.0.4": "1.0.4",
+    "jsr:@std/path@*": "1.0.7",
+    "jsr:@std/path@^1.0.7": "1.0.7",
     "npm:pure-rand@6.1.0": "6.1.0"
   },
   "jsr": {
@@ -14,6 +16,9 @@
     },
     "@std/internal@1.0.4": {
       "integrity": "62e8e4911527e5e4f307741a795c0b0a9e6958d0b3790716ae71ce085f755422"
+    },
+    "@std/path@1.0.7": {
+      "integrity": "76a689e07f0e15dcc6002ec39d0866797e7156629212b28f27179b8a5c3b33a1"
     }
   },
   "npm": {
@@ -23,6 +28,7 @@
   },
   "workspace": {
     "dependencies": [
+      "jsr:@std/path@^1.0.7",
       "npm:pure-rand@6.1.0"
     ]
   }
