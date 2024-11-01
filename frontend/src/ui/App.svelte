@@ -6,12 +6,14 @@
     import Navbar from "./Navbar.svelte";
     import ToggleButton from "./ToggleButton.svelte";
     import FlowControl from "./FlowControl.svelte";
+    import MapSelector from "./MapSelector.svelte";
 
     import { type WasmBotsState } from "../state.svelte";
 
     const gameState: WasmBotsState = $state({
         world: null,
         players: [],
+        selectedMapName: "arena",
         vis: null,
     });
     setContext("gameState", gameState);
@@ -81,6 +83,10 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M136,40V216a8,8,0,0,1-16,0V40a8,8,0,0,1,16,0ZM69.66,90.34a8,8,0,0,0-11.32,11.32L76.69,120H16a8,8,0,0,0,0,16H76.69L58.34,154.34a8,8,0,0,0,11.32,11.32l32-32a8,8,0,0,0,0-11.32ZM240,120H179.31l18.35-18.34a8,8,0,0,0-11.32-11.32l-32,32a8,8,0,0,0,0,11.32l32,32a8,8,0,0,0,11.32-11.32L179.31,136H240a8,8,0,0,0,0-16Z"></path></svg>
                 </button>
             {/if}
+            <div class="divider"></div>
+        {/if}
+        {#if gameState.world }
+            <MapSelector />
             <div class="divider"></div>
         {/if}
         {#if gameState.world }

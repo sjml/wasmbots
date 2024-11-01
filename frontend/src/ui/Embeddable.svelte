@@ -13,6 +13,7 @@
     const gameState: WasmBotsState = $state({
         world: null,
         players: [],
+        selectedMapName: "arena",
         vis: null,
     });
     setContext("gameState", gameState);
