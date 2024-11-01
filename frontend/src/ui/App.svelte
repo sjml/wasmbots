@@ -1,24 +1,23 @@
 <script lang="ts">
     import { onMount, setContext } from "svelte";
 
-    import WorldCanvas from "./WorldCanvas.svelte";
-    import BotPanel from "./BotPanel.svelte";
     import Navbar from "./Navbar.svelte";
     import ToggleButton from "./ToggleButton.svelte";
     import FlowControl from "./FlowControl.svelte";
     import MapSelector from "./MapSelector.svelte";
+    import WorldCanvas from "./WorldCanvas.svelte";
+
+    import DrawerPanel from "./DrawerPanel.svelte";
+    import BotSlotList from "./BotSlotList.svelte";
 
     import { type WasmBotsState } from "../state.svelte";
 
     const gameState: WasmBotsState = $state({
         world: null,
         players: [],
-        selectedMapName: "arena",
         vis: null,
     });
     setContext("gameState", gameState);
-
-
 
     let leftPanelVisible = $state(false);
     let rightPanelVisible = $state(false);
@@ -27,7 +26,7 @@
     onMount(() => {
         if (!isSmallScreen) {
             leftPanelVisible = true;
-            rightPanelVisible = true;
+            rightPanelVisible = false;
         }
 
         window.addEventListener("resize", updatePanelState);
@@ -67,13 +66,15 @@
 
 <svelte:window bind:innerWidth={windowWidth} />
 
-<BotPanel side="left"  isOpened={leftPanelVisible } />
-<BotPanel side="right" isOpened={rightPanelVisible} />
+<DrawerPanel side="left" isOpened={leftPanelVisible}>
+    <BotSlotList />
+</DrawerPanel>
+<!-- <DrawerPanel side="right" isOpened={rightPanelVisible} /> -->
 <div class="appContainer">
     <Navbar>
         <ToggleButton side="left"  isOpened={leftPanelVisible } toggle={togglePanel} />
         <div class="spacer"></div>
-        {#if !isSmallScreen}
+        <!-- {#if !isSmallScreen}
             {#if leftPanelVisible && rightPanelVisible}
                 <button class="navBarButton" onclick={() => {leftPanelVisible = rightPanelVisible = false;}} aria-label="Close both side panels">
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M136,40V216a8,8,0,0,1-16,0V40a8,8,0,0,1,16,0ZM96,120H35.31l18.35-18.34A8,8,0,0,0,42.34,90.34l-32,32a8,8,0,0,0,0,11.32l32,32a8,8,0,0,0,11.32-11.32L35.31,136H96a8,8,0,0,0,0-16Zm149.66,2.34-32-32a8,8,0,0,0-11.32,11.32L220.69,120H160a8,8,0,0,0,0,16h60.69l-18.35,18.34a8,8,0,0,0,11.32,11.32l32-32A8,8,0,0,0,245.66,122.34Z"></path></svg>
@@ -84,12 +85,10 @@
                 </button>
             {/if}
             <div class="divider"></div>
-        {/if}
+        {/if} -->
         {#if gameState.world }
             <MapSelector />
             <div class="divider"></div>
-        {/if}
-        {#if gameState.world }
             <FlowControl />
         {/if}
         <div class="divider"></div>
@@ -99,7 +98,7 @@
             </a>
         </div>
         <div class="spacer"></div>
-        <ToggleButton side="right" isOpened={rightPanelVisible} toggle={togglePanel} />
+        <!-- <ToggleButton side="right" isOpened={rightPanelVisible} toggle={togglePanel} /> -->
     </Navbar>
     <WorldCanvas/>
 </div>

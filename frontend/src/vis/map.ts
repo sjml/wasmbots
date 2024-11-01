@@ -9,12 +9,12 @@ export class VisMap extends Phaser.Scene {
     private _itemLayer: Phaser.Tilemaps.TilemapLayer | null = null;
     playerList: VisPlayer[] = [];
 
-    private constructor() {
-        super("MapScene");
+    private constructor(key: string) {
+        super(key);
     }
 
     static async loadFrom(name: string): Promise<VisMap> {
-        const ms = new VisMap();
+        const ms = new VisMap(`${name}_Scene`);
         ms.worldMap = await WorldMap.loadTiled(name);
         return ms;
     }

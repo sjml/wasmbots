@@ -12,7 +12,6 @@
     const gameState: WasmBotsState = $state({
         world: null,
         players: [],
-        selectedMapName: "arena",
         vis: null,
     });
     setContext("gameState", gameState);
@@ -76,6 +75,9 @@
     .trainer {
         width: 100vw;
         height: 100%;
+    }
+    a, a:visited {
+        color: white;
     }
     .gameRow {
         height: 50vh;

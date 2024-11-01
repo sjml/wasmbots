@@ -8,12 +8,14 @@
 
     let selectorVisible = $state(false);
     let button: HTMLButtonElement;
-    // svelte-ignore non_reactive_update
-    let dropdown: HTMLDivElement;
+    let dropdown: HTMLDivElement | null = $state(null);
 
+    let selectedMapName: string = $state("");
     function selectMap(mapName: string) {
-        gameState.selectedMapName = mapName;
+        selectedMapName = mapName;
         selectorVisible = false;
+
+        gameState.world!.setMap(selectedMapName);
     }
 
     function outsideClick(event: MouseEvent) {
@@ -35,9 +37,16 @@
     });
 
     let iAmEnabled = $state(true);
-    onMount(() => {
-        gameState.world?.on("gameStateChange", (evt) => {
+    $effect(() => {
+        if (gameState.world === null) return;
+
+        gameState.world.on("gameStateChange", (evt) => {
             iAmEnabled = evt.detail.newState <= GameState.Ready;
+        });
+        gameState.world.on("mapChanged", (evt) => {
+            if (selectedMapName.length == 0) {
+                selectedMapName = evt.detail.newMap.name;
+            }
         });
     });
 </script>
@@ -55,7 +64,7 @@
                         type="radio"
                         name="mapSelection"
                         value={mapName}
-                        checked={mapName === gameState.selectedMapName}
+                        checked={mapName === selectedMapName}
                         onchange={() => selectMap(mapName)}
                     />
                     {mapName}

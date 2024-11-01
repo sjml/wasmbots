@@ -8,6 +8,7 @@ import { VisMap } from "./map";
 import { VisBootloader } from "./bootloader";
 import { VisPlayer, PlayerFacing } from "./player";
 import { VisEventBus } from "./events";
+import type { WorldMap } from "../engine";
 
 export class WasmBotsVisualizer extends Phaser.Game {
     private _booloaderPromise: Promise<void>;
@@ -16,6 +17,7 @@ export class WasmBotsVisualizer extends Phaser.Game {
     private _currentMapScene?: VisMap;
     visualRNG: RNG = new RNG(null);
     worldObject: World;
+    playerList: VisPlayer[] = [];
 
     constructor(parentDiv: HTMLDivElement, world: World) {
         super({
@@ -37,6 +39,15 @@ export class WasmBotsVisualizer extends Phaser.Game {
         });
 
         this.worldObject = world;
+        this.worldObject.on("mapChanged", (evt) => {
+            this.loadMap(evt.detail.newMap);
+        });
+        this.worldObject.on("playerAdded", (evt) => {
+            this.addPlayer(evt.detail.newPlayer);
+        });
+        this.worldObject.on("playerDropped", (evt) => {
+            this.dropPlayer(evt.detail.leavingPlayer);
+        })
 
         this._booloaderPromise = new Promise<void>((resolve, reject) => {
             this._bootloaderResolve = resolve;
@@ -46,7 +57,7 @@ export class WasmBotsVisualizer extends Phaser.Game {
         VisEventBus.on("bootloader-done", () => {
             this._bootloaderResolve();
         });
-        VisEventBus.on("bootloder-error", () => {
+        VisEventBus.on("bootloader-error", () => {
             this._bootloaderReject();
         });
     }
@@ -55,13 +66,20 @@ export class WasmBotsVisualizer extends Phaser.Game {
         return this._booloaderPromise;
     }
 
-    async loadMap(mapName: string) {
-        this._currentMapScene = await VisMap.loadFrom(mapName);
-        this.worldObject.setMap(this._currentMapScene.worldMap!);
-        this.scene.add(`${mapName}_Scene`, this._currentMapScene, true);
+    async loadMap(map: WorldMap) {
+        const newScene = await VisMap.loadFrom(map.name);
+        if (this._currentMapScene) {
+            this.scene.remove(`${this._currentMapScene.worldMap!.name}_Scene`);
+        }
+        this._currentMapScene = newScene;
+        this.scene.add(`${map.name}_Scene`, this._currentMapScene, true);
     }
 
     async addPlayer(p: WorldPlayer) {
         const pvis = new VisPlayer(this._currentMapScene!, p);
+    }
+
+    async dropPlayer(p: WorldPlayer) {
+
     }
 }

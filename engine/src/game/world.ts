@@ -8,7 +8,7 @@ import * as CoreMsg from "../core/messages.ts";
 //   but not testing that at all, so probably some lurking bugs
 //   for > 2 players.
 const MIN_PLAYERS = 1;
-const MAX_PLAYERS = 2;
+const MAX_PLAYERS = 10;
 
 export enum Direction {
     East,
@@ -43,12 +43,13 @@ type WorldEvents = {
     gameStateChange: { newState: GameState, oldState: GameState };
     playerAdded: { newPlayer: Player };
     playerDropped: { leavingPlayer: Player };
+    mapChanged: { newMap: WorldMap };
 }
 
 export class World extends EventTarget {
     private _gameState: GameState = GameState.Setup;
     private _players: (Player|null)[] = Array(MAX_PLAYERS).fill(null);
-    private _currentMap: WorldMap | null;
+    currentMap: WorldMap | null;
     rng: RNG;
     private _spawnPointDeck: Deck<Point>;
 
@@ -56,7 +57,7 @@ export class World extends EventTarget {
         super();
         this.rng = new RNG(randomSeed);
         this._spawnPointDeck = new Deck([{x: -1, y: -1}], this.rng);
-        this._currentMap = null;
+        this.currentMap = null;
     }
 
     emit<K extends keyof WorldEvents>(
@@ -126,13 +127,15 @@ export class World extends EventTarget {
         return this._players.filter(p => p != null).length;
     }
 
-    setMap(map: WorldMap) {
-        if (this._gameState > GameState.Setup) {
+    async setMap(mapName: string) {
+        if (this._gameState > GameState.Ready) {
             throw new Error("Cannot change map after game start!");
         }
-        this._currentMap = map;
-        this._spawnPointDeck = new Deck(this._currentMap.spawnPoints, this.rng);
 
+        this.currentMap = await WorldMap.loadTiled(mapName);
+        this.emit("mapChanged", { newMap: this.currentMap });
+
+        this._spawnPointDeck = new Deck(this.currentMap.spawnPoints, this.rng);
         this.checkReady();
     }
 
@@ -146,7 +149,7 @@ export class World extends EventTarget {
     }
 
     isReadyToStart(): boolean {
-        return (this.playerCount >= MIN_PLAYERS) && (this._currentMap != null);
+        return (this.playerCount >= MIN_PLAYERS) && (this.currentMap != null);
     }
 
     startGame() {
@@ -233,7 +236,7 @@ export class World extends EventTarget {
                     x: player.location.x + offset.x,
                     y: player.location.y + offset.y,
                 };
-                const peek = this._currentMap!.getTile(peekLoc.x, peekLoc.y);
+                const peek = this.currentMap!.getTile(peekLoc.x, peekLoc.y);
                 if (peek == TileType.Wall) {
                     return false;
                 }

@@ -6,7 +6,6 @@ import { WasmBotsVisualizer } from "./vis/game";
 export interface WasmBotsState {
     world: World|null;
     players: Player[];
-    selectedMapName: string;
 
     vis: WasmBotsVisualizer|null;
 }
