@@ -5,6 +5,9 @@
 * toast messages / notifications
   * like for player registration failure that right now just prints to console
 * distribute the min tick across # of players?
+* why are we missing initial message in console?
+* rethink keeping nulls in the world player list -- more hassle than it's worth
+* CSS: when console gets wide it overflows the drawer
 * world setup
   * should be:
     * ✅ world created in setup mode
@@ -13,20 +16,19 @@
       * ✅ notifies worldvis (emits event)
     * ✅ player added to world
       * ✅ notifies worldvis (emits event)
-        * worldvis tracks playervisses
-          * map has to also?
+        * ✅ worldvis tracks playervisses
     * map change:
-      * world removes random players who exceed max count of new map
-        * notifies worldvis (emit)
-      * world resets remaining players
-        * notifies worldvis (emit)
+      * ✅ world drops random players who exceed max count of new map
+        * ✅ notifies worldvis (emit)
+      * ✅ world resets remaining players
+        * ✅ notifies worldvis (emit)
       * ✅ change map
         * ✅ notify worldvis (emit)
         * worldvis:
-          * remove playervisses from existing map scene
+          * ✅ remove playervisses from existing map scene
           * ✅ kill map scene
           * ✅ new map scene
-          * re-add playervisses
+          * ✅ re-add playervisses
     * once game is >= running
       * ✅ map cannot change
       * players cannot be added
@@ -38,7 +40,7 @@
         * reset players (emit)
   * botslot ui needs to respond to registration failure
 * maps
-    * right now max players is just number of spawn points, but read custom property from map file
+    * right now max players is just `spawnPoints.length`, but read custom property from map file
 * UI: 
     * redo bot panel:
       * have it read the JSON file from the loader

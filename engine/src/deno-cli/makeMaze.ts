@@ -211,7 +211,7 @@ function generate(mapWidth: number, mapHeight: number, rng?: RNG): Array2D<TileT
                     dir = lastDir;
                 }
                 else {
-                    dir = rng!.pick(unmadeCells);
+                    dir = rng!.pickOne(unmadeCells);
                 }
 
                 carve(cell.advance(dir!));
@@ -261,7 +261,7 @@ function generate(mapWidth: number, mapHeight: number, rng?: RNG): Array2D<TileT
 
         // keep connecting regions until we're down to one
         while (openRegions.size > 1) {
-            const connector = rng!.pick(connectors);
+            const connector = rng!.pickOne(connectors);
 
             addJunction(connector);
 
@@ -350,7 +350,7 @@ function generate(mapWidth: number, mapHeight: number, rng?: RNG): Array2D<TileT
         const rectangularity = rng.randInt(0, 1 + Math.floor(size/2)) * 2;
         let roomWidth = size;
         let roomHeight = size;
-        if (rng.pick([0,1]) == 0) {
+        if (rng.pickOne([0,1]) == 0) {
             roomWidth += rectangularity;
         }
         else {

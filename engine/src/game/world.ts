@@ -148,11 +148,31 @@ export class World extends EventTarget {
         const newMap = await WorldMap.loadTiled(mapName);
 
         // handle potential player changes
+        if (this.currentMap) {
+            const diff = this.playerCount - newMap.spawnPoints.length;
+            if (diff > 0) {
+                console.log(`dropping ${diff} players...`);
+                const booted = this.rng.pick(this._players.filter(p => p != null), diff);
+                for (const b of booted) {
+                    this.dropPlayer(b);
+                }
+            }
+        }
 
         this.currentMap = newMap;
         this.emit("mapChanged", { newMap: this.currentMap });
 
         this._spawnPointDeck = new Deck(this.currentMap.spawnPoints, this.rng);
+
+        for (const p of this._players.filter(p => p != null)) {
+            p.reset();
+            const loc = this._spawnPointDeck.drawNoReshuffle();
+            if (loc == null) {
+                throw new Error(`Not enough spawn points in map for ${this.playerCount} players!`);
+            }
+            p.location = loc;
+        }
+
         this.checkReady();
     }
 

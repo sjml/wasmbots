@@ -73,13 +73,28 @@ export class WasmBotsVisualizer extends Phaser.Game {
         }
         this._currentMapScene = newScene;
         this.scene.add(`${map.name}_Scene`, this._currentMapScene, true);
+
+        const playerObjects = this.playerList.map(vp => vp.playerObject);
+        this.playerList.map(vp => vp.destroy());
+        this.playerList = [];
+        for (const p of playerObjects) {
+            this.addPlayer(p);
+        }
     }
 
     async addPlayer(p: WorldPlayer) {
         const pvis = new VisPlayer(this._currentMapScene!, p);
+        this.playerList.push(pvis);
     }
 
     async dropPlayer(p: WorldPlayer) {
+        const pidx = this.playerList.findIndex(pvis => pvis.playerObject === p);
+        if (pidx < 0) {
+            throw new Error(`Visualization couldn't find VisPlayer matching ${p}`)
+        }
+        const vp = this.playerList[pidx];
+        this.playerList.splice(pidx, 1);
 
+        vp.destroy();
     }
 }

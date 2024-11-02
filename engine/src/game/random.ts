@@ -75,11 +75,29 @@ export class RNG {
         return array;
     }
 
-    pick<T>(array: T[]): T {
+    pickOne<T>(array: T[]): T {
         if (array.length == 0) {
             throw new Error("Cannot pick from empty array!");
         }
         return array[this.randInt(0, array.length)];
+    }
+
+    pick<T>(array: T[], count: number): T[] {
+        if (array.length == 0) {
+            throw new Error("Cannot pick from empty array!");
+        }
+        if (count < 0) {
+            throw new Error("Cannot pick negative count!");
+        }
+        if (count == 0) {
+            return [];
+        }
+        const subset: T[] = array.slice();
+        if (count >= array.length) {
+            return subset;
+        }
+        this.shuffle(subset);
+        return subset.slice(0, count);
     }
 
     oneIn(chance: number): boolean {

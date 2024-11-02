@@ -39,8 +39,7 @@ export class VisPlayer extends Phaser.GameObjects.Sprite {
             this.setFacing(PlayerFacing.Right);
         }
 
-        mapScene.add.existing(this);
-        mapScene.playerList.push(this);
+        mapScene.addPlayer(this);
     }
 
     setFacing(facing: PlayerFacing) {

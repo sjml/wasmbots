@@ -7,7 +7,7 @@ export class VisMap extends Phaser.Scene {
     worldMap?: WorldMap;
     private _backgroundLayer: Phaser.Tilemaps.TilemapLayer | null = null;
     private _itemLayer: Phaser.Tilemaps.TilemapLayer | null = null;
-    playerList: VisPlayer[] = [];
+    playerList: Set<VisPlayer> = new Set();
 
     private constructor(key: string) {
         super(key);
@@ -32,7 +32,16 @@ export class VisMap extends Phaser.Scene {
 
     update() {
         for (const p of this.playerList) {
-            p.update();
+            if (p.update) {
+                p.update();
+            }
         }
+    }
+
+    addPlayer(p: VisPlayer) {
+        this.playerList.add(p);
+        this.add.existing(p);
+
+        p.once("destroy", () => {this.playerList.delete(p)});
     }
 }
