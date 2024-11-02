@@ -1,10 +1,10 @@
 <script lang="ts">
     import { onMount, getContext } from "svelte";
 
-    import { type WasmBotsState } from "../state.svelte";
     import { GameState } from "../engine/game/world";
     let currentGameState: GameState = $state(GameState.Setup);
 
+    import { type WasmBotsState } from "../types.svelte";
     const gameState: WasmBotsState = getContext("gameState");
 
     let playButtonVisible: boolean = $state(true);

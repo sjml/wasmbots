@@ -2,7 +2,7 @@
     import { getContext, onMount } from "svelte";
     import { Config } from "../engine";
 
-    import { type WasmBotsState } from "../state.svelte";
+    import { type WasmBotsState } from "../types.svelte";
     import { GameState } from "../engine/game/world";
     const gameState: WasmBotsState = getContext("gameState");
 

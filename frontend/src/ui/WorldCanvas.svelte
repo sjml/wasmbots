@@ -5,7 +5,7 @@
     import { World } from "../engine/game/world";
     import { WasmBotsVisualizer } from "../vis/game";
 
-    import { type WasmBotsState } from "../state.svelte";
+    import { type WasmBotsState } from "../types.svelte";
     const gameState: WasmBotsState = getContext("gameState");
 
     let parentDiv: HTMLDivElement;

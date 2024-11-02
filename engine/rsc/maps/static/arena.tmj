@@ -52,7 +52,7 @@
          "width":64,
          "x":0,
          "y":0
-        }, 
+        },
         {
          "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -103,7 +103,7 @@
          "width":64,
          "x":0,
          "y":0
-        }, 
+        },
         {
          "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -163,11 +163,11 @@
          "name":"maxPlayers",
          "type":"int",
          "value":6
-        }, 
+        },
         {
          "name":"minPlayers",
          "type":"int",
-         "value":1
+         "value":2
         }],
  "renderorder":"right-down",
  "tiledversion":"1.11.0",
@@ -188,286 +188,286 @@
                 {
                  "id":0,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":1,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":2,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":3,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":4,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":5,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":6,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":7,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":8,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":12,
                  "probability":0.0299999993294477,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":13,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":14,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":15,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":16,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":17,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":18,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":19,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":20,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":24,
                  "probability":0.0500000007450581,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":25,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":26,
                  "probability":0.0500000007450581,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":27,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":28,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":29,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":30,
                  "type":"Empty"
-                }, 
+                },
                 {
                  "id":31,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":32,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":40,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":41,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":42,
                  "probability":0.00800000037997961,
                  "type":"Empty"
-                }, 
+                },
                 {
                  "id":43,
                  "type":"Empty"
-                }, 
+                },
                 {
                  "id":44,
                  "type":"Empty"
-                }, 
+                },
                 {
                  "id":45,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":46,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":47,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":48,
                  "type":"Empty"
-                }, 
+                },
                 {
                  "id":49,
                  "probability":0.0199999995529652,
                  "type":"Empty"
-                }, 
+                },
                 {
                  "id":50,
                  "type":"Empty"
-                }, 
+                },
                 {
                  "id":51,
                  "probability":0.150000005960464,
                  "type":"Empty"
-                }, 
+                },
                 {
                  "id":52,
                  "type":"Empty"
-                }, 
+                },
                 {
                  "id":53,
                  "type":"Empty"
-                }, 
+                },
                 {
                  "id":57,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":58,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":59,
                  "type":"Wall"
-                }, 
+                },
                 {
                  "id":60,
                  "type":"SpawnPoint"
-                }, 
+                },
                 {
                  "id":65,
                  "type":"Tombstone"
-                }, 
+                },
                 {
                  "id":84,
                  "type":"Player"
-                }, 
+                },
                 {
                  "id":89,
                  "type":"Chest"
-                }, 
+                },
                 {
                  "id":101,
                  "type":"Shield"
-                }, 
+                },
                 {
                  "id":102,
                  "type":"Shield"
-                }, 
+                },
                 {
                  "id":103,
                  "type":"Weapon"
-                }, 
+                },
                 {
                  "id":104,
                  "type":"Weapon"
-                }, 
+                },
                 {
                  "id":105,
                  "type":"Weapon"
-                }, 
+                },
                 {
                  "id":106,
                  "type":"Weapon"
-                }, 
+                },
                 {
                  "id":107,
                  "type":"Weapon"
-                }, 
+                },
                 {
                  "id":111,
                  "type":"Player"
-                }, 
+                },
                 {
                  "id":113,
                  "type":"Potion"
-                }, 
+                },
                 {
                  "id":114,
                  "type":"Potion"
-                }, 
+                },
                 {
                  "id":115,
                  "type":"Potion"
-                }, 
+                },
                 {
                  "id":116,
                  "type":"Potion"
-                }, 
+                },
                 {
                  "id":117,
                  "type":"Weapon"
-                }, 
+                },
                 {
                  "id":118,
                  "type":"Weapon"
-                }, 
+                },
                 {
                  "id":119,
                  "type":"Weapon"
-                }, 
+                },
                 {
                  "id":125,
                  "type":"Potion"
                 },
-            
+
                 {
                  "id":126,
                  "type":"Potion"
-                }, 
+                },
                 {
                  "id":127,
                  "type":"Potion"
-                }, 
+                },
                 {
                  "id":128,
                  "type":"Potion"
-                }, 
+                },
                 {
                  "id":129,
                  "type":"Wand"
-                }, 
+                },
                 {
                  "id":130,
                  "type":"Wand"
-                }, 
+                },
                 {
                  "id":131,
                  "type":"Wand"

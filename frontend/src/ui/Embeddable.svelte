@@ -4,7 +4,7 @@
     import { onMount, setContext } from "svelte";
 
     import WorldCanvas from "./WorldCanvas.svelte";
-    import { type WasmBotsState } from "../state.svelte";
+    import { type WasmBotsState } from "../types.svelte";
 
     import { Loader, Logger } from "../engine";
     import { Player } from "../engine/game/player";
@@ -12,7 +12,6 @@
 
     const gameState: WasmBotsState = $state({
         world: null,
-        players: [],
         vis: null,
     });
     setContext("gameState", gameState);

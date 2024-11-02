@@ -10,11 +10,10 @@
     import DrawerPanel from "./DrawerPanel.svelte";
     import BotSlotList from "./BotSlotList.svelte";
 
-    import { type WasmBotsState } from "../state.svelte";
+    import { type WasmBotsState } from "../types.svelte";
 
     const gameState: WasmBotsState = $state({
         world: null,
-        players: [],
         vis: null,
     });
     setContext("gameState", gameState);

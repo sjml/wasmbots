@@ -41,6 +41,7 @@ export enum GameState {
 
 type WorldEvents = {
     gameStateChange: { newState: GameState, oldState: GameState };
+    playerRegisterError: { rejectedPlayer: Player, reason: string; };
     playerAdded: { newPlayer: Player };
     playerDropped: { leavingPlayer: Player };
     mapChanged: { newMap: WorldMap };
@@ -87,7 +88,11 @@ export class World extends EventTarget {
 
     registerPlayer(newPlayer: Player) {
         if (this._players.includes(newPlayer)) {
-            throw new Error("Player already registered!");
+            this.emit("playerRegisterError", {
+                rejectedPlayer: newPlayer,
+                reason: "Player already registered!",
+            });
+            return;
         }
         let registered = false;
         for (let i=0; i < MAX_PLAYERS; i++) {
@@ -98,12 +103,20 @@ export class World extends EventTarget {
             }
         }
         if (!registered) {
-            throw new Error("Cannot register more than two players!");
+            this.emit("playerRegisterError", {
+                rejectedPlayer: newPlayer,
+                reason: "Cannot register more than two players!",
+            });
+            return;
         }
 
         const loc = this._spawnPointDeck.drawNoReshuffle();
         if (loc == null) {
-            throw new Error(`Not enough spawn points in map for ${this.playerCount} players!`);
+            this.emit("playerRegisterError", {
+                rejectedPlayer: newPlayer,
+                reason: `Not enough spawn points in map for ${this.playerCount} players!`,
+            });
+            return;
         }
         newPlayer.location = loc;
 
@@ -132,7 +145,11 @@ export class World extends EventTarget {
             throw new Error("Cannot change map after game start!");
         }
 
-        this.currentMap = await WorldMap.loadTiled(mapName);
+        const newMap = await WorldMap.loadTiled(mapName);
+
+        // handle potential player changes
+
+        this.currentMap = newMap;
         this.emit("mapChanged", { newMap: this.currentMap });
 
         this._spawnPointDeck = new Deck(this.currentMap.spawnPoints, this.rng);

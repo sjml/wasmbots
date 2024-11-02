@@ -20,26 +20,25 @@
         height: 100%;
         width: 450px;
         max-width: calc(100% - 60px);
-        background-color: rgb(0, 0, 0, 0.7);
+        background-color: rgb(0, 0, 0);
         color: white;
-        padding-top: 70px;
+        padding-top: 50px;
 
         transition: transform 0.3s ease;
-        overflow-y: hidden;
+        overflow-y: auto;
         font-size: calc(15px + 0.5vw);
 
+        opacity: 0.8;
         z-index: 15;
     }
 
     .leftPanel {
         left: 0;
         transform: translateX(-100%);
-        padding-right: 20px;
     }
     .rightPanel {
         right: 0;
         transform: translateX(100%);
-        padding-left: 20px;
     }
     .drawerPanel.panelOpened {
         transform: translateX(0);

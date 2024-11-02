@@ -5,18 +5,17 @@
     import WorldCanvas from "./WorldCanvas.svelte";
     import FlowControl from "./FlowControl.svelte";
 
-    import { type WasmBotsState } from "../state.svelte";
+    import { type WasmBotsState } from "../types.svelte";
     import { Player } from "../engine/game/player";
     import * as CoreMsg from "../engine/core/messages";
 
     const gameState: WasmBotsState = $state({
         world: null,
-        players: [],
         vis: null,
     });
     setContext("gameState", gameState);
 
-    let player: Player|null = $derived(gameState.players.length > 0 ? gameState.players[0] : null);
+    let player: Player|null = $state(null);
 </script>
 
 <Navbar>
@@ -38,7 +37,7 @@
         <div class="playerInfo">
             {#if player}
                 <ul>
-                    <li><strong>Hit Points:</strong>{player.hitPoints}</li>
+                    <!-- <li><strong>Hit Points:</strong>{player.hitPoints}</li> -->
                 </ul>
             {:else}
             <div class="emptyPlayer">

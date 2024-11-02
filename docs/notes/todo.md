@@ -1,14 +1,20 @@
 ## dev
+* modify handshake expectations (engine and libraries and modules)
+  * <sigh>
+  * hopefully this is not a thing that will change a lot
+* toast messages / notifications
+  * like for player registration failure that right now just prints to console
+* distribute the min tick across # of players?
 * world setup
   * should be:
     * ✅ world created in setup mode
     * ✅ worldvis attached
     * ✅ map set on world
       * ✅ notifies worldvis (emits event)
-    * player added to world
-      * notifies worldvis (emits event)
+    * ✅ player added to world
+      * ✅ notifies worldvis (emits event)
         * worldvis tracks playervisses
-          * map has to also
+          * map has to also?
     * map change:
       * world removes random players who exceed max count of new map
         * notifies worldvis (emit)
@@ -30,6 +36,7 @@
       * only available on stopped game
       * sends back to setup
         * reset players (emit)
+  * botslot ui needs to respond to registration failure
 * maps
     * right now max players is just number of spawn points, but read custom property from map file
 * UI: 

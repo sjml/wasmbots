@@ -5,6 +5,7 @@
     interface Props {
         chosen?: string;
     }
+    let { chosen = $bindable("") }: Props = $props();
 
     let botInfo: { [key: string]: any } = $state({});
     onMount(async () => {
@@ -16,7 +17,6 @@
         botInfo = await res.json();
     });
 
-    let { chosen = $bindable("") }: Props = $props();
     let botData = $derived(chosen in botInfo ? botInfo[chosen] : null);
 </script>
 
@@ -29,19 +29,8 @@
     {/each}
 </select>
 
-<div class="botInfo">
-    {#if botData}
-        <strong>Bot Name:</strong> {botData.name} (<a href={botData.source} target="_blank">src</a>)
-    {:else}
-        <br>
-    {/if}
-</div>
-
 <style>
     .botSelector {
-        margin-bottom: 10px;
-    }
-    .botInfo   {
         margin-bottom: 10px;
     }
 </style>
