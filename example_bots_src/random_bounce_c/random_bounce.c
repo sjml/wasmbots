@@ -30,7 +30,7 @@ void* clientTick(WasmBotsMessage_PresentCircumstances* circumstances) {
         wsmbt_logf("choosing new direction: %d", CURRENT_DIR);
     }
 
-    WasmBotsMessage_Move* move = WasmBotsMessage_Move_Create();
+    WasmBotsMessage_MoveTo* move = WasmBotsMessage_MoveTo_Create();
     move->direction = (uint8_t)CURRENT_DIR;
     move->distance = 1;
 

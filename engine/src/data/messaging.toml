@@ -40,12 +40,17 @@ _name = "Wait"
 _name = "Resign"
 
 [[messages]]
-_name = "Move"
+_name = "MoveTo"
 direction = "byte"
 distance = "byte"
 
 [[messages]]
 _name = "Open"
+targetX = "int16"
+targetY = "int16"
+
+[[messages]]
+_name = "Close"
 targetX = "int16"
 targetY = "int16"
 

@@ -74,8 +74,9 @@ typedef enum {
     WasmBotsMessage_MessageType_PresentCircumstances = 3,
     WasmBotsMessage_MessageType_Wait = 4,
     WasmBotsMessage_MessageType_Resign = 5,
-    WasmBotsMessage_MessageType_Move = 6,
-    WasmBotsMessage_MessageType_Open = 7
+    WasmBotsMessage_MessageType_MoveTo = 6,
+    WasmBotsMessage_MessageType_Open = 7,
+    WasmBotsMessage_MessageType_Close = 8
 } WasmBotsMessage_MessageType;
 
 WasmBotsMessage_MessageType WasmBotsMessage_GetMessageType(const void* m);
@@ -163,14 +164,14 @@ typedef struct {
     WasmBotsMessage_MessageType _mt;
     uint8_t direction;
     uint8_t distance;
-} WasmBotsMessage_Move;
-extern const WasmBotsMessage_Move WasmBotsMessage_Move_default;
+} WasmBotsMessage_MoveTo;
+extern const WasmBotsMessage_MoveTo WasmBotsMessage_MoveTo_default;
 
-WasmBotsMessage_err_t WasmBotsMessage_Move_WriteBytes(WasmBotsMessage_DataAccess* w, const WasmBotsMessage_Move* src, bool tag);
-WasmBotsMessage_err_t WasmBotsMessage_Move_FromBytes(WasmBotsMessage_DataAccess* r, WasmBotsMessage_Move* dst);
-WasmBotsMessage_err_t WasmBotsMessage_Move_GetSizeInBytes(const WasmBotsMessage_Move* m, size_t* size);
-WasmBotsMessage_Move* WasmBotsMessage_Move_Create(void);
-void WasmBotsMessage_Move_Destroy(WasmBotsMessage_Move *m);
+WasmBotsMessage_err_t WasmBotsMessage_MoveTo_WriteBytes(WasmBotsMessage_DataAccess* w, const WasmBotsMessage_MoveTo* src, bool tag);
+WasmBotsMessage_err_t WasmBotsMessage_MoveTo_FromBytes(WasmBotsMessage_DataAccess* r, WasmBotsMessage_MoveTo* dst);
+WasmBotsMessage_err_t WasmBotsMessage_MoveTo_GetSizeInBytes(const WasmBotsMessage_MoveTo* m, size_t* size);
+WasmBotsMessage_MoveTo* WasmBotsMessage_MoveTo_Create(void);
+void WasmBotsMessage_MoveTo_Destroy(WasmBotsMessage_MoveTo *m);
 
 
 typedef struct {
@@ -185,6 +186,20 @@ WasmBotsMessage_err_t WasmBotsMessage_Open_FromBytes(WasmBotsMessage_DataAccess*
 WasmBotsMessage_err_t WasmBotsMessage_Open_GetSizeInBytes(const WasmBotsMessage_Open* m, size_t* size);
 WasmBotsMessage_Open* WasmBotsMessage_Open_Create(void);
 void WasmBotsMessage_Open_Destroy(WasmBotsMessage_Open *m);
+
+
+typedef struct {
+    WasmBotsMessage_MessageType _mt;
+    int16_t targetX;
+    int16_t targetY;
+} WasmBotsMessage_Close;
+extern const WasmBotsMessage_Close WasmBotsMessage_Close_default;
+
+WasmBotsMessage_err_t WasmBotsMessage_Close_WriteBytes(WasmBotsMessage_DataAccess* w, const WasmBotsMessage_Close* src, bool tag);
+WasmBotsMessage_err_t WasmBotsMessage_Close_FromBytes(WasmBotsMessage_DataAccess* r, WasmBotsMessage_Close* dst);
+WasmBotsMessage_err_t WasmBotsMessage_Close_GetSizeInBytes(const WasmBotsMessage_Close* m, size_t* size);
+WasmBotsMessage_Close* WasmBotsMessage_Close_Create(void);
+void WasmBotsMessage_Close_Destroy(WasmBotsMessage_Close *m);
 
 
 // end of struct/message declarations
@@ -429,7 +444,7 @@ WasmBotsMessage_err_t WasmBotsMessage__WriteString(WasmBotsMessage_DataAccess *w
 WasmBotsMessage_MessageType WasmBotsMessage_GetMessageType(const void* m) {
     const uint8_t* buffer = (const uint8_t*)m;
     uint8_t msgType = buffer[0];
-    if (msgType > 7) {
+    if (msgType > 8) {
         return WasmBotsMessage_MessageType___NullMessage;
     }
     return (WasmBotsMessage_MessageType)msgType;
@@ -451,10 +466,12 @@ WasmBotsMessage_err_t WasmBotsMessage_GetSizeInBytes(const void* m, size_t* len)
         return WasmBotsMessage_Wait_GetSizeInBytes((const WasmBotsMessage_Wait*)m, len);
     case WasmBotsMessage_MessageType_Resign:
         return WasmBotsMessage_Resign_GetSizeInBytes((const WasmBotsMessage_Resign*)m, len);
-    case WasmBotsMessage_MessageType_Move:
-        return WasmBotsMessage_Move_GetSizeInBytes((const WasmBotsMessage_Move*)m, len);
+    case WasmBotsMessage_MessageType_MoveTo:
+        return WasmBotsMessage_MoveTo_GetSizeInBytes((const WasmBotsMessage_MoveTo*)m, len);
     case WasmBotsMessage_MessageType_Open:
         return WasmBotsMessage_Open_GetSizeInBytes((const WasmBotsMessage_Open*)m, len);
+    case WasmBotsMessage_MessageType_Close:
+        return WasmBotsMessage_Close_GetSizeInBytes((const WasmBotsMessage_Close*)m, len);
     }
     return WASMBOTSMESSAGE_ERR_INVALID_DATA;
 }
@@ -474,10 +491,12 @@ WasmBotsMessage_err_t WasmBotsMessage_WriteBytes(WasmBotsMessage_DataAccess* w, 
         return WasmBotsMessage_Wait_WriteBytes(w, (const WasmBotsMessage_Wait*)m, tag);
     case WasmBotsMessage_MessageType_Resign:
         return WasmBotsMessage_Resign_WriteBytes(w, (const WasmBotsMessage_Resign*)m, tag);
-    case WasmBotsMessage_MessageType_Move:
-        return WasmBotsMessage_Move_WriteBytes(w, (const WasmBotsMessage_Move*)m, tag);
+    case WasmBotsMessage_MessageType_MoveTo:
+        return WasmBotsMessage_MoveTo_WriteBytes(w, (const WasmBotsMessage_MoveTo*)m, tag);
     case WasmBotsMessage_MessageType_Open:
         return WasmBotsMessage_Open_WriteBytes(w, (const WasmBotsMessage_Open*)m, tag);
+    case WasmBotsMessage_MessageType_Close:
+        return WasmBotsMessage_Close_WriteBytes(w, (const WasmBotsMessage_Close*)m, tag);
     }
     return WASMBOTSMESSAGE_ERR_INVALID_DATA;
 }
@@ -502,11 +521,14 @@ WasmBotsMessage_err_t WasmBotsMessage_Destroy(void* m) {
     case WasmBotsMessage_MessageType_Resign:
         WasmBotsMessage_Resign_Destroy((WasmBotsMessage_Resign*)m);
         return WASMBOTSMESSAGE_ERR_OK;
-    case WasmBotsMessage_MessageType_Move:
-        WasmBotsMessage_Move_Destroy((WasmBotsMessage_Move*)m);
+    case WasmBotsMessage_MessageType_MoveTo:
+        WasmBotsMessage_MoveTo_Destroy((WasmBotsMessage_MoveTo*)m);
         return WASMBOTSMESSAGE_ERR_OK;
     case WasmBotsMessage_MessageType_Open:
         WasmBotsMessage_Open_Destroy((WasmBotsMessage_Open*)m);
+        return WASMBOTSMESSAGE_ERR_OK;
+    case WasmBotsMessage_MessageType_Close:
+        WasmBotsMessage_Close_Destroy((WasmBotsMessage_Close*)m);
         return WASMBOTSMESSAGE_ERR_OK;
     }
     return WASMBOTSMESSAGE_ERR_INVALID_DATA;
@@ -584,10 +606,10 @@ WasmBotsMessage_err_t WasmBotsMessage_ProcessRawBytes(WasmBotsMessage_DataAccess
                 return err;
             }
             break;
-        case WasmBotsMessage_MessageType_Move:
-            out = malloc(sizeof(WasmBotsMessage_Move));
+        case WasmBotsMessage_MessageType_MoveTo:
+            out = malloc(sizeof(WasmBotsMessage_MoveTo));
             if (out == NULL) { return WASMBOTSMESSAGE_ERR_ALLOCATION_FAILURE; }
-            err = WasmBotsMessage_Move_FromBytes(r, (WasmBotsMessage_Move*)out);
+            err = WasmBotsMessage_MoveTo_FromBytes(r, (WasmBotsMessage_MoveTo*)out);
             (*msgListDst)[*len] = out;
             *len += 1;
             if (err != WASMBOTSMESSAGE_ERR_OK) {
@@ -598,6 +620,16 @@ WasmBotsMessage_err_t WasmBotsMessage_ProcessRawBytes(WasmBotsMessage_DataAccess
             out = malloc(sizeof(WasmBotsMessage_Open));
             if (out == NULL) { return WASMBOTSMESSAGE_ERR_ALLOCATION_FAILURE; }
             err = WasmBotsMessage_Open_FromBytes(r, (WasmBotsMessage_Open*)out);
+            (*msgListDst)[*len] = out;
+            *len += 1;
+            if (err != WASMBOTSMESSAGE_ERR_OK) {
+                return err;
+            }
+            break;
+        case WasmBotsMessage_MessageType_Close:
+            out = malloc(sizeof(WasmBotsMessage_Close));
+            if (out == NULL) { return WASMBOTSMESSAGE_ERR_ALLOCATION_FAILURE; }
+            err = WasmBotsMessage_Close_FromBytes(r, (WasmBotsMessage_Close*)out);
             (*msgListDst)[*len] = out;
             *len += 1;
             if (err != WASMBOTSMESSAGE_ERR_OK) {
@@ -631,11 +663,14 @@ WasmBotsMessage_err_t WasmBotsMessage_DestroyMessageList(void** msgList, size_t 
         case WasmBotsMessage_MessageType_Resign:
             WasmBotsMessage_Resign_Destroy((WasmBotsMessage_Resign*)msgList[i]);
             break;
-        case WasmBotsMessage_MessageType_Move:
-            WasmBotsMessage_Move_Destroy((WasmBotsMessage_Move*)msgList[i]);
+        case WasmBotsMessage_MessageType_MoveTo:
+            WasmBotsMessage_MoveTo_Destroy((WasmBotsMessage_MoveTo*)msgList[i]);
             break;
         case WasmBotsMessage_MessageType_Open:
             WasmBotsMessage_Open_Destroy((WasmBotsMessage_Open*)msgList[i]);
+            break;
+        case WasmBotsMessage_MessageType_Close:
+            WasmBotsMessage_Close_Destroy((WasmBotsMessage_Close*)msgList[i]);
             break;
         case WasmBotsMessage_MessageType___NullMessage:
             return WASMBOTSMESSAGE_ERR_INVALID_DATA;
@@ -976,32 +1011,32 @@ WasmBotsMessage_err_t WasmBotsMessage_Resign_WriteBytes(WasmBotsMessage_DataAcce
     return WASMBOTSMESSAGE_ERR_OK;
 }
 
-const WasmBotsMessage_Move WasmBotsMessage_Move_default = {
-    ._mt = WasmBotsMessage_MessageType_Move,
+const WasmBotsMessage_MoveTo WasmBotsMessage_MoveTo_default = {
+    ._mt = WasmBotsMessage_MessageType_MoveTo,
     .direction = 0,
     .distance = 0,
 };
 
-WasmBotsMessage_err_t WasmBotsMessage_Move_GetSizeInBytes(const WasmBotsMessage_Move* m, size_t* size) {
+WasmBotsMessage_err_t WasmBotsMessage_MoveTo_GetSizeInBytes(const WasmBotsMessage_MoveTo* m, size_t* size) {
     *size = 2;
     return WASMBOTSMESSAGE_ERR_OK;
 }
 
-WasmBotsMessage_Move* WasmBotsMessage_Move_Create(void) {
-    WasmBotsMessage_Move* out = (WasmBotsMessage_Move*)malloc(sizeof(WasmBotsMessage_Move));
+WasmBotsMessage_MoveTo* WasmBotsMessage_MoveTo_Create(void) {
+    WasmBotsMessage_MoveTo* out = (WasmBotsMessage_MoveTo*)malloc(sizeof(WasmBotsMessage_MoveTo));
     if (out == NULL) { return NULL; }
-    out->_mt = WasmBotsMessage_MessageType_Move;
-    out->direction = WasmBotsMessage_Move_default.direction;
-    out->distance = WasmBotsMessage_Move_default.distance;
+    out->_mt = WasmBotsMessage_MessageType_MoveTo;
+    out->direction = WasmBotsMessage_MoveTo_default.direction;
+    out->distance = WasmBotsMessage_MoveTo_default.distance;
     return out;
 }
 
-void WasmBotsMessage_Move_Destroy(WasmBotsMessage_Move *m) {
+void WasmBotsMessage_MoveTo_Destroy(WasmBotsMessage_MoveTo *m) {
     free(m);
 }
 
-WasmBotsMessage_err_t WasmBotsMessage_Move_FromBytes(WasmBotsMessage_DataAccess* r, WasmBotsMessage_Move* dst) {
-    dst->_mt = WasmBotsMessage_MessageType_Move;
+WasmBotsMessage_err_t WasmBotsMessage_MoveTo_FromBytes(WasmBotsMessage_DataAccess* r, WasmBotsMessage_MoveTo* dst) {
+    dst->_mt = WasmBotsMessage_MessageType_MoveTo;
     WasmBotsMessage_err_t err;
     err = WasmBotsMessage__ReadUInt8(r, &(dst->direction));
     if (err != WASMBOTSMESSAGE_ERR_OK) {
@@ -1014,7 +1049,7 @@ WasmBotsMessage_err_t WasmBotsMessage_Move_FromBytes(WasmBotsMessage_DataAccess*
     return WASMBOTSMESSAGE_ERR_OK;
 }
 
-WasmBotsMessage_err_t WasmBotsMessage_Move_WriteBytes(WasmBotsMessage_DataAccess* w, const WasmBotsMessage_Move* src, bool tag) {
+WasmBotsMessage_err_t WasmBotsMessage_MoveTo_WriteBytes(WasmBotsMessage_DataAccess* w, const WasmBotsMessage_MoveTo* src, bool tag) {
     WasmBotsMessage_err_t err;
     if (tag) {
         err = WasmBotsMessage__WriteUInt8(w, (const uint8_t)(src->_mt));
@@ -1072,6 +1107,63 @@ WasmBotsMessage_err_t WasmBotsMessage_Open_FromBytes(WasmBotsMessage_DataAccess*
 }
 
 WasmBotsMessage_err_t WasmBotsMessage_Open_WriteBytes(WasmBotsMessage_DataAccess* w, const WasmBotsMessage_Open* src, bool tag) {
+    WasmBotsMessage_err_t err;
+    if (tag) {
+        err = WasmBotsMessage__WriteUInt8(w, (const uint8_t)(src->_mt));
+        if (err != WASMBOTSMESSAGE_ERR_OK) {
+            return err;
+        }
+    }
+    err = WasmBotsMessage__WriteInt16(w, (src->targetX));
+    if (err != WASMBOTSMESSAGE_ERR_OK) {
+        return err;
+    }
+    err = WasmBotsMessage__WriteInt16(w, (src->targetY));
+    if (err != WASMBOTSMESSAGE_ERR_OK) {
+        return err;
+    }
+    return WASMBOTSMESSAGE_ERR_OK;
+}
+
+const WasmBotsMessage_Close WasmBotsMessage_Close_default = {
+    ._mt = WasmBotsMessage_MessageType_Close,
+    .targetX = 0,
+    .targetY = 0,
+};
+
+WasmBotsMessage_err_t WasmBotsMessage_Close_GetSizeInBytes(const WasmBotsMessage_Close* m, size_t* size) {
+    *size = 4;
+    return WASMBOTSMESSAGE_ERR_OK;
+}
+
+WasmBotsMessage_Close* WasmBotsMessage_Close_Create(void) {
+    WasmBotsMessage_Close* out = (WasmBotsMessage_Close*)malloc(sizeof(WasmBotsMessage_Close));
+    if (out == NULL) { return NULL; }
+    out->_mt = WasmBotsMessage_MessageType_Close;
+    out->targetX = WasmBotsMessage_Close_default.targetX;
+    out->targetY = WasmBotsMessage_Close_default.targetY;
+    return out;
+}
+
+void WasmBotsMessage_Close_Destroy(WasmBotsMessage_Close *m) {
+    free(m);
+}
+
+WasmBotsMessage_err_t WasmBotsMessage_Close_FromBytes(WasmBotsMessage_DataAccess* r, WasmBotsMessage_Close* dst) {
+    dst->_mt = WasmBotsMessage_MessageType_Close;
+    WasmBotsMessage_err_t err;
+    err = WasmBotsMessage__ReadInt16(r, &(dst->targetX));
+    if (err != WASMBOTSMESSAGE_ERR_OK) {
+        return err;
+    }
+    err = WasmBotsMessage__ReadInt16(r, &(dst->targetY));
+    if (err != WASMBOTSMESSAGE_ERR_OK) {
+        return err;
+    }
+    return WASMBOTSMESSAGE_ERR_OK;
+}
+
+WasmBotsMessage_err_t WasmBotsMessage_Close_WriteBytes(WasmBotsMessage_DataAccess* w, const WasmBotsMessage_Close* src, bool tag) {
     WasmBotsMessage_err_t err;
     if (tag) {
         err = WasmBotsMessage__WriteUInt8(w, (const uint8_t)(src->_mt));

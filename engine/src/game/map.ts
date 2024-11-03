@@ -14,6 +14,8 @@ const TILED_FLAG_ROTATED_HEXAGONAL_120   = 0x10000000;
 export enum TileType {
     Void,
     Empty,
+    OpenDoor,
+    ClosedDoor,
     Wall,
     TERRAIN_MAX,
 

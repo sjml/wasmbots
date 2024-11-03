@@ -75,7 +75,7 @@ fn clientTick(circumstances: msg.PresentCircumstances) msg.Message {
         wasmbotClient.log("bounce");
     }
 
-    return msg.Message{ .Move = msg.Move{
+    return msg.Message{ .MoveTo = msg.MoveTo{
         .direction = @intFromEnum(CURRENT_DIR),
         .distance = 1,
     } };

@@ -154,8 +154,9 @@ export enum MessageType {
   PresentCircumstancesType = 3,
   WaitType = 4,
   ResignType = 5,
-  MoveType = 6,
+  MoveToType = 6,
   OpenType = 7,
+  CloseType = 8,
 }
 
 export interface Message {
@@ -194,11 +195,14 @@ export function ProcessRawBytes(dv: DataView): Message[] {
       case MessageType.ResignType:
         msgList.push(Resign.fromBytes(da));
         break;
-      case MessageType.MoveType:
-        msgList.push(Move.fromBytes(da));
+      case MessageType.MoveToType:
+        msgList.push(MoveTo.fromBytes(da));
         break;
       case MessageType.OpenType:
         msgList.push(Open.fromBytes(da));
+        break;
+      case MessageType.CloseType:
+        msgList.push(Close.fromBytes(da));
         break;
       default:
         throw new Error(`Unknown message type: ${msgType}`);
@@ -463,17 +467,17 @@ export class Resign implements Message {
 }
 
 @staticImplements<MessageStatic>()
-export class Move implements Message {
+export class MoveTo implements Message {
   direction: number = 0;
   distance: number = 0;
 
-  getMessageType() : MessageType { return MessageType.MoveType; }
+  getMessageType() : MessageType { return MessageType.MoveToType; }
 
   getSizeInBytes(): number {
     return 2;
   }
 
-  static fromBytes(data: DataView|DataAccess): Move {
+  static fromBytes(data: DataView|DataAccess): MoveTo {
     let da: DataAccess;
     if (data instanceof DataView) {
       da = new DataAccess(data);
@@ -482,13 +486,13 @@ export class Move implements Message {
       da = data;
     }
     try {
-      const nMove = new Move();
-      nMove.direction = da.getByte();
-      nMove.distance = da.getByte();
-      return nMove;
+      const nMoveTo = new MoveTo();
+      nMoveTo.direction = da.getByte();
+      nMoveTo.distance = da.getByte();
+      return nMoveTo;
     }
     catch (err) {
-      throw new Error(`Could not read Move from offset ${da.currentOffset} (${err.name})`);
+      throw new Error(`Could not read MoveTo from offset ${da.currentOffset} (${err.name})`);
     }
   }
 
@@ -501,7 +505,7 @@ export class Move implements Message {
       da = data;
     }
     if (tag) {
-      da.setByte(MessageType.MoveType);
+      da.setByte(MessageType.MoveToType);
     }
     da.setByte(this.direction);
     da.setByte(this.distance);
@@ -556,13 +560,61 @@ export class Open implements Message {
 
 }
 
+@staticImplements<MessageStatic>()
+export class Close implements Message {
+  targetX: number = 0;
+  targetY: number = 0;
+
+  getMessageType() : MessageType { return MessageType.CloseType; }
+
+  getSizeInBytes(): number {
+    return 4;
+  }
+
+  static fromBytes(data: DataView|DataAccess): Close {
+    let da: DataAccess;
+    if (data instanceof DataView) {
+      da = new DataAccess(data);
+    }
+    else {
+      da = data;
+    }
+    try {
+      const nClose = new Close();
+      nClose.targetX = da.getInt16();
+      nClose.targetY = da.getInt16();
+      return nClose;
+    }
+    catch (err) {
+      throw new Error(`Could not read Close from offset ${da.currentOffset} (${err.name})`);
+    }
+  }
+
+  writeBytes(data: DataView|DataAccess, tag: boolean): void {
+    let da: DataAccess;
+    if (data instanceof DataView) {
+      da = new DataAccess(data);
+    }
+    else {
+      da = data;
+    }
+    if (tag) {
+      da.setByte(MessageType.CloseType);
+    }
+    da.setInt16(this.targetX);
+    da.setInt16(this.targetY);
+  }
+
+}
+
 export const MessageTypeMap = new Map<MessageType, { new(): Message }>([
   [MessageType._ErrorType, _Error],
   [MessageType.InitialParametersType, InitialParameters],
   [MessageType.PresentCircumstancesType, PresentCircumstances],
   [MessageType.WaitType, Wait],
   [MessageType.ResignType, Resign],
-  [MessageType.MoveType, Move],
+  [MessageType.MoveToType, MoveTo],
   [MessageType.OpenType, Open],
+  [MessageType.CloseType, Close],
 ]);
 

@@ -261,8 +261,8 @@ export class World extends EventTarget {
                 const errMsg = move as CoreMsg._Error;
                 console.error(`Invalid move from player ${player}: ${errMsg.description}`);
                 break;
-            case CoreMsg.MessageType.MoveType:
-                const playerMove = move as CoreMsg.Move;
+            case CoreMsg.MessageType.MoveToType:
+                const playerMove = move as CoreMsg.MoveTo;
                 const direction = playerMove.direction as Direction;
                 const offset = OFFSETS.get(direction)!;
                 const peekLoc = {
@@ -270,7 +270,7 @@ export class World extends EventTarget {
                     y: player.location.y + offset.y,
                 };
                 const peek = this.currentMap!.getTile(peekLoc.x, peekLoc.y);
-                if (peek == TileType.Wall) {
+                if (peek == TileType.Wall) { // || peek == TileType.ClosedDoor) {
                     return false;
                 }
                 player.location = peekLoc;

@@ -7,9 +7,7 @@
     * file select or drag and drop for running your own bot
     * add player image to panel once spawned
     * button to zoom on particular bot
-* systems:
-    * rename Move to MoveTo
-* failed instantiation still adds player to UI
+* BUG: failed instantiation still adds player to UI
 * map variations
     * add map parameter to embedded component
 * testing

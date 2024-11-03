@@ -31,7 +31,7 @@ fn _typeIsSimple(comptime T: type) bool {
         return true;
     }
     const simpleTypes = [_]type{
-        InitialParameters, Wait, Resign, Move, Open,
+        InitialParameters, Wait, Resign, MoveTo, Open, Close,
     };
     for (simpleTypes) |vt| {
         if (T == vt) {
@@ -195,8 +195,9 @@ pub const MessageType = enum(u8) {
     PresentCircumstances,
     Wait,
     Resign,
-    Move,
+    MoveTo,
     Open,
+    Close,
 };
 
 pub const Message = union(MessageType) {
@@ -205,8 +206,9 @@ pub const Message = union(MessageType) {
     PresentCircumstances: PresentCircumstances,
     Wait: Wait,
     Resign: Resign,
-    Move: Move,
+    MoveTo: MoveTo,
     Open: Open,
+    Close: Close,
 };
 
 pub fn processRawBytes(allocator: std.mem.Allocator, buffer: []const u8) ![]Message {
@@ -247,15 +249,20 @@ pub fn processRawBytes(allocator: std.mem.Allocator, buffer: []const u8) ![]Mess
                 local_offset += msg_read.bytes_read;
                 try msg_list.append(Message{ .Resign = msg_read.value });
             },
-            .Move => {
-                const msg_read = try Move.fromBytes(local_offset, buffer);
+            .MoveTo => {
+                const msg_read = try MoveTo.fromBytes(local_offset, buffer);
                 local_offset += msg_read.bytes_read;
-                try msg_list.append(Message{ .Move = msg_read.value });
+                try msg_list.append(Message{ .MoveTo = msg_read.value });
             },
             .Open => {
                 const msg_read = try Open.fromBytes(local_offset, buffer);
                 local_offset += msg_read.bytes_read;
                 try msg_list.append(Message{ .Open = msg_read.value });
+            },
+            .Close => {
+                const msg_read = try Close.fromBytes(local_offset, buffer);
+                local_offset += msg_read.bytes_read;
+                try msg_list.append(Message{ .Close = msg_read.value });
             },
         }
     }
@@ -471,25 +478,25 @@ pub const Resign = struct {
     }
 };
 
-pub const Move = struct {
+pub const MoveTo = struct {
     direction: u8 = 0,
     distance: u8 = 0,
 
-    pub fn getSizeInBytes(self: *const Move) usize {
+    pub fn getSizeInBytes(self: *const MoveTo) usize {
         _ = self;
         return 2;
     }
 
-    pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: Move, bytes_read: usize } {
-        const Move_direction = (try readNumber(u8, offset + 0, buffer)).value;
-        const Move_distance = (try readNumber(u8, offset + 1, buffer)).value;
-        return .{ .value = Move{
-            .direction = Move_direction,
-            .distance = Move_distance,
+    pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: MoveTo, bytes_read: usize } {
+        const MoveTo_direction = (try readNumber(u8, offset + 0, buffer)).value;
+        const MoveTo_distance = (try readNumber(u8, offset + 1, buffer)).value;
+        return .{ .value = MoveTo{
+            .direction = MoveTo_direction,
+            .distance = MoveTo_distance,
         }, .bytes_read = 2 };
     }
 
-    pub fn writeBytes(self: *const Move, offset: usize, buffer: []u8, tag: bool) usize {
+    pub fn writeBytes(self: *const MoveTo, offset: usize, buffer: []u8, tag: bool) usize {
         var local_offset = offset;
 
         if (tag) {
@@ -525,6 +532,37 @@ pub const Open = struct {
 
         if (tag) {
             local_offset += writeNumber(u8, local_offset, buffer, 7);
+        }
+        local_offset += writeNumber(i16, local_offset, buffer, self.targetX);
+        local_offset += writeNumber(i16, local_offset, buffer, self.targetY);
+
+        return local_offset - offset;
+    }
+};
+
+pub const Close = struct {
+    targetX: i16 = 0,
+    targetY: i16 = 0,
+
+    pub fn getSizeInBytes(self: *const Close) usize {
+        _ = self;
+        return 4;
+    }
+
+    pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: Close, bytes_read: usize } {
+        const Close_targetX = (try readNumber(i16, offset + 0, buffer)).value;
+        const Close_targetY = (try readNumber(i16, offset + 2, buffer)).value;
+        return .{ .value = Close{
+            .targetX = Close_targetX,
+            .targetY = Close_targetY,
+        }, .bytes_read = 4 };
+    }
+
+    pub fn writeBytes(self: *const Close, offset: usize, buffer: []u8, tag: bool) usize {
+        var local_offset = offset;
+
+        if (tag) {
+            local_offset += writeNumber(u8, local_offset, buffer, 8);
         }
         local_offset += writeNumber(i16, local_offset, buffer, self.targetX);
         local_offset += writeNumber(i16, local_offset, buffer, self.targetY);

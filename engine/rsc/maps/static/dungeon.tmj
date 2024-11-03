@@ -98,17 +98,6 @@
          "id":6,
          "name":"metadata",
          "opacity":1,
-         "properties":[
-                {
-                 "name":"maxPlayers",
-                 "type":"int",
-                 "value":4
-                }, 
-                {
-                 "name":"minPlayers",
-                 "type":"int",
-                 "value":1
-                }],
          "type":"tilelayer",
          "visible":true,
          "width":64,
@@ -173,12 +162,12 @@
         {
          "name":"maxPlayers",
          "type":"int",
-         "value":1
+         "value":4
         }, 
         {
          "name":"minPlayers",
          "type":"int",
-         "value":4
+         "value":1
         }],
  "renderorder":"right-down",
  "tiledversion":"1.11.0",
