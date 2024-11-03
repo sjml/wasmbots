@@ -9,7 +9,7 @@ const MIN_NAME_LEN = 4;
 interface WasmBotsExports {
     memory: WebAssembly.Memory;
     setup: (requestReserve: number) => number;
-    receiveGameParams: (offset: number, resultLocation: number) => boolean;
+    receiveGameParams: (offset: number) => boolean;
     tick: (offset: number) => void;
     clientInitialize?: () => void;
     _initialize?: () => void;
@@ -216,7 +216,6 @@ export class GuestProgram {
         this.botName = `${botName} v${versionMajor}.${versionMinor}.${versionPatch}`;
         this.logger.info(`### ${this.botName} ###`);
 
-
         this.reserveBlock.fill(0);
 
         writeGameParameters(this.reserveBlock, 0);
@@ -224,7 +223,7 @@ export class GuestProgram {
         const resultOffset = 1024;
         let ready: boolean;
         try {
-            ready = this.exports.receiveGameParams(0, resultOffset);
+            ready = this.exports.receiveGameParams(0);
         }
         catch (error) {
             this.logger.error(`FATAL ERROR: Crash during client setup:\n  ${error}`);
