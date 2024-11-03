@@ -229,7 +229,7 @@ export class GuestProgram {
         const versionPatch = this.readUint16(offset);
         offset += 2;
         this.botName = `${botName} v${versionMajor}.${versionMinor}.${versionPatch}`;
-        this.logger.log(`### program info -- ${this.botName} ###`);
+        this.logger.info(`### ${this.botName} ###`);
 
         if (this.isShutDown) {
             return false;
