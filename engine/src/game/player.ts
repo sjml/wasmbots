@@ -11,11 +11,13 @@ export class Player {
 
     // remember that anything added here needs to be dealt with in the reset
     location: Point;
+    spawnPoint: Point;
     hitPoints: number;
     lastMoveSucceeded: boolean;
 
     constructor(logger: LogFunction, rngSeed: number) {
         this.location = {x: -1, y: -1};
+        this.spawnPoint = this.location;
         this.coordinator = new WasmCoordinator(this, logger, rngSeed);
         this.hitPoints = config.startingHitPoints;
         this.lastMoveSucceeded = true;
@@ -40,6 +42,7 @@ export class Player {
         this.coordinator = new WasmCoordinator(this, logger, seed);
         this.hitPoints = config.startingHitPoints;
         this.lastMoveSucceeded = true;
+        this.location = this.spawnPoint;
         return await this.init(this._programBytes, false);
     }
 

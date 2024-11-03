@@ -2,12 +2,11 @@ import { World } from "./engine/game/world";
 
 import { Logger } from "./engine";
 import { WasmBotsVisualizer } from "./vis/game";
-import type { Player } from "./engine/game/player";
+import { Player } from "./engine/game/player";
 import type { VisPlayer } from "./vis/player";
 
 export interface WasmBotsState {
     world: World|null;
-
     vis: WasmBotsVisualizer|null;
 }
 
@@ -20,8 +19,32 @@ export interface LogEntry {
     msg: string;
 };
 
-export interface UIPlayerData {
-    playerObject: Player;
-    consoleLines: LogEntry[];
-    visPlayer: VisPlayer|null;
+const MAX_LOG_ENTRIES = 1000;
+export class UIPlayerData {
+    playerObject!: Player;
+    consoleLines: LogEntry[] = [];
+    visPlayer: VisPlayer|null = null;
+
+    private constructor() {}
+
+    static makingNewPlayer(world: World, rngSeed?: number) {
+        const uipd = new UIPlayerData();
+        rngSeed ||= world.rng.randInt(0, Number.MAX_SAFE_INTEGER);
+        const player = new Player(uipd.selfLog, rngSeed);
+        uipd.playerObject = player;
+        return uipd;
+    }
+
+    static fromExisting(p: Player) {
+        const uipd = new UIPlayerData();
+        uipd.playerObject = p;
+        return uipd;
+    }
+
+    selfLog(level: Logger.LogLevel, msg: string) {
+        this.consoleLines = [
+            ...this.consoleLines,
+            {level, msg}
+        ].slice(-MAX_LOG_ENTRIES);
+    }
 }

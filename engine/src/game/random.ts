@@ -109,11 +109,13 @@ export class Deck<T> {
     private _deck: T[];
     private _discards: T[];
     private _rng: RNG;
+    private _equalityTest: ((a: T, b: T) => boolean)|null;
 
-    constructor(array: T[], rng: RNG) {
+    constructor(array: T[], rng: RNG, equalityTest?: (a: T, b: T) => boolean) {
         if (array.length == 0) {
             throw new Error("Can't build deck from empty array!");
         }
+        this._equalityTest = equalityTest || null;
         this._deck = array.slice();
         this._discards = [];
         this._rng = rng;
@@ -153,5 +155,20 @@ export class Deck<T> {
         const drawn = this._deck.pop()!;
         this._discards.push(drawn);
         return drawn;
+    }
+
+    restoreItem(item: T) {
+        let discardIdx: number;
+        if (this._equalityTest != null) {
+            discardIdx = this._discards.findIndex(x => this._equalityTest!(item, x));
+        }
+        else {
+            discardIdx = this._discards.indexOf(item);
+        }
+        if (discardIdx < 0) {
+            throw new Error(`${item} not in discard pile!`);
+        }
+        this._discards.splice(discardIdx, 1);
+        this._deck.splice(this._rng.randInt(0, this._deck.length+1), 0, item);
     }
 }

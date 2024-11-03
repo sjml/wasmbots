@@ -5,59 +5,18 @@
 * toast messages / notifications
   * like for player registration failure that right now just prints to console
 * distribute the min tick across # of players?
+  * would also allow for tweening of movements (you know you have X amount of time before you're moving again)
 * why are we missing initial message in console?
-* rethink keeping nulls in the world player list -- more hassle than it's worth
 * CSS: when console gets wide it overflows the drawer
-* world setup
-  * should be:
-    * ✅ world created in setup mode
-    * ✅ worldvis attached
-    * ✅ map set on world
-      * ✅ notifies worldvis (emits event)
-    * ✅ player added to world
-      * ✅ notifies worldvis (emits event)
-        * ✅ worldvis tracks playervisses
-    * map change:
-      * ✅ world drops random players who exceed max count of new map
-        * ✅ notifies worldvis (emit)
-      * ✅ world resets remaining players
-        * ✅ notifies worldvis (emit)
-      * ✅ change map
-        * ✅ notify worldvis (emit)
-        * worldvis:
-          * ✅ remove playervisses from existing map scene
-          * ✅ kill map scene
-          * ✅ new map scene
-          * ✅ re-add playervisses
-    * once game is >= running
-      * ✅ map cannot change
-      * players cannot be added
-    * stop game:
-      * only stops
-    * reset game:
-      * only available on stopped game
-      * sends back to setup
-        * reset players (emit)
-  * botslot ui needs to respond to registration failure
-* maps
-    * right now max players is just `spawnPoints.length`, but read custom property from map file
 * UI: 
-    * redo bot panel:
-      * have it read the JSON file from the loader
-      * small, with expandable console (w/copy button)
-      * as many slots as max player count
-      * maps specify min player count and max player count
-      * selector for example bots
-      * file select or drag and drop for running your own
-      * add player image to panel once spawned
-      * button (not hooked up for now) to zoom on particular bot
-    * player dropping when bot selector changes
+    * file select or drag and drop for running your own bot
+    * add player image to panel once spawned
+    * button to zoom on particular bot
 * systems:
     * rename Move to MoveTo
     * set params handshake to use messages
 * map variations
     * add map parameter to embedded component
-* ability to zoom in and follow a single bot
 * testing
     * player class
       * feeding non-wasm byte array

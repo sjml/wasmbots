@@ -4,11 +4,6 @@ import { WorkerStatus } from "../worker/coordinator.ts";
 import { TileType, WorldMap, type Point } from "./map.ts";
 import * as CoreMsg from "../core/messages.ts";
 
-// trying to build with the idea that these numbers might change,
-//   but not testing that at all, so probably some lurking bugs
-//   for > 2 players.
-const MIN_PLAYERS = 1;
-const MAX_PLAYERS = 10;
 
 export enum Direction {
     East,
@@ -49,7 +44,7 @@ type WorldEvents = {
 
 export class World extends EventTarget {
     private _gameState: GameState = GameState.Setup;
-    private _players: (Player|null)[] = Array(MAX_PLAYERS).fill(null);
+    players: Player[] = [];
     currentMap: WorldMap | null;
     rng: RNG;
     private _spawnPointDeck: Deck<Point>;
@@ -87,25 +82,26 @@ export class World extends EventTarget {
     }
 
     registerPlayer(newPlayer: Player) {
-        if (this._players.includes(newPlayer)) {
+        if (this.currentMap == null) {
+            this.emit("playerRegisterError", {
+                rejectedPlayer: newPlayer,
+                reason: "Need to set map before registering players!",
+            });
+            return;
+        }
+
+        if (this.players.includes(newPlayer)) {
             this.emit("playerRegisterError", {
                 rejectedPlayer: newPlayer,
                 reason: "Player already registered!",
             });
             return;
         }
-        let registered = false;
-        for (let i=0; i < MAX_PLAYERS; i++) {
-            if (this._players[i] == null) {
-                this._players[i] = newPlayer;
-                registered = true;
-                break;
-            }
-        }
-        if (!registered) {
+
+        if (this.players.length >= this.currentMap.maxPlayers) {
             this.emit("playerRegisterError", {
                 rejectedPlayer: newPlayer,
-                reason: "Cannot register more than two players!",
+                reason: `Max player count for '${this.currentMap.name}' map!`,
             });
             return;
         }
@@ -114,30 +110,30 @@ export class World extends EventTarget {
         if (loc == null) {
             this.emit("playerRegisterError", {
                 rejectedPlayer: newPlayer,
-                reason: `Not enough spawn points in map for ${this.playerCount} players!`,
+                reason: `Not enough spawn points in map for ${this.players.length} players!`,
             });
             return;
         }
-        newPlayer.location = loc;
+        newPlayer.spawnPoint = loc;
+        newPlayer.location = newPlayer.spawnPoint;
+
+        this.players.push(newPlayer);
 
         this.emit("playerAdded", {newPlayer});
         this.checkReady();
     }
 
     dropPlayer(leavingPlayer: Player) {
-        const idx = this._players.indexOf(leavingPlayer);
+        const idx = this.players.indexOf(leavingPlayer);
         if (idx == -1) {
             throw new Error("Player not registered!");
         }
 
-        this._players[idx] = null;
+        this.players.splice(idx, 1);
+        this._spawnPointDeck.restoreItem(leavingPlayer.spawnPoint);
 
         this.emit("playerDropped", {leavingPlayer});
         this.checkReady();
-    }
-
-    get playerCount(): number {
-        return this._players.filter(p => p != null).length;
     }
 
     async setMap(mapName: string) {
@@ -149,29 +145,29 @@ export class World extends EventTarget {
 
         // handle potential player changes
         if (this.currentMap) {
-            const diff = this.playerCount - newMap.spawnPoints.length;
+            const diff = this.players.length - newMap.maxPlayers;
             if (diff > 0) {
                 console.log(`dropping ${diff} players...`);
-                const booted = this.rng.pick(this._players.filter(p => p != null), diff);
+                const booted = this.rng.pick(this.players, diff);
                 for (const b of booted) {
                     this.dropPlayer(b);
                 }
             }
         }
 
-        this.currentMap = newMap;
-        this.emit("mapChanged", { newMap: this.currentMap });
+        this._spawnPointDeck = new Deck(newMap.spawnPoints, this.rng);
 
-        this._spawnPointDeck = new Deck(this.currentMap.spawnPoints, this.rng);
-
-        for (const p of this._players.filter(p => p != null)) {
+        for (const p of this.players) {
             p.reset();
             const loc = this._spawnPointDeck.drawNoReshuffle();
             if (loc == null) {
-                throw new Error(`Not enough spawn points in map for ${this.playerCount} players!`);
+                throw new Error(`Not enough spawn points in map for ${this.players.length} players!`);
             }
             p.location = loc;
         }
+
+        this.currentMap = newMap;
+        this.emit("mapChanged", { newMap: this.currentMap });
 
         this.checkReady();
     }
@@ -186,7 +182,7 @@ export class World extends EventTarget {
     }
 
     isReadyToStart(): boolean {
-        return (this.playerCount >= MIN_PLAYERS) && (this.currentMap != null);
+        return (this.currentMap != null) && (this.players.length >= this.currentMap.minPlayers);
     }
 
     startGame() {
@@ -194,7 +190,7 @@ export class World extends EventTarget {
             throw new Error("Game is not ready yet");
         }
 
-        this.rng.shuffle(this._players); // randomizes turn order
+        this.rng.shuffle(this.players); // randomize turn order
 
         this.setState(GameState.Running);
     }
@@ -206,12 +202,12 @@ export class World extends EventTarget {
     resetGame() {
         this.setState(GameState.Setup);
         this._spawnPointDeck.reset();
-        for (const p of this._players) {
+        for (const p of this.players) {
             if (p != null) {
                 p.reset();
                 const loc = this._spawnPointDeck.drawNoReshuffle();
                 if (loc == null) {
-                    throw new Error(`Not enough spawn points in map for ${this.playerCount} players!`);
+                    throw new Error(`Not enough spawn points in map for ${this.players.length} players!`);
                 }
                 p.location = loc;
             }
@@ -236,7 +232,7 @@ export class World extends EventTarget {
             return;
         }
 
-        for (const player of this._players) {
+        for (const player of this.players) {
             if (player == null) { continue; }
             if (World._playerIsValid(player)) {
                 const circumstances = new CoreMsg.PresentCircumstances();

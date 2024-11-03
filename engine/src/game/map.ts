@@ -31,6 +31,8 @@ export class WorldMap {
     name: string = "";
     tiles: TileType[][] = Array.from({length: MAP_HEIGHT}, () => Array(MAP_WIDTH).fill(TileType.Empty));
     spawnPoints: Point[] = [];
+    minPlayers: number = 1;
+    maxPlayers: number = 1;
 
     static async loadTiled(mapName: string): Promise<WorldMap> {
         const newMap = new WorldMap();
@@ -78,7 +80,7 @@ export class WorldMap {
                     return lookup;
                 }
             }
-            throw new Error(`ERROR: Invalid tile mapping in lookup (${gid})`);
+            throw new Error(`Invalid tile mapping in lookup (${gid})`);
         }
 
         for (let y = 0; y < MAP_HEIGHT; y++) {
@@ -86,7 +88,7 @@ export class WorldMap {
                 const t = terrainLayer.data[(y * MAP_WIDTH) + x];
                 const tt = lookupTile(t);
                 if (tt >= TileType.TERRAIN_MAX) {
-                    throw new Error("ERROR: Non-terrain tile in terrain layer");
+                    throw new Error("Non-terrain tile in terrain layer");
                 }
                 newMap.tiles[y][x] = tt;
             }
@@ -102,6 +104,21 @@ export class WorldMap {
             }
         }
 
+        if (newMap.spawnPoints.length == 0) {
+            throw new Error("Map has no spawn points!");
+        }
+
+        newMap.maxPlayers = rawMapData.properties?.
+            find(prop => prop.name === "maxPlayers")?.value as number
+            ?? newMap.spawnPoints.length;
+        newMap.minPlayers = rawMapData.properties?.
+            find(prop => prop.name === "minPlayers")?.value as number
+            ?? 1;
+
+        if (newMap.maxPlayers > newMap.spawnPoints.length) {
+            console.warn(`Map ${mapName} declares ${newMap.maxPlayers} but only has ${newMap.spawnPoints.length}; using smaller value.`);
+            newMap.maxPlayers = newMap.spawnPoints.length;
+        }
 
         return newMap;
     }
