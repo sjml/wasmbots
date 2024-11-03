@@ -210,7 +210,12 @@ export class GuestProgram {
         }
 
         let offset = this.reservePtr + resultOffset;
-        const botName = this.readString(offset, 26);
+        let botName = this.readString(offset, 26);
+        let nullTermIdx = botName.indexOf("\0");
+        if (nullTermIdx >= 0) {
+            botName = botName.substring(0, nullTermIdx);
+        }
+
         if (botName.length < MIN_NAME_LEN) {
             this.logger.error(`CLIENT ERROR: Bot name "${botName}" is too short (minimum length: ${MIN_NAME_LEN})`);
             this.isShutDown = true;

@@ -22,7 +22,7 @@ export interface LogEntry {
 const MAX_LOG_ENTRIES = 1000;
 export class UIPlayerData {
     playerObject!: Player;
-    consoleLines: LogEntry[] = [];
+    consoleLines: LogEntry[] = $state([]);
     visPlayer: VisPlayer|null = null;
 
     private constructor() {}
@@ -35,13 +35,7 @@ export class UIPlayerData {
         return uipd;
     }
 
-    static fromExisting(p: Player) {
-        const uipd = new UIPlayerData();
-        uipd.playerObject = p;
-        return uipd;
-    }
-
-    selfLog(level: Logger.LogLevel, msg: string) {
+    selfLog = (level: Logger.LogLevel, msg: string) => {
         this.consoleLines = [
             ...this.consoleLines,
             {level, msg}

@@ -12,27 +12,12 @@
     }
     let { playerUI = $bindable(), slotIdx }: Props = $props();
 
-    let consoleDiv: HTMLDivElement|null = $state(null);
     let consoleExpanded: boolean = $state(false);
-    async function logToMyConsole(level: Logger.LogLevel, msg: string) {
-        playerUI.selfLog(level, msg);
-        await svelteTick();
-        consoleDiv?.scroll({
-            top: consoleDiv.scrollHeight,
-            behavior: "smooth",
-        });
-    }
 
     function copyLogs() {
         const output = playerUI.consoleLines.map(l => l.msg).join("\n");
         navigator.clipboard.writeText(output);
     }
-
-    $effect(() => {
-        if (playerUI) {
-            playerUI.playerObject.coordinator.logFunction = logToMyConsole;
-        }
-    });
 
     function dropPlayer() {
         if (playerUI) {
@@ -61,7 +46,7 @@
                 </button>
                 {/if}
             </div>
-            <div class="console" bind:this={consoleDiv}>
+            <div class="console">
                 {#each playerUI!.consoleLines as log}
                 <div class={log.level}>{log.msg}</div>
                 {/each}

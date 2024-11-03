@@ -6,7 +6,6 @@
   * like for player registration failure that right now just prints to console
 * distribute the min tick across # of players?
   * would also allow for tweening of movements (you know you have X amount of time before you're moving again)
-* why are we missing initial message in console?
 * CSS: when console gets wide it overflows the drawer
 * UI: 
     * file select or drag and drop for running your own bot

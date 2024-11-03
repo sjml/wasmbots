@@ -86,7 +86,7 @@ bool receiveGameParams(size_t offset, size_t infoOffset) {
 
     WasmBotsMessage_DataAccess da = {
         .buffer = WSMBT_HOST_RESERVE,
-        .bufferSize = WSMBT_BOT_MAX_NAME_LEN,
+        .bufferSize = WSMBT_HOST_RESERVE_SIZE,
         .position = offset,
     };
 
