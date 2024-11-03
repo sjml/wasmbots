@@ -8,7 +8,7 @@
 #include "wasmbot_client.h"
 
 const char* BOT_NAME = "randBounce C";
-const uint16_t BOT_VERSION[3] = {0, 2, 0};
+const uint16_t BOT_VERSION[3] = {0, 2, 1};
 
 typedef enum {
     DIR_EAST, DIR_SOUTHEAST, DIR_SOUTH, DIR_SOUTHWEST, DIR_WEST, DIR_NORTHWEST, DIR_NORTH, DIR_NORTHEAST
@@ -37,7 +37,13 @@ void* clientTick(WasmBotsMessage_PresentCircumstances* circumstances) {
     return (void*)move;
 }
 
-wsmbt_BotMetadata clientSetup(wsmbt_GameParameters params) {
+bool clientReceiveGameParams(WasmBotsMessage_InitialParameters* initParams) {
+    chooseNewDirection(true);
+    return true;
+}
+
+
+wsmbt_BotMetadata clientSetup(void) {
     wsmbt_registerTickCallback(&clientTick);
 
     wsmbt_BotMetadata botMeta;
@@ -49,10 +55,6 @@ wsmbt_BotMetadata clientSetup(wsmbt_GameParameters params) {
     botMeta.version[0] = BOT_VERSION[0];
     botMeta.version[1] = BOT_VERSION[1];
     botMeta.version[2] = BOT_VERSION[2];
-
-    chooseNewDirection(true);
-
-    botMeta.ready = true;
 
     return botMeta;
 }

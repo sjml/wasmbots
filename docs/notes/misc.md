@@ -17,6 +17,7 @@
             * **BUT** nice to kind of separate those concerns --- `Player` focused on interacting with the game world, `WasmCoordinator` handling the low-level machinery
             * _counterpoint_: it's an extra layer that is not strictly needed
     * **_Resolution for now:_** Leave it alone; all the bounces are aesthetically annoying but that's about the only real impact right now. Might actually become _less_ maintainable by attempting to collapse it. 
+    * **_Follow-up:_** Ah, seems like a good thing that I didn't collapse `WasmCoordinator` into player since I'm thinking the trainer will involve swapping it out for a `HumanCoordinator` with the same/similar interface so yay, good job Past!Shane. 
 
 
 ## Diagram

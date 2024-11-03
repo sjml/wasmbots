@@ -79,9 +79,10 @@ bool _reserveMemory(size_t request) {
 //// GAME PARAMETERS
 const uint16_t GP_VERSION = 7;
 
-extern wsmbt_BotMetadata clientSetup(wsmbt_GameParameters params);
+extern wsmbt_BotMetadata clientSetup(void);
+extern bool clientReceiveGameParams(WasmBotsMessage_InitialParameters*);
 
-bool receiveGameParams(size_t offset, size_t infoOffset) {
+bool receiveGameParams(size_t offset) {
     wsmbt_GameParameters params;
 
     WasmBotsMessage_DataAccess da = {
@@ -90,25 +91,15 @@ bool receiveGameParams(size_t offset, size_t infoOffset) {
         .position = offset,
     };
 
-    WasmBotsMessage__ReadUInt16(&da, &params.paramsVersion);
-    if (params.paramsVersion != GP_VERSION) {
+    WasmBotsMessage_InitialParameters initParams;
+    WasmBotsMessage_InitialParameters_FromBytes(&da, &initParams);
+
+    if (initParams.paramsVersion != GP_VERSION) {
         wsmbt_logfErr("CLIENT ERROR: Can't parse GameParams v%d; only prepared for v%d", params.paramsVersion, GP_VERSION);
         return false;
     }
-    WasmBotsMessage__ReadUInt16(&da, &params.engineVersion[0]);
-    WasmBotsMessage__ReadUInt16(&da, &params.engineVersion[1]);
-    WasmBotsMessage__ReadUInt16(&da, &params.engineVersion[2]);
 
-    const wsmbt_BotMetadata botData = clientSetup(params);
-
-    memcpy((char*)(WSMBT_HOST_RESERVE + infoOffset), botData.name, WSMBT_BOT_MAX_NAME_LEN);
-    infoOffset += WSMBT_BOT_MAX_NAME_LEN;
-
-    da.position = infoOffset;
-    WasmBotsMessage__WriteUInt16(&da, botData.version[0]);
-    WasmBotsMessage__WriteUInt16(&da, botData.version[1]);
-    WasmBotsMessage__WriteUInt16(&da, botData.version[2]);
-    return botData.ready;
+    return clientReceiveGameParams(&initParams);
 }
 //// \GAME PARAMETERS
 
@@ -124,6 +115,15 @@ size_t setup(size_t requestReserve) {
     _dataAccess.buffer = WSMBT_HOST_RESERVE;
     _dataAccess.bufferSize = requestReserve;
     _dataAccess.position = 0;
+
+    const wsmbt_BotMetadata botData = clientSetup();
+
+    memcpy((char*)(WSMBT_HOST_RESERVE), botData.name, WSMBT_BOT_MAX_NAME_LEN);
+
+    _dataAccess.position = WSMBT_BOT_MAX_NAME_LEN;
+    WasmBotsMessage__WriteUInt16(&_dataAccess, botData.version[0]);
+    WasmBotsMessage__WriteUInt16(&_dataAccess, botData.version[1]);
+    WasmBotsMessage__WriteUInt16(&_dataAccess, botData.version[2]);
 
     return (size_t)WSMBT_HOST_RESERVE;
 }

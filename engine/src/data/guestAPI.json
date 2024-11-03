@@ -25,12 +25,11 @@
     "receiveGameParams": {
       "doc": "called after the setup function; the initial game parameters (specced in `gameParameters.json`) are currently sitting in the reserved memory block. they won't stay there, so copy out anything you need.",
       "paramsDoc": [
-        "the offset in the shared memory where the parameters begin",
-        "the offset in the shared memory where the client should write its data"
+        "the offset in the shared memory where the parameters begin"
       ],
       "returnDoc": "a boolean value saying whether or not we can proceed (if something in the parameters means we can't run, for example)",
-      "sourceParams": ["usize", "usize"],
-      "wasmParams": ["i32", "i32"],
+      "sourceParams": ["usize"],
+      "wasmParams": ["i32"],
       "sourceReturn": "boolean",
       "wasmReturn": "i32"
     },

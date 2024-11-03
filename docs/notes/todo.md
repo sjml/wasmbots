@@ -1,7 +1,22 @@
 ## dev
-* modify handshake expectations (engine and libraries and modules)
-  * <sigh>
-  * hopefully this is not a thing that will change a lot
+* modify handshake expectations
+  * ✅ api json
+  * ✅ engine
+  * client libraries + examples
+    * ✅ C
+    * Zig
+    * (leaving others for now while I let these shake out for a bit)
+  * procedure:
+    * update bot version number
+    * new `clientReceiveGameParams` function that takes `InitialParameters` and returns bool for "yes I'll play)
+      * should setup be done here? hrm. 
+      * setup extern as necessary
+    * `clientSetup` loses parameters,
+    * `receiveGameParams` loses second parameter
+      * now reads a `InitialParameters` from the offset instead of manually parsing
+      * returns result of `clientReceiveGameParams`
+      * does not write bot name/version anymore; moved to `setup`
+    * bot metadata (if existing) loses `ready` member
 * toast messages / notifications
   * like for player registration failure that right now just prints to console
 * distribute the min tick across # of players?
@@ -13,6 +28,7 @@
 * systems:
     * rename Move to MoveTo
     * set params handshake to use messages
+* failed instantiation still adds player to UI
 * map variations
     * add map parameter to embedded component
 * testing

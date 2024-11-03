@@ -29,7 +29,6 @@ typedef struct wsmbt_GameParameters {
 typedef struct wsmbt_BotMetadata {
     char name[WSMBT_BOT_MAX_NAME_LEN];
     uint16_t version[3];
-    bool ready;
 } wsmbt_BotMetadata;
 
 typedef void* (*wsmbt_TickFunction)(WasmBotsMessage_PresentCircumstances*);

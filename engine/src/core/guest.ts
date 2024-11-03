@@ -194,22 +194,7 @@ export class GuestProgram {
             )
         );
 
-        this.reserveBlock.fill(0);
-
-        writeGameParameters(this.reserveBlock, 0);
-
-        const resultOffset = 1024;
-        let ready: boolean;
-        try {
-            ready = this.exports.receiveGameParams(0, resultOffset);
-        }
-        catch (error) {
-            this.logger.error(`FATAL ERROR: Crash during client setup:\n  ${error}`);
-            this.isShutDown = true;
-            return false;
-        }
-
-        let offset = this.reservePtr + resultOffset;
+        let offset = this.reservePtr;
         let botName = this.readString(offset, 26);
         let nullTermIdx = botName.indexOf("\0");
         if (nullTermIdx >= 0) {
@@ -230,6 +215,22 @@ export class GuestProgram {
         offset += 2;
         this.botName = `${botName} v${versionMajor}.${versionMinor}.${versionPatch}`;
         this.logger.info(`### ${this.botName} ###`);
+
+
+        this.reserveBlock.fill(0);
+
+        writeGameParameters(this.reserveBlock, 0);
+
+        const resultOffset = 1024;
+        let ready: boolean;
+        try {
+            ready = this.exports.receiveGameParams(0, resultOffset);
+        }
+        catch (error) {
+            this.logger.error(`FATAL ERROR: Crash during client setup:\n  ${error}`);
+            this.isShutDown = true;
+            return false;
+        }
 
         if (this.isShutDown) {
             return false;
