@@ -18,7 +18,7 @@ pub fn build(b: *std.Build) void {
     const wc_module = b.createModule(.{
         .root_source_file = .{ .src_path = .{
             .owner = b,
-            .sub_path = "../../libraries/Zig/src/wasmbot_client.zig",
+            .sub_path = "./lib/wasmbot_client/src/lib.zig",
         } },
     });
 
@@ -31,14 +31,13 @@ pub fn build(b: *std.Build) void {
     exe.root_module.addImport("wasmbot_client", wc_module);
 
     exe.rdynamic = true;
+    exe.entry = .disabled;
 
     //// wasm memory limits
     // exe.import_memory = true;
     // exe.initial_memory = 65536;
     // exe.max_memory = 1048576;
     // exe.stack_size = 1024;
-
-    exe.entry = .disabled;
 
     b.installArtifact(exe);
 }
