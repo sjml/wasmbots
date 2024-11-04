@@ -4,6 +4,12 @@ zig-out/bin/$(EXE_NAME).wasm: src/bot.zig
 	zig build
 	chmod -x $@
 
+.PHONY: trainer
+trainer: zig-out/bin/$(EXE_NAME)-trainer
+
+zig-out/bin/$(EXE_NAME)-trainer: src/bot.zig
+	zig build -Dtrainer=true
+
 .PHONY: all
 all: zig-out/bin/$(EXE_NAME).wasm
 

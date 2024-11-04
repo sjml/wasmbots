@@ -1,19 +1,13 @@
 const std = @import("std");
 
 pub fn build(b: *std.Build) void {
-    const target = b.standardTargetOptions(.{ .default_target = .{
-        .cpu_arch = .wasm32,
-        .os_tag = .freestanding,
-    } });
+    const trainer = b.option(bool, "trainer", "Build the native trainer program instead of the WebAssembly") orelse false;
+    const options = b.addOptions();
+    options.addOption(bool, "building_wasm", !trainer);
 
-    const optimize = std.builtin.OptimizeMode.ReleaseSmall;
-
-    const exe = b.addExecutable(.{
-        .name = "explorer",
-        .root_source_file = b.path("src/bot.zig"),
-        .target = target,
-        .optimize = optimize,
-    });
+    var target: std.Build.ResolvedTarget = undefined;
+    var optimize: std.builtin.OptimizeMode = undefined;
+    var exe: *std.Build.Step.Compile = undefined;
 
     const wc_module = b.createModule(.{
         .root_source_file = .{ .src_path = .{
@@ -22,22 +16,60 @@ pub fn build(b: *std.Build) void {
         } },
     });
 
-    const bounds_check = b.option(bool, "bounds_checking", "Whether reads and writes to the reserve memory should do bounds checks before access") orelse true;
+    if (!trainer) {
+        target = b.standardTargetOptions(.{ .default_target = .{
+            .cpu_arch = .wasm32,
+            .os_tag = .freestanding,
+        } });
+        optimize = std.builtin.OptimizeMode.ReleaseSmall;
+        exe = b.addExecutable(.{
+            .name = "explorer",
+            .root_source_file = b.path("src/bot.zig"),
+            .target = target,
+            .optimize = optimize,
+        });
+        exe.rdynamic = true;
+        exe.entry = .disabled;
 
-    const options = b.addOptions();
-    options.addOption(bool, "bounds_checking", bounds_check);
-    wc_module.addOptions("config", options);
+        exe.root_module.addImport("wasmbot_client", wc_module);
+        exe.root_module.addOptions("config", options);
 
-    exe.root_module.addImport("wasmbot_client", wc_module);
+        //// wasm memory limits
+        // exe.import_memory = true;
+        // exe.initial_memory = 65536;
+        // exe.max_memory = 1048576;
+        // exe.stack_size = 1024;
+    } else {
+        target = b.standardTargetOptions(.{});
+        optimize = b.standardOptimizeOption(.{});
 
-    exe.rdynamic = true;
-    exe.entry = .disabled;
+        exe = b.addExecutable(.{
+            .name = "explorer-trainer",
+            .root_source_file = b.path("./lib/trainer/src/main.zig"),
+            .target = target,
+            .optimize = optimize,
+        });
 
-    //// wasm memory limits
-    // exe.import_memory = true;
-    // exe.initial_memory = 65536;
-    // exe.max_memory = 1048576;
-    // exe.stack_size = 1024;
+        const bot_lib = b.addStaticLibrary(.{
+            .name = "bot_lib",
+            .root_source_file = b.path("./src/bot.zig"),
+            .target = target,
+            .optimize = optimize,
+        });
+        bot_lib.root_module.addImport("wasmbot_client", wc_module);
+        bot_lib.root_module.addOptions("config", options);
+
+        exe.linkLibrary(bot_lib);
+
+        const run_cmd = b.addRunArtifact(exe);
+        run_cmd.step.dependOn(b.getInstallStep());
+        if (b.args) |args| {
+            run_cmd.addArgs(args);
+        }
+
+        const run_step = b.step("run", "Run the trainer");
+        run_step.dependOn(&run_cmd.step);
+    }
 
     b.installArtifact(exe);
 }

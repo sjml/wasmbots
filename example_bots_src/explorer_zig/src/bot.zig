@@ -1,5 +1,6 @@
 const std = @import("std");
 
+const config = @import("config");
 const wasmbotClient = @import("wasmbot_client");
 const msg = wasmbotClient.messages;
 const explore = @import("exploration.zig");
@@ -116,6 +117,11 @@ export fn clientInitialize() void {
     wasmbotClient.registerTickCallback(clientTick);
     wasmbotClient.registerClientReceiveGameParams(clientReceiveGameParams);
 
-    global_allocator = std.heap.wasm_allocator;
+    if (config.building_wasm) {
+        global_allocator = std.heap.wasm_allocator;
+    } else {
+        var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+        global_allocator = gpa.allocator();
+    }
     wasmbotClient.setAllocator(global_allocator);
 }
