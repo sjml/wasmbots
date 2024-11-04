@@ -65,3 +65,42 @@ Anyway, here it is in text art for now. (Not ASCII art because Unicode arrows. �
 | +-------------------------------------------+|
 +----------------------------------------------+
 ```
+
+## native trainer
+
+WebAssembly does not have a good debugging story right now -- the nesting in the host system plus its compiled nature makes it impossible to map back to source files at run time, even if we could hook into the browser. 
+
+Would it be possible to have a native trainer library for at least some of the languages? 
+
+* at least for now, only works for a single bot
+* host runs as part of web server
+* API endpoint of `getCircumstances` and `submitMove`
+* could another Coordinator just kind of hang there waiting for a move?
+  * when the circumstances message comes in, it just waits for someone to request it?
+* eeeeeh I think the async stuff is gonna get screwy here
+* server goes the other way! 
+  * trainer library exposes self on a `tickTurn` endpoint that takes circumstances and returns a move
+  * different coordinator that makes requests to a target server instead of wasm
+  * awwww yis
+    * another yak to shave! 
+  * these servers do *not* need to be async or scalable; straightforward is good
+    * with languages like Rust it's actually hard to find non-async libraries for this stuff, so just make sure to mutex it, I guess? hrm. 
+  * Zig: 
+    * https://github.com/zigzap/zap (more popular, wrapped around C)
+    * https://github.com/karlseguin/http.zig (pure Zig)
+  * C: 
+    * https://github.com/cesanta/mongoose (more popular, GPL)
+    * https://github.com/civetweb/civetweb (forked from mongoose when it was still MIT)
+  * Go:
+    * TinyGo doesn't support net/http 😔
+    * https://github.com/tinygo-org/net
+      * or for these purposes just build with normal Go?
+    * https://github.com/labstack/echo (if the standard one doesn't cut it)
+  * Rust
+    * https://rocket.rs/ (24k stars, industrial strength)
+    * https://actix.rs/ (21k stars, industrial strength)
+    * https://github.com/tokio-rs/axum (19k stars, pretty straightforward, part of tokio)
+    * https://docs.rs/tide/ (5.1 stars, more minimal/simple)
+  * AssemblyScript
+    * 🤬
+    * given its difficulty here and with beschi (at least testing) maybe this gets dropped? or moved to second-class status? 

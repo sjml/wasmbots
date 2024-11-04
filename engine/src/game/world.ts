@@ -237,6 +237,8 @@ export class World extends EventTarget {
             if (World._playerIsValid(player)) {
                 const circumstances = new CoreMsg.PresentCircumstances();
 
+                // TODO: calculate line of sight and tile slice
+
                 const move = await player.tickTurn(circumstances);
 
                 player.lastMoveSucceeded = this.processMove(player, move);
@@ -270,7 +272,7 @@ export class World extends EventTarget {
                     y: player.location.y + offset.y,
                 };
                 const peek = this.currentMap!.getTile(peekLoc.x, peekLoc.y);
-                if (peek == TileType.Wall) { // || peek == TileType.ClosedDoor) {
+                if (peek == TileType.Wall || peek == TileType.ClosedDoor) {
                     return false;
                 }
                 player.location = peekLoc;

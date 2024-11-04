@@ -1,4 +1,7 @@
 ## dev
+* exploration
+  * have world send slice that accounts for line-of-sight (TODO marked in world's `runTurn` function)
+  * set up exploration following pseudcode notes in `bot.zig`
 * toast messages / notifications
   * like for player registration failure that right now just prints to console
 * distribute the min tick across # of players?

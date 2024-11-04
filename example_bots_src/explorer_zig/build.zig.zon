@@ -1,0 +1,14 @@
+.{
+    .name = "explorer",
+
+    // actual version lives in the source code since Zig can't
+    //    easily parse this at the moment
+    .version = "0.0.0",
+
+    .dependencies = .{},
+    .paths = .{
+        "build.zig",
+        "build.zig.zon",
+        "src",
+    },
+}
