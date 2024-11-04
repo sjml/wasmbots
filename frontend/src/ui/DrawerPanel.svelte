@@ -20,15 +20,13 @@
         height: 100%;
         width: 450px;
         max-width: calc(100% - 60px);
-        background-color: rgb(0, 0, 0);
+        background-color: rgb(0, 0, 0, 0.8);
         color: white;
         padding-top: 50px;
 
         transition: transform 0.3s ease;
         overflow-y: auto;
-        font-size: calc(15px + 0.5vw);
 
-        opacity: 0.8;
         z-index: 15;
     }
 

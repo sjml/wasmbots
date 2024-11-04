@@ -15,10 +15,10 @@
 
     let consoleExpanded: boolean = $state(false);
 
-    let lastConsoleLine: LogEntry;
     let consoleDiv: HTMLDivElement;
+    let displayLines: LogEntry[] = $state([]);
     $effect(() => {
-        lastConsoleLine = playerUI.consoleLines[playerUI.consoleLines.length-1] || {level: LogLevel.Log, msg: ""};
+        displayLines = playerUI.consoleLines;
         consoleDiv.scroll({
             top: consoleDiv.scrollHeight,
             behavior: "smooth",
@@ -39,9 +39,21 @@
 
 <div class="botSlot">
     <div class="slotNumber">#{slotIdx}</div>
+    {#if playerUI.visPlayer !== null }
+        <img
+            src="./rsc/img/kenny_tiny-dungeon_tiles/tile_{String(playerUI.visPlayer.imageIndex).padStart(4, "0")}.png"
+            alt="sprite for player #{slotIdx}"
+            class="playerSprite"
+        >
+    {/if}
     <div class="botStuffs">
         <div class="botInfo">
-            <div class="name">(name and icon go here)</div>
+            <div class="name">
+                {playerUI.playerObject.name}
+                <div class="version">
+                    {playerUI.playerObject.version.join(".")}
+                </div>
+            </div>
             <button class="delete" onclick={dropPlayer} aria-label="delete this bot">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path></svg>
             </button>
@@ -58,13 +70,9 @@
                 {/if}
             </div>
             <div class="console" bind:this={consoleDiv}>
-                <!-- {#if consoleExpanded} -->
-                    {#each playerUI!.consoleLines as log}
-                    <div class={log.level}>{log.msg}</div>
-                    {/each}
-                <!-- {:else}
-                    <div class={lastConsoleLine.level}>{lastConsoleLine.msg}</div>
-                {/if} -->
+                {#each displayLines as log}
+                <div class={log.level}>{log.msg}</div>
+                {/each}
             </div>
         </div>
     </div>
@@ -72,7 +80,7 @@
 
 <style>
     .botSlot {
-        background-color: rgb(62, 62, 62);
+        background-color: rgb(62, 62, 62, 0.6);
         min-height: 60px;
         border-top: 1px solid black;
 
@@ -83,7 +91,18 @@
     .slotNumber {
         margin-top: 15px;
         margin-left: 5px;
-        margin-right: 15px;
+        margin-right: 5px;
+        font-size: 20px;
+    }
+
+    img.playerSprite {
+        image-rendering: pixelated;
+        image-rendering: -moz-crisp-edges;
+        image-rendering: crisp-edges;
+        margin: 5px 5px;
+        width: 50px;
+        height: auto;
+        align-self: flex-start;
     }
 
     .botStuffs {
@@ -99,9 +118,20 @@
         justify-content: space-between;
     }
 
+    .botInfo .name {
+        display: flex;
+        align-items: baseline;
+    }
+
+    .botInfo .version {
+        font-size: 70%;
+        margin-left: 10px;
+    }
+
     .consoleContainer {
         display: flex;
         flex-direction: row;
+        opacity: 0.6;
     }
 
     .botStuffs button {
@@ -121,7 +151,7 @@
         background-color: rgb(0, 0, 0, 0.7);
         color: white;
         font-family: 'Courier New', Courier, monospace;
-        font-size: 70%;
+        font-size: small;
         white-space: pre;
 
         height: 20px;

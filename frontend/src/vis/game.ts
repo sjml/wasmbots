@@ -85,6 +85,7 @@ export class WasmBotsVisualizer extends Phaser.Game {
     async addPlayer(p: WorldPlayer) {
         const pvis = new VisPlayer(this._currentMapScene!, p);
         this.playerList.push(pvis);
+        VisEventBus.emit("player-vis-assigned", { player: p, vis: pvis })
     }
 
     async dropPlayer(p: WorldPlayer) {

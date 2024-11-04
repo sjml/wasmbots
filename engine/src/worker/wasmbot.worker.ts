@@ -99,15 +99,19 @@ async function instantiate(payload: Msg.InstantiatePayload) {
             type: Msg.GuestToHostMessageType.InstantiateDone,
             payload: {
                 success: false,
+                botName: "",
+                botVersion: [],
             } as Msg.InstantiateDonePayload
         });
         return;
     }
-    const ready = program.runSetup();
+    const setupStatus = program.runSetup();
     self.postMessage({
         type: Msg.GuestToHostMessageType.InstantiateDone,
         payload: {
-            success: ready,
+            success: setupStatus.success,
+            botName: setupStatus.botName,
+            botVersion: setupStatus.botVersion,
         } as Msg.InstantiateDonePayload
     });
 }

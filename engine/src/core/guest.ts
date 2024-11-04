@@ -156,23 +156,28 @@ export class GuestProgram {
         return true;
     }
 
-    runSetup(): boolean {
+    runSetup(): { success: boolean, botName: string, botVersion: number[] } {
+        const errStatus = {
+            success: false,
+            botName: "",
+            botVersion: [],
+        }
         if (!this.exports) {
             this.logger.error("RUNTIME ERROR: calling `runSetup` on uninitialized GuestProgram.");
             this.isShutDown = true;
-            return false;
+            return errStatus;
         }
         try {
             this.reservePtr = this.exports.setup(config.memorySize);
         } catch (error) {
             this.logger.error(`RUNTIME ERROR: Crash during initial setup call\n  ${error}`);
             this.isShutDown = true;
-            return false;
+            return errStatus;
         }
         if (this.reservePtr == 0) {
             // was already logged from client code, probably
             this.isShutDown = true;
-            return false;
+            return errStatus;
         }
         this.reserveBlock = new Uint8Array(
             this.exports.memory.buffer,
@@ -204,7 +209,7 @@ export class GuestProgram {
         if (botName.length < MIN_NAME_LEN) {
             this.logger.error(`CLIENT ERROR: Bot name "${botName}" is too short (minimum length: ${MIN_NAME_LEN})`);
             this.isShutDown = true;
-            return false;
+            return errStatus;
         }
         offset += 26;
         const versionMajor = this.readUint16(offset);
@@ -228,15 +233,19 @@ export class GuestProgram {
         catch (error) {
             this.logger.error(`FATAL ERROR: Crash during client setup:\n  ${error}`);
             this.isShutDown = true;
-            return false;
+            return errStatus;
         }
 
         if (this.isShutDown) {
-            return false;
+            return errStatus;
         }
 
         this.isShutDown = !ready;
-        return ready;
+        return {
+            success: ready,
+            botName: botName,
+            botVersion: [versionMajor, versionMinor, versionPatch]
+        };
     }
 
     // "This where the magic happens"

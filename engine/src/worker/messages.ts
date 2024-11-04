@@ -15,6 +15,8 @@ export interface InitModuleDonePayload {
 
 export interface InstantiateDonePayload {
     success: boolean;
+    botName: string;
+    botVersion: number[];
 }
 export interface RunTickDonePayload {
     hadError: boolean;

@@ -1,4 +1,9 @@
 ## dev
+* trainer
+  * abstract out coordinator to an interface
+  * make one that runs from Deno, finding an open port and running an external program with the argument `--port={}`
+  * hit that and return its result instead of executing wasm
+  * need to figure out debugger attaching to the process; maybe deno can just take a port number and hit it up instead of starting it directly? 
 * exploration
   * have world send slice that accounts for line-of-sight (TODO marked in world's `runTurn` function)
   * set up exploration following pseudcode notes in `bot.zig`
@@ -22,7 +27,7 @@
       * passing negative or invalid string length
 * line of sight and vision area
 * items, weapons, armor, spells
-* trainer
+* web trainer
   * first UX:
     * runtime configuration of timeout values (to disable)
     * add hooks to wasmcoordinator to stop in the middle of a tick until advanced

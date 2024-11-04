@@ -1,13 +1,16 @@
-import { WasmCoordinator, WorkerStatus, type LogFunction } from "../worker/coordinator.ts";
+import { WasmCoordinator } from "../worker/wasm-coordinator.ts";
+import { CoordinatorStatus } from "../core/coordinator.ts";
 import * as CoreMsg from "../core/messages.ts";
 
 import config from "../core/config.ts";
 import { type Point } from "./map.ts";
-import { LogLevel } from "../core/logger.ts";
+import { LogLevel, type LogFunction } from "../core/logger.ts";
 
 export class Player {
     private _programBytes: Uint8Array = new Uint8Array();
     coordinator: WasmCoordinator;
+    name: string;
+    version: number[];
 
     // remember that anything added here needs to be dealt with in the reset
     location: Point;
@@ -16,9 +19,12 @@ export class Player {
     lastMoveSucceeded: boolean;
 
     constructor(logger: LogFunction, rngSeed: number) {
+        this.coordinator = new WasmCoordinator(this, logger, rngSeed);
+        this.name = "";
+        this.version = [];
+
         this.location = {x: -1, y: -1};
         this.spawnPoint = this.location;
-        this.coordinator = new WasmCoordinator(this, logger, rngSeed);
         this.hitPoints = config.startingHitPoints;
         this.lastMoveSucceeded = true;
     }
@@ -29,14 +35,14 @@ export class Player {
         }
         this.coordinator.kickoff(programBytes);
         await this.coordinator.untilReady();
-        if (this.coordinator.workerStatus == WorkerStatus.Shutdown) {
+        if (this.coordinator.status == CoordinatorStatus.Shutdown) {
             return false;
         }
         return true;
     }
 
     async reset(): Promise<boolean> {
-        const logger = this.coordinator.logFunction;
+        const logger = this.coordinator.logger;
         const seed = this.coordinator.rngSeed;
         logger(LogLevel.Info, "-------- RESETTING");
         this.coordinator = new WasmCoordinator(this, logger, seed);

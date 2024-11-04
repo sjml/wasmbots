@@ -7,7 +7,7 @@ import { Deck } from "../engine/game/random.ts";
 import { WasmBotsVisualizer } from "./game.ts";
 import { VisMap } from "./map.ts";
 
-const PLAYER_IMG_FRAMES = [84, 111];
+const PLAYER_IMG_FRAMES = [84, 87, 96, 99, 100, 111];
 
 export enum PlayerFacing {
     Right,
@@ -18,18 +18,21 @@ export class VisPlayer extends Phaser.GameObjects.Sprite {
     static playerImageDeck?: Deck<number>;
     playerObject: Player;
     tilePosition: Point;
+    imageIndex: number;
 
     constructor(mapScene: VisMap, playerObject: Player) {
         if (!VisPlayer.playerImageDeck) {
             VisPlayer.playerImageDeck = new Deck(PLAYER_IMG_FRAMES, (mapScene.game as WasmBotsVisualizer).visualRNG)
         }
+        const imageIndex = VisPlayer.playerImageDeck.draw();
         super(
             mapScene,
             playerObject.location.x * config.tileSize, playerObject.location.y * config.tileSize,
-            "tiles-dungeon", VisPlayer.playerImageDeck.draw()
+            "tiles-dungeon", imageIndex
         );
         this.playerObject = playerObject;
         this.tilePosition = playerObject.location;
+        this.imageIndex = imageIndex;
         this.setOrigin(0, 0);
 
         if (playerObject.location.x > (config.gameWidth / config.tileSize * 0.5)) {

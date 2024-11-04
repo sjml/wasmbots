@@ -1,6 +1,6 @@
 import { RNG, Deck } from "./random.ts";
 import { Player } from "./player.ts";
-import { WorkerStatus } from "../worker/coordinator.ts";
+import { CoordinatorStatus } from "../core/coordinator.ts";
 import { TileType, WorldMap, type Point } from "./map.ts";
 import * as CoreMsg from "../core/messages.ts";
 
@@ -219,8 +219,8 @@ export class World extends EventTarget {
         return (
                 p != null
             &&  (
-                       p.coordinator.workerStatus == WorkerStatus.Ready
-                    || p.coordinator.workerStatus == WorkerStatus.Running
+                       p.coordinator.status == CoordinatorStatus.Ready
+                    || p.coordinator.status == CoordinatorStatus.Running
                 )
             && p.hitPoints > 0
         );

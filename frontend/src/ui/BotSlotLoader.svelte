@@ -15,7 +15,7 @@
 
     async function makeNewPlayer(rawWasm: Uint8Array) {
         const uipd = UIPlayerData.makingNewPlayer(gameState.world!);
-        uipd.playerObject.init(rawWasm);
+        await uipd.playerObject.init(rawWasm);
         newBotCallback(uipd);
         resetUI();
     }
@@ -65,6 +65,7 @@
         margin-top: 15px;
         margin-left: 5px;
         margin-right: 15px;
+        font-size: 20px;
     }
 
     .botLoading {

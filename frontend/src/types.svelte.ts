@@ -23,7 +23,7 @@ const MAX_LOG_ENTRIES = 1000;
 export class UIPlayerData {
     playerObject!: Player;
     consoleLines: LogEntry[] = $state([]);
-    visPlayer: VisPlayer|null = null;
+    visPlayer: VisPlayer|null = $state(null);
 
     private constructor() {}
 

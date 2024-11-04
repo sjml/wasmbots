@@ -6,6 +6,8 @@ export enum LogLevel {
     Debug = "debug",
 }
 
+export type LogFunction = (level: LogLevel, message: string) => void;
+
 // subset of lib.dom.ts's Console interface
 export interface ILogger {
     debug(...data: any[]): void;

@@ -48,10 +48,10 @@ Anyway, here it is in text art for now. (Not ASCII art because Unicode arrows. �
 +---------------------|-|-----------------------+
                       | ↓           
     +---------------------------------------+ 
-    |            WasmCoordinator            |
-    +---------------------------------------+ 
-                                     ↑ |        
-+------------------------------------|-|-------+
+    |            WasmCoordinator            | --  (swapped out for a
+    +---------------------------------------+      TrainerCoordinator when
+                                     ↑ |           running natively; then
++------------------------------------|-|-------+   there is no Web Worker)
 |                   Web Worker       | ↓       |
 | +-------------------------------------------+|
 | |                Guest Program              ||

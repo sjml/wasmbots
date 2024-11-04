@@ -9,6 +9,8 @@
     import { UIPlayerData, type BotInfo } from "../types.svelte";
     import BotSlotLoader from "./BotSlotLoader.svelte";
     import { GameState } from "../engine/game/world";
+    import { VisEventBus } from "../vis/events";
+    import { VisPlayer } from "../vis/player";
 
     const gameState: WasmBotsState = getContext("gameState");
 
@@ -54,6 +56,13 @@
 
         gameState.world.on("gameStateChange", (evt) => {
             gameInSetup = evt.detail.newState <= GameState.Ready;
+        });
+
+        VisEventBus.on("player-vis-assigned", (data: { player: Player, vis: VisPlayer }) => {
+            const idx = playerList.findIndex(uipd => uipd.playerObject === data.player);
+            if (idx >= 0) {
+                playerList[idx].visPlayer = data.vis;
+            }
         });
     });
 
