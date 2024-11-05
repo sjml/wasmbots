@@ -3,6 +3,8 @@ import { type ILogger } from "./logger.ts";
 import { writeGameParameters } from "../game/circumstances.ts";
 import * as CoreMsg from "./messages.ts";
 import { RNG } from "../game/random.ts";
+import { CoordinatorType } from "./coordinator.ts";
+import { sleep, encodeBase64 } from "./util.ts";
 
 const MIN_NAME_LEN = 4;
 
@@ -17,6 +19,7 @@ interface WasmBotsExports {
 }
 
 export class GuestProgram {
+    coordinatorFlavor: CoordinatorType;
     instance: WebAssembly.Instance|null = null;
     exports: WasmBotsExports|null = null;
     private logger: ILogger;
@@ -28,51 +31,21 @@ export class GuestProgram {
     botName: string = "";
     localRng: RNG;
 
-    constructor(logger: ILogger | null, rngSeed: number) {
+    constructor(logger: ILogger | null, rngSeed: number, coordinatorFlavor: CoordinatorType) {
         logger ||= console;
         this.logger = logger;
+        this.coordinatorFlavor = coordinatorFlavor;
         this.localRng = new RNG(rngSeed);
     }
 
     private readString(msgPtr: number, msgLen: number): string {
-        const av = new Uint8Array((this.instance!.exports.memory as WebAssembly.Memory).buffer, msgPtr, msgLen);
+        const av = new Uint8Array(this.reserveReadBlock.buffer.buffer, msgPtr, msgLen);
         return new TextDecoder("utf-8").decode(av);
     }
 
     private readUint16(ptr: number): number {
-        const dv = new DataView(this.exports!.memory.buffer);
+        const dv = new DataView(this.reserveReadBlock.buffer.buffer);
         return dv.getUint16(ptr, true);
-    }
-    private readInt16(ptr: number): number {
-        const dv = new DataView(this.exports!.memory.buffer);
-        return dv.getInt16(ptr, true);
-    }
-
-    private readUint32(ptr: number): number {
-        const dv = new DataView(this.exports!.memory.buffer);
-        return dv.getUint32(ptr, true);
-    }
-    private readInt32(ptr: number): number {
-        const dv = new DataView(this.exports!.memory.buffer);
-        return dv.getInt32(ptr, true);
-    }
-
-    private readUint64(ptr: number): BigInt {
-        const dv = new DataView(this.exports!.memory.buffer);
-        return dv.getBigUint64(ptr, true);
-    }
-    private readInt64(ptr: number): BigInt {
-        const dv = new DataView(this.exports!.memory.buffer);
-        return dv.getBigInt64(ptr, true);
-    }
-
-    private readFloat32(ptr: number): number {
-        const dv = new DataView(this.exports!.memory.buffer);
-        return dv.getFloat32(ptr, true);
-    }
-    private readFloat64(ptr: number): number {
-        const dv = new DataView(this.exports!.memory.buffer);
-        return dv.getFloat64(ptr, true);
     }
 
     private log(logLevel: number, msgPtr: number, msgLen: number) {
@@ -156,34 +129,48 @@ export class GuestProgram {
         return true;
     }
 
-    runSetup(): { success: boolean, botName: string, botVersion: number[] } {
-        const errStatus = {
-            success: false,
-            botName: "",
-            botVersion: [],
+    async setupMemory(): Promise<boolean> {
+        switch (this.coordinatorFlavor) {
+            case CoordinatorType.WebAssembly:
+                if (!this.exports) {
+                    this.logger.error("RUNTIME ERROR: calling `runSetup` on uninitialized GuestProgram.");
+                    return false;
+                }
+                try {
+                    this.reservePtr = this.exports.setup(config.memorySize);
+                } catch (error) {
+                    this.logger.error(`RUNTIME ERROR: Crash during initial setup call\n  ${error}`);
+                    return false;
+                }
+                if (this.reservePtr == 0) {
+                    // was already logged from client code, probably
+                    return false;
+                }
+                this.reserveBlock = new Uint8Array(
+                    this.exports.memory.buffer,
+                    this.reservePtr,
+                    config.memorySize
+                );
+                break;
+            case CoordinatorType.Trainer:
+                const res = await fetch("http://localhost:9090/setup", {
+                    method: "POST",
+                    body: JSON.stringify({reserve: config.memorySize}),
+                });
+                if (res.ok) {
+                    const memBuffer = await res.arrayBuffer();
+                    if (memBuffer.byteLength != config.memorySize) {
+                        throw new Error("Trainer did not return properly-sized memory");
+                    }
+                    this.reserveBlock = new Uint8Array(memBuffer);
+                }
+                else {
+                    const errMsg = await res.text();
+                    throw new Error(`Could not set up trainer memory: ${errMsg}`);
+                }
+                break;
         }
-        if (!this.exports) {
-            this.logger.error("RUNTIME ERROR: calling `runSetup` on uninitialized GuestProgram.");
-            this.isShutDown = true;
-            return errStatus;
-        }
-        try {
-            this.reservePtr = this.exports.setup(config.memorySize);
-        } catch (error) {
-            this.logger.error(`RUNTIME ERROR: Crash during initial setup call\n  ${error}`);
-            this.isShutDown = true;
-            return errStatus;
-        }
-        if (this.reservePtr == 0) {
-            // was already logged from client code, probably
-            this.isShutDown = true;
-            return errStatus;
-        }
-        this.reserveBlock = new Uint8Array(
-            this.exports.memory.buffer,
-            this.reservePtr,
-            config.memorySize
-        );
+
         this.reserveReadBlock = new CoreMsg.DataAccess(
             new DataView(
                 this.reserveBlock.buffer,
@@ -199,8 +186,25 @@ export class GuestProgram {
             )
         );
 
-        let offset = this.reservePtr;
+        return true;
+    }
+
+    async runSetup(): Promise<{ success: boolean, botName: string, botVersion: number[] }> {
+        const errStatus = {
+            success: false,
+            botName: "",
+            botVersion: [],
+        }
+
+        const memorySuccess = await this.setupMemory();
+        if (!memorySuccess) {
+            this.isShutDown = true;
+            return errStatus;
+        }
+
+        let offset = 0;
         let botName = this.readString(offset, 26);
+        offset += 26;
         let nullTermIdx = botName.indexOf("\0");
         if (nullTermIdx >= 0) {
             botName = botName.substring(0, nullTermIdx);
@@ -211,7 +215,6 @@ export class GuestProgram {
             this.isShutDown = true;
             return errStatus;
         }
-        offset += 26;
         const versionMajor = this.readUint16(offset);
         offset += 2;
         const versionMinor = this.readUint16(offset);
@@ -228,7 +231,7 @@ export class GuestProgram {
         const resultOffset = 1024;
         let ready: boolean;
         try {
-            ready = this.exports.receiveGameParams(0);
+            ready = await this.runReceiveGameParams(0);
         }
         catch (error) {
             this.logger.error(`FATAL ERROR: Crash during client setup:\n  ${error}`);
@@ -248,13 +251,37 @@ export class GuestProgram {
         };
     }
 
+    private async runReceiveGameParams(offset: number): Promise<boolean> {
+        if (this.coordinatorFlavor == CoordinatorType.WebAssembly) {
+            return this.exports!.receiveGameParams(offset);
+        }
+        else {
+            await sleep(1); // TODO: Zig server seems to not like being hammered; is that universally true?
+            const res = await fetch("http://localhost:9090/receiveGameParams", {
+                method: "POST",
+                body: JSON.stringify({
+                    offset: offset,
+                    mem: await encodeBase64(this.reserveBlock),
+                }),
+            });
+            if (res.ok) {
+                const result = await res.json();
+                return result.success;
+            }
+            else {
+                const errMsg = await res.text();
+                throw new Error(`Could not send game parameters: ${errMsg}`);
+            }
+        }
+    }
+
     // "This where the magic happens"
     //    - predefined messages pass swapped back and forth in shared memory
     //        - from the spec in data/messaging.toml
     //    - each side knows how to read what they get based on the spec
     //    - each side knows how to write what the other can read based on the same spec
     //    - I imagine them holding hands and dancing in a circle
-    runTick(circumstances: CoreMsg.PresentCircumstances): CoreMsg.Message {
+    async runTick(circumstances: CoreMsg.PresentCircumstances): Promise<CoreMsg.Message> {
         // wipe the shared block before every tick
         this.reserveBlock.fill(0);
 
@@ -262,7 +289,28 @@ export class GuestProgram {
         circumstances.writeBytes(this.reserveWriteBlock, false);
 
         try {
-            this.exports!.tick(config.writeBlockOffset);
+            switch (this.coordinatorFlavor) {
+                case CoordinatorType.WebAssembly:
+                    this.exports!.tick(config.writeBlockOffset);
+                    break;
+                case CoordinatorType.Trainer:
+                    const res = await fetch("http://localhost:9090/tick", {
+                        method: "POST",
+                        body: JSON.stringify({
+                            offset: config.writeBlockOffset,
+                            mem: await encodeBase64(this.reserveBlock),
+                        }),
+                    });
+                    if (res.ok) {
+                        const newMem = await res.arrayBuffer();
+                        this.reserveBlock.set(new Uint8Array(newMem), 0);
+                    }
+                    else {
+                        const errMsg = await res.text();
+                        throw new Error(`Could not tick: ${errMsg}`);
+                    }
+                    break;
+            }
         } catch (error) {
             const msg = `FATAL ERROR: Crash during tick function:\n  ${error}`;
             this.logger.error(msg);

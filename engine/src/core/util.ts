@@ -1,3 +1,5 @@
+import config from "./config.ts";
+
 export async function sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -57,4 +59,24 @@ export function pathBasename(filepath: string): string {
 export function stringToNumericEnum<T extends number>(enumObject: { [key: string]: T | string }, value: string): T | undefined {
     const key = Object.keys(enumObject).find(k => k.toLowerCase() === value.toLowerCase());
     return key !== undefined ? enumObject[key] as T : undefined;
+}
+
+export async function encodeBase64(arr: Uint8Array): Promise<string> {
+    if (config.environment == "Deno") {
+        const base64 = await import("jsr:@std/encoding/base64");
+        return base64.encodeBase64(arr);
+    }
+    else {
+        throw new Error("base64 not implemented on web");
+    }
+}
+
+export async function decodeBase64(str: string): Promise<Uint8Array> {
+    if (config.environment == "Deno") {
+        const base64 = await import("jsr:@std/encoding/base64");
+        return base64.decodeBase64(str);
+    }
+    else {
+        throw new Error("base64 not implemented on web");
+    }
 }

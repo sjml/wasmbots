@@ -4,6 +4,7 @@ import * as CoreMsg from "../core/messages.ts";
 import { GuestProgram } from "../core/guest.ts";
 import { validateWasm } from "../core/validator.ts";
 import { LogLevel, type ILogger } from "../core/logger.ts";
+import { CoordinatorType } from "../core/coordinator.ts";
 
 let module!: WebAssembly.Module;
 let program!: GuestProgram;
@@ -92,7 +93,7 @@ async function initModule(payload: Msg.InitModulePayload) {
 }
 
 async function instantiate(payload: Msg.InstantiatePayload) {
-    program = new GuestProgram(logger, payload.rngSeed);
+    program = new GuestProgram(logger, payload.rngSeed, CoordinatorType.WebAssembly);
     const initSuccess = await program.init(module);
     if (!initSuccess) {
         self.postMessage({
@@ -105,7 +106,7 @@ async function instantiate(payload: Msg.InstantiatePayload) {
         });
         return;
     }
-    const setupStatus = program.runSetup();
+    const setupStatus = await program.runSetup();
     self.postMessage({
         type: Msg.GuestToHostMessageType.InstantiateDone,
         payload: {
@@ -122,7 +123,7 @@ async function runTick(payload: Msg.RunTickPayload) {
     const workerCirc = new CoreMsg.PresentCircumstances();
     Object.assign(workerCirc, payload.circumstances);
 
-    const move = program.runTick(workerCirc);
+    const move = await program.runTick(workerCirc);
     self.postMessage({
         type: Msg.GuestToHostMessageType.RunTickDone,
         payload: {

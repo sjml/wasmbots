@@ -4,16 +4,18 @@ import * as Msg from "./messages.ts";
 import * as CoreMsg from "../core/messages.ts";
 import { sleep } from "../core/util.ts";
 import { Player } from "../game/player.ts";
-import { type Coordinator, CoordinatorStatus } from "../core/coordinator.ts";
+import { type Coordinator, CoordinatorStatus, CoordinatorType } from "../core/coordinator.ts";
 
 
 export class WasmCoordinator implements Coordinator {
     private worker: Worker;
     private player: Player;
+    flavor: CoordinatorType = CoordinatorType.WebAssembly;
     status: CoordinatorStatus;
     logger: LogFunction;
     rngSeed: number;
 
+    private programBytes: Uint8Array;
     private setupTimeout: number = -1;
     private tickTimeout: number = -1;
     private inTick: boolean = false;
@@ -28,10 +30,11 @@ export class WasmCoordinator implements Coordinator {
     private readyResolve!: () => void;
     private readyReject!: () => void;
 
-    constructor(parent: Player, logFunc: LogFunction, rngSeed: number) {
+    constructor(parent: Player, logger: LogFunction, rngSeed: number, programBytes: Uint8Array) {
         this.player = parent;
-        this.logger = logFunc;
+        this.logger = logger;
         this.rngSeed = rngSeed;
+        this.programBytes = programBytes;
 
         this.worker = new Worker(
             new URL("./wasmbot.worker.ts", import.meta.url).href,
@@ -51,11 +54,11 @@ export class WasmCoordinator implements Coordinator {
         return this.readyPromise;
     }
 
-    kickoff(programBytes: Uint8Array) {
+    kickoff() {
         const initMsgPayload: Msg.InitModulePayload = {
-            wasmBytes: programBytes.buffer,
-            wasmBytesOffset: programBytes.byteOffset,
-            wasmBytesLength: programBytes.byteLength,
+            wasmBytes: this.programBytes.buffer,
+            wasmBytesOffset: this.programBytes.byteOffset,
+            wasmBytesLength: this.programBytes.byteLength,
             setupTimeLimit: config.setupTimeLimit,
             tickWarnTimeLimit: config.tickWarnTimeLimit,
             tickKillTimeLimit: config.tickKillTimeLimit,
@@ -70,6 +73,23 @@ export class WasmCoordinator implements Coordinator {
         );
     }
 
+    async reset() {
+        this.worker = new Worker(
+            new URL("./wasmbot.worker.ts", import.meta.url).href,
+            { type: "module" }
+        );
+        this.status = CoordinatorStatus.Uninitialized;
+
+        this.worker.onmessage = this.onMessage.bind(this);
+
+        this.readyPromise = new Promise<void>((resolve, reject) => {
+            this.readyResolve = resolve;
+            this.readyReject = reject;
+        });
+
+        this.kickoff();
+    }
+
     initModuleDone(payload: Msg.InitModuleDonePayload) {
         if (!payload.success) {
             this.status = CoordinatorStatus.Invalid;
@@ -81,7 +101,7 @@ export class WasmCoordinator implements Coordinator {
             type: Msg.HostToGuestMessageType.Instantiate,
             payload: {
                 rngSeed: this.rngSeed
-            },
+            } as Msg.InstantiatePayload,
         });
         this.setupTimeout = setTimeout(() => {
             if (this.status == CoordinatorStatus.Uninitialized) {

@@ -1,7 +1,6 @@
 const std = @import("std");
 const Allocator = std.mem.Allocator;
 
-pub const host_reserve = @import("host_reserve.zig");
 pub const messages = @import("wasmbot_messages.zig");
 
 const MAX_NAME_LEN: usize = 26;
@@ -42,7 +41,7 @@ pub fn registerClientSetup(cb: *const ClientSetupFn) void {
 }
 
 export fn setup(requestReserve: usize) usize {
-    if (!host_reserve.reserveMemory(requestReserve)) {
+    if (!reserveMemory(requestReserve)) {
         return 0;
     }
 
@@ -51,17 +50,17 @@ export fn setup(requestReserve: usize) usize {
     var offset: usize = 0;
     for (0..MAX_NAME_LEN) |i| {
         if (i < bot_data.name.len) {
-            _ = messages.writeNumber(u8, offset + i, host_reserve.HOST_RESERVE, bot_data.name[i]);
+            _ = messages.writeNumber(u8, offset + i, HOST_RESERVE, bot_data.name[i]);
         } else {
-            _ = messages.writeNumber(u8, offset + i, host_reserve.HOST_RESERVE, 0);
+            _ = messages.writeNumber(u8, offset + i, HOST_RESERVE, 0);
         }
     }
     offset += MAX_NAME_LEN;
     for (bot_data.version) |ve| {
-        offset += messages.writeNumber(u16, offset, host_reserve.HOST_RESERVE, ve);
+        offset += messages.writeNumber(u16, offset, HOST_RESERVE, ve);
     }
 
-    return @intFromPtr(host_reserve.HOST_RESERVE.ptr);
+    return @intFromPtr(HOST_RESERVE.ptr);
 }
 
 pub const TickFn = fn (messages.PresentCircumstances) messages.Message;
@@ -74,22 +73,22 @@ pub fn registerTickCallback(cb: *const TickFn) void {
     _client_tick = cb;
 }
 
-var _allocator: Allocator = undefined;
+pub var global_allocator: Allocator = undefined;
 pub fn setAllocator(allocator: Allocator) void {
-    _allocator = allocator;
+    global_allocator = allocator;
 }
 
 export fn tick(offset: usize) void {
-    const circumstances_read = messages.PresentCircumstances.fromBytes(_allocator, offset, host_reserve.HOST_RESERVE) catch {
+    const circumstances_read = messages.PresentCircumstances.fromBytes(global_allocator, offset, HOST_RESERVE) catch {
         logErr("Could not parse PresentCircumstances in host reserve");
         return;
     };
     var circumstances = circumstances_read.value;
-    defer circumstances.deinit(_allocator);
+    defer circumstances.deinit(global_allocator);
 
     const move = _client_tick(circumstances);
 
-    _ = messages.writeBytes(&move, 0, host_reserve.HOST_RESERVE, true);
+    _ = messages.writeBytes(&move, 0, HOST_RESERVE, true);
 }
 
 pub extern fn getRandomInt(min: i32, max: i32) i32;
@@ -109,7 +108,7 @@ pub fn registerClientReceiveGameParams(cb: *const ClientReceiveGameParamsFn) voi
 export fn receiveGameParams(offset: usize) bool {
     var local_offset = offset;
 
-    const initParamsRead = messages.InitialParameters.fromBytes(local_offset, host_reserve.HOST_RESERVE) catch @panic("Could not read from reserve memory");
+    const initParamsRead = messages.InitialParameters.fromBytes(local_offset, HOST_RESERVE) catch @panic("Could not read from reserve memory");
     const initParams = initParamsRead.value;
     local_offset += initParamsRead.bytes_read;
 
@@ -121,4 +120,20 @@ export fn receiveGameParams(offset: usize) bool {
     }
 
     return _client_receive_game_params(initParams);
+}
+
+pub var HOST_RESERVE: []u8 = undefined;
+
+pub fn reserveMemory(request: usize) bool {
+    if (HOST_RESERVE.len > 0) {
+        logErr("CLIENT ERROR: Attempting to reserve memory twice");
+        return false;
+    }
+
+    HOST_RESERVE = global_allocator.alloc(u8, request) catch {
+        logErr("CLIENT ERROR: Could not allocate reserve memory");
+        return false;
+    };
+
+    return true;
 }

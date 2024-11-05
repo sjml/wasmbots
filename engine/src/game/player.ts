@@ -1,5 +1,5 @@
 import { WasmCoordinator } from "../worker/wasm-coordinator.ts";
-import { CoordinatorStatus } from "../core/coordinator.ts";
+import { type Coordinator, CoordinatorStatus } from "../core/coordinator.ts";
 import * as CoreMsg from "../core/messages.ts";
 
 import config from "../core/config.ts";
@@ -8,7 +8,7 @@ import { LogLevel, type LogFunction } from "../core/logger.ts";
 
 export class Player {
     private _programBytes: Uint8Array = new Uint8Array();
-    coordinator: WasmCoordinator;
+    coordinator!: Coordinator;
     name: string;
     version: number[];
 
@@ -18,8 +18,7 @@ export class Player {
     hitPoints: number;
     lastMoveSucceeded: boolean;
 
-    constructor(logger: LogFunction, rngSeed: number) {
-        this.coordinator = new WasmCoordinator(this, logger, rngSeed);
+    constructor() {
         this.name = "";
         this.version = [];
 
@@ -29,11 +28,9 @@ export class Player {
         this.lastMoveSucceeded = true;
     }
 
-    async init(programBytes: Uint8Array, cloneProgram: boolean = true): Promise<boolean> {
-        if (cloneProgram) {
-            this._programBytes = programBytes.slice();
-        }
-        this.coordinator.kickoff(programBytes);
+    async init(coordinator: Coordinator): Promise<boolean> {
+        this.coordinator = coordinator;
+        this.coordinator.kickoff();
         await this.coordinator.untilReady();
         if (this.coordinator.status == CoordinatorStatus.Shutdown) {
             return false;
@@ -42,14 +39,15 @@ export class Player {
     }
 
     async reset(): Promise<boolean> {
-        const logger = this.coordinator.logger;
-        const seed = this.coordinator.rngSeed;
-        logger(LogLevel.Info, "-------- RESETTING");
-        this.coordinator = new WasmCoordinator(this, logger, seed);
+        this.coordinator.logger(LogLevel.Info, "-------- RESETTING");
+
         this.hitPoints = config.startingHitPoints;
         this.lastMoveSucceeded = true;
         this.location = this.spawnPoint;
-        return await this.init(this._programBytes, false);
+
+        this.coordinator.reset();
+        await this.coordinator.untilReady();
+        return true;
     }
 
     async tickTurn(circumstances: CoreMsg.PresentCircumstances): Promise<CoreMsg.Message> {

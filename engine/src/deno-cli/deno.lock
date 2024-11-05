@@ -2,6 +2,8 @@
   "version": "4",
   "specifiers": {
     "jsr:@std/assert@*": "1.0.6",
+    "jsr:@std/encoding@*": "1.0.5",
+    "jsr:@std/encoding@^1.0.5": "1.0.5",
     "jsr:@std/internal@^1.0.4": "1.0.4",
     "jsr:@std/path@*": "1.0.7",
     "jsr:@std/path@^1.0.7": "1.0.7",
@@ -13,6 +15,9 @@
       "dependencies": [
         "jsr:@std/internal"
       ]
+    },
+    "@std/encoding@1.0.5": {
+      "integrity": "ecf363d4fc25bd85bd915ff6733a7e79b67e0e7806334af15f4645c569fefc04"
     },
     "@std/internal@1.0.4": {
       "integrity": "62e8e4911527e5e4f307741a795c0b0a9e6958d0b3790716ae71ce085f755422"
@@ -28,6 +33,7 @@
   },
   "workspace": {
     "dependencies": [
+      "jsr:@std/encoding@^1.0.5",
       "jsr:@std/path@^1.0.7",
       "npm:pure-rand@6.1.0"
     ]

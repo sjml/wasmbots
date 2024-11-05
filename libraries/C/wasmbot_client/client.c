@@ -1,5 +1,5 @@
 #define WASMBOTSMESSAGE_IMPLEMENTATION
-#include "./wasmbot_client.h"
+#include "./client.h"
 
 #include <stdarg.h>
 #include <string.h>

@@ -120,8 +120,12 @@ export fn clientInitialize() void {
     if (config.building_wasm) {
         global_allocator = std.heap.wasm_allocator;
     } else {
-        var gpa = std.heap.GeneralPurposeAllocator(.{}){};
-        global_allocator = gpa.allocator();
+        // var gpa = std.heap.GeneralPurposeAllocator(.{}){};
+        // global_allocator = gpa.allocator();
+
+        // a little troubling that the GPA allocator was faulting...
+        //   let's figure that out; maybe it was a threading thing?
+        global_allocator = std.heap.page_allocator;
     }
     wasmbotClient.setAllocator(global_allocator);
 }

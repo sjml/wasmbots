@@ -27,10 +27,9 @@ export class UIPlayerData {
 
     private constructor() {}
 
-    static makingNewPlayer(world: World, rngSeed?: number) {
+    static makingNewPlayer(world: World) {
         const uipd = new UIPlayerData();
-        rngSeed ||= world.rng.randInt(0, Number.MAX_SAFE_INTEGER);
-        const player = new Player(uipd.selfLog, rngSeed);
+        const player = new Player();
         uipd.playerObject = player;
         return uipd;
     }

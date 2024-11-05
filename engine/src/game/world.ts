@@ -215,10 +215,9 @@ export class World extends EventTarget {
         this.checkReady();
     }
 
-    private static _playerIsValid(p: Player|null): boolean {
+    private static _playerIsValid(p: Player): boolean {
         return (
-                p != null
-            &&  (
+                (
                        p.coordinator.status == CoordinatorStatus.Ready
                     || p.coordinator.status == CoordinatorStatus.Running
                 )
@@ -233,11 +232,17 @@ export class World extends EventTarget {
         }
 
         for (const player of this.players) {
-            if (player == null) { continue; }
             if (World._playerIsValid(player)) {
                 const circumstances = new CoreMsg.PresentCircumstances();
+                circumstances.currentHitPoints = player.hitPoints;
 
                 // TODO: calculate line of sight and tile slice
+                // https://www.roguebasin.com/index.php?title=FOV_using_recursive_shadowcasting
+                circumstances.surroundingsRadius  = 2;
+                circumstances.surroundings = this.currentMap?.getTileSlice(
+                    player.location.x, player.location.y,
+                    2
+                ).flat() || [];
 
                 const move = await player.tickTurn(circumstances);
 

@@ -1,7 +1,7 @@
 <script lang="ts">
     import { getContext } from "svelte";
     import { UIPlayerData, type BotInfo } from "../types.svelte";
-    import { Loader } from "../engine";
+    import { Loader, WasmCoordinator } from "../engine";
 
     import { type WasmBotsState } from "../types.svelte";
     const gameState: WasmBotsState = getContext("gameState");
@@ -15,7 +15,9 @@
 
     async function makeNewPlayer(rawWasm: Uint8Array) {
         const uipd = UIPlayerData.makingNewPlayer(gameState.world!);
-        await uipd.playerObject.init(rawWasm);
+        const rngSeed = gameState.world!.rng.randInt(0, Number.MAX_SAFE_INTEGER);
+        const coord = new WasmCoordinator(uipd.playerObject, uipd.selfLog, rngSeed, rawWasm);
+        await uipd.playerObject.init(coord);
         newBotCallback(uipd);
         resetUI();
     }

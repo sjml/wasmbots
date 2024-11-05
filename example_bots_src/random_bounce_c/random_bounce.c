@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include "wasmbot_client.h"
+#include "wasmbot_client/client.h"
 
 const char* BOT_NAME = "randBounce C";
 const uint16_t BOT_VERSION[3] = {0, 2, 1};

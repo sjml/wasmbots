@@ -1,9 +1,12 @@
 ## dev
 * trainer
-  * abstract out coordinator to an interface
-  * make one that runs from Deno, finding an open port and running an external program with the argument `--port={}`
-  * hit that and return its result instead of executing wasm
-  * need to figure out debugger attaching to the process; maybe deno can just take a port number and hit it up instead of starting it directly? 
+    * need to figure out debugger attaching to the process; maybe deno can just take a port number and hit it up instead of starting it directly? 
+    * typescript base64 encoding is super hackhack; should not require await
+    * code could use a smoothing pass -- all the switching in guest program feels like code smell
+        * call out to coordinator for certain things? 
+    * reset functionality got moved around; test it out
+    * clean the server code the heck up
+    * vs code debug doesn't like symlinks :-/ -- a better way? 
 * exploration
   * have world send slice that accounts for line-of-sight (TODO marked in world's `runTurn` function)
   * set up exploration following pseudcode notes in `bot.zig`
@@ -16,6 +19,10 @@
     * add player image to panel once spawned
     * button to zoom on particular bot
 * BUG: failed instantiation still adds player to UI
+
+* is `makingNewPlayer` still needed or can we just make it separate?
+
+
 * map variations
     * add map parameter to embedded component
 * testing
@@ -49,6 +56,7 @@
 ## polish
 * player class
     * set facing when reset
+* clean up / organize Zig library; just kind of a mess right now
 * UI: landscape view on iPhone - the drawers don't extend into the island areas
 * Tech: ability to reseed player on reset
 * Trainer:
