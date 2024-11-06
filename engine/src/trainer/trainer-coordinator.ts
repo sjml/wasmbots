@@ -1,13 +1,12 @@
-import { type Coordinator, CoordinatorStatus, CoordinatorType } from "../core/coordinator.ts";
-import { GuestProgram } from "../core/guest.ts";
+import { type Coordinator, CoordinatorStatus } from "../core/coordinator.ts";
+import { TrainerGuestProgram } from "../core/guest.ts";
 import { LogFunction, LogLevel } from "../core/logger.ts";
-import * as Msg from "../core/messages.ts";
+import * as CoreMsg from "../core/messages.ts";
 import { Player } from "../game/player.ts";
 
 export class TrainerCoordinator implements Coordinator {
     private player: Player;
-    private program: GuestProgram;
-    flavor: CoordinatorType = CoordinatorType.Trainer;
+    private program: TrainerGuestProgram;
     status: CoordinatorStatus;
     logger: LogFunction;
     rngSeed: number;
@@ -25,7 +24,7 @@ export class TrainerCoordinator implements Coordinator {
 
         this.status = CoordinatorStatus.Uninitialized;
 
-        this.program = new GuestProgram(console, this.rngSeed, this.flavor);
+        this.program = new TrainerGuestProgram(this.rngSeed);
 
         this.readyPromise = new Promise<void>((resolve, reject) => {
             this.readyResolve = resolve;
@@ -53,7 +52,7 @@ export class TrainerCoordinator implements Coordinator {
         throw new Error("Reset not implemented on trainer coordinator");
     }
 
-    tick(circumstances: Msg.PresentCircumstances): Promise<Msg.Message> {
+    async tick(circumstances: CoreMsg.PresentCircumstances): Promise<CoreMsg.Message> {
         if (this.status == CoordinatorStatus.Shutdown) {
             this.logger(LogLevel.Warn, "Tried to tick shutdown module");
             return Promise.reject();
@@ -61,7 +60,23 @@ export class TrainerCoordinator implements Coordinator {
 
         this.tickStartTime = performance.now();
         circumstances.lastTickDuration = this.lastTickDuration;
-        const move = this.program.runTick(circumstances);
+
+        let move: CoreMsg.Message;
+        try {
+            move = await this.program.runTick(circumstances);
+        }
+        catch (err) {
+            const errMsg = `Error in tick! ${err}`;
+            this.status = CoordinatorStatus.Shutdown;
+
+            const e = new CoreMsg._Error();
+            e.description = errMsg;
+            return e;
+        }
+        if (move.getMessageType() == CoreMsg.MessageType._ErrorType) {
+            this.status = CoordinatorStatus.Shutdown;
+        }
+
         this.lastTickDuration = Math.ceil(performance.now() - this.tickStartTime);
 
         return move;

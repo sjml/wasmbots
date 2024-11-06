@@ -12,10 +12,11 @@ const config = {
     numTimeLimitStrikes: 3,
     memorySize: 2048,
     writeBlockOffset: 1024,
+    minimumNameLength: 4,
 
     // GameParameters
     startingHitPoints: 10,
-    enabledMaps: ["arena", "dungeon"],
+    enabledMaps: ["dungeon", "arena"],
 
     // visualization stuff
     gameWidth: 1024,

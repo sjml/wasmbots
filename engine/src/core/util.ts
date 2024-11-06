@@ -1,5 +1,3 @@
-import config from "./config.ts";
-
 export async function sleep(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -61,12 +59,12 @@ export function stringToNumericEnum<T extends number>(enumObject: { [key: string
     return key !== undefined ? enumObject[key] as T : undefined;
 }
 
-export async function encodeBase64(arr: Uint8Array): Promise<string> {
+export function encodeBase64(arr: Uint8Array): string {
     const binaryStr = String.fromCharCode(...arr);
     return btoa(binaryStr);
 }
 
-export async function decodeBase64(str: string): Promise<Uint8Array> {
+export function decodeBase64(str: string): Uint8Array {
     const binaryStr = atob(str);
     return Uint8Array.from(binaryStr, char => char.charCodeAt(0));
 }

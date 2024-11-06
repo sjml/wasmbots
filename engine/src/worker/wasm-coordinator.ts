@@ -4,13 +4,12 @@ import * as Msg from "./messages.ts";
 import * as CoreMsg from "../core/messages.ts";
 import { sleep } from "../core/util.ts";
 import { Player } from "../game/player.ts";
-import { type Coordinator, CoordinatorStatus, CoordinatorType } from "../core/coordinator.ts";
+import { type Coordinator, CoordinatorStatus } from "../core/coordinator.ts";
 
 
 export class WasmCoordinator implements Coordinator {
     private worker: Worker;
     private player: Player;
-    flavor: CoordinatorType = CoordinatorType.WebAssembly;
     status: CoordinatorStatus;
     logger: LogFunction;
     rngSeed: number;

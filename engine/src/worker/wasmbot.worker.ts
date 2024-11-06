@@ -1,13 +1,13 @@
 import config from "../core/config.ts";
 import * as Msg from "./messages.ts";
 import * as CoreMsg from "../core/messages.ts";
-import { GuestProgram } from "../core/guest.ts";
+import { WasmGuestProgram } from "../core/guest.ts";
 import { validateWasm } from "../core/validator.ts";
 import { LogLevel, type ILogger } from "../core/logger.ts";
 import { CoordinatorType } from "../core/coordinator.ts";
 
 let module!: WebAssembly.Module;
-let program!: GuestProgram;
+let program!: WasmGuestProgram;
 let logger!: Logger;
 
 class Logger implements ILogger {
@@ -93,7 +93,7 @@ async function initModule(payload: Msg.InitModulePayload) {
 }
 
 async function instantiate(payload: Msg.InstantiatePayload) {
-    program = new GuestProgram(logger, payload.rngSeed, CoordinatorType.WebAssembly);
+    program = new WasmGuestProgram(payload.rngSeed);
     const initSuccess = await program.init(module);
     if (!initSuccess) {
         self.postMessage({
