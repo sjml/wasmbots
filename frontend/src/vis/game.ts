@@ -1,14 +1,16 @@
 import Phaser from "phaser";
 
-import config from "../engine/core/config";
-import { RNG } from "../engine/game/random";
-import { World } from "../engine/game/world";
-import { Player as WorldPlayer } from "../engine/game/player";
+import {
+    Config,
+    WorldMap,
+    RNG,
+    World,
+    Player as WorldPlayer
+} from "wasmbots";
 import { VisMap } from "./map";
 import { VisBootloader } from "./bootloader";
 import { VisPlayer, PlayerFacing } from "./player";
 import { VisEventBus } from "./events";
-import type { WorldMap } from "../engine";
 
 export class WasmBotsVisualizer extends Phaser.Game {
     private _booloaderPromise: Promise<void>;
@@ -26,8 +28,8 @@ export class WasmBotsVisualizer extends Phaser.Game {
                 parent: parentDiv,
                 mode: Phaser.Scale.FIT,
                 autoCenter: Phaser.Scale.CENTER_BOTH,
-                width: config.gameWidth,
-                height: config.gameHeight,
+                width: Config.gameWidth,
+                height: Config.gameHeight,
             },
             pixelArt: true,
             backgroundColor: "#032300",

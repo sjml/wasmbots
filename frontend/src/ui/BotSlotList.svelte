@@ -1,14 +1,11 @@
 <script lang="ts">
     import { getContext, onMount } from "svelte";
 
-    import { Loader } from "../engine";
+    import { Loader, Player, WorldMap, GameState } from "wasmbots";
     import { type WasmBotsState } from "../types.svelte";
-    import type { Player } from "../engine/game/player";
-    import type { WorldMap } from "../engine";
     import BotSlot from "./BotSlot.svelte";
     import { UIPlayerData, type BotInfo } from "../types.svelte";
     import BotSlotLoader from "./BotSlotLoader.svelte";
-    import { GameState } from "../engine/game/world";
     import { VisEventBus } from "../vis/events";
     import { VisPlayer } from "../vis/player";
 

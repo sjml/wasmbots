@@ -62,21 +62,11 @@ export function stringToNumericEnum<T extends number>(enumObject: { [key: string
 }
 
 export async function encodeBase64(arr: Uint8Array): Promise<string> {
-    if (config.environment == "Deno") {
-        const base64 = await import("jsr:@std/encoding/base64");
-        return base64.encodeBase64(arr);
-    }
-    else {
-        throw new Error("base64 not implemented on web");
-    }
+    const binaryStr = String.fromCharCode(...arr);
+    return btoa(binaryStr);
 }
 
 export async function decodeBase64(str: string): Promise<Uint8Array> {
-    if (config.environment == "Deno") {
-        const base64 = await import("jsr:@std/encoding/base64");
-        return base64.decodeBase64(str);
-    }
-    else {
-        throw new Error("base64 not implemented on web");
-    }
+    const binaryStr = atob(str);
+    return Uint8Array.from(binaryStr, char => char.charCodeAt(0));
 }

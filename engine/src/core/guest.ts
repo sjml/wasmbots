@@ -121,6 +121,7 @@ export class GuestProgram {
             if (this.exports?.clientInitialize) {
                 this.exports.clientInitialize();
             }
+
         } catch (err) {
             this.logger.error(`CLIENT ERROR: Intitialization failed:\n  ${err}`);
             return false;
@@ -178,6 +179,7 @@ export class GuestProgram {
                 this.reserveBlock.byteLength
             )
         );
+
         this.reserveWriteBlock = new CoreMsg.DataAccess(
             new DataView(
                 this.reserveBlock.buffer,
@@ -202,7 +204,7 @@ export class GuestProgram {
             return errStatus;
         }
 
-        let offset = 0;
+        let offset = this.reserveReadBlock.buffer.byteOffset;
         let botName = this.readString(offset, 26);
         offset += 26;
         let nullTermIdx = botName.indexOf("\0");

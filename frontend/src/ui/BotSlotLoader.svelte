@@ -1,7 +1,7 @@
 <script lang="ts">
     import { getContext } from "svelte";
+    import { Loader, WasmCoordinator, Logger } from "wasmbots";
     import { UIPlayerData, type BotInfo } from "../types.svelte";
-    import { Loader, WasmCoordinator } from "../engine";
 
     import { type WasmBotsState } from "../types.svelte";
     const gameState: WasmBotsState = getContext("gameState");

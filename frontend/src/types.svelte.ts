@@ -1,8 +1,5 @@
-import { World } from "./engine/game/world";
-
-import { Logger } from "./engine";
+import { World, Logger, Player } from "wasmbots";
 import { WasmBotsVisualizer } from "./vis/game";
-import { Player } from "./engine/game/player";
 import type { VisPlayer } from "./vis/player";
 
 export interface WasmBotsState {

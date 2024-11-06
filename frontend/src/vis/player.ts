@@ -1,9 +1,6 @@
 import Phaser from "phaser";
 
-import config from "../engine/core/config.ts";
-import { type Point } from "../engine/game/map.ts";
-import { Player } from "../engine/game/player.ts";
-import { Deck } from "../engine/game/random.ts";
+import { Config, type Point, Player, Deck } from "wasmbots";
 import { WasmBotsVisualizer } from "./game.ts";
 import { VisMap } from "./map.ts";
 
@@ -27,7 +24,7 @@ export class VisPlayer extends Phaser.GameObjects.Sprite {
         const imageIndex = VisPlayer.playerImageDeck.draw();
         super(
             mapScene,
-            playerObject.location.x * config.tileSize, playerObject.location.y * config.tileSize,
+            playerObject.location.x * Config.tileSize, playerObject.location.y * Config.tileSize,
             "tiles-dungeon", imageIndex
         );
         this.playerObject = playerObject;
@@ -35,7 +32,7 @@ export class VisPlayer extends Phaser.GameObjects.Sprite {
         this.imageIndex = imageIndex;
         this.setOrigin(0, 0);
 
-        if (playerObject.location.x > (config.gameWidth / config.tileSize * 0.5)) {
+        if (playerObject.location.x > (Config.gameWidth / Config.tileSize * 0.5)) {
             this.setFacing(PlayerFacing.Left);
         }
         else {
@@ -66,8 +63,8 @@ export class VisPlayer extends Phaser.GameObjects.Sprite {
             }
             this.tilePosition = this.playerObject.location;
             this.setPosition(
-                this.tilePosition.x * config.tileSize,
-                this.tilePosition.y * config.tileSize,
+                this.tilePosition.x * Config.tileSize,
+                this.tilePosition.y * Config.tileSize,
             );
         }
     }

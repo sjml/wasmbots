@@ -2,12 +2,10 @@
 
 <script lang="ts">
     import { onMount, setContext } from "svelte";
+    import { Loader, Logger, Player, WasmCoordinator } from "wasmbots";
 
     import WorldCanvas from "./WorldCanvas.svelte";
     import { type WasmBotsState } from "../types.svelte";
-
-    import { Loader, Logger } from "../engine";
-    import { Player } from "../engine/game/player";
 
 
     const gameState: WasmBotsState = $state({
@@ -34,9 +32,15 @@
         const setupInfo: SetupInfo = JSON.parse(setup);
         for (const botUrl of setupInfo.botUrlList) {
             const wasmBytes = await Loader.readBinaryFile(botUrl);
-            const p = new Player(log, gameState.world!.rng.randInt(0, Number.MAX_SAFE_INTEGER));
-            await p.init(wasmBytes);
-            gameState.world?.registerPlayer(p)
+            const player = new Player();
+            const coord = new WasmCoordinator(
+                player,
+                log,
+                gameState.world!.rng.randInt(0, Number.MAX_SAFE_INTEGER),
+                wasmBytes,
+            )
+            await player.init(coord);
+            gameState.world?.registerPlayer(player);
         }
         if (gameState.world?.isReadyToStart()) {
             gameState.world.startGame();

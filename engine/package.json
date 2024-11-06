@@ -1,0 +1,10 @@
+{
+  "name": "wasmbots",
+  "version": "0.0.0",
+  "private": true,
+  "main": "src/index.ts",
+  "type": "module",
+  "dependencies": {
+    "pure-rand": "6.1.0"
+  }
+}

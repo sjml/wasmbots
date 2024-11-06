@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 
-import { WorldMap } from "../engine/game/map";
+import { WorldMap } from "wasmbots";
 import type { VisPlayer } from "./player";
 
 export class VisMap extends Phaser.Scene {

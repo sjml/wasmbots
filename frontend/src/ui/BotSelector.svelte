@@ -1,6 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { Loader } from "../engine";
+    import { Loader } from "wasmbots";
 
     interface Props {
         chosen?: string;

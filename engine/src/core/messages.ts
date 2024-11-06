@@ -148,6 +148,16 @@ export class DataAccess {
     }
 }
 
+export abstract class Message {
+    abstract getMessageType(): MessageType;
+    abstract writeBytes(dv: DataView, tag: boolean): void;
+    abstract getSizeInBytes(): number;
+
+    static fromBytes(dv: DataView): Message | null {
+        throw new Error("Cannot read abstract Message from bytes.");
+    };
+}
+
 export enum MessageType {
   _ErrorType = 1,
   InitialParametersType = 2,
@@ -157,19 +167,6 @@ export enum MessageType {
   MoveToType = 6,
   OpenType = 7,
   CloseType = 8,
-}
-
-export interface Message {
-  getMessageType(): MessageType;
-  writeBytes(dv: DataView, tag: boolean): void;
-  getSizeInBytes(): number;
-}
-export interface MessageStatic {
-  new(): Message;
-  fromBytes(dv: DataView): Message | null;
-}
-function staticImplements<T>() {
-  return (constructor: T) => {}
 }
 
 export function ProcessRawBytes(dv: DataView): Message[] {
@@ -211,8 +208,7 @@ export function ProcessRawBytes(dv: DataView): Message[] {
   return msgList;
 }
 
-@staticImplements<MessageStatic>()
-export class _Error implements Message {
+export class _Error extends Message {
   description: string = "";
 
   getMessageType() : MessageType { return MessageType._ErrorType; }
@@ -238,7 +234,11 @@ export class _Error implements Message {
       return n_Error;
     }
     catch (err) {
-      throw new Error(`Could not read _Error from offset ${da.currentOffset} (${err.name})`);
+      let errMsg = "[Unknown error]";
+      if (err instanceof Error) {
+        errMsg = `${err.name} -- ${err.message}`;
+      }
+      throw new Error(`Could not read _Error from offset ${da.currentOffset} (${errMsg})`);
     }
   }
 
@@ -258,8 +258,7 @@ export class _Error implements Message {
 
 }
 
-@staticImplements<MessageStatic>()
-export class InitialParameters implements Message {
+export class InitialParameters extends Message {
   paramsVersion: number = 0;
   engineVersionMajor: number = 0;
   engineVersionMinor: number = 0;
@@ -288,7 +287,11 @@ export class InitialParameters implements Message {
       return nInitialParameters;
     }
     catch (err) {
-      throw new Error(`Could not read InitialParameters from offset ${da.currentOffset} (${err.name})`);
+      let errMsg = "[Unknown error]";
+      if (err instanceof Error) {
+        errMsg = `${err.name} -- ${err.message}`;
+      }
+      throw new Error(`Could not read InitialParameters from offset ${da.currentOffset} (${errMsg})`);
     }
   }
 
@@ -311,8 +314,7 @@ export class InitialParameters implements Message {
 
 }
 
-@staticImplements<MessageStatic>()
-export class PresentCircumstances implements Message {
+export class PresentCircumstances extends Message {
   lastTickDuration: number = 0;
   lastMoveSucceeded: boolean = false;
   lastMoveValid: boolean = false;
@@ -354,7 +356,11 @@ export class PresentCircumstances implements Message {
       return nPresentCircumstances;
     }
     catch (err) {
-      throw new Error(`Could not read PresentCircumstances from offset ${da.currentOffset} (${err.name})`);
+      let errMsg = "[Unknown error]";
+      if (err instanceof Error) {
+        errMsg = `${err.name} -- ${err.message}`;
+      }
+      throw new Error(`Could not read PresentCircumstances from offset ${da.currentOffset} (${errMsg})`);
     }
   }
 
@@ -384,8 +390,7 @@ export class PresentCircumstances implements Message {
 
 }
 
-@staticImplements<MessageStatic>()
-export class Wait implements Message {
+export class Wait extends Message {
 
   getMessageType() : MessageType { return MessageType.WaitType; }
 
@@ -406,7 +411,11 @@ export class Wait implements Message {
       return nWait;
     }
     catch (err) {
-      throw new Error(`Could not read Wait from offset ${da.currentOffset} (${err.name})`);
+      let errMsg = "[Unknown error]";
+      if (err instanceof Error) {
+        errMsg = `${err.name} -- ${err.message}`;
+      }
+      throw new Error(`Could not read Wait from offset ${da.currentOffset} (${errMsg})`);
     }
   }
 
@@ -425,8 +434,7 @@ export class Wait implements Message {
 
 }
 
-@staticImplements<MessageStatic>()
-export class Resign implements Message {
+export class Resign extends Message {
 
   getMessageType() : MessageType { return MessageType.ResignType; }
 
@@ -447,7 +455,11 @@ export class Resign implements Message {
       return nResign;
     }
     catch (err) {
-      throw new Error(`Could not read Resign from offset ${da.currentOffset} (${err.name})`);
+      let errMsg = "[Unknown error]";
+      if (err instanceof Error) {
+        errMsg = `${err.name} -- ${err.message}`;
+      }
+      throw new Error(`Could not read Resign from offset ${da.currentOffset} (${errMsg})`);
     }
   }
 
@@ -466,8 +478,7 @@ export class Resign implements Message {
 
 }
 
-@staticImplements<MessageStatic>()
-export class MoveTo implements Message {
+export class MoveTo extends Message {
   direction: number = 0;
   distance: number = 0;
 
@@ -492,7 +503,11 @@ export class MoveTo implements Message {
       return nMoveTo;
     }
     catch (err) {
-      throw new Error(`Could not read MoveTo from offset ${da.currentOffset} (${err.name})`);
+      let errMsg = "[Unknown error]";
+      if (err instanceof Error) {
+        errMsg = `${err.name} -- ${err.message}`;
+      }
+      throw new Error(`Could not read MoveTo from offset ${da.currentOffset} (${errMsg})`);
     }
   }
 
@@ -513,8 +528,7 @@ export class MoveTo implements Message {
 
 }
 
-@staticImplements<MessageStatic>()
-export class Open implements Message {
+export class Open extends Message {
   targetX: number = 0;
   targetY: number = 0;
 
@@ -539,7 +553,11 @@ export class Open implements Message {
       return nOpen;
     }
     catch (err) {
-      throw new Error(`Could not read Open from offset ${da.currentOffset} (${err.name})`);
+      let errMsg = "[Unknown error]";
+      if (err instanceof Error) {
+        errMsg = `${err.name} -- ${err.message}`;
+      }
+      throw new Error(`Could not read Open from offset ${da.currentOffset} (${errMsg})`);
     }
   }
 
@@ -560,8 +578,7 @@ export class Open implements Message {
 
 }
 
-@staticImplements<MessageStatic>()
-export class Close implements Message {
+export class Close extends Message {
   targetX: number = 0;
   targetY: number = 0;
 
@@ -586,7 +603,11 @@ export class Close implements Message {
       return nClose;
     }
     catch (err) {
-      throw new Error(`Could not read Close from offset ${da.currentOffset} (${err.name})`);
+      let errMsg = "[Unknown error]";
+      if (err instanceof Error) {
+        errMsg = `${err.name} -- ${err.message}`;
+      }
+      throw new Error(`Could not read Close from offset ${da.currentOffset} (${errMsg})`);
     }
   }
 

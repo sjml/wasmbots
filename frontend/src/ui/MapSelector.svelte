@@ -1,9 +1,8 @@
 <script lang="ts">
     import { getContext, onMount } from "svelte";
-    import { Config } from "../engine";
+    import { Config, GameState } from "wasmbots";
 
     import { type WasmBotsState } from "../types.svelte";
-    import { GameState } from "../engine/game/world";
     const gameState: WasmBotsState = getContext("gameState");
 
     let selectorVisible = $state(false);

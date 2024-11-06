@@ -1,7 +1,7 @@
 <script lang="ts">
     import { onMount, getContext } from "svelte";
+    import { GameState } from "wasmbots";
 
-    import { GameState } from "../engine/game/world";
     let currentGameState: GameState = $state(GameState.Setup);
 
     import { type WasmBotsState } from "../types.svelte";

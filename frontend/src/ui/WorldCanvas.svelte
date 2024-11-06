@@ -1,8 +1,7 @@
 <script lang="ts">
     import { onMount, getContext } from "svelte";
+    import { Config, World } from "wasmbots";
 
-    import { Config } from "../engine";
-    import { World } from "../engine/game/world";
     import { WasmBotsVisualizer } from "../vis/game";
 
     import { type WasmBotsState } from "../types.svelte";

@@ -25,6 +25,6 @@
 	},
 	"dependencies": {
 		"phaser": "^3.86.0",
-		"pure-rand": "6.1.0"
+		"wasmbots": "*"
 	}
 }

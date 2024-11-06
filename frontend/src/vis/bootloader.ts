@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 
-import { Loader, Config } from "../engine";
+import { Loader, Config } from "wasmbots";
 import { VisEventBus } from "./events";
 
 export class VisBootloader extends Phaser.Scene {

@@ -3,3 +3,6 @@
 /.vscode
 /scripts/deploy_frontend.sh
 /.envrc
+
+/package-lock.json
+/node_modules

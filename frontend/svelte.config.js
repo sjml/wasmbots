@@ -6,7 +6,7 @@ const config = {
   preprocess: vitePreprocess(),
 
   kit: {
-  adapter: adapter({
+    adapter: adapter({
       pages: 'build',
       asssets: 'build',
       fallback: '200.html',
@@ -15,6 +15,9 @@ const config = {
     }),
     paths: {
       base: process.argv.includes('dev') ? '' : '/projects/wasmbots'
+    },
+    alias: {
+      "wasmbots": "../engine/src"
     }
   },
 };

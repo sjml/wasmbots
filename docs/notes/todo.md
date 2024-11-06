@@ -7,6 +7,7 @@
     * reset functionality got moved around; test it out
     * clean the server code the heck up
     * vs code debug doesn't like symlinks :-/ -- a better way? 
+* botloader not using Loader? (I assume I had a reason, because it *is* imported...)
 * exploration
   * have world send slice that accounts for line-of-sight (TODO marked in world's `runTurn` function)
   * set up exploration following pseudcode notes in `bot.zig`
