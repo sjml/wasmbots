@@ -12,7 +12,7 @@ pub fn build(b: *std.Build) void {
     const wc_module = b.createModule(.{
         .root_source_file = .{ .src_path = .{
             .owner = b,
-            .sub_path = "./lib/wasmbot_client/src/lib.zig",
+            .sub_path = "../../libraries/Zig/wasmbot_client/src/lib.zig",
         } },
     });
 
@@ -45,7 +45,7 @@ pub fn build(b: *std.Build) void {
 
         exe = b.addExecutable(.{
             .name = "explorer-trainer",
-            .root_source_file = b.path("./lib/trainer/src/main.zig"),
+            .root_source_file = b.path("../../libraries/Zig/trainer/src/main.zig"),
             .target = target,
             .optimize = optimize,
         });
