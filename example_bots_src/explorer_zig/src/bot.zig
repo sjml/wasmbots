@@ -79,27 +79,35 @@ fn updateMaps(circs: *const msg.PresentCircumstances) !void {
     }
 }
 
+var exploring = true;
+var targetTile: ?Point = null;
+
 fn clientTick(circumstances: msg.PresentCircumstances) msg.Message {
     updateMaps(&circumstances) catch {
         wasmbotClient.logErr("Could not update maps!");
         unreachable;
     };
 
-    // if exploring == false:
-    //      submit wait message and return
-    // if targetTile is null:
-    //      use DFS to pick a targetTile that's been seen but not visited
-    //      if there are no candidates:
-    //          pick the nearest closed door as a target
-    //          if none:
-    //              set targetTile to null
-    //              set exploring to false
-    // else:
-    //         move towards target
-    //         if within one square of targetTile and targetTile is closed door:
-    //              open door
-    //         set targetTile to null
+    if (!exploring) {
+        return msg.Message{ .Wait = msg.Wait{} };
+    }
 
+    if (targetTile == null) {
+        //      use DFS to pick a targetTile that's been seen but not visited
+        //      if there are no candidates:
+        //          pick the nearest closed door as a target
+        //          if none:
+        //              set targetTile to null
+        //              set exploring to false
+        //              submit wait
+    } else {
+        //         if within one square of targetTile and targetTile is closed door:
+        //              set targetTile to null
+        //              submit open door
+        //         submit move towards target
+    }
+
+    // should be unreachable
     return msg.Message{ .Wait = msg.Wait{} };
 }
 
