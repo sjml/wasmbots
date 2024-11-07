@@ -47,12 +47,12 @@ const ValueBlockReturn = struct {
 
 pub fn simulateSetup(reserve_request: usize) []u8 {
     clientInitialize();
-    const reserveOffset = setup(reserve_request);
-    if (reserveOffset == 0) {
+    const reserve_offset = setup(reserve_request);
+    if (reserve_offset == 0) {
         return &[0]u8{};
     }
-    const reservePtr: [*]u8 = @ptrFromInt(reserveOffset);
-    reserve_block = reservePtr[0..reserve_request];
+    const reserve_ptr: [*]u8 = @ptrFromInt(reserve_offset);
+    reserve_block = reserve_ptr[0..reserve_request];
     return reserve_block;
 }
 

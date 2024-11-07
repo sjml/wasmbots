@@ -3,6 +3,8 @@ const harness = @import("harness.zig");
 
 var global_allocator: std.mem.Allocator = undefined;
 
+const CHATTY_SERVER = false;
+
 pub fn main() !void {
     var gpa = std.heap.GeneralPurposeAllocator(.{}){};
     defer _ = gpa.deinit();
@@ -89,7 +91,9 @@ fn encodeMemory(allocator: std.mem.Allocator, mem: []const u8) []u8 {
 
 fn handle_request(request: *std.http.Server.Request) !void {
     if (std.mem.eql(u8, request.head.target, "/setup")) {
-        std.debug.print("/setup\n", .{});
+        if (CHATTY_SERVER) {
+            std.debug.print("/setup\n", .{});
+        }
         var reader = try request.reader();
         const contents = try reader.readAllAlloc(global_allocator, 4096);
         defer global_allocator.free(contents);
@@ -114,7 +118,9 @@ fn handle_request(request: *std.http.Server.Request) !void {
             return;
         }
 
-        std.debug.print("  [SUCCESS!]\n", .{});
+        if (CHATTY_SERVER) {
+            std.debug.print("  [SUCCESS!]\n", .{});
+        }
         try request.respond(reserve_block, .{
             .extra_headers = &.{
                 .{
@@ -124,7 +130,9 @@ fn handle_request(request: *std.http.Server.Request) !void {
             },
         });
     } else if (std.mem.eql(u8, request.head.target, "/receiveGameParams")) {
-        std.debug.print("/receiveGameParams\n", .{});
+        if (CHATTY_SERVER) {
+            std.debug.print("/receiveGameParams\n", .{});
+        }
         var reader = try request.reader();
         const contents = try reader.readAllAlloc(global_allocator, 4096);
         defer global_allocator.free(contents);
@@ -149,7 +157,9 @@ fn handle_request(request: *std.http.Server.Request) !void {
         const return_json = std.json.stringifyAlloc(global_allocator, output, .{}) catch unreachable;
         defer global_allocator.free(return_json);
 
-        std.debug.print("  [SUCCESS!]\n", .{});
+        if (CHATTY_SERVER) {
+            std.debug.print("  [SUCCESS!]\n", .{});
+        }
 
         try request.respond(return_json, .{
             .extra_headers = &.{
@@ -160,7 +170,9 @@ fn handle_request(request: *std.http.Server.Request) !void {
             },
         });
     } else if (std.mem.eql(u8, request.head.target, "/tick")) {
-        std.debug.print("/tick\n", .{});
+        if (CHATTY_SERVER) {
+            std.debug.print("/tick\n", .{});
+        }
         var reader = try request.reader();
         const contents = try reader.readAllAlloc(global_allocator, 4096);
         defer global_allocator.free(contents);
@@ -177,6 +189,10 @@ fn handle_request(request: *std.http.Server.Request) !void {
         // overwrites the reserve block with the incoming buffer
         const reserve_block = harness.simulateTick(tick_msg.mem, tick_msg.offset);
         // returned block contains the results of whatever the program did in the tick
+
+        if (CHATTY_SERVER) {
+            std.debug.print("  [SUCCESS!]\n", .{});
+        }
 
         const output = MemoryResult{
             .success = true,

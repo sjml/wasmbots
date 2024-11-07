@@ -3,7 +3,7 @@ import { type ILogger } from "./logger.ts";
 import config from "./config.ts";
 import { type InstantiateDonePayload } from "../worker/messages.ts";
 import { CoreMsg } from "../index.ts";
-import { sleep, encodeBase64 } from "../core/util.ts";
+import { sleep, encodeBase64, decodeBase64 } from "../core/util.ts";
 
 interface WasmBotsExports {
     memory: WebAssembly.Memory;
@@ -237,7 +237,7 @@ export class WasmGuestProgram extends GuestProgram {
         const rb = this.getReserveBlock();
         rb.fill(0);
 
-        let rbdv = this.getReserveBlockDV();
+        let rbdv = new DataView(rb.buffer, rb.byteOffset + config.writeBlockOffset, rb.byteLength - config.writeBlockOffset);
         circumstances.writeBytes(rbdv, false);
 
         try {
@@ -320,9 +320,13 @@ export class TrainerGuestProgram extends GuestProgram {
 
     async runTick(circumstances: CoreMsg.PresentCircumstances): Promise<CoreMsg.Message> {
         let reserveBlock = new Uint8Array(config.memorySize);
-        let rbdv = new DataView(reserveBlock.buffer, reserveBlock.byteOffset, reserveBlock.byteLength);
+        let writeBlock = new DataView(
+            reserveBlock.buffer,
+            reserveBlock.byteOffset + config.writeBlockOffset,
+            reserveBlock.byteLength - config.writeBlockOffset
+        );
 
-        circumstances.writeBytes(rbdv, false);
+        circumstances.writeBytes(writeBlock, false);
 
         try {
             const res = await fetch("http://localhost:9090/tick", {
@@ -333,7 +337,8 @@ export class TrainerGuestProgram extends GuestProgram {
                 }),
             });
             if (res.ok) {
-                const newMem = await res.arrayBuffer();
+                const tickResult: { success: boolean, mem: string } = await res.json();
+                const newMem = decodeBase64(tickResult.mem);
                 reserveBlock.set(new Uint8Array(newMem), 0);
             }
             else {
@@ -350,7 +355,8 @@ export class TrainerGuestProgram extends GuestProgram {
             return err;
         }
 
-        const msgList = CoreMsg.ProcessRawBytes(rbdv);
+        const readBlock = new DataView(reserveBlock.buffer, reserveBlock.byteOffset, reserveBlock.byteLength);
+        const msgList = CoreMsg.ProcessRawBytes(readBlock);
         if (msgList.length != 1) {
             const err = new CoreMsg._Error();
             err.description = `Unexpected number of submitted player moves: ${msgList}`;

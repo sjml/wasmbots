@@ -225,6 +225,10 @@ export class World extends EventTarget {
         );
     }
 
+    private calculateLineOfSight(p: Player, radius: number): TileType[][] {
+        return [];
+    }
+
     async runTurn(): Promise<void> {
         if (this._gameState != GameState.Running) {
             console.error("ERROR: Trying to process turn on non-running game");
@@ -263,6 +267,7 @@ export class World extends EventTarget {
     }
 
     processMove(player: Player, move: CoreMsg.Message): boolean {
+        console.log(move);
         switch (move.getMessageType()) {
             case CoreMsg.MessageType._ErrorType:
                 const errMsg = move as CoreMsg._Error;
@@ -282,8 +287,20 @@ export class World extends EventTarget {
                 }
                 player.location = peekLoc;
                 break;
+            case CoreMsg.MessageType.WaitType:
+                // no-op
+                break;
+            case CoreMsg.MessageType.ResignType:
+                console.log("Unimplemented move: Resign")
+                break;
+            case CoreMsg.MessageType.OpenType:
+                console.log("Unimplemented move: Open")
+                break;
+            case CoreMsg.MessageType.CloseType:
+                console.log("Unimplemented move: Close")
+                break;
             default:
-                throw new Error("Invalid player move! (Should be unreachable.)");
+                throw new Error("Invalid player move! (Should be unreachable, unless player passes wrong message type.)");
         }
         return true;
     }
