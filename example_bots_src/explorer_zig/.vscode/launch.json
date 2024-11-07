@@ -7,7 +7,7 @@
       {
         "type": "lldb",
         "request": "launch",
-        "name": "Launch",
+        "name": "Launch Bot Trainer (Zig explorer)",
         "program": "${workspaceFolder}/zig-out/bin/explorer-trainer",
         "args": [],
         "cwd": "${workspaceFolder}"

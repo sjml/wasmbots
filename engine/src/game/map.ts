@@ -128,38 +128,75 @@ export class WorldMap {
     static debugDrawSlice(slice: TileType[][]) {
         for (let y = 0; y < slice.length; y++) {
             console.log(slice[y].map(t => {
-                if (t === TileType.Empty) {
-                    return " ";
-                }
-                if (t === TileType.Void) {
-                    return "*";
-                }
-                if (t === TileType.Wall) {
-                    return "#";
+                switch (t) {
+                    case TileType.Empty:
+                        return ".";
+                    case TileType.Void:
+                        return " ";
+                    case TileType.OpenDoor:
+                        return "_";
+                    case TileType.ClosedDoor:
+                        return "-";
+                    case TileType.Wall:
+                        return "#";
                 }
             }).join(""));
         }
     }
 
-    getTileSlice(x: number, y: number, radius: number): TileType[][] {
+    getTile(x: number, y: number): TileType {
+        if (x < 0 || y < 0 || x >= MAP_WIDTH || y >= MAP_WIDTH) {
+            return TileType.Void;
+        }
+        return this.tiles[y][x];
+    }
+    getTilePt(loc: Point): TileType {
+        return this.getTile(loc.x , loc.y);
+    }
+
+    getTileSlice(origin: Point, radius: number): TileType[][] {
         const size = 2 * radius + 1;
         const slice: TileType[][] = Array.from({ length: size }, () =>
             Array(size).fill(TileType.Void)
         );
 
-        for (let i = Math.max(0, y - radius); i <= Math.min(y + radius, this.tiles.length - 1); i++) {
-            for (let j = Math.max(0, x - radius); j <= Math.min(x + radius, this.tiles[0].length - 1); j++) {
-                slice[i - (y - radius)][j - (x - radius)] = this.tiles[i][j];
+        for (let i = Math.max(0, origin.y - radius); i <= Math.min(origin.y + radius, this.tiles.length - 1); i++) {
+            for (let j = Math.max(0, origin.x - radius); j <= Math.min(origin.x + radius, this.tiles[0].length - 1); j++) {
+                slice[i - (origin.y - radius)][j - (origin.x - radius)] = this.tiles[i][j];
             }
         }
 
         return slice;
     }
 
-    getTile(x: number, y: number): TileType {
-        return this.tiles[y][x];
+    calculateLineOfSight(origin: Point, radius: number, opacityTest: TileType[]|((t: TileType) => boolean)) {
+        const size = 2 * radius + 1;
+        const calculatedSlice: TileType[][] = Array.from({ length: size }, () =>
+            Array(size).fill(TileType.Void)
+        );
+
+        const globalToLocal = (global: Point): Point => {
+            return { x: global.x - origin.x + radius, y: global.y - origin.y + radius };
+        }
+        const localToGlobal = (local: Point): Point => {
+            return { x: local.x + origin.x, y: local.y + origin.y };
+        }
+        const setVisible = (globalLocation: Point, tile?: TileType) => {
+            const loc = globalToLocal(globalLocation);
+            calculatedSlice[loc.y][loc.x] = tile || this.getTilePt(globalLocation);
+        }
+
+        // origin always visible
+        setVisible(origin);
+
+
+
+        return calculatedSlice;
     }
 }
 
-// const m = await WorldMap.loadTiled("arena");
-// WorldMap.debugDrawSlice(m.tiles);
+const m = await WorldMap.loadTiled("dungeon");
+const opaqueList = [TileType.Wall, TileType.ClosedDoor];
+// const opaqueList = [TileType.Wall]; // letting us see through closed doors for the purposes of testing
+const view = m.calculateLineOfSight({x: 19, y: 17}, 5, opaqueList);
+WorldMap.debugDrawSlice(view);

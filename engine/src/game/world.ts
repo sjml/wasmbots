@@ -225,10 +225,6 @@ export class World extends EventTarget {
         );
     }
 
-    private calculateLineOfSight(p: Player, radius: number): TileType[][] {
-        return [];
-    }
-
     async runTurn(): Promise<void> {
         if (this._gameState != GameState.Running) {
             console.error("ERROR: Trying to process turn on non-running game");
@@ -243,7 +239,7 @@ export class World extends EventTarget {
                 // TODO: calculate line of sight and tile slice
                 // https://www.roguebasin.com/index.php?title=FOV_using_recursive_shadowcasting
                 circumstances.surroundingsRadius  = 2;
-                circumstances.surroundings = this.currentMap?.getTileSlice(
+                circumstances.surroundings = this.currentMap!.getTileSlice(
                     player.location.x, player.location.y,
                     2
                 ).flat() || [];

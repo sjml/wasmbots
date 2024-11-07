@@ -1,6 +1,8 @@
 ## dev
 * trainer
     * need to figure out debugger attaching to the process; maybe deno can just take a port number and hit it up instead of starting it directly? 
+      * set up monorepo as a VS Code workspace? https://code.visualstudio.com/docs/editor/multi-root-workspaces
+      * https://code.visualstudio.com/docs/editor/debugging#_compound-launch-configurations
     * reset functionality got moved around; test it out
     * clean the server code the heck up
         * would be nice if it could recover from a panic, but not sure what would even happen then
