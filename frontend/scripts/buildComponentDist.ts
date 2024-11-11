@@ -8,10 +8,10 @@ const outputDirectory = `${embeddedOutputBase}/wasmbots`;
 const zipOutput = "wasmbots-embed.tar.gz";
 
 await build({
-    configFile: "vite.component.config.js",
-    build: {
-        outDir: outputDirectory,
-    }
+	configFile: "vite.component.config.js",
+	build: {
+		outDir: outputDirectory,
+	}
 });
 
 
@@ -19,9 +19,9 @@ await build({
 //   but not sure why they aren't already happening and don't
 //   feel like tracking it down
 await fs.cp(
-    "static/rsc",
-    `${outputDirectory}/rsc`,
-    {dereference: true, preserveTimestamps: true, recursive: true}
+	"static/rsc",
+	`${outputDirectory}/rsc`,
+	{dereference: true, preserveTimestamps: true, recursive: true}
 );
 
 const iifeFile = `${embeddedOutputBase}/wasmbots/wasmbots-embedded.iife.js`;

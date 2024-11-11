@@ -1,28 +1,28 @@
 {
-  "version": 7,
-  "sizes": {
-     "u8": 1,  "i8": 1,
-    "u16": 2, "i16": 2,
-    "u32": 4, "i32": 4,
-    "u64": 8, "i64": 8,
-    "f32": 4, "f64": 8
-  },
-  "layout": [
-    {
-      "doc": "gameParameters version, mapping to the `version` field of this very object; if this changes, you'll have to rewrite your code",
-      "type": "u16"
-    },
-    {
-      "doc": "engine semver major version",
-      "type": "u16"
-    },
-    {
-      "doc": "engine semver minor version",
-      "type": "u16"
-    },
-    {
-      "doc": "engine semver patch version",
-      "type": "u16"
-    }
-  ]
+	"version": 7,
+	"sizes": {
+		 "u8": 1,  "i8": 1,
+		"u16": 2, "i16": 2,
+		"u32": 4, "i32": 4,
+		"u64": 8, "i64": 8,
+		"f32": 4, "f64": 8
+	},
+	"layout": [
+		{
+			"doc": "gameParameters version, mapping to the `version` field of this very object; if this changes, you'll have to rewrite your code",
+			"type": "u16"
+		},
+		{
+			"doc": "engine semver major version",
+			"type": "u16"
+		},
+		{
+			"doc": "engine semver minor version",
+			"type": "u16"
+		},
+		{
+			"doc": "engine semver patch version",
+			"type": "u16"
+		}
+	]
 }

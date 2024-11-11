@@ -337,420 +337,420 @@ pub fn writeBytes(m: *const Message, offset: usize, buffer: []u8, tag: bool) usi
 }
 
 pub const MessageType = enum(u8) {
-    _Error,
-    InitialParameters,
-    PresentCircumstances,
-    Wait,
-    Resign,
-    MoveTo,
-    Open,
-    Close,
+	_Error,
+	InitialParameters,
+	PresentCircumstances,
+	Wait,
+	Resign,
+	MoveTo,
+	Open,
+	Close,
 };
 
 pub const Message = union(MessageType) {
-    _Error: _Error,
-    InitialParameters: InitialParameters,
-    PresentCircumstances: PresentCircumstances,
-    Wait: Wait,
-    Resign: Resign,
-    MoveTo: MoveTo,
-    Open: Open,
-    Close: Close,
+	_Error: _Error,
+	InitialParameters: InitialParameters,
+	PresentCircumstances: PresentCircumstances,
+	Wait: Wait,
+	Resign: Resign,
+	MoveTo: MoveTo,
+	Open: Open,
+	Close: Close,
 };
 
 pub fn processRawBytes(allocator: std.mem.Allocator, buffer: []const u8) ![]Message {
-    var msg_list = std.ArrayList(Message).init(allocator);
-    defer msg_list.deinit();
+	var msg_list = std.ArrayList(Message).init(allocator);
+	defer msg_list.deinit();
 
-    var local_offset: usize = 0;
-    while (local_offset < buffer.len) {
-        const msg_type_byte = (try readNumber(u8, local_offset, buffer)).value;
-        local_offset += 1;
-        if (msg_type_byte == 0) {
-            return msg_list.toOwnedSlice();
-        }
-        const msg_type: MessageType = std.meta.intToEnum(MessageType, msg_type_byte - 1) catch return DataReaderError.InvalidData;
-        switch(msg_type) {
-            ._Error => {
-                const msg_read = try _Error.fromBytes(allocator, local_offset, buffer);
-                local_offset += msg_read.bytes_read;
-                try msg_list.append(Message{ ._Error = msg_read.value });
-            },
-            .InitialParameters => {
-                const msg_read = try InitialParameters.fromBytes(local_offset, buffer);
-                local_offset += msg_read.bytes_read;
-                try msg_list.append(Message{ .InitialParameters = msg_read.value });
-            },
-            .PresentCircumstances => {
-                const msg_read = try PresentCircumstances.fromBytes(allocator, local_offset, buffer);
-                local_offset += msg_read.bytes_read;
-                try msg_list.append(Message{ .PresentCircumstances = msg_read.value });
-            },
-            .Wait => {
-                const msg_read = try Wait.fromBytes(local_offset, buffer);
-                local_offset += msg_read.bytes_read;
-                try msg_list.append(Message{ .Wait = msg_read.value });
-            },
-            .Resign => {
-                const msg_read = try Resign.fromBytes(local_offset, buffer);
-                local_offset += msg_read.bytes_read;
-                try msg_list.append(Message{ .Resign = msg_read.value });
-            },
-            .MoveTo => {
-                const msg_read = try MoveTo.fromBytes(local_offset, buffer);
-                local_offset += msg_read.bytes_read;
-                try msg_list.append(Message{ .MoveTo = msg_read.value });
-            },
-            .Open => {
-                const msg_read = try Open.fromBytes(local_offset, buffer);
-                local_offset += msg_read.bytes_read;
-                try msg_list.append(Message{ .Open = msg_read.value });
-            },
-            .Close => {
-                const msg_read = try Close.fromBytes(local_offset, buffer);
-                local_offset += msg_read.bytes_read;
-                try msg_list.append(Message{ .Close = msg_read.value });
-            },
-        }
-    }
-    return msg_list.toOwnedSlice();
+	var local_offset: usize = 0;
+	while (local_offset < buffer.len) {
+		const msg_type_byte = (try readNumber(u8, local_offset, buffer)).value;
+		local_offset += 1;
+		if (msg_type_byte == 0) {
+			return msg_list.toOwnedSlice();
+		}
+		const msg_type: MessageType = std.meta.intToEnum(MessageType, msg_type_byte - 1) catch return DataReaderError.InvalidData;
+		switch(msg_type) {
+			._Error => {
+				const msg_read = try _Error.fromBytes(allocator, local_offset, buffer);
+				local_offset += msg_read.bytes_read;
+				try msg_list.append(Message{ ._Error = msg_read.value });
+			},
+			.InitialParameters => {
+				const msg_read = try InitialParameters.fromBytes(local_offset, buffer);
+				local_offset += msg_read.bytes_read;
+				try msg_list.append(Message{ .InitialParameters = msg_read.value });
+			},
+			.PresentCircumstances => {
+				const msg_read = try PresentCircumstances.fromBytes(allocator, local_offset, buffer);
+				local_offset += msg_read.bytes_read;
+				try msg_list.append(Message{ .PresentCircumstances = msg_read.value });
+			},
+			.Wait => {
+				const msg_read = try Wait.fromBytes(local_offset, buffer);
+				local_offset += msg_read.bytes_read;
+				try msg_list.append(Message{ .Wait = msg_read.value });
+			},
+			.Resign => {
+				const msg_read = try Resign.fromBytes(local_offset, buffer);
+				local_offset += msg_read.bytes_read;
+				try msg_list.append(Message{ .Resign = msg_read.value });
+			},
+			.MoveTo => {
+				const msg_read = try MoveTo.fromBytes(local_offset, buffer);
+				local_offset += msg_read.bytes_read;
+				try msg_list.append(Message{ .MoveTo = msg_read.value });
+			},
+			.Open => {
+				const msg_read = try Open.fromBytes(local_offset, buffer);
+				local_offset += msg_read.bytes_read;
+				try msg_list.append(Message{ .Open = msg_read.value });
+			},
+			.Close => {
+				const msg_read = try Close.fromBytes(local_offset, buffer);
+				local_offset += msg_read.bytes_read;
+				try msg_list.append(Message{ .Close = msg_read.value });
+			},
+		}
+	}
+	return msg_list.toOwnedSlice();
 }
 
 pub const MoveResult = enum(u8) {
-    Succeeded = 0,
-    Failed = 1,
-    Invalid = 2,
-    Error = 3,
+	Succeeded = 0,
+	Failed = 1,
+	Invalid = 2,
+	Error = 3,
 };
 
 pub const TileType = enum(u8) {
-    Void = 0,
-    Empty = 1,
-    OpenDoor = 2,
-    ClosedDoor = 3,
-    Wall = 4,
+	Void = 0,
+	Empty = 1,
+	OpenDoor = 2,
+	ClosedDoor = 3,
+	Wall = 4,
 };
 
 pub const Direction = enum(u8) {
-    East = 0,
-    Southeast = 1,
-    South = 2,
-    Southwest = 3,
-    West = 4,
-    Northwest = 5,
-    North = 6,
-    Northeast = 7,
+	East = 0,
+	Southeast = 1,
+	South = 2,
+	Southwest = 3,
+	West = 4,
+	Northwest = 5,
+	North = 6,
+	Northeast = 7,
 };
 
 pub const Point = struct {
-    x: u16 = 0,
-    y: u16 = 0,
+	x: u16 = 0,
+	y: u16 = 0,
 
-    pub fn getSizeInBytes(self: *const Point) usize {
-        _ = self;
-        return 4;
-    }
+	pub fn getSizeInBytes(self: *const Point) usize {
+		_ = self;
+		return 4;
+	}
 
-    pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: Point, bytes_read: usize } {
-        const Point_x = (try readNumber(u16, offset + 0, buffer)).value;
-        const Point_y = (try readNumber(u16, offset + 2, buffer)).value;
-        return .{ .value = Point{
-            .x = Point_x,
-            .y = Point_y,
-        }, .bytes_read = 4 };
-    }
+	pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: Point, bytes_read: usize } {
+		const Point_x = (try readNumber(u16, offset + 0, buffer)).value;
+		const Point_y = (try readNumber(u16, offset + 2, buffer)).value;
+		return .{ .value = Point{
+			.x = Point_x,
+			.y = Point_y,
+		}, .bytes_read = 4 };
+	}
 
-    pub fn writeBytes(self: *const Point, offset: usize, buffer: []u8) usize {
-        _ = writeNumber(u16, offset + 0, buffer, self.x);
-        _ = writeNumber(u16, offset + 2, buffer, self.y);
-        return 4;
-    }
+	pub fn writeBytes(self: *const Point, offset: usize, buffer: []u8) usize {
+		_ = writeNumber(u16, offset + 0, buffer, self.x);
+		_ = writeNumber(u16, offset + 2, buffer, self.y);
+		return 4;
+	}
 };
 
 pub const _Error = struct {
-    description: []const u8 = "",
+	description: []const u8 = "",
 
-    pub fn getSizeInBytes(self: *const _Error) usize {
-        var size: usize = 0;
-        size += self.description.len;
-        size += 1;
-        return size;
-    }
+	pub fn getSizeInBytes(self: *const _Error) usize {
+		var size: usize = 0;
+		size += self.description.len;
+		size += 1;
+		return size;
+	}
 
-    pub fn fromBytes(allocator: std.mem.Allocator, offset: usize, buffer: []const u8) !struct { value: _Error, bytes_read: usize } {
-        var local_offset = offset;
+	pub fn fromBytes(allocator: std.mem.Allocator, offset: usize, buffer: []const u8) !struct { value: _Error, bytes_read: usize } {
+		var local_offset = offset;
 
-        const _Error_description_read = try readString(allocator, local_offset, buffer);
-        const _Error_description = _Error_description_read.value;
-        local_offset += _Error_description_read.bytes_read;
+		const _Error_description_read = try readString(allocator, local_offset, buffer);
+		const _Error_description = _Error_description_read.value;
+		local_offset += _Error_description_read.bytes_read;
 
-        return .{ .value = _Error{
-            .description = _Error_description,
-        }, .bytes_read = local_offset - offset };
-    }
+		return .{ .value = _Error{
+			.description = _Error_description,
+		}, .bytes_read = local_offset - offset };
+	}
 
-    pub fn writeBytes(self: *const _Error, offset: usize, buffer: []u8, tag: bool) usize {
-        var local_offset = offset;
-        if (tag) {
-            local_offset += writeNumber(u8, local_offset, buffer, 1);
-        }
+	pub fn writeBytes(self: *const _Error, offset: usize, buffer: []u8, tag: bool) usize {
+		var local_offset = offset;
+		if (tag) {
+			local_offset += writeNumber(u8, local_offset, buffer, 1);
+		}
 
-        local_offset += writeString(local_offset, buffer, self.description);
+		local_offset += writeString(local_offset, buffer, self.description);
 
-        return local_offset - offset;
-    }
+		return local_offset - offset;
+	}
 
-    pub fn deinit(self: *_Error, allocator: std.mem.Allocator) void {
-        allocator.free(self.description);
-    }
+	pub fn deinit(self: *_Error, allocator: std.mem.Allocator) void {
+		allocator.free(self.description);
+	}
 };
 
 pub const InitialParameters = struct {
-    paramsVersion: u16 = 0,
-    engineVersionMajor: u16 = 0,
-    engineVersionMinor: u16 = 0,
-    engineVersionPatch: u16 = 0,
-    diagonalMovement: bool = false,
+	paramsVersion: u16 = 0,
+	engineVersionMajor: u16 = 0,
+	engineVersionMinor: u16 = 0,
+	engineVersionPatch: u16 = 0,
+	diagonalMovement: bool = false,
 
-    pub fn getSizeInBytes(self: *const InitialParameters) usize {
-        _ = self;
-        return 9;
-    }
+	pub fn getSizeInBytes(self: *const InitialParameters) usize {
+		_ = self;
+		return 9;
+	}
 
-    pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: InitialParameters, bytes_read: usize } {
-        const InitialParameters_paramsVersion = (try readNumber(u16, offset + 0, buffer)).value;
-        const InitialParameters_engineVersionMajor = (try readNumber(u16, offset + 2, buffer)).value;
-        const InitialParameters_engineVersionMinor = (try readNumber(u16, offset + 4, buffer)).value;
-        const InitialParameters_engineVersionPatch = (try readNumber(u16, offset + 6, buffer)).value;
-        const InitialParameters_diagonalMovement = (try readNumber(bool, offset + 8, buffer)).value;
-        return .{ .value = InitialParameters{
-            .paramsVersion = InitialParameters_paramsVersion,
-            .engineVersionMajor = InitialParameters_engineVersionMajor,
-            .engineVersionMinor = InitialParameters_engineVersionMinor,
-            .engineVersionPatch = InitialParameters_engineVersionPatch,
-            .diagonalMovement = InitialParameters_diagonalMovement,
-        }, .bytes_read = 9 };
-    }
+	pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: InitialParameters, bytes_read: usize } {
+		const InitialParameters_paramsVersion = (try readNumber(u16, offset + 0, buffer)).value;
+		const InitialParameters_engineVersionMajor = (try readNumber(u16, offset + 2, buffer)).value;
+		const InitialParameters_engineVersionMinor = (try readNumber(u16, offset + 4, buffer)).value;
+		const InitialParameters_engineVersionPatch = (try readNumber(u16, offset + 6, buffer)).value;
+		const InitialParameters_diagonalMovement = (try readNumber(bool, offset + 8, buffer)).value;
+		return .{ .value = InitialParameters{
+			.paramsVersion = InitialParameters_paramsVersion,
+			.engineVersionMajor = InitialParameters_engineVersionMajor,
+			.engineVersionMinor = InitialParameters_engineVersionMinor,
+			.engineVersionPatch = InitialParameters_engineVersionPatch,
+			.diagonalMovement = InitialParameters_diagonalMovement,
+		}, .bytes_read = 9 };
+	}
 
-    pub fn writeBytes(self: *const InitialParameters, offset: usize, buffer: []u8, tag: bool) usize {
-        var local_offset = offset;
+	pub fn writeBytes(self: *const InitialParameters, offset: usize, buffer: []u8, tag: bool) usize {
+		var local_offset = offset;
 
-        if (tag) {
-            local_offset += writeNumber(u8, local_offset, buffer, 2);
-        }
-        local_offset += writeNumber(u16, local_offset, buffer, self.paramsVersion);
-        local_offset += writeNumber(u16, local_offset, buffer, self.engineVersionMajor);
-        local_offset += writeNumber(u16, local_offset, buffer, self.engineVersionMinor);
-        local_offset += writeNumber(u16, local_offset, buffer, self.engineVersionPatch);
-        local_offset += writeNumber(bool, local_offset, buffer, self.diagonalMovement);
+		if (tag) {
+			local_offset += writeNumber(u8, local_offset, buffer, 2);
+		}
+		local_offset += writeNumber(u16, local_offset, buffer, self.paramsVersion);
+		local_offset += writeNumber(u16, local_offset, buffer, self.engineVersionMajor);
+		local_offset += writeNumber(u16, local_offset, buffer, self.engineVersionMinor);
+		local_offset += writeNumber(u16, local_offset, buffer, self.engineVersionPatch);
+		local_offset += writeNumber(bool, local_offset, buffer, self.diagonalMovement);
 
-        return local_offset - offset;
-    }
+		return local_offset - offset;
+	}
 };
 
 pub const PresentCircumstances = struct {
-    lastTickDuration: u32 = 0,
-    lastMoveResult: MoveResult = MoveResult.Succeeded,
-    currentHitPoints: u16 = 0,
-    surroundings: []TileType = &.{},
-    surroundingsRadius: u8 = 0,
+	lastTickDuration: u32 = 0,
+	lastMoveResult: MoveResult = MoveResult.Succeeded,
+	currentHitPoints: u16 = 0,
+	surroundings: []TileType = &.{},
+	surroundingsRadius: u8 = 0,
 
-    pub fn getSizeInBytes(self: *const PresentCircumstances) usize {
-        var size: usize = 0;
-        size += self.surroundings.len * 1;
-        size += 10;
-        return size;
-    }
+	pub fn getSizeInBytes(self: *const PresentCircumstances) usize {
+		var size: usize = 0;
+		size += self.surroundings.len * 1;
+		size += 10;
+		return size;
+	}
 
-    pub fn fromBytes(allocator: std.mem.Allocator, offset: usize, buffer: []const u8) !struct { value: PresentCircumstances, bytes_read: usize } {
-        var local_offset = offset;
+	pub fn fromBytes(allocator: std.mem.Allocator, offset: usize, buffer: []const u8) !struct { value: PresentCircumstances, bytes_read: usize } {
+		var local_offset = offset;
 
-        const PresentCircumstances_lastTickDuration_read = try readNumber(u32, local_offset, buffer);
-        const PresentCircumstances_lastTickDuration = PresentCircumstances_lastTickDuration_read.value;
-        local_offset += PresentCircumstances_lastTickDuration_read.bytes_read;
+		const PresentCircumstances_lastTickDuration_read = try readNumber(u32, local_offset, buffer);
+		const PresentCircumstances_lastTickDuration = PresentCircumstances_lastTickDuration_read.value;
+		local_offset += PresentCircumstances_lastTickDuration_read.bytes_read;
 
-        const PresentCircumstances_lastMoveResult_read = try readNumber(MoveResult, local_offset, buffer);
-        const PresentCircumstances_lastMoveResult = PresentCircumstances_lastMoveResult_read.value;
-        local_offset += PresentCircumstances_lastMoveResult_read.bytes_read;
+		const PresentCircumstances_lastMoveResult_read = try readNumber(MoveResult, local_offset, buffer);
+		const PresentCircumstances_lastMoveResult = PresentCircumstances_lastMoveResult_read.value;
+		local_offset += PresentCircumstances_lastMoveResult_read.bytes_read;
 
-        const PresentCircumstances_currentHitPoints_read = try readNumber(u16, local_offset, buffer);
-        const PresentCircumstances_currentHitPoints = PresentCircumstances_currentHitPoints_read.value;
-        local_offset += PresentCircumstances_currentHitPoints_read.bytes_read;
+		const PresentCircumstances_currentHitPoints_read = try readNumber(u16, local_offset, buffer);
+		const PresentCircumstances_currentHitPoints = PresentCircumstances_currentHitPoints_read.value;
+		local_offset += PresentCircumstances_currentHitPoints_read.bytes_read;
 
-        const PresentCircumstances_surroundings_read = try readList(TileType, allocator, local_offset, buffer);
-        const PresentCircumstances_surroundings = PresentCircumstances_surroundings_read.value;
-        local_offset += PresentCircumstances_surroundings_read.bytes_read;
+		const PresentCircumstances_surroundings_read = try readList(TileType, allocator, local_offset, buffer);
+		const PresentCircumstances_surroundings = PresentCircumstances_surroundings_read.value;
+		local_offset += PresentCircumstances_surroundings_read.bytes_read;
 
-        const PresentCircumstances_surroundingsRadius_read = try readNumber(u8, local_offset, buffer);
-        const PresentCircumstances_surroundingsRadius = PresentCircumstances_surroundingsRadius_read.value;
-        local_offset += PresentCircumstances_surroundingsRadius_read.bytes_read;
+		const PresentCircumstances_surroundingsRadius_read = try readNumber(u8, local_offset, buffer);
+		const PresentCircumstances_surroundingsRadius = PresentCircumstances_surroundingsRadius_read.value;
+		local_offset += PresentCircumstances_surroundingsRadius_read.bytes_read;
 
-        return .{ .value = PresentCircumstances{
-            .lastTickDuration = PresentCircumstances_lastTickDuration,
-            .lastMoveResult = PresentCircumstances_lastMoveResult,
-            .currentHitPoints = PresentCircumstances_currentHitPoints,
-            .surroundings = PresentCircumstances_surroundings,
-            .surroundingsRadius = PresentCircumstances_surroundingsRadius,
-        }, .bytes_read = local_offset - offset };
-    }
+		return .{ .value = PresentCircumstances{
+			.lastTickDuration = PresentCircumstances_lastTickDuration,
+			.lastMoveResult = PresentCircumstances_lastMoveResult,
+			.currentHitPoints = PresentCircumstances_currentHitPoints,
+			.surroundings = PresentCircumstances_surroundings,
+			.surroundingsRadius = PresentCircumstances_surroundingsRadius,
+		}, .bytes_read = local_offset - offset };
+	}
 
-    pub fn writeBytes(self: *const PresentCircumstances, offset: usize, buffer: []u8, tag: bool) usize {
-        var local_offset = offset;
-        if (tag) {
-            local_offset += writeNumber(u8, local_offset, buffer, 3);
-        }
+	pub fn writeBytes(self: *const PresentCircumstances, offset: usize, buffer: []u8, tag: bool) usize {
+		var local_offset = offset;
+		if (tag) {
+			local_offset += writeNumber(u8, local_offset, buffer, 3);
+		}
 
-        local_offset += writeNumber(u32, local_offset, buffer, self.lastTickDuration);
-        local_offset += writeNumber(MoveResult, local_offset, buffer, self.lastMoveResult);
-        local_offset += writeNumber(u16, local_offset, buffer, self.currentHitPoints);
-        local_offset += writeList(TileType, local_offset, buffer, self.surroundings);
-        local_offset += writeNumber(u8, local_offset, buffer, self.surroundingsRadius);
+		local_offset += writeNumber(u32, local_offset, buffer, self.lastTickDuration);
+		local_offset += writeNumber(MoveResult, local_offset, buffer, self.lastMoveResult);
+		local_offset += writeNumber(u16, local_offset, buffer, self.currentHitPoints);
+		local_offset += writeList(TileType, local_offset, buffer, self.surroundings);
+		local_offset += writeNumber(u8, local_offset, buffer, self.surroundingsRadius);
 
-        return local_offset - offset;
-    }
+		return local_offset - offset;
+	}
 
-    pub fn deinit(self: *PresentCircumstances, allocator: std.mem.Allocator) void {
-        allocator.free(self.surroundings);
-    }
+	pub fn deinit(self: *PresentCircumstances, allocator: std.mem.Allocator) void {
+		allocator.free(self.surroundings);
+	}
 };
 
 pub const Wait = struct {
 
-    pub fn getSizeInBytes(self: *const Wait) usize {
-        _ = self;
-        return 0;
-    }
+	pub fn getSizeInBytes(self: *const Wait) usize {
+		_ = self;
+		return 0;
+	}
 
-    pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: Wait, bytes_read: usize } {
-        _ = offset;
-        _ = buffer;
-        return .{ .value = Wait{
-        }, .bytes_read = 0 };
-    }
+	pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: Wait, bytes_read: usize } {
+		_ = offset;
+		_ = buffer;
+		return .{ .value = Wait{
+		}, .bytes_read = 0 };
+	}
 
-    pub fn writeBytes(self: *const Wait, offset: usize, buffer: []u8, tag: bool) usize {
-        _ = self;
-        var local_offset = offset;
+	pub fn writeBytes(self: *const Wait, offset: usize, buffer: []u8, tag: bool) usize {
+		_ = self;
+		var local_offset = offset;
 
-        if (tag) {
-            local_offset += writeNumber(u8, local_offset, buffer, 4);
-        }
+		if (tag) {
+			local_offset += writeNumber(u8, local_offset, buffer, 4);
+		}
 
-        return local_offset - offset;
-    }
+		return local_offset - offset;
+	}
 };
 
 pub const Resign = struct {
 
-    pub fn getSizeInBytes(self: *const Resign) usize {
-        _ = self;
-        return 0;
-    }
+	pub fn getSizeInBytes(self: *const Resign) usize {
+		_ = self;
+		return 0;
+	}
 
-    pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: Resign, bytes_read: usize } {
-        _ = offset;
-        _ = buffer;
-        return .{ .value = Resign{
-        }, .bytes_read = 0 };
-    }
+	pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: Resign, bytes_read: usize } {
+		_ = offset;
+		_ = buffer;
+		return .{ .value = Resign{
+		}, .bytes_read = 0 };
+	}
 
-    pub fn writeBytes(self: *const Resign, offset: usize, buffer: []u8, tag: bool) usize {
-        _ = self;
-        var local_offset = offset;
+	pub fn writeBytes(self: *const Resign, offset: usize, buffer: []u8, tag: bool) usize {
+		_ = self;
+		var local_offset = offset;
 
-        if (tag) {
-            local_offset += writeNumber(u8, local_offset, buffer, 5);
-        }
+		if (tag) {
+			local_offset += writeNumber(u8, local_offset, buffer, 5);
+		}
 
-        return local_offset - offset;
-    }
+		return local_offset - offset;
+	}
 };
 
 pub const MoveTo = struct {
-    direction: Direction = Direction.East,
-    distance: u8 = 0,
+	direction: Direction = Direction.East,
+	distance: u8 = 0,
 
-    pub fn getSizeInBytes(self: *const MoveTo) usize {
-        _ = self;
-        return 2;
-    }
+	pub fn getSizeInBytes(self: *const MoveTo) usize {
+		_ = self;
+		return 2;
+	}
 
-    pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: MoveTo, bytes_read: usize } {
-        const MoveTo_direction_check = (try readNumber(u8, offset + 0, buffer)).value;
+	pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: MoveTo, bytes_read: usize } {
+		const MoveTo_direction_check = (try readNumber(u8, offset + 0, buffer)).value;
 
-        const MoveTo_distance = (try readNumber(u8, offset + 1, buffer)).value;
-        return .{ .value = MoveTo{
-            .direction = MoveTo_direction,
-            .distance = MoveTo_distance,
-        }, .bytes_read = 2 };
-    }
+		const MoveTo_distance = (try readNumber(u8, offset + 1, buffer)).value;
+		return .{ .value = MoveTo{
+			.direction = MoveTo_direction,
+			.distance = MoveTo_distance,
+		}, .bytes_read = 2 };
+	}
 
-    pub fn writeBytes(self: *const MoveTo, offset: usize, buffer: []u8, tag: bool) usize {
-        var local_offset = offset;
+	pub fn writeBytes(self: *const MoveTo, offset: usize, buffer: []u8, tag: bool) usize {
+		var local_offset = offset;
 
-        if (tag) {
-            local_offset += writeNumber(u8, local_offset, buffer, 6);
-        }
-        local_offset += writeNumber(Direction, local_offset, buffer, self.direction);
-        local_offset += writeNumber(u8, local_offset, buffer, self.distance);
+		if (tag) {
+			local_offset += writeNumber(u8, local_offset, buffer, 6);
+		}
+		local_offset += writeNumber(Direction, local_offset, buffer, self.direction);
+		local_offset += writeNumber(u8, local_offset, buffer, self.distance);
 
-        return local_offset - offset;
-    }
+		return local_offset - offset;
+	}
 };
 
 pub const Open = struct {
-    target: Point = Point{},
+	target: Point = Point{},
 
-    pub fn getSizeInBytes(self: *const Open) usize {
-        _ = self;
-        return 4;
-    }
+	pub fn getSizeInBytes(self: *const Open) usize {
+		_ = self;
+		return 4;
+	}
 
-    pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: Open, bytes_read: usize } {
-        const Open_target_read = Point.fromBytes(0, buffer);
-        const Open_target = Open_target_read.value;
-        return .{ .value = Open{
-            .target = Open_target,
-        }, .bytes_read = 4 };
-    }
+	pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: Open, bytes_read: usize } {
+		const Open_target_read = Point.fromBytes(0, buffer);
+		const Open_target = Open_target_read.value;
+		return .{ .value = Open{
+			.target = Open_target,
+		}, .bytes_read = 4 };
+	}
 
-    pub fn writeBytes(self: *const Open, offset: usize, buffer: []u8, tag: bool) usize {
-        var local_offset = offset;
+	pub fn writeBytes(self: *const Open, offset: usize, buffer: []u8, tag: bool) usize {
+		var local_offset = offset;
 
-        if (tag) {
-            local_offset += writeNumber(u8, local_offset, buffer, 7);
-        }
-        local_offset += self.target.writeBytes(local_offset, buffer);
+		if (tag) {
+			local_offset += writeNumber(u8, local_offset, buffer, 7);
+		}
+		local_offset += self.target.writeBytes(local_offset, buffer);
 
-        return local_offset - offset;
-    }
+		return local_offset - offset;
+	}
 };
 
 pub const Close = struct {
-    target: Point = Point{},
+	target: Point = Point{},
 
-    pub fn getSizeInBytes(self: *const Close) usize {
-        _ = self;
-        return 4;
-    }
+	pub fn getSizeInBytes(self: *const Close) usize {
+		_ = self;
+		return 4;
+	}
 
-    pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: Close, bytes_read: usize } {
-        const Close_target_read = Point.fromBytes(0, buffer);
-        const Close_target = Close_target_read.value;
-        return .{ .value = Close{
-            .target = Close_target,
-        }, .bytes_read = 4 };
-    }
+	pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: Close, bytes_read: usize } {
+		const Close_target_read = Point.fromBytes(0, buffer);
+		const Close_target = Close_target_read.value;
+		return .{ .value = Close{
+			.target = Close_target,
+		}, .bytes_read = 4 };
+	}
 
-    pub fn writeBytes(self: *const Close, offset: usize, buffer: []u8, tag: bool) usize {
-        var local_offset = offset;
+	pub fn writeBytes(self: *const Close, offset: usize, buffer: []u8, tag: bool) usize {
+		var local_offset = offset;
 
-        if (tag) {
-            local_offset += writeNumber(u8, local_offset, buffer, 8);
-        }
-        local_offset += self.target.writeBytes(local_offset, buffer);
+		if (tag) {
+			local_offset += writeNumber(u8, local_offset, buffer, 8);
+		}
+		local_offset += self.target.writeBytes(local_offset, buffer);
 
-        return local_offset - offset;
-    }
+		return local_offset - offset;
+	}
 };
 

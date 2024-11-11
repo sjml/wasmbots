@@ -1,24 +1,24 @@
 <script lang="ts">
-    import { onMount, getContext } from "svelte";
-    import { Config, World } from "wasmbots";
+	import { onMount, getContext } from "svelte";
+	import { Config, World } from "wasmbots";
 
-    import { WasmBotsVisualizer } from "../vis/game";
+	import { WasmBotsVisualizer } from "../vis/game";
 
-    import { type WasmBotsState } from "../types.svelte";
-    const gameState: WasmBotsState = getContext("gameState");
+	import { type WasmBotsState } from "../types.svelte";
+	const gameState: WasmBotsState = getContext("gameState");
 
-    let parentDiv: HTMLDivElement;
+	let parentDiv: HTMLDivElement;
 
-    async function gameSetup() {
-        gameState.world = new World(null);
-        gameState.vis = new WasmBotsVisualizer(parentDiv, gameState.world);
-        await gameState.vis.untilBootloaderDone();
-        await gameState.world.setMap(Config.enabledMaps[0]);
-    }
+	async function gameSetup() {
+		gameState.world = new World(null);
+		gameState.vis = new WasmBotsVisualizer(parentDiv, gameState.world);
+		await gameState.vis.untilBootloaderDone();
+		await gameState.world.setMap(Config.enabledMaps[0]);
+	}
 
-    onMount(() => {
-        gameSetup();
-    })
+	onMount(() => {
+		gameSetup();
+	})
 </script>
 
 <div class="canvasContainer" bind:this={parentDiv}>

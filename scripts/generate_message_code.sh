@@ -13,12 +13,13 @@ langs["typescript"]="./engine/src/core/messages.ts"
 langs["zig"]="./libraries/Zig/wasmbot_client/wasmbot_messages.zig"
 
 for lang in "${!langs[@]}"; do
-  flags=(
-    --lang $lang
-    --protocol ./engine/src/data/messaging.toml
-    --embed-protocol
-    --output "${langs[$lang]}"
-  )
+	flags=(
+		--lang $lang
+		--protocol ./engine/src/data/messaging.toml
+		--embed-protocol
+		--indent "	"
+		--output "${langs[$lang]}"
+	)
 
-  beschi "${flags[@]}"
+	beschi "${flags[@]}"
 done

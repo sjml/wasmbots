@@ -1,5 +1,5 @@
 <script lang="ts">
-    import Trainer from "../../ui/Trainer.svelte";
+	import Trainer from "../../ui/Trainer.svelte";
 </script>
 
 

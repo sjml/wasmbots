@@ -1,18 +1,18 @@
 {
-  "name": "wasmbots_client",
-  "version": "0.1.0",
-  "author": "Shane Liesegang",
-  "license": "MIT",
-  "devDependencies": {
-    "assemblyscript": "^0.27.30"
-  },
-  "type": "module",
-  "main": "assembly/index.ts",
-  "types": "assembly/index.ts",
-  "exports": {
-    ".": {
-      "import": "./build/release.js",
-      "types": "./build/release.d.ts"
-    }
-  }
+	"name": "wasmbots_client",
+	"version": "0.1.0",
+	"author": "Shane Liesegang",
+	"license": "MIT",
+	"devDependencies": {
+		"assemblyscript": "^0.27.30"
+	},
+	"type": "module",
+	"main": "assembly/index.ts",
+	"types": "assembly/index.ts",
+	"exports": {
+		".": {
+			"import": "./build/release.js",
+			"types": "./build/release.d.ts"
+		}
+	}
 }

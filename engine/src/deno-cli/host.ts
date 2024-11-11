@@ -4,8 +4,8 @@
 // import { log } from "./_logs.ts";
 
 // if (Deno.args.length == 0) {
-//     console.error("Give at least one file path.")
-//     Deno.exit(1);
+// 	console.error("Give at least one file path.")
+// 	Deno.exit(1);
 // }
 
 // const world = new World(null);
@@ -23,7 +23,7 @@
 
 // world.startGame();
 // while (world.gameState != GameState.Shutdown) {
-//     await world.runTurn();
+// 	await world.runTurn();
 // }
 
 // Deno.exit(0);

@@ -256,560 +256,560 @@ export abstract class Message {
 }
 
 export enum MessageType {
-  _ErrorType = 1,
-  InitialParametersType = 2,
-  PresentCircumstancesType = 3,
-  WaitType = 4,
-  ResignType = 5,
-  MoveToType = 6,
-  OpenType = 7,
-  CloseType = 8,
+	_ErrorType = 1,
+	InitialParametersType = 2,
+	PresentCircumstancesType = 3,
+	WaitType = 4,
+	ResignType = 5,
+	MoveToType = 6,
+	OpenType = 7,
+	CloseType = 8,
 }
 
 export function ProcessRawBytes(data: DataView|DataAccess): Message[] {
-  let da: DataAccess;
-  if (data instanceof DataView) {
-    da = new DataAccess(data);
-  }
-  else {
-    da = data;
-  }
-  const msgList: Message[] = [];
-  while (!da.isFinished()) {
-    const msgType: number = da.getByte();
-    switch (msgType) {
-      case 0:
-        return msgList;
-      case MessageType._ErrorType:
-        msgList.push(_Error.fromBytes(da));
-        break;
-      case MessageType.InitialParametersType:
-        msgList.push(InitialParameters.fromBytes(da));
-        break;
-      case MessageType.PresentCircumstancesType:
-        msgList.push(PresentCircumstances.fromBytes(da));
-        break;
-      case MessageType.WaitType:
-        msgList.push(Wait.fromBytes(da));
-        break;
-      case MessageType.ResignType:
-        msgList.push(Resign.fromBytes(da));
-        break;
-      case MessageType.MoveToType:
-        msgList.push(MoveTo.fromBytes(da));
-        break;
-      case MessageType.OpenType:
-        msgList.push(Open.fromBytes(da));
-        break;
-      case MessageType.CloseType:
-        msgList.push(Close.fromBytes(da));
-        break;
-      default:
-        throw new Error(`Unknown message type: ${msgType}`);
-    }
-  }
-  return msgList;
+	let da: DataAccess;
+	if (data instanceof DataView) {
+		da = new DataAccess(data);
+	}
+	else {
+		da = data;
+	}
+	const msgList: Message[] = [];
+	while (!da.isFinished()) {
+		const msgType: number = da.getByte();
+		switch (msgType) {
+			case 0:
+				return msgList;
+			case MessageType._ErrorType:
+				msgList.push(_Error.fromBytes(da));
+				break;
+			case MessageType.InitialParametersType:
+				msgList.push(InitialParameters.fromBytes(da));
+				break;
+			case MessageType.PresentCircumstancesType:
+				msgList.push(PresentCircumstances.fromBytes(da));
+				break;
+			case MessageType.WaitType:
+				msgList.push(Wait.fromBytes(da));
+				break;
+			case MessageType.ResignType:
+				msgList.push(Resign.fromBytes(da));
+				break;
+			case MessageType.MoveToType:
+				msgList.push(MoveTo.fromBytes(da));
+				break;
+			case MessageType.OpenType:
+				msgList.push(Open.fromBytes(da));
+				break;
+			case MessageType.CloseType:
+				msgList.push(Close.fromBytes(da));
+				break;
+			default:
+				throw new Error(`Unknown message type: ${msgType}`);
+		}
+	}
+	return msgList;
 }
 
 export enum MoveResult {
-  Succeeded = 0,
-  Failed = 1,
-  Invalid = 2,
-  Error = 3,
+	Succeeded = 0,
+	Failed = 1,
+	Invalid = 2,
+	Error = 3,
 }
 
 export enum TileType {
-  Void = 0,
-  Empty = 1,
-  OpenDoor = 2,
-  ClosedDoor = 3,
-  Wall = 4,
+	Void = 0,
+	Empty = 1,
+	OpenDoor = 2,
+	ClosedDoor = 3,
+	Wall = 4,
 }
 
 export enum Direction {
-  East = 0,
-  Southeast = 1,
-  South = 2,
-  Southwest = 3,
-  West = 4,
-  Northwest = 5,
-  North = 6,
-  Northeast = 7,
+	East = 0,
+	Southeast = 1,
+	South = 2,
+	Southwest = 3,
+	West = 4,
+	Northwest = 5,
+	North = 6,
+	Northeast = 7,
 }
 
 export class Point {
-  x: number = 0;
-  y: number = 0;
+	x: number = 0;
+	y: number = 0;
 
-  static fromBytes(da: DataAccess): Point {
-    const nPoint = new Point();
-    nPoint.x = da.getUint16();
-    nPoint.y = da.getUint16();
-    return nPoint;
-  }
+	static fromBytes(da: DataAccess): Point {
+		const nPoint = new Point();
+		nPoint.x = da.getUint16();
+		nPoint.y = da.getUint16();
+		return nPoint;
+	}
 
-  writeBytes(da: DataAccess) {
-    da.setUint16(this.x);
-    da.setUint16(this.y);
-  }
+	writeBytes(da: DataAccess) {
+		da.setUint16(this.x);
+		da.setUint16(this.y);
+	}
 
 }
 
 export class _Error extends Message {
-  description: string = "";
+	description: string = "";
 
-  getMessageType() : MessageType { return MessageType._ErrorType; }
+	getMessageType() : MessageType { return MessageType._ErrorType; }
 
-  getSizeInBytes(): number {
-    let size: number = 0;
-    size += _textEnc.encode(this.description).byteLength;
-    size += 1;
-    return size;
-  }
+	getSizeInBytes(): number {
+		let size: number = 0;
+		size += _textEnc.encode(this.description).byteLength;
+		size += 1;
+		return size;
+	}
 
-  static fromBytes(data: DataView|DataAccess|ArrayBuffer): _Error {
-    let da: DataAccess;
-    if (data instanceof DataView) {
-      da = new DataAccess(data);
-    }
-    else if (data instanceof ArrayBuffer) {
-      da = new DataAccess(new DataView(data));
-    }
-    else {
-      da = data;
-    }
-    try {
-      const n_Error = new _Error();
-      n_Error.description = da.getString();
-      return n_Error;
-    }
-    catch (err) {
-      let errMsg = "[Unknown error]";
-      if (err instanceof Error) {
-        errMsg = `${err.name} -- ${err.message}`;
-      }
-      throw new Error(`Could not read _Error from offset ${da.currentOffset} (${errMsg})`);
-    }
-  }
+	static fromBytes(data: DataView|DataAccess|ArrayBuffer): _Error {
+		let da: DataAccess;
+		if (data instanceof DataView) {
+			da = new DataAccess(data);
+		}
+		else if (data instanceof ArrayBuffer) {
+			da = new DataAccess(new DataView(data));
+		}
+		else {
+			da = data;
+		}
+		try {
+			const n_Error = new _Error();
+			n_Error.description = da.getString();
+			return n_Error;
+		}
+		catch (err) {
+			let errMsg = "[Unknown error]";
+			if (err instanceof Error) {
+				errMsg = `${err.name} -- ${err.message}`;
+			}
+			throw new Error(`Could not read _Error from offset ${da.currentOffset} (${errMsg})`);
+		}
+	}
 
-  writeBytes(data: DataView|DataAccess, tag: boolean): void {
-    let da: DataAccess;
-    if (data instanceof DataView) {
-      da = new DataAccess(data);
-    }
-    else {
-      da = data;
-    }
-    if (tag) {
-      da.setByte(MessageType._ErrorType);
-    }
-    da.setString(this.description);
-  }
+	writeBytes(data: DataView|DataAccess, tag: boolean): void {
+		let da: DataAccess;
+		if (data instanceof DataView) {
+			da = new DataAccess(data);
+		}
+		else {
+			da = data;
+		}
+		if (tag) {
+			da.setByte(MessageType._ErrorType);
+		}
+		da.setString(this.description);
+	}
 
 }
 
 export class InitialParameters extends Message {
-  paramsVersion: number = 0;
-  engineVersionMajor: number = 0;
-  engineVersionMinor: number = 0;
-  engineVersionPatch: number = 0;
-  diagonalMovement: boolean = false;
+	paramsVersion: number = 0;
+	engineVersionMajor: number = 0;
+	engineVersionMinor: number = 0;
+	engineVersionPatch: number = 0;
+	diagonalMovement: boolean = false;
 
-  getMessageType() : MessageType { return MessageType.InitialParametersType; }
+	getMessageType() : MessageType { return MessageType.InitialParametersType; }
 
-  getSizeInBytes(): number {
-    return 9;
-  }
+	getSizeInBytes(): number {
+		return 9;
+	}
 
-  static fromBytes(data: DataView|DataAccess|ArrayBuffer): InitialParameters {
-    let da: DataAccess;
-    if (data instanceof DataView) {
-      da = new DataAccess(data);
-    }
-    else if (data instanceof ArrayBuffer) {
-      da = new DataAccess(new DataView(data));
-    }
-    else {
-      da = data;
-    }
-    try {
-      const nInitialParameters = new InitialParameters();
-      nInitialParameters.paramsVersion = da.getUint16();
-      nInitialParameters.engineVersionMajor = da.getUint16();
-      nInitialParameters.engineVersionMinor = da.getUint16();
-      nInitialParameters.engineVersionPatch = da.getUint16();
-      nInitialParameters.diagonalMovement = da.getBool();
-      return nInitialParameters;
-    }
-    catch (err) {
-      let errMsg = "[Unknown error]";
-      if (err instanceof Error) {
-        errMsg = `${err.name} -- ${err.message}`;
-      }
-      throw new Error(`Could not read InitialParameters from offset ${da.currentOffset} (${errMsg})`);
-    }
-  }
+	static fromBytes(data: DataView|DataAccess|ArrayBuffer): InitialParameters {
+		let da: DataAccess;
+		if (data instanceof DataView) {
+			da = new DataAccess(data);
+		}
+		else if (data instanceof ArrayBuffer) {
+			da = new DataAccess(new DataView(data));
+		}
+		else {
+			da = data;
+		}
+		try {
+			const nInitialParameters = new InitialParameters();
+			nInitialParameters.paramsVersion = da.getUint16();
+			nInitialParameters.engineVersionMajor = da.getUint16();
+			nInitialParameters.engineVersionMinor = da.getUint16();
+			nInitialParameters.engineVersionPatch = da.getUint16();
+			nInitialParameters.diagonalMovement = da.getBool();
+			return nInitialParameters;
+		}
+		catch (err) {
+			let errMsg = "[Unknown error]";
+			if (err instanceof Error) {
+				errMsg = `${err.name} -- ${err.message}`;
+			}
+			throw new Error(`Could not read InitialParameters from offset ${da.currentOffset} (${errMsg})`);
+		}
+	}
 
-  writeBytes(data: DataView|DataAccess, tag: boolean): void {
-    let da: DataAccess;
-    if (data instanceof DataView) {
-      da = new DataAccess(data);
-    }
-    else {
-      da = data;
-    }
-    if (tag) {
-      da.setByte(MessageType.InitialParametersType);
-    }
-    da.setUint16(this.paramsVersion);
-    da.setUint16(this.engineVersionMajor);
-    da.setUint16(this.engineVersionMinor);
-    da.setUint16(this.engineVersionPatch);
-    da.setBool(this.diagonalMovement);
-  }
+	writeBytes(data: DataView|DataAccess, tag: boolean): void {
+		let da: DataAccess;
+		if (data instanceof DataView) {
+			da = new DataAccess(data);
+		}
+		else {
+			da = data;
+		}
+		if (tag) {
+			da.setByte(MessageType.InitialParametersType);
+		}
+		da.setUint16(this.paramsVersion);
+		da.setUint16(this.engineVersionMajor);
+		da.setUint16(this.engineVersionMinor);
+		da.setUint16(this.engineVersionPatch);
+		da.setBool(this.diagonalMovement);
+	}
 
 }
 
 export class PresentCircumstances extends Message {
-  lastTickDuration: number = 0;
-  lastMoveResult: MoveResult = MoveResult.Succeeded;
-  currentHitPoints: number = 0;
-  surroundings: TileType[] = [];
-  surroundingsRadius: number = 0;
+	lastTickDuration: number = 0;
+	lastMoveResult: MoveResult = MoveResult.Succeeded;
+	currentHitPoints: number = 0;
+	surroundings: TileType[] = [];
+	surroundingsRadius: number = 0;
 
-  getMessageType() : MessageType { return MessageType.PresentCircumstancesType; }
+	getMessageType() : MessageType { return MessageType.PresentCircumstancesType; }
 
-  getSizeInBytes(): number {
-    let size: number = 0;
-    size += this.surroundings.length * 1;
-    size += 10;
-    return size;
-  }
+	getSizeInBytes(): number {
+		let size: number = 0;
+		size += this.surroundings.length * 1;
+		size += 10;
+		return size;
+	}
 
-  static fromBytes(data: DataView|DataAccess|ArrayBuffer): PresentCircumstances {
-    let da: DataAccess;
-    if (data instanceof DataView) {
-      da = new DataAccess(data);
-    }
-    else if (data instanceof ArrayBuffer) {
-      da = new DataAccess(new DataView(data));
-    }
-    else {
-      da = data;
-    }
-    try {
-      const nPresentCircumstances = new PresentCircumstances();
-      nPresentCircumstances.lastTickDuration = da.getUint32();
-      const _lastMoveResult = da.getByte();
-      if (MoveResult[_lastMoveResult] === undefined) {
-        throw new Error(`Enum (${_lastMoveResult}) out of range for MoveResult`);
-      }
-      nPresentCircumstances.lastMoveResult = _lastMoveResult;
-      nPresentCircumstances.currentHitPoints = da.getUint16();
-      const surroundings_Length = da.getUint16();
-      nPresentCircumstances.surroundings = Array<TileType>(surroundings_Length);
-      for (let i3 = 0; i3 < surroundings_Length; i3++) {
-        const _surroundings = da.getByte();
-        if (TileType[_surroundings] === undefined) {
-          throw new Error(`Enum (${_surroundings}) out of range for TileType`);
-        }
-        nPresentCircumstances.surroundings[i3] = _surroundings;
-      }
-      nPresentCircumstances.surroundingsRadius = da.getByte();
-      return nPresentCircumstances;
-    }
-    catch (err) {
-      let errMsg = "[Unknown error]";
-      if (err instanceof Error) {
-        errMsg = `${err.name} -- ${err.message}`;
-      }
-      throw new Error(`Could not read PresentCircumstances from offset ${da.currentOffset} (${errMsg})`);
-    }
-  }
+	static fromBytes(data: DataView|DataAccess|ArrayBuffer): PresentCircumstances {
+		let da: DataAccess;
+		if (data instanceof DataView) {
+			da = new DataAccess(data);
+		}
+		else if (data instanceof ArrayBuffer) {
+			da = new DataAccess(new DataView(data));
+		}
+		else {
+			da = data;
+		}
+		try {
+			const nPresentCircumstances = new PresentCircumstances();
+			nPresentCircumstances.lastTickDuration = da.getUint32();
+			const _lastMoveResult = da.getByte();
+			if (MoveResult[_lastMoveResult] === undefined) {
+				throw new Error(`Enum (${_lastMoveResult}) out of range for MoveResult`);
+			}
+			nPresentCircumstances.lastMoveResult = _lastMoveResult;
+			nPresentCircumstances.currentHitPoints = da.getUint16();
+			const surroundings_Length = da.getUint16();
+			nPresentCircumstances.surroundings = Array<TileType>(surroundings_Length);
+			for (let i3 = 0; i3 < surroundings_Length; i3++) {
+				const _surroundings = da.getByte();
+				if (TileType[_surroundings] === undefined) {
+					throw new Error(`Enum (${_surroundings}) out of range for TileType`);
+				}
+				nPresentCircumstances.surroundings[i3] = _surroundings;
+			}
+			nPresentCircumstances.surroundingsRadius = da.getByte();
+			return nPresentCircumstances;
+		}
+		catch (err) {
+			let errMsg = "[Unknown error]";
+			if (err instanceof Error) {
+				errMsg = `${err.name} -- ${err.message}`;
+			}
+			throw new Error(`Could not read PresentCircumstances from offset ${da.currentOffset} (${errMsg})`);
+		}
+	}
 
-  writeBytes(data: DataView|DataAccess, tag: boolean): void {
-    let da: DataAccess;
-    if (data instanceof DataView) {
-      da = new DataAccess(data);
-    }
-    else {
-      da = data;
-    }
-    if (tag) {
-      da.setByte(MessageType.PresentCircumstancesType);
-    }
-    da.setUint32(this.lastTickDuration);
-    da.setByte(this.lastMoveResult);
-    da.setUint16(this.currentHitPoints);
-    da.setUint16(this.surroundings.length);
-    for (let i = 0; i < this.surroundings.length; i++) {
-      let el = this.surroundings[i];
-      da.setByte(el);
-    }
-    da.setByte(this.surroundingsRadius);
-  }
+	writeBytes(data: DataView|DataAccess, tag: boolean): void {
+		let da: DataAccess;
+		if (data instanceof DataView) {
+			da = new DataAccess(data);
+		}
+		else {
+			da = data;
+		}
+		if (tag) {
+			da.setByte(MessageType.PresentCircumstancesType);
+		}
+		da.setUint32(this.lastTickDuration);
+		da.setByte(this.lastMoveResult);
+		da.setUint16(this.currentHitPoints);
+		da.setUint16(this.surroundings.length);
+		for (let i = 0; i < this.surroundings.length; i++) {
+			let el = this.surroundings[i];
+			da.setByte(el);
+		}
+		da.setByte(this.surroundingsRadius);
+	}
 
 }
 
 export class Wait extends Message {
 
-  getMessageType() : MessageType { return MessageType.WaitType; }
+	getMessageType() : MessageType { return MessageType.WaitType; }
 
-  getSizeInBytes(): number {
-    return 0;
-  }
+	getSizeInBytes(): number {
+		return 0;
+	}
 
-  static fromBytes(data: DataView|DataAccess|ArrayBuffer): Wait {
-    let da: DataAccess;
-    if (data instanceof DataView) {
-      da = new DataAccess(data);
-    }
-    else if (data instanceof ArrayBuffer) {
-      da = new DataAccess(new DataView(data));
-    }
-    else {
-      da = data;
-    }
-    try {
-      const nWait = new Wait();
-      return nWait;
-    }
-    catch (err) {
-      let errMsg = "[Unknown error]";
-      if (err instanceof Error) {
-        errMsg = `${err.name} -- ${err.message}`;
-      }
-      throw new Error(`Could not read Wait from offset ${da.currentOffset} (${errMsg})`);
-    }
-  }
+	static fromBytes(data: DataView|DataAccess|ArrayBuffer): Wait {
+		let da: DataAccess;
+		if (data instanceof DataView) {
+			da = new DataAccess(data);
+		}
+		else if (data instanceof ArrayBuffer) {
+			da = new DataAccess(new DataView(data));
+		}
+		else {
+			da = data;
+		}
+		try {
+			const nWait = new Wait();
+			return nWait;
+		}
+		catch (err) {
+			let errMsg = "[Unknown error]";
+			if (err instanceof Error) {
+				errMsg = `${err.name} -- ${err.message}`;
+			}
+			throw new Error(`Could not read Wait from offset ${da.currentOffset} (${errMsg})`);
+		}
+	}
 
-  writeBytes(data: DataView|DataAccess, tag: boolean): void {
-    let da: DataAccess;
-    if (data instanceof DataView) {
-      da = new DataAccess(data);
-    }
-    else {
-      da = data;
-    }
-    if (tag) {
-      da.setByte(MessageType.WaitType);
-    }
-  }
+	writeBytes(data: DataView|DataAccess, tag: boolean): void {
+		let da: DataAccess;
+		if (data instanceof DataView) {
+			da = new DataAccess(data);
+		}
+		else {
+			da = data;
+		}
+		if (tag) {
+			da.setByte(MessageType.WaitType);
+		}
+	}
 
 }
 
 export class Resign extends Message {
 
-  getMessageType() : MessageType { return MessageType.ResignType; }
+	getMessageType() : MessageType { return MessageType.ResignType; }
 
-  getSizeInBytes(): number {
-    return 0;
-  }
+	getSizeInBytes(): number {
+		return 0;
+	}
 
-  static fromBytes(data: DataView|DataAccess|ArrayBuffer): Resign {
-    let da: DataAccess;
-    if (data instanceof DataView) {
-      da = new DataAccess(data);
-    }
-    else if (data instanceof ArrayBuffer) {
-      da = new DataAccess(new DataView(data));
-    }
-    else {
-      da = data;
-    }
-    try {
-      const nResign = new Resign();
-      return nResign;
-    }
-    catch (err) {
-      let errMsg = "[Unknown error]";
-      if (err instanceof Error) {
-        errMsg = `${err.name} -- ${err.message}`;
-      }
-      throw new Error(`Could not read Resign from offset ${da.currentOffset} (${errMsg})`);
-    }
-  }
+	static fromBytes(data: DataView|DataAccess|ArrayBuffer): Resign {
+		let da: DataAccess;
+		if (data instanceof DataView) {
+			da = new DataAccess(data);
+		}
+		else if (data instanceof ArrayBuffer) {
+			da = new DataAccess(new DataView(data));
+		}
+		else {
+			da = data;
+		}
+		try {
+			const nResign = new Resign();
+			return nResign;
+		}
+		catch (err) {
+			let errMsg = "[Unknown error]";
+			if (err instanceof Error) {
+				errMsg = `${err.name} -- ${err.message}`;
+			}
+			throw new Error(`Could not read Resign from offset ${da.currentOffset} (${errMsg})`);
+		}
+	}
 
-  writeBytes(data: DataView|DataAccess, tag: boolean): void {
-    let da: DataAccess;
-    if (data instanceof DataView) {
-      da = new DataAccess(data);
-    }
-    else {
-      da = data;
-    }
-    if (tag) {
-      da.setByte(MessageType.ResignType);
-    }
-  }
+	writeBytes(data: DataView|DataAccess, tag: boolean): void {
+		let da: DataAccess;
+		if (data instanceof DataView) {
+			da = new DataAccess(data);
+		}
+		else {
+			da = data;
+		}
+		if (tag) {
+			da.setByte(MessageType.ResignType);
+		}
+	}
 
 }
 
 export class MoveTo extends Message {
-  direction: Direction = Direction.East;
-  distance: number = 0;
+	direction: Direction = Direction.East;
+	distance: number = 0;
 
-  getMessageType() : MessageType { return MessageType.MoveToType; }
+	getMessageType() : MessageType { return MessageType.MoveToType; }
 
-  getSizeInBytes(): number {
-    return 2;
-  }
+	getSizeInBytes(): number {
+		return 2;
+	}
 
-  static fromBytes(data: DataView|DataAccess|ArrayBuffer): MoveTo {
-    let da: DataAccess;
-    if (data instanceof DataView) {
-      da = new DataAccess(data);
-    }
-    else if (data instanceof ArrayBuffer) {
-      da = new DataAccess(new DataView(data));
-    }
-    else {
-      da = data;
-    }
-    try {
-      const nMoveTo = new MoveTo();
-      const _direction = da.getByte();
-      if (Direction[_direction] === undefined) {
-        throw new Error(`Enum (${_direction}) out of range for Direction`);
-      }
-      nMoveTo.direction = _direction;
-      nMoveTo.distance = da.getByte();
-      return nMoveTo;
-    }
-    catch (err) {
-      let errMsg = "[Unknown error]";
-      if (err instanceof Error) {
-        errMsg = `${err.name} -- ${err.message}`;
-      }
-      throw new Error(`Could not read MoveTo from offset ${da.currentOffset} (${errMsg})`);
-    }
-  }
+	static fromBytes(data: DataView|DataAccess|ArrayBuffer): MoveTo {
+		let da: DataAccess;
+		if (data instanceof DataView) {
+			da = new DataAccess(data);
+		}
+		else if (data instanceof ArrayBuffer) {
+			da = new DataAccess(new DataView(data));
+		}
+		else {
+			da = data;
+		}
+		try {
+			const nMoveTo = new MoveTo();
+			const _direction = da.getByte();
+			if (Direction[_direction] === undefined) {
+				throw new Error(`Enum (${_direction}) out of range for Direction`);
+			}
+			nMoveTo.direction = _direction;
+			nMoveTo.distance = da.getByte();
+			return nMoveTo;
+		}
+		catch (err) {
+			let errMsg = "[Unknown error]";
+			if (err instanceof Error) {
+				errMsg = `${err.name} -- ${err.message}`;
+			}
+			throw new Error(`Could not read MoveTo from offset ${da.currentOffset} (${errMsg})`);
+		}
+	}
 
-  writeBytes(data: DataView|DataAccess, tag: boolean): void {
-    let da: DataAccess;
-    if (data instanceof DataView) {
-      da = new DataAccess(data);
-    }
-    else {
-      da = data;
-    }
-    if (tag) {
-      da.setByte(MessageType.MoveToType);
-    }
-    da.setByte(this.direction);
-    da.setByte(this.distance);
-  }
+	writeBytes(data: DataView|DataAccess, tag: boolean): void {
+		let da: DataAccess;
+		if (data instanceof DataView) {
+			da = new DataAccess(data);
+		}
+		else {
+			da = data;
+		}
+		if (tag) {
+			da.setByte(MessageType.MoveToType);
+		}
+		da.setByte(this.direction);
+		da.setByte(this.distance);
+	}
 
 }
 
 export class Open extends Message {
-  target: Point = new Point();
+	target: Point = new Point();
 
-  getMessageType() : MessageType { return MessageType.OpenType; }
+	getMessageType() : MessageType { return MessageType.OpenType; }
 
-  getSizeInBytes(): number {
-    return 4;
-  }
+	getSizeInBytes(): number {
+		return 4;
+	}
 
-  static fromBytes(data: DataView|DataAccess|ArrayBuffer): Open {
-    let da: DataAccess;
-    if (data instanceof DataView) {
-      da = new DataAccess(data);
-    }
-    else if (data instanceof ArrayBuffer) {
-      da = new DataAccess(new DataView(data));
-    }
-    else {
-      da = data;
-    }
-    try {
-      const nOpen = new Open();
-      nOpen.target = Point.fromBytes(da);
-      return nOpen;
-    }
-    catch (err) {
-      let errMsg = "[Unknown error]";
-      if (err instanceof Error) {
-        errMsg = `${err.name} -- ${err.message}`;
-      }
-      throw new Error(`Could not read Open from offset ${da.currentOffset} (${errMsg})`);
-    }
-  }
+	static fromBytes(data: DataView|DataAccess|ArrayBuffer): Open {
+		let da: DataAccess;
+		if (data instanceof DataView) {
+			da = new DataAccess(data);
+		}
+		else if (data instanceof ArrayBuffer) {
+			da = new DataAccess(new DataView(data));
+		}
+		else {
+			da = data;
+		}
+		try {
+			const nOpen = new Open();
+			nOpen.target = Point.fromBytes(da);
+			return nOpen;
+		}
+		catch (err) {
+			let errMsg = "[Unknown error]";
+			if (err instanceof Error) {
+				errMsg = `${err.name} -- ${err.message}`;
+			}
+			throw new Error(`Could not read Open from offset ${da.currentOffset} (${errMsg})`);
+		}
+	}
 
-  writeBytes(data: DataView|DataAccess, tag: boolean): void {
-    let da: DataAccess;
-    if (data instanceof DataView) {
-      da = new DataAccess(data);
-    }
-    else {
-      da = data;
-    }
-    if (tag) {
-      da.setByte(MessageType.OpenType);
-    }
-    this.target.writeBytes(da);
-  }
+	writeBytes(data: DataView|DataAccess, tag: boolean): void {
+		let da: DataAccess;
+		if (data instanceof DataView) {
+			da = new DataAccess(data);
+		}
+		else {
+			da = data;
+		}
+		if (tag) {
+			da.setByte(MessageType.OpenType);
+		}
+		this.target.writeBytes(da);
+	}
 
 }
 
 export class Close extends Message {
-  target: Point = new Point();
+	target: Point = new Point();
 
-  getMessageType() : MessageType { return MessageType.CloseType; }
+	getMessageType() : MessageType { return MessageType.CloseType; }
 
-  getSizeInBytes(): number {
-    return 4;
-  }
+	getSizeInBytes(): number {
+		return 4;
+	}
 
-  static fromBytes(data: DataView|DataAccess|ArrayBuffer): Close {
-    let da: DataAccess;
-    if (data instanceof DataView) {
-      da = new DataAccess(data);
-    }
-    else if (data instanceof ArrayBuffer) {
-      da = new DataAccess(new DataView(data));
-    }
-    else {
-      da = data;
-    }
-    try {
-      const nClose = new Close();
-      nClose.target = Point.fromBytes(da);
-      return nClose;
-    }
-    catch (err) {
-      let errMsg = "[Unknown error]";
-      if (err instanceof Error) {
-        errMsg = `${err.name} -- ${err.message}`;
-      }
-      throw new Error(`Could not read Close from offset ${da.currentOffset} (${errMsg})`);
-    }
-  }
+	static fromBytes(data: DataView|DataAccess|ArrayBuffer): Close {
+		let da: DataAccess;
+		if (data instanceof DataView) {
+			da = new DataAccess(data);
+		}
+		else if (data instanceof ArrayBuffer) {
+			da = new DataAccess(new DataView(data));
+		}
+		else {
+			da = data;
+		}
+		try {
+			const nClose = new Close();
+			nClose.target = Point.fromBytes(da);
+			return nClose;
+		}
+		catch (err) {
+			let errMsg = "[Unknown error]";
+			if (err instanceof Error) {
+				errMsg = `${err.name} -- ${err.message}`;
+			}
+			throw new Error(`Could not read Close from offset ${da.currentOffset} (${errMsg})`);
+		}
+	}
 
-  writeBytes(data: DataView|DataAccess, tag: boolean): void {
-    let da: DataAccess;
-    if (data instanceof DataView) {
-      da = new DataAccess(data);
-    }
-    else {
-      da = data;
-    }
-    if (tag) {
-      da.setByte(MessageType.CloseType);
-    }
-    this.target.writeBytes(da);
-  }
+	writeBytes(data: DataView|DataAccess, tag: boolean): void {
+		let da: DataAccess;
+		if (data instanceof DataView) {
+			da = new DataAccess(data);
+		}
+		else {
+			da = data;
+		}
+		if (tag) {
+			da.setByte(MessageType.CloseType);
+		}
+		this.target.writeBytes(da);
+	}
 
 }
 
 export const MessageTypeMap = new Map<MessageType, { new(): Message }>([
-  [MessageType._ErrorType, _Error],
-  [MessageType.InitialParametersType, InitialParameters],
-  [MessageType.PresentCircumstancesType, PresentCircumstances],
-  [MessageType.WaitType, Wait],
-  [MessageType.ResignType, Resign],
-  [MessageType.MoveToType, MoveTo],
-  [MessageType.OpenType, Open],
-  [MessageType.CloseType, Close],
+	[MessageType._ErrorType, _Error],
+	[MessageType.InitialParametersType, InitialParameters],
+	[MessageType.PresentCircumstancesType, PresentCircumstances],
+	[MessageType.WaitType, Wait],
+	[MessageType.ResignType, Resign],
+	[MessageType.MoveToType, MoveTo],
+	[MessageType.OpenType, Open],
+	[MessageType.CloseType, Close],
 ]);
 

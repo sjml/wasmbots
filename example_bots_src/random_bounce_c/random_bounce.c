@@ -11,50 +11,50 @@ const char* BOT_NAME = "randBounce C";
 const uint16_t BOT_VERSION[3] = {0, 2, 1};
 
 typedef enum {
-    DIR_EAST, DIR_SOUTHEAST, DIR_SOUTH, DIR_SOUTHWEST, DIR_WEST, DIR_NORTHWEST, DIR_NORTH, DIR_NORTHEAST
+	DIR_EAST, DIR_SOUTHEAST, DIR_SOUTH, DIR_SOUTHWEST, DIR_WEST, DIR_NORTHWEST, DIR_NORTH, DIR_NORTHEAST
 } Direction;
 Direction CURRENT_DIR = DIR_EAST;
 
 void chooseNewDirection(bool allowRepeat) {
-    Direction oldDir = CURRENT_DIR;
-    int32_t randomDir = wsmbt_getRandomInt(0, 8);
-    if (!allowRepeat && randomDir == oldDir) {
-        randomDir = (randomDir + 1) % 8;
-    }
-    CURRENT_DIR = randomDir;
+	Direction oldDir = CURRENT_DIR;
+	int32_t randomDir = wsmbt_getRandomInt(0, 8);
+	if (!allowRepeat && randomDir == oldDir) {
+		randomDir = (randomDir + 1) % 8;
+	}
+	CURRENT_DIR = randomDir;
 }
 
 void* clientTick(WasmBots_PresentCircumstances* circumstances) {
-    if (!circumstances->lastMoveResult != WasmBots_MoveResult_Succeeded) {
-        chooseNewDirection(false);
-        wsmbt_logf("choosing new direction: %d", CURRENT_DIR);
-    }
+	if (!circumstances->lastMoveResult != WasmBots_MoveResult_Succeeded) {
+		chooseNewDirection(false);
+		wsmbt_logf("choosing new direction: %d", CURRENT_DIR);
+	}
 
-    WasmBots_MoveTo* move = WasmBots_MoveTo_Create();
-    move->direction = (uint8_t)CURRENT_DIR;
-    move->distance = 1;
+	WasmBots_MoveTo* move = WasmBots_MoveTo_Create();
+	move->direction = (uint8_t)CURRENT_DIR;
+	move->distance = 1;
 
-    return (void*)move;
+	return (void*)move;
 }
 
 bool clientReceiveGameParams(WasmBots_InitialParameters* initParams) {
-    chooseNewDirection(true);
-    return true;
+	chooseNewDirection(true);
+	return true;
 }
 
 
 wsmbt_BotMetadata clientSetup(void) {
-    wsmbt_registerTickCallback(&clientTick);
+	wsmbt_registerTickCallback(&clientTick);
 
-    wsmbt_BotMetadata botMeta;
+	wsmbt_BotMetadata botMeta;
 
-    memset(botMeta.name, 0, sizeof(botMeta.name));
-    size_t copyLength = strlen(BOT_NAME) < WSMBT_BOT_MAX_NAME_LEN ? strlen(BOT_NAME) : WSMBT_BOT_MAX_NAME_LEN;
-    memcpy(botMeta.name, BOT_NAME, copyLength);
+	memset(botMeta.name, 0, sizeof(botMeta.name));
+	size_t copyLength = strlen(BOT_NAME) < WSMBT_BOT_MAX_NAME_LEN ? strlen(BOT_NAME) : WSMBT_BOT_MAX_NAME_LEN;
+	memcpy(botMeta.name, BOT_NAME, copyLength);
 
-    botMeta.version[0] = BOT_VERSION[0];
-    botMeta.version[1] = BOT_VERSION[1];
-    botMeta.version[2] = BOT_VERSION[2];
+	botMeta.version[0] = BOT_VERSION[0];
+	botMeta.version[1] = BOT_VERSION[1];
+	botMeta.version[2] = BOT_VERSION[2];
 
-    return botMeta;
+	return botMeta;
 }

@@ -1,98 +1,98 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WasmBots Embedding Demonstration</title>
-    <link rel="stylesheet" href="https://shaneliesegang.com/style.css">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>WasmBots Embedding Demonstration</title>
+	<link rel="stylesheet" href="https://shaneliesegang.com/style.css">
 
-    <!--
-        Include this script file and **make sure** to set
-        the data-script-id attribute so that it can load
-        its assets relative to itself.
-    -->
-    <script
-        src="./wasmbots/wasmbots-embedded.iife.js"
-        data-script-id="wasmbotsEmbedScript"
-    >
-    </script>
+	<!--
+		Include this script file and **make sure** to set
+		the data-script-id attribute so that it can load
+		its assets relative to itself.
+	-->
+	<script
+		src="./wasmbots/wasmbots-embedded.iife.js"
+		data-script-id="wasmbotsEmbedScript"
+	>
+	</script>
 </head>
 <body>
-    <h1>WasmBots Embedding Demonstration</h1>
-    <hr/>
-    <p>
-        This is just a simple example of how WasmBots can be embedded
-        in a webpage as a standalone element. Most of the page is
-        running as a <a href="https://svelte.dev/" target="_blank">SvelteKit</a>
-        app, but this one is just plain old HTML, loading the entire
-        engine as a single script and then hooking it to a custom element.
-    </p>
+	<h1>WasmBots Embedding Demonstration</h1>
+	<hr/>
+	<p>
+		This is just a simple example of how WasmBots can be embedded
+		in a webpage as a standalone element. Most of the page is
+		running as a <a href="https://svelte.dev/" target="_blank">SvelteKit</a>
+		app, but this one is just plain old HTML, loading the entire
+		engine as a single script and then hooking it to a custom element.
+	</p>
 
-    <p>Look at those little guys running around! They get loaded from a
-        list of module files set as an attribute on the component.
-        <a href="./index.html.txt" target="_blank">Take a look at the
-        source and see for yourself!</a>
-    </p>
-    <p>
-        You can <a href="./wasmbots-embed.tar.gz">download
-        the component scripts here</a>.
-    </p>
-
-
-
-    <!--
-        You can stick it in whatever div you want, obviously,
-        and style/size it to your liking.
-    -->
-    <div class="aquarium" style="margin: auto;">
-        <!--
-            autoRun -- makes it start and loop forever,
-                       otherwise you can call the step()
-                       function on the element to go one
-                       turn at a time
-
-            setup -- is a string of JSON; at the moment
-                     just a list of bots, but you could
-                     imagine this specifying the map,
-                     game parameters, etc.
-
-                     the urls need to either be absolute
-                     or relative to the page that is
-                     loading them, much like the src
-                     attribute on an img element.
-        -->
-        <wasmbots-embed
-            autoRun
-            setup='{
-                "botUrlList": [
-                    "../example_bots/random_bounce_c.wasm",
-                    "../example_bots/random_bounce_zig.wasm"
-                ]
-            }'
-        />
-    </div>
+	<p>Look at those little guys running around! They get loaded from a
+		list of module files set as an attribute on the component.
+		<a href="./index.html.txt" target="_blank">Take a look at the
+		source and see for yourself!</a>
+	</p>
+	<p>
+		You can <a href="./wasmbots-embed.tar.gz">download
+		the component scripts here</a>.
+	</p>
 
 
 
-    <!--
-        Just a little button with an image from
-        Phosophor Icons <https://phosphoricons.com/>
-        that makes the bots run full screen
-        (if allowed on this platform).
-    -->
-    <button
-        class="fullScreen" aria-labelledby="fsButtonLabel"
-        onclick="document.querySelector('.aquarium').requestFullscreen();"
-        style="margin-top: 10px; display: flex; justify-content: center; align-items: center; padding: 5px;"
-    >
-        <svg style="flex-shrink: 0;" aria-hidden="true"
-            xmlns="http://www.w3.org/2000/svg"
-            width="32" height="32" fill="currentColor"
-            viewBox="0 0 256 256">
-            <path d="M220,48V96a12,12,0,0,1-24,0V77l-35.51,35.52a12,12,0,0,1-17-17L179,60H160a12,12,0,0,1,0-24h48A12,12,0,0,1,220,48ZM95.51,143.51,60,179V160a12,12,0,0,0-24,0v48a12,12,0,0,0,12,12H96a12,12,0,0,0,0-24H77l35.52-35.51a12,12,0,0,0-17-17ZM208,148a12,12,0,0,0-12,12v19l-35.51-35.52a12,12,0,0,0-17,17L179,196H160a12,12,0,0,0,0,24h48a12,12,0,0,0,12-12V160A12,12,0,0,0,208,148ZM77,60H96a12,12,0,0,0,0-24H48A12,12,0,0,0,36,48V96a12,12,0,0,0,24,0V77l35.51,35.52a12,12,0,0,0,17-17Z">
-            </path>
-        </svg>
-    </button>
-    <label id="fsButtonLabel">Show fullscreen (doesn’t work on iPhones 😔)</label>
+	<!--
+		You can stick it in whatever div you want, obviously,
+		and style/size it to your liking.
+	-->
+	<div class="aquarium" style="margin: auto;">
+		<!--
+			autoRun -- makes it start and loop forever,
+					   otherwise you can call the step()
+					   function on the element to go one
+					   turn at a time
+
+			setup -- is a string of JSON; at the moment
+					 just a list of bots, but you could
+					 imagine this specifying the map,
+					 game parameters, etc.
+
+					 the urls need to either be absolute
+					 or relative to the page that is
+					 loading them, much like the src
+					 attribute on an img element.
+		-->
+		<wasmbots-embed
+			autoRun
+			setup='{
+				"botUrlList": [
+					"../example_bots/random_bounce_c.wasm",
+					"../example_bots/random_bounce_zig.wasm"
+				]
+			}'
+		/>
+	</div>
+
+
+
+	<!--
+		Just a little button with an image from
+		Phosophor Icons <https://phosphoricons.com/>
+		that makes the bots run full screen
+		(if allowed on this platform).
+	-->
+	<button
+		class="fullScreen" aria-labelledby="fsButtonLabel"
+		onclick="document.querySelector('.aquarium').requestFullscreen();"
+		style="margin-top: 10px; display: flex; justify-content: center; align-items: center; padding: 5px;"
+	>
+		<svg style="flex-shrink: 0;" aria-hidden="true"
+			xmlns="http://www.w3.org/2000/svg"
+			width="32" height="32" fill="currentColor"
+			viewBox="0 0 256 256">
+			<path d="M220,48V96a12,12,0,0,1-24,0V77l-35.51,35.52a12,12,0,0,1-17-17L179,60H160a12,12,0,0,1,0-24h48A12,12,0,0,1,220,48ZM95.51,143.51,60,179V160a12,12,0,0,0-24,0v48a12,12,0,0,0,12,12H96a12,12,0,0,0,0-24H77l35.52-35.51a12,12,0,0,0-17-17ZM208,148a12,12,0,0,0-12,12v19l-35.51-35.52a12,12,0,0,0-17,17L179,196H160a12,12,0,0,0,0,24h48a12,12,0,0,0,12-12V160A12,12,0,0,0,208,148ZM77,60H96a12,12,0,0,0,0-24H48A12,12,0,0,0,36,48V96a12,12,0,0,0,24,0V77l35.51,35.52a12,12,0,0,0,17-17Z">
+			</path>
+		</svg>
+	</button>
+	<label id="fsButtonLabel">Show fullscreen (doesn’t work on iPhones 😔)</label>
 </body>
 </html>

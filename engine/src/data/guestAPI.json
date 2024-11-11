@@ -1,75 +1,75 @@
 {
-  "memory": {
-    "doc": "the wasm module should export its linear memory, rather than expecting to import it from the host (at the moment only 'exported' is valid)",
-    "kind": "exported"
-  },
-  "functionExports": {
-    "clientInitialize": {
-      "optional": true,
-      "doc": "first thing called in your module; should only be used for absolutely minimal functionality like registering callbacks or the like. (I mean, I can't stop you from doing more in here, but you're on a timer so don't go too wild.)",
-      "paramsDoc": [],
-      "sourceParams": [],
-      "wasmParams": [],
-      "sourceReturn": null,
-      "wasmReturn": null
-    },
-    "setup": {
-      "doc": "called at startup; do whatever you need to do here but also reserve a block of memory for the engine to use later. write 32 bytes to that memory: the first 26 are a utf-8 string of the program name (null-terminated if length < 26) and then 3 unsigned 16-bit integers in a row indicating semver major.minor.patch",
-      "paramsDoc": ["how many bytes of contiguous memory to reserve for the host"],
-      "returnDoc": "a pointer to where in the linear memory the reserved block begins",
-      "sourceParams": ["usize"],
-      "wasmParams": ["i32"],
-      "sourceReturn": "usize",
-      "wasmReturn": "i32"
-    },
-    "receiveGameParams": {
-      "doc": "called after the setup function; the initial game parameters (specced in `gameParameters.json`) are currently sitting in the reserved memory block. they won't stay there, so copy out anything you need.",
-      "paramsDoc": [
-        "the offset in the shared memory where the parameters begin"
-      ],
-      "returnDoc": "a boolean value saying whether or not we can proceed (if something in the parameters means we can't run, for example)",
-      "sourceParams": ["usize"],
-      "wasmParams": ["i32"],
-      "sourceReturn": "boolean",
-      "wasmReturn": "i32"
-    },
-    "tick": {
-      "doc": "a prompt from the engine for you to make your move; the current circumstances will be waiting for you in the reserved block",
-      "paramsDoc": ["the offset in the shared memory where the circumstances begin"],
-      "returnDoc": "",
-      "sourceParams": ["usize"],
-      "wasmParams": ["i32"],
-      "sourceReturn": null,
-      "wasmReturn": null
-    }
-  },
-  "functionImports": {
-    "shutdown": {
-      "doc": "request shutdown from the host; does not take effect immediately, but no more ticks will be called after the current one",
-      "paramsDoc": [],
-      "returnDoc": "",
-      "sourceParams": [],
-      "wasmParams": [],
-      "sourceReturn": null,
-      "wasmReturn": null
-    },
-    "logFunction": {
-      "doc": "the engine's hook for logging; will print to either the terminal (if running from CLI) or the web console (if running in browser) or the visible UI (running in the frontend)",
-      "paramsDoc": ["the log level; 0 = error, 1 = warn, 2 = log, 3 = info, 4 = debug", "the offset in the shared memory where the string to log begins", "length of the string"],
-      "returnDoc": "",
-      "sourceParams": ["u32", "usize", "usize"],
-      "wasmParams": ["i32", "i32", "i32"],
-      "sourceReturn": null,
-      "wasmReturn": null
-    },
-    "getRandomInt": {
-      "doc": "gets a random 32-bit integer from the engine's PRNG; handy since you might otherwise not have a source of entropy to seed your own. If max < min, will return 0.",
-      "paramsDoc": ["minimum value (inclusive)", "maximum value (exclusive)"],
-      "returnDoc": "a random integer in the range",
-      "sourceParams": ["i32", "i32"],
-      "wasmParams": ["i32", "i32"],
-      "sourceReturn": "i32",
-      "wasmReturn": "i32"
-    }
-  }
+	"memory": {
+		"doc": "the wasm module should export its linear memory, rather than expecting to import it from the host (at the moment only 'exported' is valid)",
+		"kind": "exported"
+	},
+	"functionExports": {
+		"clientInitialize": {
+			"optional": true,
+			"doc": "first thing called in your module; should only be used for absolutely minimal functionality like registering callbacks or the like. (I mean, I can't stop you from doing more in here, but you're on a timer so don't go too wild.)",
+			"paramsDoc": [],
+			"sourceParams": [],
+			"wasmParams": [],
+			"sourceReturn": null,
+			"wasmReturn": null
+		},
+		"setup": {
+			"doc": "called at startup; do whatever you need to do here but also reserve a block of memory for the engine to use later. write 32 bytes to that memory: the first 26 are a utf-8 string of the program name (null-terminated if length < 26) and then 3 unsigned 16-bit integers in a row indicating semver major.minor.patch",
+			"paramsDoc": ["how many bytes of contiguous memory to reserve for the host"],
+			"returnDoc": "a pointer to where in the linear memory the reserved block begins",
+			"sourceParams": ["usize"],
+			"wasmParams": ["i32"],
+			"sourceReturn": "usize",
+			"wasmReturn": "i32"
+		},
+		"receiveGameParams": {
+			"doc": "called after the setup function; the initial game parameters (specced in `gameParameters.json`) are currently sitting in the reserved memory block. they won't stay there, so copy out anything you need.",
+			"paramsDoc": [
+				"the offset in the shared memory where the parameters begin"
+			],
+			"returnDoc": "a boolean value saying whether or not we can proceed (if something in the parameters means we can't run, for example)",
+			"sourceParams": ["usize"],
+			"wasmParams": ["i32"],
+			"sourceReturn": "boolean",
+			"wasmReturn": "i32"
+		},
+		"tick": {
+			"doc": "a prompt from the engine for you to make your move; the current circumstances will be waiting for you in the reserved block",
+			"paramsDoc": ["the offset in the shared memory where the circumstances begin"],
+			"returnDoc": "",
+			"sourceParams": ["usize"],
+			"wasmParams": ["i32"],
+			"sourceReturn": null,
+			"wasmReturn": null
+		}
+	},
+	"functionImports": {
+		"shutdown": {
+			"doc": "request shutdown from the host; does not take effect immediately, but no more ticks will be called after the current one",
+			"paramsDoc": [],
+			"returnDoc": "",
+			"sourceParams": [],
+			"wasmParams": [],
+			"sourceReturn": null,
+			"wasmReturn": null
+		},
+		"logFunction": {
+			"doc": "the engine's hook for logging; will print to either the terminal (if running from CLI) or the web console (if running in browser) or the visible UI (running in the frontend)",
+			"paramsDoc": ["the log level; 0 = error, 1 = warn, 2 = log, 3 = info, 4 = debug", "the offset in the shared memory where the string to log begins", "length of the string"],
+			"returnDoc": "",
+			"sourceParams": ["u32", "usize", "usize"],
+			"wasmParams": ["i32", "i32", "i32"],
+			"sourceReturn": null,
+			"wasmReturn": null
+		},
+		"getRandomInt": {
+			"doc": "gets a random 32-bit integer from the engine's PRNG; handy since you might otherwise not have a source of entropy to seed your own. If max < min, will return 0.",
+			"paramsDoc": ["minimum value (inclusive)", "maximum value (exclusive)"],
+			"returnDoc": "a random integer in the range",
+			"sourceParams": ["i32", "i32"],
+			"wasmParams": ["i32", "i32"],
+			"sourceReturn": "i32",
+			"wasmReturn": "i32"
+		}
+	}
 }

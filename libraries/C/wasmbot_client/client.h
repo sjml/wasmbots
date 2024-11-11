@@ -20,15 +20,15 @@ void wsmbt_logf(const char* fmt, ...);
 void wsmbt_logfErr(const char* fmt, ...);
 
 typedef struct wsmbt_GameParameters {
-    uint16_t paramsVersion;
-    uint16_t engineVersion[3];
+	uint16_t paramsVersion;
+	uint16_t engineVersion[3];
 } wsmbt_GameParameters;
 
 #define WSMBT_BOT_MAX_NAME_LEN 26
 
 typedef struct wsmbt_BotMetadata {
-    char name[WSMBT_BOT_MAX_NAME_LEN];
-    uint16_t version[3];
+	char name[WSMBT_BOT_MAX_NAME_LEN];
+	uint16_t version[3];
 } wsmbt_BotMetadata;
 
 typedef void* (*wsmbt_TickFunction)(WasmBotsMessage_PresentCircumstances*);
