@@ -31,16 +31,8 @@ fn clientSetup() wasmbotClient.BotMetadata {
     return bot_meta;
 }
 
-const TileType = enum {
-    Void,
-    Empty,
-    OpenDoor,
-    ClosedDoor,
-    Wall,
-};
-
 const PointSet = std.AutoHashMap(Point, void);
-const Map = std.AutoHashMap(Point, TileType);
+const Map = std.AutoHashMap(Point, msg.TileType);
 var mapping: Map = undefined;
 var doors: Map = undefined;
 var visited: PointSet = undefined;
@@ -51,7 +43,7 @@ fn updateMaps(circs: *const msg.PresentCircumstances) !void {
     const side_len = circs.surroundingsRadius * 2 + 1;
     const grid = Grid(u16).init(circs.surroundings, side_len, side_len);
 
-    if (circs.lastMoveSucceeded) {
+    if (circs.lastMoveResult == msg.MoveResult.Succeeded) {
         bot.lastLocation = bot.location;
         bot.location = bot.location.add(bot.attemptedMove);
         bot.attemptedMove = Point{};
@@ -69,10 +61,10 @@ fn updateMaps(circs: *const msg.PresentCircumstances) !void {
             const offset = Point{ .x = x_offset, .y = y_offset };
             const location = bot.toWorld(offset);
 
-            const value: TileType = @enumFromInt(grid.get(x, y));
+            const value: msg.TileType = @enumFromInt(grid.get(x, y));
             try mapping.put(location, value);
 
-            if (value == TileType.ClosedDoor or value == TileType.OpenDoor) {
+            if (value == msg.TileType.ClosedDoor or value == msg.TileType.OpenDoor) {
                 try doors.put(location, value);
             }
         }

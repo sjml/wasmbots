@@ -3,7 +3,7 @@ CFLAGS = -s WASM=1 -s EXPORTED_FUNCTIONS='["_setup", "_receiveGameParams", "_tic
 LIBDIR = ../../libraries/C
 EXE_NAME = random_bounce
 
-$(EXE_NAME).wasm: $(EXE_NAME).c $(LIBDIR)/wasmbot_client.c
+$(EXE_NAME).wasm: $(EXE_NAME).c $(LIBDIR)/wasmbot_client/client.c
 	$(CC) $(CFLAGS) -I$(LIBDIR) $^ -o $@
 	chmod -x $@
 
