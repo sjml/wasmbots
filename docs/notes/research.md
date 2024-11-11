@@ -10,3 +10,10 @@
         * https://web.archive.org/web/20150905121206/http://blogs.msdn.com/b/ericlippert/archive/2011/12/29/shadowcasting-in-c-part-six.aspx
     * interactive: https://www.albertford.com/shadowcasting/
     * Python code: https://www.gridbugs.org/visible-area-detection-recursive-shadowcast/
+* general roguelike info
+    * libtcod -- well-known Python library
+      * tutorial: http://rogueliketutorials.com/tutorials/tcod/v2/
+    * rot.js -- libtcod-inspired JavaScript library 
+      * https://ondras.github.io/rot.js/hp/
+      * https://roguebasin.com/index.php/Rot.js_tutorial
+

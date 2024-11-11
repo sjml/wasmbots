@@ -1,6 +1,6 @@
 # Programmatic Interface for WasmBots
 
-This is a description of the low-level interface. **Note that the [client libraries](../libraries/) abstract a lot of this away, so you may want to start there.** 
+This is a description of the low-level interface. **Note that the [client libraries](../libraries/) abstract a lot of this away, so if you're working in one of those languages (C, Rust, Zig, Go, or AssemblyScript) you probably want to start there.** If you find the libraries not to your liking, want to work in another language, or are simply curious about how the low-level stuff works, read on!
 
 ## WebAssembly Expectations
 

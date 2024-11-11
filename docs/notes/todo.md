@@ -1,4 +1,8 @@
 ## dev
+* resume work:
+  * doing line of sight coding in the `engine/src/game/map.ts` file. 
+  * disallow diagonal movement if config is set that way
+
 * trainer
     * need to figure out debugger attaching to the process; maybe deno can just take a port number and hit it up instead of starting it directly? 
       * set up monorepo as a VS Code workspace? https://code.visualstudio.com/docs/editor/multi-root-workspaces
