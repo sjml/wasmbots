@@ -7,13 +7,8 @@ import * as path from "jsr:@std/path";
 
 
 import { RNG } from "../game/random.ts";
+import { TileType } from "../core/messages.ts";
 
-enum TileType {
-    Empty,
-    OpenDoor,
-    ClosedDoor,
-    Wall,
-}
 
 class Rect {
     readonly x: number = 0;

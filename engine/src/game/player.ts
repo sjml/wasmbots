@@ -51,7 +51,12 @@ export class Player {
     }
 
     async tickTurn(circumstances: CoreMsg.PresentCircumstances): Promise<CoreMsg.Message> {
-        circumstances.lastMoveSucceeded = this.lastMoveSucceeded;
+        if (this.lastMoveSucceeded) {
+            circumstances.lastMoveResult = CoreMsg.MoveResult.Succeeded;
+        }
+        else {
+            circumstances.lastMoveResult = CoreMsg.MoveResult.Error; // TODO: implement actual checks here
+        }
 
         const move = await this.coordinator.tick(circumstances);
 

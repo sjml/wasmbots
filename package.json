@@ -1,4 +1,5 @@
 {
+  "name": "wasmbots",
   "private": true,
   "workspaces": [
     "engine",

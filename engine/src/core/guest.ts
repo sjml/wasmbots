@@ -88,6 +88,7 @@ export abstract class GuestProgram {
         gp.engineVersionMajor = config.version[0];
         gp.engineVersionMinor = config.version[1];
         gp.engineVersionPatch = config.version[2];
+        gp.diagonalMovement = config.diagonalMovement;
 
         gp.writeBytes(dv, false);
 

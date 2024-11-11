@@ -1,8 +1,5 @@
-# Processed by beschi <https://github.com/sjml/beschi> to generate
-#    message-parsing code for the host and all the client libraries.
-
 [meta]
-namespace = "WasmBotsMessage"
+namespace = "WasmBots"
 list_size_type = "uint16"
 string_size_type = "byte"
 
@@ -14,60 +11,79 @@ description = "string"
 # initial setup message that you can either accept or reject
 [[messages]]
 _name = "InitialParameters"
-paramsVersion = "uint16"
-engineVersionMajor = "uint16"
-engineVersionMinor = "uint16"
-engineVersionPatch = "uint16"
+paramsVersion = "uint16"       # version of this very message, so you know if you can parse the rest
+engineVersionMajor = "uint16"  # major version of engine
+engineVersionMinor = "uint16"  # minor version of engine
+engineVersionPatch = "uint16"  # patch version of engine
+diagonalMovement = "bool"      # if false, any attempted diagonal move will be Invalid
+
+
+[[structs]]
+_name = "Point"
+x = "uint16"
+y = "uint16"
+
+
+[[enums]]
+_name = "MoveResult"
+_values = [
+    "Succeeded",  # your move worked (ex: attack hit, moved successfully)
+    "Failed",     # your move did not work (ex: attack missed, moved into wall)
+    "Invalid",    # your move was not allowed by the system (ex: tried diagonal movement when not allowed, targeted something out of range)
+    "Error",      # your move was not understood (ex: malformed message, missing data)
+]
+
+[[enums]]
+_name = "TileType"
+_values = [
+    "Void",        # you don't know what's there; might be off the edge of the map, or maybe just behind a wall
+    "Empty",       # an open space you can move to
+    "OpenDoor",    # a door space that you can pass through or take a turn to target with Close
+    "ClosedDoor",  # an impassible door space that you can take a turn to target with Open
+    "Wall",        # an impassible space
+]
+
+[[enums]]
+_name = "Direction"
+_values = [
+    "East",
+    "Southeast",
+    "South",
+    "Southwest",
+    "West",
+    "Northwest",
+    "North",
+    "Northeast",
+]
 
 # player receives every tick
 [[messages]]
-_name = "PresentCircumstances"
-lastTickDuration = "uint32"
-lastMoveSucceeded = "bool" # these two would be better as an enum, but beschi doesn't do that yet
-lastMoveValid = "bool"
-currentHitPoints = "uint16"
-currentStatus = "byte"
-surroundings = "[uint16]"
-surroundingsRadius = "byte"
+_name = "PresentCircumstances"  # describes your immediate situation and surroundings at the start of this turn
+lastTickDuration = "uint32"     # how long, in milliseconds, you took on the last tick (will be 0 on initial turn)
+lastMoveResult = "MoveResult"   # the result of your last turn (will be Succeeded on initial turn)
+currentHitPoints = "uint16"     # how many hit points you have
+surroundings = "[TileType]"     # array of tiles representing your immediate surroundings as a square with you in the middle
+surroundingsRadius = "byte"     # radius (from you) of the surroundings, so the side of a square is (this * 2) + 1
 
 
 ### moves that the player submits
 
 [[messages]]
-_name = "Wait"
+_name = "Wait"  # no-op; don't do anything and wait for the next tick
 
 [[messages]]
-_name = "Resign"
+_name = "Resign"  # give up the game; you will receive no more tick calls after submitting this move
 
 [[messages]]
-_name = "MoveTo"
-direction = "byte"
-distance = "byte"
+_name = "MoveTo"         # move to a new tile
+direction = "Direction"  # which way to move
+distance = "byte"        # how far to move (can usually just be 1, but might be modified); if you put a number that is beyond your max range, the move will be Invalid
 
 [[messages]]
-_name = "Open"
-targetX = "int16"
-targetY = "int16"
+_name = "Open"     # open (a door, a chest, etc.) at a specific tile
+target = "Point"   # the position *relative to you* that you want to try to open; can usually only be one square away (manhattan distance); if already opened, move will fail; if target is not openable, move will be Invalid
 
 [[messages]]
-_name = "Close"
-targetX = "int16"
-targetY = "int16"
+_name = "Close"    # close (a door, a chest, etc.) at a specific tile
+target = "Point"   # the position *relative to you* that you want to try to close; can usually only be one square away (manhattan distance); if already closed, move will fail; if target is not closable, move will be Invalid
 
-# [[messages]]
-# _name = "Attack"
-# targetX = "int16"
-# targetY = "int16"
-
-# [[messages]]
-# _name = "CastSpell"
-# spellID = "byte"
-# params = "[byte]"
-# targetX = "int16"
-# targetY = "int16"
-
-# [[messages]]
-# _name = "Examine"
-
-# [[messages]]
-# _name = "Take"

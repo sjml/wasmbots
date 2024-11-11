@@ -17,6 +17,7 @@ const config = {
     // GameParameters
     startingHitPoints: 10,
     enabledMaps: ["dungeon", "arena"],
+    diagonalMovement: false,
 
     // visualization stuff
     gameWidth: 1024,

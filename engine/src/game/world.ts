@@ -1,30 +1,24 @@
 import { RNG, Deck } from "./random.ts";
 import { Player } from "./player.ts";
 import { CoordinatorStatus } from "../core/coordinator.ts";
-import { TileType, WorldMap, type Point } from "./map.ts";
+import { WorldMap } from "./map.ts";
+import { type Point } from "../core/math.ts";
 import * as CoreMsg from "../core/messages.ts";
 
 
-export enum Direction {
-    East,
-    Southeast,
-    South,
-    Southwest,
-    West,
-    Northwest,
-    North,
-    Northeast,
+function isCardinal(d: CoreMsg.Direction): boolean {
+    return d == CoreMsg.Direction.East || d == CoreMsg.Direction.South || d == CoreMsg.Direction.West || d == CoreMsg.Direction.North;
 }
 
-const OFFSETS: Map<Direction, Point> = new Map([
-    [Direction.East,      { x:  1, y:  0 }],
-    [Direction.Southeast, { x:  1, y:  1 }],
-    [Direction.South,     { x:  0, y:  1 }],
-    [Direction.Southwest, { x: -1, y:  1 }],
-    [Direction.West,      { x: -1, y:  0 }],
-    [Direction.Northwest, { x: -1, y: -1 }],
-    [Direction.North,     { x:  0, y: -1 }],
-    [Direction.Northeast, { x:  1, y: -1 }],
+const OFFSETS: Map<CoreMsg.Direction, Point> = new Map([
+    [CoreMsg.Direction.East,      { x:  1, y:  0 }],
+    [CoreMsg.Direction.Southeast, { x:  1, y:  1 }],
+    [CoreMsg.Direction.South,     { x:  0, y:  1 }],
+    [CoreMsg.Direction.Southwest, { x: -1, y:  1 }],
+    [CoreMsg.Direction.West,      { x: -1, y:  0 }],
+    [CoreMsg.Direction.Northwest, { x: -1, y: -1 }],
+    [CoreMsg.Direction.North,     { x:  0, y: -1 }],
+    [CoreMsg.Direction.Northeast, { x:  1, y: -1 }],
 ]);
 
 export enum GameState {
@@ -240,8 +234,8 @@ export class World extends EventTarget {
                 // https://www.roguebasin.com/index.php?title=FOV_using_recursive_shadowcasting
                 circumstances.surroundingsRadius  = 2;
                 circumstances.surroundings = this.currentMap!.getTileSlice(
-                    player.location.x, player.location.y,
-                    2
+                    player.location,
+                    circumstances.surroundingsRadius,
                 ).flat() || [];
 
                 const move = await player.tickTurn(circumstances);
@@ -271,14 +265,14 @@ export class World extends EventTarget {
                 break;
             case CoreMsg.MessageType.MoveToType:
                 const playerMove = move as CoreMsg.MoveTo;
-                const direction = playerMove.direction as Direction;
+                const direction = playerMove.direction as CoreMsg.Direction;
                 const offset = OFFSETS.get(direction)!;
                 const peekLoc = {
                     x: player.location.x + offset.x,
                     y: player.location.y + offset.y,
                 };
                 const peek = this.currentMap!.getTile(peekLoc.x, peekLoc.y);
-                if (peek == TileType.Wall || peek == TileType.ClosedDoor) {
+                if (peek == CoreMsg.TileType.Wall || peek == CoreMsg.TileType.ClosedDoor) {
                     return false;
                 }
                 player.location = peekLoc;
