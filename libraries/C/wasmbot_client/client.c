@@ -1,4 +1,3 @@
-#define WASMBOTSMESSAGE_IMPLEMENTATION
 #include "./client.h"
 
 #include <stdarg.h>
@@ -6,6 +5,8 @@
 #include <stdbool.h>
 #include <stdio.h>
 
+#define WASMBOTS_IMPLEMENTATION
+#include "wasmbot_messages.h"
 
 //// LOGGING
 extern void logFunction(int logLevel, unsigned int msgPtr, unsigned int msgLen);
@@ -80,19 +81,19 @@ bool _reserveMemory(size_t request) {
 const uint16_t GP_VERSION = 7;
 
 extern wsmbt_BotMetadata clientSetup(void);
-extern bool clientReceiveGameParams(WasmBotsMessage_InitialParameters*);
+extern bool clientReceiveGameParams(WasmBots_InitialParameters*);
 
 bool receiveGameParams(size_t offset) {
     wsmbt_GameParameters params;
 
-    WasmBotsMessage_DataAccess da = {
+    WasmBots_DataAccess da = {
         .buffer = WSMBT_HOST_RESERVE,
         .bufferSize = WSMBT_HOST_RESERVE_SIZE,
         .position = offset,
     };
 
-    WasmBotsMessage_InitialParameters initParams;
-    WasmBotsMessage_InitialParameters_FromBytes(&da, &initParams);
+    WasmBots_InitialParameters initParams;
+    WasmBots_InitialParameters_FromBytes(&da, &initParams);
 
     if (initParams.paramsVersion != GP_VERSION) {
         wsmbt_logfErr("CLIENT ERROR: Can't parse GameParams v%d; only prepared for v%d", params.paramsVersion, GP_VERSION);
@@ -105,7 +106,7 @@ bool receiveGameParams(size_t offset) {
 
 
 //// SETUP AND LOOP
-WasmBotsMessage_DataAccess _dataAccess;
+WasmBots_DataAccess _dataAccess;
 
 size_t setup(size_t requestReserve) {
     if (!_reserveMemory(requestReserve)) {
@@ -121,14 +122,14 @@ size_t setup(size_t requestReserve) {
     memcpy((char*)(WSMBT_HOST_RESERVE), botData.name, WSMBT_BOT_MAX_NAME_LEN);
 
     _dataAccess.position = WSMBT_BOT_MAX_NAME_LEN;
-    WasmBotsMessage__WriteUInt16(&_dataAccess, botData.version[0]);
-    WasmBotsMessage__WriteUInt16(&_dataAccess, botData.version[1]);
-    WasmBotsMessage__WriteUInt16(&_dataAccess, botData.version[2]);
+    WasmBots__WriteUInt16(&_dataAccess, botData.version[0]);
+    WasmBots__WriteUInt16(&_dataAccess, botData.version[1]);
+    WasmBots__WriteUInt16(&_dataAccess, botData.version[2]);
 
     return (size_t)WSMBT_HOST_RESERVE;
 }
 
-void* _noop(WasmBotsMessage_PresentCircumstances* circumstances) { return NULL; }
+void* _noop(WasmBots_PresentCircumstances* circumstances) { return NULL; }
 wsmbt_TickFunction _clientTick = &_noop;
 
 void wsmbt_registerTickCallback(wsmbt_TickFunction tickFunc) {
@@ -136,15 +137,15 @@ void wsmbt_registerTickCallback(wsmbt_TickFunction tickFunc) {
 }
 
 void tick(size_t offset) {
-    WasmBotsMessage_err_t err = WASMBOTSMESSAGE_ERR_OK;
+    WasmBots_err_t err = WASMBOTS_ERR_OK;
     void* playerMove = NULL;
 
     _dataAccess.position = offset;
-    WasmBotsMessage_PresentCircumstances* circumstances = malloc(sizeof(WasmBotsMessage_PresentCircumstances));
-    err = WasmBotsMessage_PresentCircumstances_FromBytes(&_dataAccess, circumstances);
-    if (err != WASMBOTSMESSAGE_ERR_OK) {
-        WasmBotsMessage_PresentCircumstances_Destroy(circumstances);
-        WasmBotsMessage__Error* errMsg = WasmBotsMessage__Error_Create();
+    WasmBots_PresentCircumstances* circumstances = malloc(sizeof(WasmBots_PresentCircumstances));
+    err = WasmBots_PresentCircumstances_FromBytes(&_dataAccess, circumstances);
+    if (err != WASMBOTS_ERR_OK) {
+        WasmBots_PresentCircumstances_Destroy(circumstances);
+        WasmBots__Error* errMsg = WasmBots__Error_Create();
         errMsg->description = "Could not read PresentCircumstances message";
         errMsg->description_len = strlen(errMsg->description);
         wsmbt_logErr(errMsg->description);
@@ -156,10 +157,10 @@ void tick(size_t offset) {
 
     if (playerMove != NULL) {
         _dataAccess.position = 0;
-        err = WasmBotsMessage_WriteBytes(&_dataAccess, playerMove, true);
-        err = WasmBotsMessage_Destroy(playerMove);
+        err = WasmBots_WriteBytes(&_dataAccess, playerMove, true);
+        err = WasmBots_Destroy(playerMove);
     }
 
-    WasmBotsMessage_PresentCircumstances_Destroy(circumstances);
+    WasmBots_PresentCircumstances_Destroy(circumstances);
 }
 //// \SETUP AND LOOP
