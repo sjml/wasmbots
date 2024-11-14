@@ -230,7 +230,7 @@ pub extern "C" fn validate_wasm(wasm_ptr: *mut u8, wasm_len: usize, json_ptr: *m
 		Ok(_) => 0,
 		Err(e) => match e {
 			WatParserError::WasmParserError(_) => {
-				log(&"Some error in the WASM parser");
+				log(&"Some error in the WebAssembly parser");
 				1
 			},
 			WatParserError::FunctionHasWrongParams(f) => {

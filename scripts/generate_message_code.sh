@@ -17,7 +17,7 @@ for lang in "${!langs[@]}"; do
 		--lang $lang
 		--protocol ./engine/src/data/messaging.toml
 		--embed-protocol
-		--indent "	"
+		--indent $'\t'
 		--output "${langs[$lang]}"
 	)
 

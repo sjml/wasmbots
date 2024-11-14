@@ -2,24 +2,8 @@ import { RNG, Deck } from "./random.ts";
 import { Player } from "./player.ts";
 import { CoordinatorStatus } from "../core/coordinator.ts";
 import { WorldMap } from "./map.ts";
-import { type Point } from "../core/math.ts";
+import { type Point, Direction } from "../core/math.ts";
 import * as CoreMsg from "../core/messages.ts";
-
-
-function isCardinal(d: CoreMsg.Direction): boolean {
-	return d == CoreMsg.Direction.East || d == CoreMsg.Direction.South || d == CoreMsg.Direction.West || d == CoreMsg.Direction.North;
-}
-
-const OFFSETS: Map<CoreMsg.Direction, Point> = new Map([
-	[CoreMsg.Direction.East,      { x:  1, y:  0 }],
-	[CoreMsg.Direction.Southeast, { x:  1, y:  1 }],
-	[CoreMsg.Direction.South,     { x:  0, y:  1 }],
-	[CoreMsg.Direction.Southwest, { x: -1, y:  1 }],
-	[CoreMsg.Direction.West,      { x: -1, y:  0 }],
-	[CoreMsg.Direction.Northwest, { x: -1, y: -1 }],
-	[CoreMsg.Direction.North,     { x:  0, y: -1 }],
-	[CoreMsg.Direction.Northeast, { x:  1, y: -1 }],
-]);
 
 export enum GameState {
 	Setup,
@@ -230,13 +214,13 @@ export class World extends EventTarget {
 				const circumstances = new CoreMsg.PresentCircumstances();
 				circumstances.currentHitPoints = player.hitPoints;
 
-				// TODO: calculate line of sight and tile slice
-				// https://www.roguebasin.com/index.php?title=FOV_using_recursive_shadowcasting
 				circumstances.surroundingsRadius  = 2;
-				circumstances.surroundings = this.currentMap!.getTileSlice(
+				circumstances.surroundings = this.currentMap!.computeFOV(
 					player.location,
 					circumstances.surroundingsRadius,
-				).flat() || [];
+					[CoreMsg.TileType.Wall, CoreMsg.TileType.ClosedDoor]
+				).flat().map(t => t.terrainType);
+
 
 				const move = await player.tickTurn(circumstances);
 
@@ -265,14 +249,14 @@ export class World extends EventTarget {
 				break;
 			case CoreMsg.MessageType.MoveToType:
 				const playerMove = move as CoreMsg.MoveTo;
-				const direction = playerMove.direction as CoreMsg.Direction;
-				const offset = OFFSETS.get(direction)!;
+				const direction = Direction.from(playerMove.direction);
+				const offset = direction.moveDelta;
 				const peekLoc = {
 					x: player.location.x + offset.x,
 					y: player.location.y + offset.y,
 				};
 				const peek = this.currentMap!.getTile(peekLoc.x, peekLoc.y);
-				if (peek == CoreMsg.TileType.Wall || peek == CoreMsg.TileType.ClosedDoor) {
+				if (peek.terrainType == CoreMsg.TileType.Wall || peek.terrainType == CoreMsg.TileType.ClosedDoor) {
 					return false;
 				}
 				player.location = peekLoc;

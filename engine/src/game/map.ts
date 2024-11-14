@@ -1,5 +1,8 @@
 import { readJsonFile } from "../core/loader.ts";
 import { stringToNumericEnum } from "../core/util.ts";
+import { type Point } from "../core/math.ts";
+import { computeFOV } from "./fov.ts";
+import { TileType as TerrainTileType } from "../core/messages.ts";
 
 // right now assuming all maps are the same size
 const MAP_WIDTH = 64;
@@ -11,27 +14,32 @@ const TILED_FLAG_FLIPPED_VERTICALLY      = 0x40000000;
 const TILED_FLAG_FLIPPED_DIAGONALLY      = 0x20000000;
 const TILED_FLAG_ROTATED_HEXAGONAL_120   = 0x10000000;
 
-export enum TileType {
-	Void,
-	Empty,
-	OpenDoor,
-	ClosedDoor,
-	Wall,
-	TERRAIN_MAX,
-
+export enum MetaTileType {
 	SpawnPoint,
+	Tombstone,
 }
 
-export interface Point {
-	x: number;
-	y: number;
+export class Tile {
+	terrainType: TerrainTileType;
+	metaDatums: Set<MetaTileType>;
+
+	constructor(terrain?: TerrainTileType) {
+		this.terrainType = terrain || TerrainTileType.Void;
+		this.metaDatums = new Set();
+	}
 }
 
+interface TileRecord {
+	terrain?: TerrainTileType;
+	meta?: MetaTileType
+}
 
 export class WorldMap {
 	source: string = "";
 	name: string = "";
-	tiles: TileType[][] = Array.from({length: MAP_HEIGHT}, () => Array(MAP_WIDTH).fill(TileType.Empty));
+	tiles: Tile[][] = Array.from({length: MAP_HEIGHT}, () =>
+		Array.from({ length: MAP_WIDTH }, () => new Tile())
+	);
 	spawnPoints: Point[] = [];
 	minPlayers: number = 1;
 	maxPlayers: number = 1;
@@ -44,9 +52,30 @@ export class WorldMap {
 		const rawMapData = await readJsonFile(newMap.source);
 
 		for (const tsd of rawMapData.tilesets) {
-			const tileData: Map<number, TileType> = new Map();
+			const tileData: Map<number, TileRecord> = new Map();
 			for (const td of tsd.tiles) {
-				tileData.set(td.id, stringToNumericEnum(TileType, td.type) || TileType.Void);
+				const [genus, species] = td.type.split(".");
+				if (species === undefined) {
+					continue; // not one of ours
+				}
+				switch (genus) {
+					case "Terrain":
+						const terrain = stringToNumericEnum(TerrainTileType, species);
+						if (terrain === undefined) {
+							throw new Error(`Invalid tile type: ${td.type}`);
+						}
+						tileData.set(td.id, { terrain });
+						continue;
+					case "Meta":
+						const meta = stringToNumericEnum(MetaTileType, species);
+						if (meta === undefined) {
+							throw new Error(`Invalid tile type: ${td.type}`);
+						}
+						tileData.set(td.id, { meta });
+						continue;
+					default:
+						throw new Error(`Unrecognized tile genus: ${genus}`);
+				}
 			}
 			tsd.tileData = tileData;
 		}
@@ -60,9 +89,9 @@ export class WorldMap {
 			throw new Error("Invalid map data, wrong dimensions!");
 		}
 
-		const tileLookup: Map<number, TileType> = new Map();
+		const tileLookup: Map<number, TileRecord> = new Map();
 
-		function lookupTile(t: number): TileType {
+		function lookupTile(t: number): TileRecord {
 			if (tileLookup.has(t)) {
 				return tileLookup.get(t)!;
 			}
@@ -72,7 +101,7 @@ export class WorldMap {
 							  TILED_FLAG_ROTATED_HEXAGONAL_120
 							 );
 			if (gid == 0) {
-				return TileType.Void;
+				return {};
 			}
 			for (let i = rawMapData.tilesets.length - 1; i >= 0; i--) {
 				const ts = rawMapData.tilesets[i];
@@ -88,20 +117,35 @@ export class WorldMap {
 		for (let y = 0; y < MAP_HEIGHT; y++) {
 			for (let x = 0; x < MAP_WIDTH; x++) {
 				const t = terrainLayer.data[(y * MAP_WIDTH) + x];
-				const tt = lookupTile(t);
-				if (tt >= TileType.TERRAIN_MAX) {
+				const tr = lookupTile(t);
+
+				if (tr.terrain === undefined) {
 					throw new Error("Non-terrain tile in terrain layer");
 				}
-				newMap.tiles[y][x] = tt;
+				newMap.tiles[y][x].terrainType = tr.terrain;
 			}
 		}
 
 		for (let y = 0; y < MAP_HEIGHT; y++) {
 			for (let x = 0; x < MAP_WIDTH; x++) {
 				const t = metadataLayer.data[(y * MAP_WIDTH) + x];
-				const tt = lookupTile(t);
-				if (tt == TileType.SpawnPoint) {
-					newMap.spawnPoints.push({x, y});
+				const tr = lookupTile(t);
+
+				if (tr.terrain !== undefined) {
+					throw new Error(`Non-meta tile in meta layer: ${x}, ${y} -- ${Object.entries(tr)}`);
+				}
+				if (tr.meta === undefined) {
+					continue;
+				}
+				newMap.tiles[y][x].metaDatums.add(tr.meta);
+				switch (tr.meta) {
+					case MetaTileType.SpawnPoint:
+						newMap.spawnPoints.push({x, y});
+						break;
+					case MetaTileType.Tombstone:
+						break;
+					default:
+						throw new Error(`Unrecognized meta tile: ${tr.meta}`);
 				}
 			}
 		}
@@ -122,42 +166,56 @@ export class WorldMap {
 			newMap.maxPlayers = newMap.spawnPoints.length;
 		}
 
+		for (let y = 0; y < MAP_HEIGHT; y++) {
+			for (let x = 0; x < MAP_WIDTH; x++) {
+				// for now, should not be any void spots in the map
+				// (maybe someday a howling vortex somewhere?
+				//  more likely would be its own tile type and void
+				//  will remain a proper nil.)
+				if (newMap.tiles[y][x].terrainType === TerrainTileType.Void) {
+					throw new Error(`Tile at ${x}, ${y} was void after map parsing`)
+				}
+			}
+		}
 		return newMap;
 	}
 
-	static debugDrawSlice(slice: TileType[][]) {
+	static debugDrawSlice(slice: Tile[][]) {
 		for (let y = 0; y < slice.length; y++) {
-			console.log(slice[y].map(t => {
-				switch (t) {
-					case TileType.Empty:
+			console.log(slice[y].map((t, x) => {
+				if (y == Math.floor(slice.length / 2) && (x == Math.floor(slice[0].length / 2))) {
+					return "@";
+				}
+				switch (t.terrainType) {
+					case TerrainTileType.Empty:
 						return ".";
-					case TileType.Void:
+					case TerrainTileType.Void:
 						return " ";
-					case TileType.OpenDoor:
+					case TerrainTileType.OpenDoor:
 						return "_";
-					case TileType.ClosedDoor:
+					case TerrainTileType.ClosedDoor:
 						return "-";
-					case TileType.Wall:
+					case TerrainTileType.Wall:
 						return "#";
 				}
 			}).join(""));
 		}
 	}
 
-	getTile(x: number, y: number): TileType {
+	getTile(x: number, y: number): Tile {
 		if (x < 0 || y < 0 || x >= MAP_WIDTH || y >= MAP_WIDTH) {
-			return TileType.Void;
+			return new Tile();
 		}
 		return this.tiles[y][x];
 	}
-	getTilePt(loc: Point): TileType {
+	getTilePt(loc: Point): Tile {
 		return this.getTile(loc.x , loc.y);
 	}
 
-	getTileSlice(origin: Point, radius: number): TileType[][] {
+	getTileSlice(origin: Point, radius: number): Tile[][] {
 		const size = 2 * radius + 1;
-		const slice: TileType[][] = Array.from({ length: size }, () =>
-			Array(size).fill(TileType.Void)
+		const slice: Tile[][] = Array.from({ length: size }, () =>
+			Array.from({ length: size }, () => new Tile())
 		);
 
 		for (let i = Math.max(0, origin.y - radius); i <= Math.min(origin.y + radius, this.tiles.length - 1); i++) {
@@ -169,34 +227,22 @@ export class WorldMap {
 		return slice;
 	}
 
-	calculateLineOfSight(origin: Point, radius: number, opacityTest: TileType[]|((t: TileType) => boolean)) {
-		const size = 2 * radius + 1;
-		const calculatedSlice: TileType[][] = Array.from({ length: size }, () =>
-			Array(size).fill(TileType.Void)
-		);
-
-		const globalToLocal = (global: Point): Point => {
-			return { x: global.x - origin.x + radius, y: global.y - origin.y + radius };
-		}
-		const localToGlobal = (local: Point): Point => {
-			return { x: local.x + origin.x, y: local.y + origin.y };
-		}
-		const setVisible = (globalLocation: Point, tile?: TileType) => {
-			const loc = globalToLocal(globalLocation);
-			calculatedSlice[loc.y][loc.x] = tile || this.getTilePt(globalLocation);
-		}
-
-		// origin always visible
-		setVisible(origin);
-
-
-
-		return calculatedSlice;
+	// outsourcing to another file because lotsa helper classes and things
+	computeFOV(origin: Point, radius: number, opacityTest: TerrainTileType[]|((t: TerrainTileType) => boolean)): Tile[][] {
+		return computeFOV(this, origin, radius, opacityTest);
 	}
 }
 
-const m = await WorldMap.loadTiled("dungeon");
-const opaqueList = [TileType.Wall, TileType.ClosedDoor];
-// const opaqueList = [TileType.Wall]; // letting us see through closed doors for the purposes of testing
-const view = m.calculateLineOfSight({x: 19, y: 17}, 5, opaqueList);
-WorldMap.debugDrawSlice(view);
+// // testing functionality while developing
+// async function main() {
+// 	const m = await WorldMap.loadTiled("dungeon");
+// 	const opaqueList = [TerrainTileType.Wall, TerrainTileType.ClosedDoor];
+// 	// const opaqueList = [TerrainTileType.Wall]; // letting us see through closed doors for the purposes of testing
+// 	const view = m.computeFOV({x: 21, y: 4}, 2, opaqueList);
+// 	WorldMap.debugDrawSlice(view);
+// }
+
+// // @ts-ignore
+// if (import.meta.main) {
+// 	main();
+// }

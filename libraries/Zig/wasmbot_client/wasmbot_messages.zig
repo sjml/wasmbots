@@ -100,240 +100,240 @@
 const std = @import("std");
 
 const DataReaderError = error {
-    EOF,
-    InvalidData,
+	EOF,
+	InvalidData,
 };
 
 fn numberTypeIsValid(comptime T: type) bool {
-    const validNumericTypes = [_]type{
-        bool,
-        u8,  i8,
-        u16, i16,
-        u32, i32,
-        u64, i64,
-        f32, f64,
-    };
-    for (validNumericTypes) |vt| {
-        if (T == vt) {
-            return true;
-        }
-    }
-    return false;
+	const validNumericTypes = [_]type{
+		bool,
+		u8,  i8,
+		u16, i16,
+		u32, i32,
+		u64, i64,
+		f32, f64,
+	};
+	for (validNumericTypes) |vt| {
+		if (T == vt) {
+			return true;
+		}
+	}
+	return false;
 }
 
 const simpleTypes = [_]type{
-    Point, InitialParameters, Wait, Resign, MoveTo, Open, Close,
+	Point, InitialParameters, Wait, Resign, MoveTo, Open, Close,
 };
 
 const enumTypes = [_]type{
-    MoveResult, TileType, Direction,
+	MoveResult, TileType, Direction,
 };
 
 fn typeIsSimple(comptime T: type) bool {
-    if (comptime numberTypeIsValid(T)) {
-        return true;
-    }
-    for (simpleTypes) |vt| {
-        if (T == vt) {
-            return true;
-        }
-    }
-    if (typeIsEnum(T)) {
-        return true;
-    }
-    return false;
+	if (comptime numberTypeIsValid(T)) {
+		return true;
+	}
+	for (simpleTypes) |vt| {
+		if (T == vt) {
+			return true;
+		}
+	}
+	if (typeIsEnum(T)) {
+		return true;
+	}
+	return false;
 }
 
 fn typeIsEnum(comptime T: type) bool {
-    for (enumTypes) |vt| {
-        if (T == vt) {
-            return true;
-        }
-    }
-    return false;
+	for (enumTypes) |vt| {
+		if (T == vt) {
+			return true;
+		}
+	}
+	return false;
 }
 
 fn isValidEnum(comptime Te: type, comptime Ti: type, value: Ti) bool {
-    inline for (std.meta.fields(Te)) |f| {
-        if (value == f.value) {
-            return true;
-        }
-    }
-    return false;
+	inline for (std.meta.fields(Te)) |f| {
+		if (value == f.value) {
+			return true;
+		}
+	}
+	return false;
 }
 
 pub fn readNumber(comptime T: type, offset: usize, buffer: []const u8) !struct { value: T, bytes_read: usize } {
-    comptime {
-        const actual_type = switch (@typeInfo(T)) {
-            .Enum => |enum_info| enum_info.tag_type,
-            else => T,
-        };
+	comptime {
+		const actual_type = switch (@typeInfo(T)) {
+			.Enum => |enum_info| enum_info.tag_type,
+			else => T,
+		};
 
-        if (!numberTypeIsValid(actual_type)) {
-            @compileError("Invalid number type");
-        }
-    }
+		if (!numberTypeIsValid(actual_type)) {
+			@compileError("Invalid number type");
+		}
+	}
 
-    if (offset + @sizeOf(T) > buffer.len) {
-        return DataReaderError.EOF;
-    }
+	if (offset + @sizeOf(T) > buffer.len) {
+		return DataReaderError.EOF;
+	}
 
-    const val: T = switch (T) {
-        f32 => @bitCast(std.mem.readInt(u32, buffer[offset..][0..@sizeOf(T)], .little)),
-        f64 => @bitCast(std.mem.readInt(u64, buffer[offset..][0..@sizeOf(T)], .little)),
-        bool => std.mem.readInt(u8, buffer[offset..][0..@sizeOf(T)], .little) != 0,
-        else => enum_conversion: {
-            break :enum_conversion switch (@typeInfo(T)) {
-                .Enum => |ei| {
-                    const raw = std.mem.readInt(ei.tag_type, buffer[offset..][0..@sizeOf(T)], .little);
-                    if (!isValidEnum(T, ei.tag_type, raw)) {
-                        return DataReaderError.InvalidData;
-                    }
-                    break :enum_conversion @enumFromInt(raw);
-                },
-                else => std.mem.readInt(T, buffer[offset..][0..@sizeOf(T)], .little),
-            };
-        },
-    };
+	const val: T = switch (T) {
+		f32 => @bitCast(std.mem.readInt(u32, buffer[offset..][0..@sizeOf(T)], .little)),
+		f64 => @bitCast(std.mem.readInt(u64, buffer[offset..][0..@sizeOf(T)], .little)),
+		bool => std.mem.readInt(u8, buffer[offset..][0..@sizeOf(T)], .little) != 0,
+		else => enum_conversion: {
+			break :enum_conversion switch (@typeInfo(T)) {
+				.Enum => |ei| {
+					const raw = std.mem.readInt(ei.tag_type, buffer[offset..][0..@sizeOf(T)], .little);
+					if (!isValidEnum(T, ei.tag_type, raw)) {
+						return DataReaderError.InvalidData;
+					}
+					break :enum_conversion @enumFromInt(raw);
+				},
+				else => std.mem.readInt(T, buffer[offset..][0..@sizeOf(T)], .little),
+			};
+		},
+	};
 
-    return .{ .value = val, .bytes_read = @sizeOf(T) };
+	return .{ .value = val, .bytes_read = @sizeOf(T) };
 }
 
 pub fn readString(allocator: std.mem.Allocator, offset: usize, buffer: []const u8) !struct { value: []u8, bytes_read: usize } {
-    const len_read = try readNumber(u8, offset, buffer);
-    const len = len_read.value;
+	const len_read = try readNumber(u8, offset, buffer);
+	const len = len_read.value;
 
-    if (offset + @sizeOf(u8) + len > buffer.len) {
-        return DataReaderError.EOF;
-    }
+	if (offset + @sizeOf(u8) + len > buffer.len) {
+		return DataReaderError.EOF;
+	}
 
-    var str = try allocator.alloc(u8, len);
-    for (0..len) |i| {
-        str[i] = buffer[offset + len_read.bytes_read + i];
-    }
-    return .{ .value = str, .bytes_read = @sizeOf(u8) + len };
+	var str = try allocator.alloc(u8, len);
+	for (0..len) |i| {
+		str[i] = buffer[offset + len_read.bytes_read + i];
+	}
+	return .{ .value = str, .bytes_read = @sizeOf(u8) + len };
 }
 
 pub fn readList(comptime T: type, allocator: std.mem.Allocator, offset: usize, buffer: []const u8) !struct { value: []T, bytes_read: usize } {
-    var local_offset = offset;
-    const len_read = try readNumber(u16, local_offset, buffer);
-    const len = len_read.value;
-    local_offset += len_read.bytes_read;
-    var list = try allocator.alloc(T, len);
-    var made_count: u16 = 0;
+	var local_offset = offset;
+	const len_read = try readNumber(u16, local_offset, buffer);
+	const len = len_read.value;
+	local_offset += len_read.bytes_read;
+	var list = try allocator.alloc(T, len);
+	var made_count: u16 = 0;
 
-    errdefer {
-        for (0..made_count) |i| {
-            if (comptime (numberTypeIsValid(T) or typeIsEnum(T))) {
-                // no-op; just keeping the same structure as below
-            }
-            else {
-                switch (T) {
-                    []u8, []const u8 => {
-                        allocator.free(list[i]);
-                    },
-                    else => {
-                        if (comptime typeIsSimple(T)) {
-                            // no-op
-                        }
-                        else {
-                            list[i].deinit(allocator);
-                        }
-                    }
-                }
-            }
-        }
-        allocator.free(list);
-    }
+	errdefer {
+		for (0..made_count) |i| {
+			if (comptime (numberTypeIsValid(T) or typeIsEnum(T))) {
+				// no-op; just keeping the same structure as below
+			}
+			else {
+				switch (T) {
+					[]u8, []const u8 => {
+						allocator.free(list[i]);
+					},
+					else => {
+						if (comptime typeIsSimple(T)) {
+							// no-op
+						}
+						else {
+							list[i].deinit(allocator);
+						}
+					}
+				}
+			}
+		}
+		allocator.free(list);
+	}
 
-    for (0..len) |i| {
-        if (comptime (numberTypeIsValid(T) or typeIsEnum(T))) {
-            const list_read = try readNumber(T, local_offset, buffer);
-            list[i] = list_read.value;
-            local_offset += list_read.bytes_read;
-        } else {
-            switch (T) {
-                []u8, []const u8 => {
-                    const list_read = try readString(allocator, local_offset, buffer);
-                    list[i] = list_read.value;
-                    local_offset += list_read.bytes_read;
-                },
-                else => {
-                    if (comptime typeIsSimple(T)) {
-                        const list_read = try T.fromBytes(local_offset, buffer);
-                        list[i] = list_read.value;
-                        local_offset += list_read.bytes_read;
-                    }
-                    else {
-                        const list_read = try T.fromBytes(allocator, local_offset, buffer);
-                        list[i] = list_read.value;
-                        local_offset += list_read.bytes_read;
-                    }
-                },
-            }
-        }
-        made_count += 1;
-    }
-    return .{ .value = list, .bytes_read = local_offset - offset };
+	for (0..len) |i| {
+		if (comptime (numberTypeIsValid(T) or typeIsEnum(T))) {
+			const list_read = try readNumber(T, local_offset, buffer);
+			list[i] = list_read.value;
+			local_offset += list_read.bytes_read;
+		} else {
+			switch (T) {
+				[]u8, []const u8 => {
+					const list_read = try readString(allocator, local_offset, buffer);
+					list[i] = list_read.value;
+					local_offset += list_read.bytes_read;
+				},
+				else => {
+					if (comptime typeIsSimple(T)) {
+						const list_read = try T.fromBytes(local_offset, buffer);
+						list[i] = list_read.value;
+						local_offset += list_read.bytes_read;
+					}
+					else {
+						const list_read = try T.fromBytes(allocator, local_offset, buffer);
+						list[i] = list_read.value;
+						local_offset += list_read.bytes_read;
+					}
+				},
+			}
+		}
+		made_count += 1;
+	}
+	return .{ .value = list, .bytes_read = local_offset - offset };
 }
 
 pub fn writeNumber(comptime T: type, offset: usize, buffer: []u8, value: T) usize {
-    comptime {
-        const actual_type = switch (@typeInfo(T)) {
-            .Enum => |enum_info| enum_info.tag_type,
-            else => T,
-        };
+	comptime {
+		const actual_type = switch (@typeInfo(T)) {
+			.Enum => |enum_info| enum_info.tag_type,
+			else => T,
+		};
 
-        if (!numberTypeIsValid(actual_type)) {
-            @compileError("Invalid number type");
-        }
-    }
+		if (!numberTypeIsValid(actual_type)) {
+			@compileError("Invalid number type");
+		}
+	}
 
-    const slice = buffer[offset..][0..@sizeOf(T)];
-    switch (T) {
-        f32 => std.mem.writeInt(u32, @constCast(slice), @bitCast(value), .little),
-        f64 => std.mem.writeInt(u64, @constCast(slice), @bitCast(value), .little),
-        bool => std.mem.writeInt(u8, @constCast(slice), @intFromBool(value), .little),
-        else => switch (@typeInfo(T)) {
-            .Enum => |ei| std.mem.writeInt(ei.tag_type, @constCast(slice), @intFromEnum(value), .little),
-            else => std.mem.writeInt(T, @constCast(slice), value, .little),
-        }
-    }
-    return @sizeOf(T);
+	const slice = buffer[offset..][0..@sizeOf(T)];
+	switch (T) {
+		f32 => std.mem.writeInt(u32, @constCast(slice), @bitCast(value), .little),
+		f64 => std.mem.writeInt(u64, @constCast(slice), @bitCast(value), .little),
+		bool => std.mem.writeInt(u8, @constCast(slice), @intFromBool(value), .little),
+		else => switch (@typeInfo(T)) {
+			.Enum => |ei| std.mem.writeInt(ei.tag_type, @constCast(slice), @intFromEnum(value), .little),
+			else => std.mem.writeInt(T, @constCast(slice), value, .little),
+		}
+	}
+	return @sizeOf(T);
 }
 
 pub fn writeString(offset: usize, buffer: []u8, value: []const u8) usize {
-    _ = writeNumber(u16, offset, buffer, @intCast(value.len));
-    std.mem.copyForwards(u8, buffer[offset+@sizeOf(u16)..][0..value.len], value);
-    return @sizeOf(u16) + value.len;
+	_ = writeNumber(u16, offset, buffer, @intCast(value.len));
+	std.mem.copyForwards(u8, buffer[offset+@sizeOf(u16)..][0..value.len], value);
+	return @sizeOf(u16) + value.len;
 }
 
 pub fn writeList(comptime T: type, offset: usize, buffer: []u8, value: []T) usize {
-    var local_offset = offset;
-    local_offset += writeNumber(u16, local_offset, buffer, @intCast(value.len));
+	var local_offset = offset;
+	local_offset += writeNumber(u16, local_offset, buffer, @intCast(value.len));
 
-    for (value) |item| {
-        if (comptime (numberTypeIsValid(T) or typeIsEnum(T))) {
-            local_offset += writeNumber(T, local_offset, buffer, item);
-        }
-        else {
-            switch(T) {
-                []u8, []const u8 => {
-                    local_offset += writeString(local_offset, buffer, item);
-                },
-                else => {
-                    local_offset += item.writeBytes(local_offset, buffer);
-                }
-            }
-        }
-    }
-    return local_offset - offset;
+	for (value) |item| {
+		if (comptime (numberTypeIsValid(T) or typeIsEnum(T))) {
+			local_offset += writeNumber(T, local_offset, buffer, item);
+		}
+		else {
+			switch(T) {
+				[]u8, []const u8 => {
+					local_offset += writeString(local_offset, buffer, item);
+				},
+				else => {
+					local_offset += item.writeBytes(local_offset, buffer);
+				}
+			}
+		}
+	}
+	return local_offset - offset;
 }
 
 pub fn writeBytes(m: *const Message, offset: usize, buffer: []u8, tag: bool) usize {
-    switch (m.*) {
-        inline else => |inner| return inner.writeBytes(offset, buffer, tag),
-    }
+	switch (m.*) {
+		inline else => |inner| return inner.writeBytes(offset, buffer, tag),
+	}
 }
 
 pub const MessageType = enum(u8) {
@@ -676,8 +676,7 @@ pub const MoveTo = struct {
 	}
 
 	pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: MoveTo, bytes_read: usize } {
-		const MoveTo_direction_check = (try readNumber(u8, offset + 0, buffer)).value;
-
+		const MoveTo_direction = (try readNumber(Direction, offset + 0, buffer)).value;
 		const MoveTo_distance = (try readNumber(u8, offset + 1, buffer)).value;
 		return .{ .value = MoveTo{
 			.direction = MoveTo_direction,
@@ -707,7 +706,7 @@ pub const Open = struct {
 	}
 
 	pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: Open, bytes_read: usize } {
-		const Open_target_read = Point.fromBytes(0, buffer);
+		const Open_target_read = Point.fromBytes(offset + 0, buffer);
 		const Open_target = Open_target_read.value;
 		return .{ .value = Open{
 			.target = Open_target,
@@ -735,7 +734,7 @@ pub const Close = struct {
 	}
 
 	pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: Close, bytes_read: usize } {
-		const Close_target_read = Point.fromBytes(0, buffer);
+		const Close_target_read = Point.fromBytes(offset + 0, buffer);
 		const Close_target = Close_target_read.value;
 		return .{ .value = Close{
 			.target = Close_target,

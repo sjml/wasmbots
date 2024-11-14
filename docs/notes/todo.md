@@ -1,31 +1,30 @@
 ## dev
 * resume work:
-  * doing line of sight coding in the `engine/src/game/map.ts` file. 
   * disallow diagonal movement if config is set that way
+
+* review [memory notes](./misc.md#memory-thoughts)
+
+* distribute the min tick across # of players?
+    * would also allow for tweening of movements (you know you have X amount of time before you're moving again)
+    * need a min and max value for it tho
+* UI: 
+    * file select or drag and drop for running your own bot
+    * button to zoom on particular bot
+    * spinners when map or wasm is loading
 
 * trainer
     * need to figure out debugger attaching to the process; maybe deno can just take a port number and hit it up instead of starting it directly? 
       * set up monorepo as a VS Code workspace? https://code.visualstudio.com/docs/editor/multi-root-workspaces
       * https://code.visualstudio.com/docs/editor/debugging#_compound-launch-configurations
-    * reset functionality got moved around; test it out
-    * clean the server code the heck up
+    * player reset functionality got moved around; test it out
+    * clean the zig server code the heck up
         * would be nice if it could recover from a panic, but not sure what would even happen then
 * botloader not using Loader? (I assume I had a reason, because it *is* imported...)
-* exploration
-  * have world send slice that accounts for line-of-sight (TODO marked in world's `runTurn` function)
-  * set up exploration following pseudcode notes in `bot.zig`
 * toast messages / notifications
   * like for player registration failure that right now just prints to console
-* distribute the min tick across # of players?
-  * would also allow for tweening of movements (you know you have X amount of time before you're moving again)
-* UI: 
-    * file select or drag and drop for running your own bot
-    * add player image to panel once spawned
-    * button to zoom on particular bot
 * BUG: failed instantiation still adds player to UI
 
 * is `makingNewPlayer` still needed or can we just make it separate?
-
 
 * map variations
     * add map parameter to embedded component

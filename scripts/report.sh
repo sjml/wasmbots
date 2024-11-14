@@ -3,7 +3,7 @@
 cd "$(dirname "$0")"
 cd ..
 
-output="Bot:WASM:WAT:WASM.gz\n---:----:---:-------\n"
+output="bot:wasm:wat:wasm.gz\n---:----:---:-------\n"
 
 for wasm in $(ls -S example_bots/*.wasm); do
   wasm_bytes=$(stat -f %z $wasm)

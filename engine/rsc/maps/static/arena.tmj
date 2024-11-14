@@ -187,193 +187,193 @@
          "tiles":[
                 {
                  "id":0,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":1,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":2,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":3,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":4,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":5,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":6,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":7,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":8,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":12,
                  "probability":0.0299999993294477,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":13,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":14,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":15,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":16,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":17,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":18,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":19,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":20,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":24,
                  "probability":0.0500000007450581,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":25,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":26,
                  "probability":0.0500000007450581,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":27,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":28,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":29,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":30,
-                 "type":"Empty"
+                 "type":"Terrain.Empty"
                 },
                 {
                  "id":31,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":32,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":40,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":41,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":42,
                  "probability":0.00800000037997961,
-                 "type":"Empty"
+                 "type":"Terrain.Empty"
                 },
                 {
                  "id":43,
-                 "type":"Empty"
+                 "type":"Terrain.Empty"
                 },
                 {
                  "id":44,
-                 "type":"Empty"
+                 "type":"Terrain.Empty"
                 },
                 {
                  "id":45,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":46,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":47,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":48,
-                 "type":"Empty"
+                 "type":"Terrain.Empty"
                 },
                 {
                  "id":49,
                  "probability":0.0199999995529652,
-                 "type":"Empty"
+                 "type":"Terrain.Empty"
                 },
                 {
                  "id":50,
-                 "type":"Empty"
+                 "type":"Terrain.Empty"
                 },
                 {
                  "id":51,
                  "probability":0.150000005960464,
-                 "type":"Empty"
+                 "type":"Terrain.Empty"
                 },
                 {
                  "id":52,
-                 "type":"Empty"
+                 "type":"Terrain.Empty"
                 },
                 {
                  "id":53,
-                 "type":"Empty"
+                 "type":"Terrain.Empty"
                 },
                 {
                  "id":57,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":58,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":59,
-                 "type":"Wall"
+                 "type":"Terrain.Wall"
                 },
                 {
                  "id":60,
-                 "type":"SpawnPoint"
+                 "type":"Meta.SpawnPoint"
                 },
                 {
                  "id":65,
-                 "type":"Tombstone"
+                 "type":"Meta.Tombstone"
                 },
                 {
                  "id":84,
@@ -381,35 +381,35 @@
                 },
                 {
                  "id":89,
-                 "type":"Chest"
+                 "type":"Items.Chest"
                 },
                 {
                  "id":101,
-                 "type":"Shield"
+                 "type":"Items.Shield"
                 },
                 {
                  "id":102,
-                 "type":"Shield"
+                 "type":"Items.Shield"
                 },
                 {
                  "id":103,
-                 "type":"Weapon"
+                 "type":"Items.Weapon"
                 },
                 {
                  "id":104,
-                 "type":"Weapon"
+                 "type":"Items.Weapon"
                 },
                 {
                  "id":105,
-                 "type":"Weapon"
+                 "type":"Items.Weapon"
                 },
                 {
                  "id":106,
-                 "type":"Weapon"
+                 "type":"Items.Weapon"
                 },
                 {
                  "id":107,
-                 "type":"Weapon"
+                 "type":"Items.Weapon"
                 },
                 {
                  "id":111,
@@ -417,60 +417,60 @@
                 },
                 {
                  "id":113,
-                 "type":"Potion"
+                 "type":"Items.Potion"
                 },
                 {
                  "id":114,
-                 "type":"Potion"
+                 "type":"Items.Potion"
                 },
                 {
                  "id":115,
-                 "type":"Potion"
+                 "type":"Items.Potion"
                 },
                 {
                  "id":116,
-                 "type":"Potion"
+                 "type":"Items.Potion"
                 },
                 {
                  "id":117,
-                 "type":"Weapon"
+                 "type":"Items.Weapon"
                 },
                 {
                  "id":118,
-                 "type":"Weapon"
+                 "type":"Items.Weapon"
                 },
                 {
                  "id":119,
-                 "type":"Weapon"
+                 "type":"Items.Weapon"
                 },
                 {
                  "id":125,
-                 "type":"Potion"
+                 "type":"Items.Potion"
                 },
 
                 {
                  "id":126,
-                 "type":"Potion"
+                 "type":"Items.Potion"
                 },
                 {
                  "id":127,
-                 "type":"Potion"
+                 "type":"Items.Potion"
                 },
                 {
                  "id":128,
-                 "type":"Potion"
+                 "type":"Items.Potion"
                 },
                 {
                  "id":129,
-                 "type":"Wand"
+                 "type":"Items.Wand"
                 },
                 {
                  "id":130,
-                 "type":"Wand"
+                 "type":"Items.Wand"
                 },
                 {
                  "id":131,
-                 "type":"Wand"
+                 "type":"Items.Wand"
                 }],
          "tilewidth":16
         }],

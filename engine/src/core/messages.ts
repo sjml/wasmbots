@@ -104,155 +104,155 @@ const _textDec = new TextDecoder('utf-8');
 const _textEnc = new TextEncoder();
 
 export class DataAccess {
-    data: DataView;
-    currentOffset: number;
+	data: DataView;
+	currentOffset: number;
 
-    constructor(buffer: ArrayBuffer|DataView) {
-        this.currentOffset = 0;
-        if (buffer instanceof ArrayBuffer) {
-            this.data = new DataView(buffer);
-        }
-        else {
-            this.data = buffer;
-        }
-    }
+	constructor(buffer: ArrayBuffer|DataView) {
+		this.currentOffset = 0;
+		if (buffer instanceof ArrayBuffer) {
+			this.data = new DataView(buffer);
+		}
+		else {
+			this.data = buffer;
+		}
+	}
 
-    isFinished(): boolean {
-        return this.currentOffset >= this.data.byteLength;
-    }
+	isFinished(): boolean {
+		return this.currentOffset >= this.data.byteLength;
+	}
 
-    getByte(): number {
-        const ret = this.data.getUint8(this.currentOffset);
-        this.currentOffset += 1;
-        return ret;
-    }
+	getByte(): number {
+		const ret = this.data.getUint8(this.currentOffset);
+		this.currentOffset += 1;
+		return ret;
+	}
 
-    getBool(): boolean {
-        return this.getByte() > 0;
-    }
+	getBool(): boolean {
+		return this.getByte() > 0;
+	}
 
-    getInt16(): number {
-        const ret = this.data.getInt16(this.currentOffset, true);
-        this.currentOffset += 2;
-        return ret;
-    }
+	getInt16(): number {
+		const ret = this.data.getInt16(this.currentOffset, true);
+		this.currentOffset += 2;
+		return ret;
+	}
 
-    getUint16(): number {
-        const ret = this.data.getUint16(this.currentOffset, true);
-        this.currentOffset += 2;
-        return ret;
-    }
+	getUint16(): number {
+		const ret = this.data.getUint16(this.currentOffset, true);
+		this.currentOffset += 2;
+		return ret;
+	}
 
-    getInt32(): number {
-        const ret = this.data.getInt32(this.currentOffset, true);
-        this.currentOffset += 4;
-        return ret;
-    }
+	getInt32(): number {
+		const ret = this.data.getInt32(this.currentOffset, true);
+		this.currentOffset += 4;
+		return ret;
+	}
 
-    getUint32(): number {
-        const ret = this.data.getUint32(this.currentOffset, true);
-        this.currentOffset += 4;
-        return ret;
-    }
+	getUint32(): number {
+		const ret = this.data.getUint32(this.currentOffset, true);
+		this.currentOffset += 4;
+		return ret;
+	}
 
-    getInt64(): bigint {
-        const ret = this.data.getBigInt64(this.currentOffset, true);
-        this.currentOffset += 8;
-        return ret;
-    }
+	getInt64(): bigint {
+		const ret = this.data.getBigInt64(this.currentOffset, true);
+		this.currentOffset += 8;
+		return ret;
+	}
 
-    getUint64(): bigint {
-        const ret = this.data.getBigUint64(this.currentOffset, true);
-        this.currentOffset += 8;
-        return ret;
-    }
+	getUint64(): bigint {
+		const ret = this.data.getBigUint64(this.currentOffset, true);
+		this.currentOffset += 8;
+		return ret;
+	}
 
-    getFloat32(): number {
-        const ret = this.data.getFloat32(this.currentOffset, true);
-        this.currentOffset += 4;
-        return Math.fround(ret);
-    }
+	getFloat32(): number {
+		const ret = this.data.getFloat32(this.currentOffset, true);
+		this.currentOffset += 4;
+		return Math.fround(ret);
+	}
 
-    getFloat64(): number {
-        const ret = this.data.getFloat64(this.currentOffset, true);
-        this.currentOffset += 8;
-        return ret;
-    }
+	getFloat64(): number {
+		const ret = this.data.getFloat64(this.currentOffset, true);
+		this.currentOffset += 8;
+		return ret;
+	}
 
-    getString(): string {
-        const len = this.getByte();
-        const strBuffer = new Uint8Array(this.data.buffer, this.currentOffset, len);
-        this.currentOffset += len;
-        return _textDec.decode(strBuffer);
-    }
+	getString(): string {
+		const len = this.getByte();
+		const strBuffer = new Uint8Array(this.data.buffer, this.currentOffset, len);
+		this.currentOffset += len;
+		return _textDec.decode(strBuffer);
+	}
 
 
-    setByte(val: number) {
-        this.data.setUint8(this.currentOffset, val);
-        this.currentOffset += 1;
-    }
+	setByte(val: number) {
+		this.data.setUint8(this.currentOffset, val);
+		this.currentOffset += 1;
+	}
 
-    setBool(val: boolean) {
-        this.setByte(val ? 1 : 0);
-    }
+	setBool(val: boolean) {
+		this.setByte(val ? 1 : 0);
+	}
 
-    setInt16(val: number) {
-        this.data.setInt16(this.currentOffset, val, true);
-        this.currentOffset += 2;
-    }
+	setInt16(val: number) {
+		this.data.setInt16(this.currentOffset, val, true);
+		this.currentOffset += 2;
+	}
 
-    setUint16(val: number) {
-        this.data.setUint16(this.currentOffset, val, true);
-        this.currentOffset += 2;
-    }
+	setUint16(val: number) {
+		this.data.setUint16(this.currentOffset, val, true);
+		this.currentOffset += 2;
+	}
 
-    setInt32(val: number) {
-        this.data.setInt32(this.currentOffset, val, true);
-        this.currentOffset += 4;
-    }
+	setInt32(val: number) {
+		this.data.setInt32(this.currentOffset, val, true);
+		this.currentOffset += 4;
+	}
 
-    setUint32(val: number) {
-        this.data.setUint32(this.currentOffset, val, true);
-        this.currentOffset += 4;
-    }
+	setUint32(val: number) {
+		this.data.setUint32(this.currentOffset, val, true);
+		this.currentOffset += 4;
+	}
 
-    setInt64(val: bigint) {
-        this.data.setBigInt64(this.currentOffset, val, true);
-        this.currentOffset += 8;
-    }
+	setInt64(val: bigint) {
+		this.data.setBigInt64(this.currentOffset, val, true);
+		this.currentOffset += 8;
+	}
 
-    setUint64(val: bigint) {
-        this.data.setBigUint64(this.currentOffset, val, true);
-        this.currentOffset += 8;
-    }
+	setUint64(val: bigint) {
+		this.data.setBigUint64(this.currentOffset, val, true);
+		this.currentOffset += 8;
+	}
 
-    setFloat32(val: number) {
-        this.data.setFloat32(this.currentOffset, val, true);
-        this.currentOffset += 4;
-    }
+	setFloat32(val: number) {
+		this.data.setFloat32(this.currentOffset, val, true);
+		this.currentOffset += 4;
+	}
 
-    setFloat64(val: number) {
-        this.data.setFloat64(this.currentOffset, val, true);
-        this.currentOffset += 8;
-    }
+	setFloat64(val: number) {
+		this.data.setFloat64(this.currentOffset, val, true);
+		this.currentOffset += 8;
+	}
 
-    setString(val: string) {
-        const strBuffer = _textEnc.encode(val);
-        this.setByte(strBuffer.byteLength);
-        const arr = new Uint8Array(this.data.buffer);
-        arr.set(strBuffer, this.currentOffset);
-        this.currentOffset += strBuffer.byteLength;
-    }
+	setString(val: string) {
+		const strBuffer = _textEnc.encode(val);
+		this.setByte(strBuffer.byteLength);
+		const arr = new Uint8Array(this.data.buffer);
+		arr.set(strBuffer, this.currentOffset);
+		this.currentOffset += strBuffer.byteLength;
+	}
 }
 
 export abstract class Message {
-    abstract getMessageType(): MessageType;
-    abstract writeBytes(dv: DataView, tag: boolean): void;
-    abstract getSizeInBytes(): number;
+	abstract getMessageType(): MessageType;
+	abstract writeBytes(dv: DataView, tag: boolean): void;
+	abstract getSizeInBytes(): number;
 
-    static fromBytes(data: DataView|DataAccess|ArrayBuffer): Message | null {
-        throw new Error("Cannot read abstract Message from bytes.");
-    };
+	static fromBytes(data: DataView|DataAccess|ArrayBuffer): Message | null {
+		throw new Error("Cannot read abstract Message from bytes.");
+	};
 }
 
 export enum MessageType {

@@ -41,7 +41,7 @@ var bot = Agent{};
 
 fn updateMaps(circs: *const msg.PresentCircumstances) !void {
     const side_len = circs.surroundingsRadius * 2 + 1;
-    const grid = Grid(u16).init(circs.surroundings, side_len, side_len);
+    const grid = Grid(msg.TileType).init(circs.surroundings, side_len, side_len);
 
     if (circs.lastMoveResult == msg.MoveResult.Succeeded) {
         bot.lastLocation = bot.location;
@@ -61,7 +61,7 @@ fn updateMaps(circs: *const msg.PresentCircumstances) !void {
             const offset = Point{ .x = x_offset, .y = y_offset };
             const location = bot.toWorld(offset);
 
-            const value: msg.TileType = @enumFromInt(grid.get(x, y));
+            const value: msg.TileType = grid.get(x, y);
             try mapping.put(location, value);
 
             if (value == msg.TileType.ClosedDoor or value == msg.TileType.OpenDoor) {
