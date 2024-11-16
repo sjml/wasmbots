@@ -22,7 +22,7 @@ async function main(): Promise<void> {
 
 	console.log("start:", player.location);
 
-	for (let i = 0; i < 2; i++) {
+	for (let i = 0; i < 200; i++) {
 		await sleep(1);
 		await world.runTurn();
 		console.log(player.location);

@@ -15,6 +15,18 @@ pub fn logErr(msg: []const u8) void {
     logFunction(0, @intFromPtr(msg.ptr), msg.len);
 }
 
+pub fn logFmt(comptime fmtMsg: []const u8, args: anytype) void {
+    const msg = std.fmt.allocPrint(global_allocator, fmtMsg, args) catch @panic("Couldn't allocate memory for logging");
+    defer global_allocator.free(msg);
+    log(msg);
+}
+
+pub fn logErrFmt(comptime fmtMsg: []const u8, args: anytype) void {
+    const msg = std.fmt.allocPrint(global_allocator, fmtMsg, args) catch @panic("Couldn't allocate memory for logging");
+    defer global_allocator.free(msg);
+    logErr(msg);
+}
+
 pub const BotMetadata = extern struct {
     name: [MAX_NAME_LEN]u8,
     version: [3]u16,

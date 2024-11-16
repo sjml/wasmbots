@@ -5,11 +5,11 @@ import {
 	WorldMap,
 	RNG,
 	World,
-	Player as WorldPlayer
+	Player as WorldPlayer,
 } from "wasmbots";
 import { VisMap } from "./map";
 import { VisBootloader } from "./bootloader";
-import { VisPlayer, PlayerFacing } from "./player";
+import { VisPlayer } from "./player";
 import { VisEventBus } from "./events";
 
 export class WasmBotsVisualizer extends Phaser.Game {
@@ -49,7 +49,10 @@ export class WasmBotsVisualizer extends Phaser.Game {
 		});
 		this.worldObject.on("playerDropped", (evt) => {
 			this.dropPlayer(evt.detail.leavingPlayer);
-		})
+		});
+		this.worldObject.on("terrainChanged", (evt) => {
+			this._currentMapScene?.processTerrainChange(evt.detail.location, evt.detail.newTerrain);
+		});
 
 		this._booloaderPromise = new Promise<void>((resolve, reject) => {
 			this._bootloaderResolve = resolve;
@@ -69,7 +72,7 @@ export class WasmBotsVisualizer extends Phaser.Game {
 	}
 
 	async loadMap(map: WorldMap) {
-		const newScene = await VisMap.loadFrom(map.name);
+		const newScene = await VisMap.from(map);
 		if (this._currentMapScene) {
 			this.scene.remove(`${this._currentMapScene.worldMap!.name}_Scene`);
 		}

@@ -1,6 +1,6 @@
 const config = {
-	// WebAssembly Hosting
 	version: [0, 0, 1],
+
 	// @ts-ignore
 	environment: typeof Deno !== "undefined" ? "Deno" : "Web",
 
@@ -18,6 +18,8 @@ const config = {
 	startingHitPoints: 10,
 	enabledMaps: ["dungeon", "arena"],
 	diagonalMovement: false,
+	defaultPlayerStride: 1,
+	defaultPlayerOpenReach: 1,
 
 	// visualization stuff
 	gameWidth: 1024,

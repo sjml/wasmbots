@@ -23,12 +23,13 @@ engineVersionMajor = "uint16"  # major version of engine
 engineVersionMinor = "uint16"  # minor version of engine
 engineVersionPatch = "uint16"  # patch version of engine
 diagonalMovement = "bool"      # if false, any attempted diagonal move will be Invalid
-
+playerStride = "byte"          # how far you can move on a given turn
+playerOpenReach = "byte"       # the distance at which you can open things (doors, chests)
 
 [[structs]]
 _name = "Point"
-x = "uint16"
-y = "uint16"
+x = "int16"
+y = "int16"
 
 
 [[enums]]
@@ -343,14 +344,14 @@ export class Point {
 
 	static fromBytes(da: DataAccess): Point {
 		const nPoint = new Point();
-		nPoint.x = da.getUint16();
-		nPoint.y = da.getUint16();
+		nPoint.x = da.getInt16();
+		nPoint.y = da.getInt16();
 		return nPoint;
 	}
 
 	writeBytes(da: DataAccess) {
-		da.setUint16(this.x);
-		da.setUint16(this.y);
+		da.setInt16(this.x);
+		da.setInt16(this.y);
 	}
 
 }
@@ -414,11 +415,13 @@ export class InitialParameters extends Message {
 	engineVersionMinor: number = 0;
 	engineVersionPatch: number = 0;
 	diagonalMovement: boolean = false;
+	playerStride: number = 0;
+	playerOpenReach: number = 0;
 
 	getMessageType() : MessageType { return MessageType.InitialParametersType; }
 
 	getSizeInBytes(): number {
-		return 9;
+		return 11;
 	}
 
 	static fromBytes(data: DataView|DataAccess|ArrayBuffer): InitialParameters {
@@ -439,6 +442,8 @@ export class InitialParameters extends Message {
 			nInitialParameters.engineVersionMinor = da.getUint16();
 			nInitialParameters.engineVersionPatch = da.getUint16();
 			nInitialParameters.diagonalMovement = da.getBool();
+			nInitialParameters.playerStride = da.getByte();
+			nInitialParameters.playerOpenReach = da.getByte();
 			return nInitialParameters;
 		}
 		catch (err) {
@@ -466,6 +471,8 @@ export class InitialParameters extends Message {
 		da.setUint16(this.engineVersionMinor);
 		da.setUint16(this.engineVersionPatch);
 		da.setBool(this.diagonalMovement);
+		da.setByte(this.playerStride);
+		da.setByte(this.playerOpenReach);
 	}
 
 }

@@ -43,6 +43,7 @@ export class WorldMap {
 	spawnPoints: Point[] = [];
 	minPlayers: number = 1;
 	maxPlayers: number = 1;
+	terrainIndexLookup: Map<TerrainTileType, number[]> = new Map();
 
 	static async loadTiled(mapName: string): Promise<WorldMap> {
 		const newMap = new WorldMap();
@@ -65,6 +66,11 @@ export class WorldMap {
 							throw new Error(`Invalid tile type: ${td.type}`);
 						}
 						tileData.set(td.id, { terrain });
+						const gid = tsd.firstgid + td.id;
+						if (!newMap.terrainIndexLookup.has(terrain)) {
+							newMap.terrainIndexLookup.set(terrain, []);
+						}
+						newMap.terrainIndexLookup.get(terrain)!.push(gid);
 						continue;
 					case "Meta":
 						const meta = stringToNumericEnum(MetaTileType, species);
@@ -155,14 +161,14 @@ export class WorldMap {
 		}
 
 		newMap.maxPlayers = rawMapData.properties?.
-			find(prop => prop.name === "maxPlayers")?.value as number
+			find((prop: {name: string}) => prop.name === "maxPlayers")?.value as number
 			?? newMap.spawnPoints.length;
 		newMap.minPlayers = rawMapData.properties?.
-			find(prop => prop.name === "minPlayers")?.value as number
+			find((prop: {name: string}) => prop.name === "minPlayers")?.value as number
 			?? 1;
 
 		if (newMap.maxPlayers > newMap.spawnPoints.length) {
-			console.warn(`Map ${mapName} declares ${newMap.maxPlayers} but only has ${newMap.spawnPoints.length}; using smaller value.`);
+			console.warn(`Map ${mapName} declares ${newMap.maxPlayers} player(s) but only has ${newMap.spawnPoints.length} spawn point(s); using smaller value.`);
 			newMap.maxPlayers = newMap.spawnPoints.length;
 		}
 

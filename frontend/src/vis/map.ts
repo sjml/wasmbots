@@ -1,10 +1,10 @@
 import Phaser from "phaser";
 
-import { WorldMap } from "wasmbots";
-import type { VisPlayer } from "./player";
+import { CoreMsg, WorldMap, type Point } from "wasmbots";
+import { type VisPlayer } from "./player";
 
 export class VisMap extends Phaser.Scene {
-	worldMap?: WorldMap;
+	worldMap!: WorldMap;
 	private _backgroundLayer: Phaser.Tilemaps.TilemapLayer | null = null;
 	private _itemLayer: Phaser.Tilemaps.TilemapLayer | null = null;
 	playerList: Set<VisPlayer> = new Set();
@@ -13,21 +13,32 @@ export class VisMap extends Phaser.Scene {
 		super(key);
 	}
 
-	static async loadFrom(name: string): Promise<VisMap> {
-		const ms = new VisMap(`${name}_Scene`);
-		ms.worldMap = await WorldMap.loadTiled(name);
+	static async from(map: WorldMap): Promise<VisMap> {
+		const ms = new VisMap(`${map.name})Scene`);
+		ms.worldMap = map;
 		return ms;
 	}
 
 	preload() {}
 
 	create() {
-		const tm = this.make.tilemap({key: `map-${this.worldMap!.name}`});
+		const tm = this.make.tilemap({key: `map-${this.worldMap.name}`});
 		for (const tsObj of tm.tilesets) {
 			tm.addTilesetImage(tsObj.name, `tiles-${tsObj.name}`);
 		}
 		this._backgroundLayer = tm.createLayer("terrain", tm.tilesets, 0, 0);
 		this._itemLayer = tm.createLayer("items", tm.tilesets, 0, 0);
+	}
+
+	processTerrainChange(location: Point, newTerrain: CoreMsg.TileType) {
+		const candidates = this.worldMap.terrainIndexLookup.get(newTerrain);
+		if (candidates === undefined) {
+			throw new Error(`Cannot change ${location} to terrain ${newTerrain}; does not exist in map.`);
+		}
+		if (candidates.length === 0) {
+			throw new Error(`Cannot change ${location} to terrain ${newTerrain}; no candidates.`);
+		}
+		this._backgroundLayer?.putTileAt(candidates[0], location.x, location.y);
 	}
 
 	update() {

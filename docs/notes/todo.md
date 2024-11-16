@@ -1,6 +1,10 @@
 ## dev
-* resume work:
-  * disallow diagonal movement if config is set that way
+* pathfinding breaks at a certain point? :(
+    * FIRST: figure out why it gets in an infinite loop @ relative 21, -35
+    * THEN: why isn't it finding a new door to open?
+    * THEN: add neighbors to "visited" to make the whole thing a little smoother
+* fix the reset functionality
+    * (set player facing on reset while we're at it)
 
 * review [memory notes](./misc.md#memory-thoughts)
 
@@ -8,6 +12,7 @@
     * would also allow for tweening of movements (you know you have X amount of time before you're moving again)
     * need a min and max value for it tho
 * UI: 
+    * logs not going to UI again
     * file select or drag and drop for running your own bot
     * button to zoom on particular bot
     * spinners when map or wasm is loading
@@ -16,7 +21,7 @@
     * need to figure out debugger attaching to the process; maybe deno can just take a port number and hit it up instead of starting it directly? 
       * set up monorepo as a VS Code workspace? https://code.visualstudio.com/docs/editor/multi-root-workspaces
       * https://code.visualstudio.com/docs/editor/debugging#_compound-launch-configurations
-    * player reset functionality got moved around; test it out
+      * https://code.visualstudio.com/Docs/editor/debugging#_multitarget-debugging
     * clean the zig server code the heck up
         * would be nice if it could recover from a panic, but not sure what would even happen then
 * botloader not using Loader? (I assume I had a reason, because it *is* imported...)
@@ -47,6 +52,10 @@
     * TICK
     * gray out / lock game circumstances, show message received from the program on right
     * pull down menu to choose different message types
+  * overlay values -- let bots draw on the screen, but only in the trainer (ignore otherwise)
+    * coordinates given relative to spawn point
+    * tile overlay set/clear color
+    * add/clear text at tile?
   * allow seeding of world (and show seed)
 * build out a few different example bots (./bot_concepts.md)
 
@@ -57,8 +66,6 @@
 
 
 ## polish
-* player class
-    * set facing when reset
 * clean up / organize Zig library; just kind of a mess right now
 * UI: landscape view on iPhone - the drawers don't extend into the island areas
 * Tech: ability to reseed player on reset
@@ -67,6 +74,8 @@
     * means generating code to serialize/deserialize messages from JSON 😬
   * single executable that hosts webpage
     * https://github.com/NfNitLoop/deno-embedder
+    * or maybe move to bun? :-/
+    * or Go exe that runs server hosting frontend built with special flags
 * CI to build/validate/deploy
 
 
@@ -86,6 +95,3 @@
 
 ## far-flung future
 * allow teams? hooboy, whole other layer of functionality
-
-## bugs
-* in web ui: switching bot while still running: gotta fully detach and dispose of the old one

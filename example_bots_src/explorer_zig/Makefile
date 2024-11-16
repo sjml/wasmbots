@@ -1,13 +1,13 @@
 EXE_NAME = explorer
 
-zig-out/bin/$(EXE_NAME).wasm: src/bot.zig
+zig-out/bin/$(EXE_NAME).wasm: src/bot.zig src/exploration.zig
 	zig build
 	chmod -x $@
 
 .PHONY: trainer
 trainer: zig-out/bin/$(EXE_NAME)-trainer
 
-zig-out/bin/$(EXE_NAME)-trainer: src/bot.zig
+zig-out/bin/$(EXE_NAME)-trainer: src/bot.zig src/exploration.zig
 	zig build -Dtrainer=true
 
 .PHONY: all

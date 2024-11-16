@@ -2,6 +2,7 @@ import { RNG, Deck } from "./random.ts";
 import { Player } from "./player.ts";
 import { CoordinatorStatus } from "../core/coordinator.ts";
 import { WorldMap } from "./map.ts";
+import config from "../core/config.ts";
 import { type Point, Direction } from "../core/math.ts";
 import * as CoreMsg from "../core/messages.ts";
 
@@ -18,6 +19,7 @@ type WorldEvents = {
 	playerAdded: { newPlayer: Player };
 	playerDropped: { leavingPlayer: Player };
 	mapChanged: { newMap: WorldMap };
+	terrainChanged: { location: Point, newTerrain: CoreMsg.TileType, oldTerrain: CoreMsg.TileType };
 }
 
 export class World extends EventTarget {
@@ -224,32 +226,29 @@ export class World extends EventTarget {
 
 				const move = await player.tickTurn(circumstances);
 
-				player.lastMoveSucceeded = this.processMove(player, move);
+
+				player.lastMoveStatus = this.processMove(player, move);
 			}
 		}
 
-		// const playersAlive = this._players.filter(p => World._playerIsValid(p));
-		// if (playersAlive.length == 1) {
-		//     // winner winner
-		//     // TODO: report winners and losers
-		//     this.setState(GameState.Shutdown);
-		// }
-		// else if (playersAlive.length == 0) {
-		//     // errybody dead
-		//     this.setState(GameState.Shutdown);
-		// }
+		// TODO: is there a winner or something?
 	}
 
-	processMove(player: Player, move: CoreMsg.Message): boolean {
-		console.log(move);
+	processMove(player: Player, move: CoreMsg.Message): CoreMsg.MoveResult {
 		switch (move.getMessageType()) {
 			case CoreMsg.MessageType._ErrorType:
 				const errMsg = move as CoreMsg._Error;
-				console.error(`Invalid move from player ${player}: ${errMsg.description}`);
-				break;
+				console.error(`You can't get ye flask! ${player}: ${errMsg.description}`);
+				return CoreMsg.MoveResult.Error;
 			case CoreMsg.MessageType.MoveToType:
 				const playerMove = move as CoreMsg.MoveTo;
 				const direction = Direction.from(playerMove.direction);
+				if (!config.diagonalMovement && Direction.Ordinal.includes(direction)) {
+					return CoreMsg.MoveResult.Invalid;
+				}
+				if (playerMove.distance > player.stride) {
+					return CoreMsg.MoveResult.Invalid;
+				}
 				const offset = direction.moveDelta;
 				const peekLoc = {
 					x: player.location.x + offset.x,
@@ -257,25 +256,65 @@ export class World extends EventTarget {
 				};
 				const peek = this.currentMap!.getTile(peekLoc.x, peekLoc.y);
 				if (peek.terrainType == CoreMsg.TileType.Wall || peek.terrainType == CoreMsg.TileType.ClosedDoor) {
-					return false;
+					return CoreMsg.MoveResult.Failed;
 				}
 				player.location = peekLoc;
-				break;
+				return CoreMsg.MoveResult.Succeeded;
 			case CoreMsg.MessageType.WaitType:
 				// no-op
-				break;
+				return CoreMsg.MoveResult.Succeeded;
 			case CoreMsg.MessageType.ResignType:
 				console.log("Unimplemented move: Resign")
-				break;
+				return CoreMsg.MoveResult.Invalid;
 			case CoreMsg.MessageType.OpenType:
-				console.log("Unimplemented move: Open")
-				break;
+				const openMove = move as CoreMsg.Open;
+				const openTarget = {
+					x: player.location.x + openMove.target.x,
+					y: player.location.y + openMove.target.y,
+				};
+				const openManhattanDist =
+					  Math.abs(player.location.x - openTarget.x)
+					+ Math.abs(player.location.y - openTarget.y);
+				if (openManhattanDist > player.openReach) {
+					return CoreMsg.MoveResult.Invalid;
+				}
+				const openTargetTile = this.currentMap!.getTilePt(openTarget);
+				if (openTargetTile.terrainType !== CoreMsg.TileType.ClosedDoor) {
+					return CoreMsg.MoveResult.Invalid;
+				}
+				openTargetTile.terrainType = CoreMsg.TileType.OpenDoor;
+				this.emit("terrainChanged", {
+					location: openTarget,
+					oldTerrain: CoreMsg.TileType.ClosedDoor,
+					newTerrain: CoreMsg.TileType.OpenDoor
+				});
+				return CoreMsg.MoveResult.Succeeded;
 			case CoreMsg.MessageType.CloseType:
-				console.log("Unimplemented move: Close")
-				break;
+				const closeMove = move as CoreMsg.Close;
+				const closeTarget = {
+					x: player.location.x + closeMove.target.x,
+					y: player.location.y + closeMove.target.y,
+				};
+				const closeManhattanDist =
+					  Math.abs(player.location.x - closeTarget.x)
+					+ Math.abs(player.location.y - closeTarget.y);
+				if (closeManhattanDist > player.openReach) {
+					return CoreMsg.MoveResult.Invalid;
+				}
+				const closeTargetTile = this.currentMap!.getTilePt(closeTarget);
+				if (closeTargetTile.terrainType !== CoreMsg.TileType.OpenDoor) {
+					return CoreMsg.MoveResult.Invalid;
+				}
+				closeTargetTile.terrainType = CoreMsg.TileType.ClosedDoor;
+				this.emit("terrainChanged", {
+					location: closeTarget,
+					oldTerrain: CoreMsg.TileType.OpenDoor,
+					newTerrain: CoreMsg.TileType.ClosedDoor
+				});
+				return CoreMsg.MoveResult.Succeeded;
 			default:
-				throw new Error("Invalid player move! (Should be unreachable, unless player passes wrong message type.)");
+				console.error("You can't get ye flask!");
+				return CoreMsg.MoveResult.Error;
 		}
-		return true;
 	}
 }

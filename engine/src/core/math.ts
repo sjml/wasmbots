@@ -138,7 +138,7 @@ export class Fraction {
 	}
 
 	reduce() {
-		const gcd = (a: number, b: number) => (b == 0 ? a : gcd(b, a % b));
+		const gcd = (a: number, b: number): number => (b == 0 ? a : gcd(b, a % b));
 		const divisor = gcd(this.numerator, this.denominator);
 		this.numerator /= divisor;
 		this.denominator /= divisor;

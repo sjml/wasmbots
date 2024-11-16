@@ -22,12 +22,13 @@
 // engineVersionMinor = "uint16"  # minor version of engine
 // engineVersionPatch = "uint16"  # patch version of engine
 // diagonalMovement = "bool"      # if false, any attempted diagonal move will be Invalid
-// 
+// playerStride = "byte"          # how far you can move on a given turn
+// playerOpenReach = "byte"       # the distance at which you can open things (doors, chests)
 // 
 // [[structs]]
 // _name = "Point"
-// x = "uint16"
-// y = "uint16"
+// x = "int16"
+// y = "int16"
 // 
 // 
 // [[enums]]
@@ -443,8 +444,8 @@ pub const Direction = enum(u8) {
 };
 
 pub const Point = struct {
-	x: u16 = 0,
-	y: u16 = 0,
+	x: i16 = 0,
+	y: i16 = 0,
 
 	pub fn getSizeInBytes(self: *const Point) usize {
 		_ = self;
@@ -452,8 +453,8 @@ pub const Point = struct {
 	}
 
 	pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: Point, bytes_read: usize } {
-		const Point_x = (try readNumber(u16, offset + 0, buffer)).value;
-		const Point_y = (try readNumber(u16, offset + 2, buffer)).value;
+		const Point_x = (try readNumber(i16, offset + 0, buffer)).value;
+		const Point_y = (try readNumber(i16, offset + 2, buffer)).value;
 		return .{ .value = Point{
 			.x = Point_x,
 			.y = Point_y,
@@ -461,8 +462,8 @@ pub const Point = struct {
 	}
 
 	pub fn writeBytes(self: *const Point, offset: usize, buffer: []u8) usize {
-		_ = writeNumber(u16, offset + 0, buffer, self.x);
-		_ = writeNumber(u16, offset + 2, buffer, self.y);
+		_ = writeNumber(i16, offset + 0, buffer, self.x);
+		_ = writeNumber(i16, offset + 2, buffer, self.y);
 		return 4;
 	}
 };
@@ -511,10 +512,12 @@ pub const InitialParameters = struct {
 	engineVersionMinor: u16 = 0,
 	engineVersionPatch: u16 = 0,
 	diagonalMovement: bool = false,
+	playerStride: u8 = 0,
+	playerOpenReach: u8 = 0,
 
 	pub fn getSizeInBytes(self: *const InitialParameters) usize {
 		_ = self;
-		return 9;
+		return 11;
 	}
 
 	pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: InitialParameters, bytes_read: usize } {
@@ -523,13 +526,17 @@ pub const InitialParameters = struct {
 		const InitialParameters_engineVersionMinor = (try readNumber(u16, offset + 4, buffer)).value;
 		const InitialParameters_engineVersionPatch = (try readNumber(u16, offset + 6, buffer)).value;
 		const InitialParameters_diagonalMovement = (try readNumber(bool, offset + 8, buffer)).value;
+		const InitialParameters_playerStride = (try readNumber(u8, offset + 9, buffer)).value;
+		const InitialParameters_playerOpenReach = (try readNumber(u8, offset + 10, buffer)).value;
 		return .{ .value = InitialParameters{
 			.paramsVersion = InitialParameters_paramsVersion,
 			.engineVersionMajor = InitialParameters_engineVersionMajor,
 			.engineVersionMinor = InitialParameters_engineVersionMinor,
 			.engineVersionPatch = InitialParameters_engineVersionPatch,
 			.diagonalMovement = InitialParameters_diagonalMovement,
-		}, .bytes_read = 9 };
+			.playerStride = InitialParameters_playerStride,
+			.playerOpenReach = InitialParameters_playerOpenReach,
+		}, .bytes_read = 11 };
 	}
 
 	pub fn writeBytes(self: *const InitialParameters, offset: usize, buffer: []u8, tag: bool) usize {
@@ -543,6 +550,8 @@ pub const InitialParameters = struct {
 		local_offset += writeNumber(u16, local_offset, buffer, self.engineVersionMinor);
 		local_offset += writeNumber(u16, local_offset, buffer, self.engineVersionPatch);
 		local_offset += writeNumber(bool, local_offset, buffer, self.diagonalMovement);
+		local_offset += writeNumber(u8, local_offset, buffer, self.playerStride);
+		local_offset += writeNumber(u8, local_offset, buffer, self.playerOpenReach);
 
 		return local_offset - offset;
 	}

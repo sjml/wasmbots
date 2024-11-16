@@ -89,6 +89,8 @@ export abstract class GuestProgram {
 		gp.engineVersionMinor = config.version[1];
 		gp.engineVersionPatch = config.version[2];
 		gp.diagonalMovement = config.diagonalMovement;
+		gp.playerStride = config.defaultPlayerStride;
+		gp.playerOpenReach = config.defaultPlayerOpenReach;
 
 		gp.writeBytes(dv, false);
 

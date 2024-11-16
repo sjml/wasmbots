@@ -16,12 +16,13 @@ engineVersionMajor = "uint16"  # major version of engine
 engineVersionMinor = "uint16"  # minor version of engine
 engineVersionPatch = "uint16"  # patch version of engine
 diagonalMovement = "bool"      # if false, any attempted diagonal move will be Invalid
-
+playerStride = "byte"          # how far you can move on a given turn
+playerOpenReach = "byte"       # the distance at which you can open things (doors, chests)
 
 [[structs]]
 _name = "Point"
-x = "uint16"
-y = "uint16"
+x = "int16"
+y = "int16"
 
 
 [[enums]]

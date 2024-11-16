@@ -25,12 +25,13 @@ engineVersionMajor = "uint16"  # major version of engine
 engineVersionMinor = "uint16"  # minor version of engine
 engineVersionPatch = "uint16"  # patch version of engine
 diagonalMovement = "bool"      # if false, any attempted diagonal move will be Invalid
-
+playerStride = "byte"          # how far you can move on a given turn
+playerOpenReach = "byte"       # the distance at which you can open things (doors, chests)
 
 [[structs]]
 _name = "Point"
-x = "uint16"
-y = "uint16"
+x = "int16"
+y = "int16"
 
 
 [[enums]]
@@ -213,8 +214,8 @@ typedef enum WasmBots_Direction {
 bool WasmBots_IsValidDirection(uint8_t value);
 
 typedef struct {
-	uint16_t x;
-	uint16_t y;
+	int16_t x;
+	int16_t y;
 } WasmBots_Point;
 
 WasmBots_err_t WasmBots_Point_WriteBytes(WasmBots_DataAccess* w, const WasmBots_Point* src);
@@ -243,6 +244,8 @@ typedef struct {
 	uint16_t engineVersionMinor;
 	uint16_t engineVersionPatch;
 	bool diagonalMovement;
+	uint8_t playerStride;
+	uint8_t playerOpenReach;
 } WasmBots_InitialParameters;
 extern const WasmBots_InitialParameters WasmBots_InitialParameters_default;
 
@@ -877,11 +880,11 @@ bool WasmBots_IsValidDirection(uint8_t value) {
 
 WasmBots_err_t WasmBots_Point_FromBytes(WasmBots_DataAccess* r, WasmBots_Point* dst) {
 	WasmBots_err_t err;
-	err = WasmBots__ReadUInt16(r, &(dst->x));
+	err = WasmBots__ReadInt16(r, &(dst->x));
 	if (err != WASMBOTS_ERR_OK) {
 		return err;
 	}
-	err = WasmBots__ReadUInt16(r, &(dst->y));
+	err = WasmBots__ReadInt16(r, &(dst->y));
 	if (err != WASMBOTS_ERR_OK) {
 		return err;
 	}
@@ -890,11 +893,11 @@ WasmBots_err_t WasmBots_Point_FromBytes(WasmBots_DataAccess* r, WasmBots_Point* 
 
 WasmBots_err_t WasmBots_Point_WriteBytes(WasmBots_DataAccess* w, const WasmBots_Point* src) {
 	WasmBots_err_t err;
-	err = WasmBots__WriteUInt16(w, (src->x));
+	err = WasmBots__WriteInt16(w, (src->x));
 	if (err != WASMBOTS_ERR_OK) {
 		return err;
 	}
-	err = WasmBots__WriteUInt16(w, (src->y));
+	err = WasmBots__WriteInt16(w, (src->y));
 	if (err != WASMBOTS_ERR_OK) {
 		return err;
 	}
@@ -944,7 +947,7 @@ WasmBots_err_t WasmBots__Error_FromBytes(WasmBots_DataAccess* r, WasmBots__Error
 WasmBots_err_t WasmBots__Error_WriteBytes(WasmBots_DataAccess* w, const WasmBots__Error* src, bool tag) {
 	WasmBots_err_t err;
 	if (tag) {
-		err = WasmBots__WriteUInt8(w, (const uint8_t)(src->_mt));
+		err = WasmBots__WriteUInt8(w, (uint8_t)(src->_mt));
 		if (err != WASMBOTS_ERR_OK) {
 			return err;
 		}
@@ -963,10 +966,12 @@ const WasmBots_InitialParameters WasmBots_InitialParameters_default = {
 	.engineVersionMinor = 0,
 	.engineVersionPatch = 0,
 	.diagonalMovement = false,
+	.playerStride = 0,
+	.playerOpenReach = 0,
 };
 
 WasmBots_err_t WasmBots_InitialParameters_GetSizeInBytes(const WasmBots_InitialParameters* m, size_t* size) {
-	*size = 9;
+	*size = 11;
 	return WASMBOTS_ERR_OK;
 }
 
@@ -979,6 +984,8 @@ WasmBots_InitialParameters* WasmBots_InitialParameters_Create(void) {
 	out->engineVersionMinor = WasmBots_InitialParameters_default.engineVersionMinor;
 	out->engineVersionPatch = WasmBots_InitialParameters_default.engineVersionPatch;
 	out->diagonalMovement = WasmBots_InitialParameters_default.diagonalMovement;
+	out->playerStride = WasmBots_InitialParameters_default.playerStride;
+	out->playerOpenReach = WasmBots_InitialParameters_default.playerOpenReach;
 	return out;
 }
 
@@ -1013,13 +1020,21 @@ WasmBots_err_t WasmBots_InitialParameters_FromBytes(WasmBots_DataAccess* r, Wasm
 	if (err != WASMBOTS_ERR_OK) {
 		return err;
 	}
+	err = WasmBots__ReadUInt8(r, &(dst->playerStride));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	err = WasmBots__ReadUInt8(r, &(dst->playerOpenReach));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
 	return WASMBOTS_ERR_OK;
 }
 
 WasmBots_err_t WasmBots_InitialParameters_WriteBytes(WasmBots_DataAccess* w, const WasmBots_InitialParameters* src, bool tag) {
 	WasmBots_err_t err;
 	if (tag) {
-		err = WasmBots__WriteUInt8(w, (const uint8_t)(src->_mt));
+		err = WasmBots__WriteUInt8(w, (uint8_t)(src->_mt));
 		if (err != WASMBOTS_ERR_OK) {
 			return err;
 		}
@@ -1041,6 +1056,14 @@ WasmBots_err_t WasmBots_InitialParameters_WriteBytes(WasmBots_DataAccess* w, con
 		return err;
 	}
 	err = WasmBots__WriteBool(w, (src->diagonalMovement));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	err = WasmBots__WriteUInt8(w, (src->playerStride));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	err = WasmBots__WriteUInt8(w, (src->playerOpenReach));
 	if (err != WASMBOTS_ERR_OK) {
 		return err;
 	}
@@ -1135,7 +1158,7 @@ WasmBots_err_t WasmBots_PresentCircumstances_FromBytes(WasmBots_DataAccess* r, W
 WasmBots_err_t WasmBots_PresentCircumstances_WriteBytes(WasmBots_DataAccess* w, const WasmBots_PresentCircumstances* src, bool tag) {
 	WasmBots_err_t err;
 	if (tag) {
-		err = WasmBots__WriteUInt8(w, (const uint8_t)(src->_mt));
+		err = WasmBots__WriteUInt8(w, (uint8_t)(src->_mt));
 		if (err != WASMBOTS_ERR_OK) {
 			return err;
 		}
@@ -1204,7 +1227,7 @@ WasmBots_err_t WasmBots_Wait_FromBytes(WasmBots_DataAccess* r, WasmBots_Wait* ds
 WasmBots_err_t WasmBots_Wait_WriteBytes(WasmBots_DataAccess* w, const WasmBots_Wait* src, bool tag) {
 	WasmBots_err_t err;
 	if (tag) {
-		err = WasmBots__WriteUInt8(w, (const uint8_t)(src->_mt));
+		err = WasmBots__WriteUInt8(w, (uint8_t)(src->_mt));
 		if (err != WASMBOTS_ERR_OK) {
 			return err;
 		}
@@ -1244,7 +1267,7 @@ WasmBots_err_t WasmBots_Resign_FromBytes(WasmBots_DataAccess* r, WasmBots_Resign
 WasmBots_err_t WasmBots_Resign_WriteBytes(WasmBots_DataAccess* w, const WasmBots_Resign* src, bool tag) {
 	WasmBots_err_t err;
 	if (tag) {
-		err = WasmBots__WriteUInt8(w, (const uint8_t)(src->_mt));
+		err = WasmBots__WriteUInt8(w, (uint8_t)(src->_mt));
 		if (err != WASMBOTS_ERR_OK) {
 			return err;
 		}
@@ -1302,7 +1325,7 @@ WasmBots_err_t WasmBots_MoveTo_FromBytes(WasmBots_DataAccess* r, WasmBots_MoveTo
 WasmBots_err_t WasmBots_MoveTo_WriteBytes(WasmBots_DataAccess* w, const WasmBots_MoveTo* src, bool tag) {
 	WasmBots_err_t err;
 	if (tag) {
-		err = WasmBots__WriteUInt8(w, (const uint8_t)(src->_mt));
+		err = WasmBots__WriteUInt8(w, (uint8_t)(src->_mt));
 		if (err != WASMBOTS_ERR_OK) {
 			return err;
 		}
@@ -1360,7 +1383,7 @@ WasmBots_err_t WasmBots_Open_FromBytes(WasmBots_DataAccess* r, WasmBots_Open* ds
 WasmBots_err_t WasmBots_Open_WriteBytes(WasmBots_DataAccess* w, const WasmBots_Open* src, bool tag) {
 	WasmBots_err_t err;
 	if (tag) {
-		err = WasmBots__WriteUInt8(w, (const uint8_t)(src->_mt));
+		err = WasmBots__WriteUInt8(w, (uint8_t)(src->_mt));
 		if (err != WASMBOTS_ERR_OK) {
 			return err;
 		}
@@ -1414,7 +1437,7 @@ WasmBots_err_t WasmBots_Close_FromBytes(WasmBots_DataAccess* r, WasmBots_Close* 
 WasmBots_err_t WasmBots_Close_WriteBytes(WasmBots_DataAccess* w, const WasmBots_Close* src, bool tag) {
 	WasmBots_err_t err;
 	if (tag) {
-		err = WasmBots__WriteUInt8(w, (const uint8_t)(src->_mt));
+		err = WasmBots__WriteUInt8(w, (uint8_t)(src->_mt));
 		if (err != WASMBOTS_ERR_OK) {
 			return err;
 		}
