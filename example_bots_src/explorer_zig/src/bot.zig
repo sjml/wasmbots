@@ -73,13 +73,17 @@ fn updateMaps(circs: *const msg.PresentCircumstances) !void {
     const grid = Grid(msg.TileType).init(circs.surroundings, side_len, side_len);
 
     if (circs.lastMoveResult == msg.MoveResult.Succeeded) {
-        bot.lastLocation = bot.location;
-        bot.location = bot.location.add(bot.attemptedMove);
-        bot.attemptedMove = Point{};
+        bot.last_location = bot.location;
+        bot.location = bot.location.add(bot.attempted_move);
+        bot.attempted_move = Point{};
     }
 
     try visited.put(bot.location, {});
     _ = unvisited.remove(bot.location); // just returns false if it wasn't there
+    for (bot.location.getNeighbors8()) |n| {
+        try visited.put(n, {});
+        _ = unvisited.remove(n);
+    }
 
     const rad16: i16 = @intCast(circs.surroundingsRadius);
     for (0..grid.height) |y| {
@@ -120,12 +124,18 @@ fn updateMaps(circs: *const msg.PresentCircumstances) !void {
 var exploring = true;
 var target_tile: ?Point = null;
 var current_path: ?PathWalk = null;
+var number_of_turns: u64 = 0;
 
 fn clientTick(circumstances: msg.PresentCircumstances) msg.Message {
+    number_of_turns += 1;
     updateMaps(&circumstances) catch {
         wasmbotClient.logErr("Could not update maps!");
         unreachable;
     };
+    var debugging = false;
+    if (bot.location.equals(Point{ .x = 21, .y = -32 })) {
+        debugging = true;
+    }
 
     if (!exploring) {
         return msg.Message{ .Wait = msg.Wait{} };
@@ -151,13 +161,11 @@ fn clientTick(circumstances: msg.PresentCircumstances) msg.Message {
             var target_door: ?Point = null;
             var target_distance: u32 = 0;
             var doors_it = doors.iterator();
-            wasmbotClient.log("SELECTING DOOR");
             while (doors_it.next()) |door_entry| {
                 const pt = door_entry.key_ptr;
                 const tt = door_entry.value_ptr;
                 if (tt.* == msg.TileType.ClosedDoor) {
                     const dist = pt.manhattanDistance(bot.location);
-                    wasmbotClient.logFmt("  candidate @ {d}: {d}, {d}", .{ dist, pt.x, pt.y });
                     if (target_door == null or dist < target_distance) {
                         target_door = pt.*;
                         target_distance = dist;
@@ -165,12 +173,11 @@ fn clientTick(circumstances: msg.PresentCircumstances) msg.Message {
                 }
             }
             if (target_door == null) {
-                wasmbotClient.log("stopping exploration\n");
+                wasmbotClient.logFmt("stopping exploration after {d} turns\n", .{number_of_turns});
                 setTarget(null);
                 exploring = false;
                 return msg.Message{ .Wait = msg.Wait{} };
             } else {
-                wasmbotClient.logFmt("targeting door @ {d}, {d}\n", .{ target_door.?.x, target_door.?.y });
                 if (bot.location.manhattanDistance(target_door.?) == 1) {
                     const delta = target_door.?.sub(bot.location);
                     setTarget(null);

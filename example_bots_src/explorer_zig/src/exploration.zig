@@ -143,15 +143,15 @@ pub fn Grid(comptime T: type) type {
 
 pub const Agent = struct {
     location: Point = Point{},
-    lastLocation: Point = Point{},
-    attemptedMove: Point = Point{},
+    last_location: Point = Point{},
+    attempted_move: Point = Point{},
 
     pub fn toWorld(self: *Agent, offset_point: Point) Point {
         return self.location.add(offset_point);
     }
 
     pub fn makeMove(self: *Agent, target: Point) msg.Message {
-        self.attemptedMove = target.sub(self.location);
+        self.attempted_move = target.sub(self.location);
         const movement = self.location.directionToNeighbor(target);
         if (movement == null) {
             return msg.Message{ .Wait = msg.Wait{} };
@@ -161,19 +161,19 @@ pub const Agent = struct {
 };
 
 pub const PathWalk = struct {
-    currentIdx: usize,
+    current_idx: usize,
     path: []Point,
 
     pub fn isFinished(self: *PathWalk) bool {
-        return self.currentIdx >= self.path.len;
+        return self.current_idx >= self.path.len;
     }
 
     pub fn getNext(self: *PathWalk) ?Point {
         if (self.isFinished()) {
             return null;
         }
-        self.currentIdx += 1;
-        return self.path[self.currentIdx - 1];
+        self.current_idx += 1;
+        return self.path[self.current_idx - 1];
     }
 };
 
@@ -187,50 +187,50 @@ fn pfnComp(ctx: void, a: PathfindNode, b: PathfindNode) std.math.Order {
 const Frontier = std.PriorityQueue(PathfindNode, void, pfnComp);
 
 pub fn pathfind(allocator: std.mem.Allocator, start: Point, goal: Point, map: *const Map) !PathWalk {
-    const startNode = PathfindNode{ .cost = 0, .location = start };
+    const start_node = PathfindNode{ .cost = 0, .location = start };
     var frontier = Frontier.init(allocator, {});
     defer frontier.deinit();
-    var cameFrom = std.AutoHashMap(Point, ?Point).init(allocator);
-    defer cameFrom.deinit();
-    var costSoFar = std.AutoHashMap(Point, u32).init(allocator);
-    defer costSoFar.deinit();
+    var came_from = std.AutoHashMap(Point, ?Point).init(allocator);
+    defer came_from.deinit();
+    var cost_so_far = std.AutoHashMap(Point, u32).init(allocator);
+    defer cost_so_far.deinit();
 
-    try frontier.add(startNode);
-    try cameFrom.put(start, null);
-    try costSoFar.put(start, 0);
+    try frontier.add(start_node);
+    try came_from.put(start, null);
+    try cost_so_far.put(start, 0);
 
     while (frontier.count() > 0) {
-        const currNode = frontier.remove();
-        const curr = currNode.location;
+        const curr_node = frontier.remove();
+        const curr = curr_node.location;
         if (curr.equals(goal)) {
             break;
         }
 
         for (curr.getNeighbors4()) |neighbor| {
-            var totalCost = costSoFar.get(curr).?;
-            const neighborType = map.get(neighbor);
-            if (neighborType == msg.TileType.Void) {
+            var total_cost = cost_so_far.get(curr).?;
+            const neighbor_type = map.get(neighbor).?;
+            if (neighbor_type == msg.TileType.Void) {
                 // we don't know what's there
                 continue;
-            } else if (neighborType == msg.TileType.Wall) {
+            } else if (neighbor_type == msg.TileType.Wall) {
                 // can't go there
                 continue;
-            } else if (neighborType == msg.TileType.ClosedDoor) {
-                totalCost += 2;
+            } else if (neighbor_type == msg.TileType.ClosedDoor) {
+                total_cost += 2;
             } else {
-                totalCost += 1;
+                total_cost += 1;
             }
-            if (!costSoFar.contains(neighbor) or totalCost < costSoFar.get(neighbor).?) {
-                try costSoFar.put(neighbor, totalCost);
-                const priority = totalCost + neighbor.manhattanDistance(goal);
+            if (!cost_so_far.contains(neighbor) or total_cost < cost_so_far.get(neighbor).?) {
+                try cost_so_far.put(neighbor, total_cost);
+                const priority = total_cost + neighbor.manhattanDistance(goal);
                 try frontier.add(PathfindNode{ .cost = priority, .location = neighbor });
-                try cameFrom.put(neighbor, curr);
+                try came_from.put(neighbor, curr);
             }
         }
     }
 
-    if (!costSoFar.contains(goal)) {
-        return PathWalk{ .path = &.{}, .currentIdx = 0 };
+    if (!cost_so_far.contains(goal)) {
+        return PathWalk{ .path = &.{}, .current_idx = 0 };
     }
 
     var backtrack = std.ArrayList(Point).init(allocator);
@@ -238,7 +238,7 @@ pub fn pathfind(allocator: std.mem.Allocator, start: Point, goal: Point, map: *c
     try backtrack.append(goal);
     var curr = goal;
     while (!curr.equals(start)) {
-        curr = cameFrom.get(curr).?.?;
+        curr = came_from.get(curr).?.?;
         try backtrack.append(curr);
     }
     _ = backtrack.pop(); // remove starting point
@@ -249,7 +249,7 @@ pub fn pathfind(allocator: std.mem.Allocator, start: Point, goal: Point, map: *c
     }
 
     return PathWalk{
-        .currentIdx = 0,
+        .current_idx = 0,
         .path = try path.toOwnedSlice(),
     };
 }

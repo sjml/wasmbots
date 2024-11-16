@@ -1,10 +1,10 @@
 ## dev
-* pathfinding breaks at a certain point? :(
-    * FIRST: figure out why it gets in an infinite loop @ relative 21, -35
-    * THEN: why isn't it finding a new door to open?
-    * THEN: add neighbors to "visited" to make the whole thing a little smoother
+* add neighbors to "visited" to make the whole thing a little smoother
+    * did, but it leads to another freeze :-/
+    * gets locked at 11, 19, but had a weird hitch a few spots earlier
 * fix the reset functionality
     * (set player facing on reset while we're at it)
+    * probably related: pressing pause when bot is crashed disables all flowcontrol
 
 * review [memory notes](./misc.md#memory-thoughts)
 
