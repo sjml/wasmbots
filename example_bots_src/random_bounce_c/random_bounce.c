@@ -1,39 +1,129 @@
-#include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
 #include <stdbool.h>
-#include <stdio.h>
-#include <stdarg.h>
 
 #include "wasmbot_client/client.h"
 
 const char* BOT_NAME = "randBounce C";
-const uint16_t BOT_VERSION[3] = {0, 2, 1};
+const uint16_t BOT_VERSION[3] = {0, 3, 0};
 
-typedef enum {
-	DIR_EAST, DIR_SOUTHEAST, DIR_SOUTH, DIR_SOUTHWEST, DIR_WEST, DIR_NORTHWEST, DIR_NORTH, DIR_NORTHEAST
-} Direction;
-Direction CURRENT_DIR = DIR_EAST;
+WasmBots_Direction _currentDir = WasmBots_Direction_East;
 
 void chooseNewDirection(bool allowRepeat) {
-	Direction oldDir = CURRENT_DIR;
-	int32_t randomDir = wsmbt_getRandomInt(0, 8);
+	WasmBots_Direction oldDir = _currentDir;
+	int32_t randomDir = wsmbt_getRandomInt(0, 3);
+	randomDir *= 2;
 	if (!allowRepeat && randomDir == oldDir) {
-		randomDir = (randomDir + 1) % 8;
+		randomDir = (randomDir + 2) % 8;
 	}
-	CURRENT_DIR = randomDir;
+	_currentDir = (WasmBots_Direction)randomDir;
+}
+
+void directionToDelta(WasmBots_Direction dir, int16_t* dx, int16_t* dy) {
+	*dx = 0;
+	*dy = 0;
+	switch (dir) {
+		case WasmBots_Direction_East:
+			*dx = 1;
+			break;
+		case WasmBots_Direction_South:
+			*dy = 1;
+			break;
+		case WasmBots_Direction_West:
+			*dx = -1;
+			break;
+		case WasmBots_Direction_North:
+			*dy = -1;
+			break;
+		default:
+			wsmbt_logfErr("Invalid direction, %d", _currentDir);
+			break;
+	}
+}
+
+WasmBots_TileType getNeighborTile(WasmBots_Direction dir, WasmBots_PresentCircumstances* circumstances) {
+	int16_t dx = 0;
+	int16_t dy = 0;
+	directionToDelta(dir, &dx, &dy);
+
+	const size_t targetIdx = (circumstances->surroundingsRadius + dy) * (circumstances->surroundingsRadius*2+1) + (circumstances->surroundingsRadius + dx);
+	return circumstances->surroundings[targetIdx];
 }
 
 void* clientTick(WasmBots_PresentCircumstances* circumstances) {
-	if (!circumstances->lastMoveResult != WasmBots_MoveResult_Succeeded) {
+	if (!(circumstances->lastMoveResult == WasmBots_MoveResult_Succeeded)) {
 		chooseNewDirection(false);
-		wsmbt_logf("choosing new direction: %d", CURRENT_DIR);
+		// wsmbt_logf("choosing new direction: %d", _currentDir);
+	}
+
+	WasmBots_TileType neighbors[4] = {
+		getNeighborTile(WasmBots_Direction_East, circumstances),
+		getNeighborTile(WasmBots_Direction_South, circumstances),
+		getNeighborTile(WasmBots_Direction_West, circumstances),
+		getNeighborTile(WasmBots_Direction_North, circumstances),
+	};
+
+	// "southeast" == invalid, and not because of any geographical bias of mine
+	uint8_t doorCount = 0;
+	WasmBots_Direction doors[4] = {
+		WasmBots_Direction_Southeast,
+		WasmBots_Direction_Southeast,
+		WasmBots_Direction_Southeast,
+		WasmBots_Direction_Southeast,
+	};
+	bool isOpened[4] = { false, false, false, false };
+
+	if (neighbors[0] == WasmBots_TileType_OpenDoor || neighbors[0] == WasmBots_TileType_ClosedDoor) {
+		if (neighbors[0] == WasmBots_TileType_OpenDoor) {
+			isOpened[doorCount] = true;
+		}
+		doors[doorCount] = WasmBots_Direction_East;
+		doorCount++;
+	}
+	if (neighbors[1] == WasmBots_TileType_OpenDoor || neighbors[1] == WasmBots_TileType_ClosedDoor) {
+		if (neighbors[1] == WasmBots_TileType_OpenDoor) {
+			isOpened[doorCount] = true;
+		}
+		doors[doorCount] = WasmBots_Direction_South;
+		doorCount++;
+	}
+	if (neighbors[2] == WasmBots_TileType_OpenDoor || neighbors[2] == WasmBots_TileType_ClosedDoor) {
+		if (neighbors[2] == WasmBots_TileType_OpenDoor) {
+			isOpened[doorCount] = true;
+		}
+		doors[doorCount] = WasmBots_Direction_West;
+		doorCount++;
+	}
+	if (neighbors[3] == WasmBots_TileType_OpenDoor || neighbors[3] == WasmBots_TileType_ClosedDoor) {
+		if (neighbors[3] == WasmBots_TileType_OpenDoor) {
+			isOpened[doorCount] = true;
+		}
+		doors[doorCount] = WasmBots_Direction_North;
+		doorCount++;
+	}
+
+	for (uint8_t d = 0; d < doorCount; d++) {
+		if (isOpened[d]) {
+			if (wsmbt_getRandomInt(0, 4) == 0) {
+				wsmbt_log("taking open door");
+				_currentDir = doors[d];
+				break;
+			}
+		}
+		else {
+			if (wsmbt_getRandomInt(0, 3) < 2) {
+				_currentDir = doors[d];
+				wsmbt_log("opening door");
+				WasmBots_Open* open = WasmBots_Open_Create();
+				directionToDelta(_currentDir, &open->target.x, &open->target.y);
+				return (void*)open;
+			}
+		}
 	}
 
 	WasmBots_MoveTo* move = WasmBots_MoveTo_Create();
-	move->direction = (uint8_t)CURRENT_DIR;
+	move->direction = _currentDir;
 	move->distance = 1;
-
 	return (void*)move;
 }
 

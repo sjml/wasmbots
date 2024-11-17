@@ -2,7 +2,6 @@
 #define WASMBOT_CLIENT_H
 
 #include <stdint.h>
-#include <stdlib.h>
 #include <stdbool.h>
 
 #include "./wasmbot_messages.h"
@@ -31,7 +30,7 @@ typedef struct wsmbt_BotMetadata {
 	uint16_t version[3];
 } wsmbt_BotMetadata;
 
-typedef void* (*wsmbt_TickFunction)(WasmBotsMessage_PresentCircumstances*);
+typedef void* (*wsmbt_TickFunction)(WasmBots_PresentCircumstances*);
 void wsmbt_registerTickCallback(wsmbt_TickFunction tickFunc);
 
 #endif // \WASMBOT_CLIENT_H

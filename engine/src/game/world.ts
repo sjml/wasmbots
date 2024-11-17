@@ -228,9 +228,9 @@ export class World extends EventTarget {
 
 
 				player.lastMoveStatus = this.processMove(player, move);
-				if (player.lastMoveStatus !== CoreMsg.MoveResult.Succeeded) {
-					console.info(`Move did not succeed (${CoreMsg.MoveResult[player.lastMoveStatus]}):`, move);
-				}
+				// if (player.lastMoveStatus !== CoreMsg.MoveResult.Succeeded) {
+				// 	console.info(`Move did not succeed (${CoreMsg.MoveResult[player.lastMoveStatus]}):`, move);
+				// }
 			}
 		}
 

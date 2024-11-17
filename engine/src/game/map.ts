@@ -80,7 +80,8 @@ export class WorldMap {
 						tileData.set(td.id, { meta });
 						continue;
 					default:
-						throw new Error(`Unrecognized tile genus: ${genus}`);
+						console.warn(`Unrecognized tile genus: ${genus}`);
+						continue;
 				}
 			}
 			tsd.tileData = tileData;

@@ -110,9 +110,10 @@ END DATA PROTOCOL
 #ifndef INCLUDE_WASMBOTS_H
 #define INCLUDE_WASMBOTS_H
 
-#include <stdbool.h>
+#include <stdlib.h>
+#include <stddef.h>
 #include <stdint.h>
-#include <string.h>
+#include <stdbool.h>
 
 typedef uint8_t WasmBots_err_t;
 #define WASMBOTS_ERR_OK  0
@@ -478,9 +479,10 @@ WasmBots_err_t WasmBots__ReadString(WasmBots_DataAccess *r, char **s, uint8_t *l
 	if (r->bufferSize < r->position + *len) {
 		return WASMBOTS_ERR_EOF;
 	}
-	*s = (char*)calloc(1, (size_t)(*len + 1));
+	*s = (char*)WASMBOTS_MALLOC((size_t)(*len + 1));
 	if (*s == NULL) { return WASMBOTS_ERR_ALLOCATION_FAILURE; }
 	memcpy(*s, r->buffer + r->position, *len);
+	(*s)[*len] = '\0';
 	r->position += *len;
 	return WASMBOTS_ERR_OK;
 }

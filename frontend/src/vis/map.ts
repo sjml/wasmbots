@@ -14,7 +14,7 @@ export class VisMap extends Phaser.Scene {
 	}
 
 	static async from(map: WorldMap): Promise<VisMap> {
-		const ms = new VisMap(`${map.name})Scene`);
+		const ms = new VisMap(`${map.name}_Scene`);
 		ms.worldMap = map;
 		return ms;
 	}
