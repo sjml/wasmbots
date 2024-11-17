@@ -170,13 +170,13 @@ pub const PathWalk = struct {
 
     pub fn getNextMove(self: *PathWalk, agent: *Agent, mapping: *Map) ?msg.Message {
         if (self.isFinished()) {
-            wasmbotClient.logErr("path already exhausted\n");
+            wasmbotClient.logErr("path already exhausted");
             return null;
         }
         const next_target = self.path[self.current_idx];
         const tile = mapping.get(next_target).?;
         if (tile == msg.TileType.Void or tile == msg.TileType.Wall) {
-            wasmbotClient.logErrFmt("path attempting to move into invalid space: {d}, {d}\n", .{ next_target.x, next_target.y });
+            wasmbotClient.logErrFmt("path attempting to move into invalid space: {d}, {d}", .{ next_target.x, next_target.y });
             unreachable;
         }
         if (tile == msg.TileType.ClosedDoor) {

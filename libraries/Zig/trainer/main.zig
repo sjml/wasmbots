@@ -38,7 +38,7 @@ fn start_server(server: *std.net.Server) void {
             continue;
         };
         handle_request(&request) catch |err| {
-            std.debug.print("Could not handle request: {}", .{err});
+            std.debug.print("Could not handle request: {}\n", .{err});
             continue;
         };
     }

@@ -3,7 +3,6 @@
     * (set player facing on reset while we're at it)
     * probably related: pressing pause when bot is crashed disables all flowcontrol
     * also: coordinator status never changes to running?
-* fix logging in zig client so native doesn't have to put newlines in everything
 
 * review [memory notes](./misc.md#memory-thoughts)
 

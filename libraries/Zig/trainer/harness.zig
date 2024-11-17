@@ -13,11 +13,9 @@ export fn shutdown() void {
 
 export fn logFunction(logLevel: i32, msgPtr: usize, msgLen: usize) void {
     const str = liftString(msgPtr, msgLen);
-    if (logLevel == 0) {
-        stderr.writeAll(str) catch @panic("Couldn't write to console?!");
-    } else {
-        stdout.writeAll(str) catch @panic("Couldn't write to console?!");
-    }
+    const writer = if (logLevel == 0) stderr else stdout;
+    writer.writeAll(str) catch @panic("Couldn't write to console?!");
+    writer.write("\n"); // so bot code can use the same log as normally
 }
 
 export fn getRandomInt(min: i32, max: i32) i32 {

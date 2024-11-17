@@ -75,10 +75,11 @@ fn updateMaps(circs: *const msg.PresentCircumstances) !void {
     if (circs.lastMoveResult == msg.MoveResult.Succeeded) {
         bot.last_location = bot.location;
         bot.location = bot.location.add(bot.attempted_move);
-        bot.attempted_move = Point{};
     } else {
-        // TODO: log error and re-eval
+        wasmbotClient.logErr("Last move didn't work; re-evaluating");
+        setTarget(null);
     }
+    bot.attempted_move = Point{};
 
     try visited.put(bot.location, {});
     _ = unvisited.remove(bot.location); // just returns false if it wasn't there
@@ -164,7 +165,7 @@ fn clientTick(circumstances: msg.PresentCircumstances) msg.Message {
                 }
             }
             if (target_door == null) {
-                wasmbotClient.logFmt("stopping exploration after {d} turns\n", .{number_of_turns});
+                wasmbotClient.logFmt("stopping exploration after {d} turns", .{number_of_turns});
                 setTarget(null);
                 exploring = false;
                 return msg.Message{ .Resign = msg.Resign{} };
