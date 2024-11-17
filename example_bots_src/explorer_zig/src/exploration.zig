@@ -168,12 +168,23 @@ pub const PathWalk = struct {
         return self.current_idx >= self.path.len;
     }
 
-    pub fn getNext(self: *PathWalk) ?Point {
+    pub fn getNextMove(self: *PathWalk, agent: *Agent, mapping: *Map) ?msg.Message {
         if (self.isFinished()) {
+            wasmbotClient.logErr("path already exhausted\n");
             return null;
         }
+        const next_target = self.path[self.current_idx];
+        const tile = mapping.get(next_target).?;
+        if (tile == msg.TileType.Void or tile == msg.TileType.Wall) {
+            wasmbotClient.logErrFmt("path attempting to move into invalid space: {d}, {d}\n", .{ next_target.x, next_target.y });
+            unreachable;
+        }
+        if (tile == msg.TileType.ClosedDoor) {
+            const delta = next_target.sub(agent.location);
+            return msg.Message{ .Open = msg.Open{ .target = delta.toMsgPt() } };
+        }
         self.current_idx += 1;
-        return self.path[self.current_idx - 1];
+        return agent.makeMove(next_target);
     }
 };
 

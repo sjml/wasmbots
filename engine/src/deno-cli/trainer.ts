@@ -4,6 +4,7 @@ import { TrainerCoordinator } from "../trainer/trainer-coordinator.ts";
 import { log } from "./_logs.ts";
 import { sleep } from "../core/util.ts";
 import { CoordinatorStatus } from "../core/coordinator.ts";
+import { GameState } from "../index.ts";
 
 
 // eventually take this as program argument, have it start up automatically?
@@ -28,6 +29,9 @@ async function main(): Promise<void> {
 		await world.runTurn();
 		console.log(player.location);
 		if (player.coordinator.status === CoordinatorStatus.Shutdown) {
+			break;
+		}
+		if (world.gameState !== GameState.Running) {
 			break;
 		}
 	}

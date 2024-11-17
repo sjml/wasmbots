@@ -82,10 +82,6 @@ fn updateMaps(circs: *const msg.PresentCircumstances) !void {
 
     try visited.put(bot.location, {});
     _ = unvisited.remove(bot.location); // just returns false if it wasn't there
-    for (bot.location.getNeighbors8()) |n| {
-        try visited.put(n, {});
-        _ = unvisited.remove(n);
-    }
 
     const rad16: i16 = @intCast(circs.surroundingsRadius);
     for (0..grid.height) |y| {
@@ -107,23 +103,18 @@ fn updateMaps(circs: *const msg.PresentCircumstances) !void {
             }
 
             if (value == msg.TileType.ClosedDoor or value == msg.TileType.OpenDoor) {
-                if (location.add(temp_origin).equals(Point{ .x = 16, .y = 23 })) {
-                    // wasmbotClient.log("HALT\n");
-                }
                 try doors.put(location, value);
             }
         }
     }
 
-    // var unvisited_str = try global_allocator.alloc(u8, 0);
-    // var unvisited_it = unvisited.keyIterator();
-    // while (unvisited_it.next()) |k| {
-    //     const new_str = try std.fmt.allocPrint(global_allocator, "{s}; {d},{d}", .{ unvisited_str, k.x, k.y });
-    //     global_allocator.free(unvisited_str);
-    //     unvisited_str = new_str;
-    // }
-    // wasmbotClient.logFmt("unvisited: {s}\n", .{unvisited_str});
-    // global_allocator.free(unvisited_str);
+    for (bot.location.getNeighbors8()) |n| {
+        const value = mapping.get(n) orelse msg.TileType.Void;
+        if (value != msg.TileType.Void) {
+            try visited.put(n, {});
+            _ = unvisited.remove(n);
+        }
+    }
 }
 
 var exploring = true;
@@ -150,14 +141,9 @@ fn clientTick(circumstances: msg.PresentCircumstances) msg.Message {
         if (unvisited.count() > 0) {
             const t = findClosestUnvisited(bot.location) catch @panic("Failed to find reachable tile");
             setTarget(t);
-            const next = current_path.?.getNext();
+            const next = current_path.?.getNextMove(&bot, &mapping);
             if (next != null) {
-                if (mapping.get(next.?).? == msg.TileType.ClosedDoor) {
-                    const delta = next.?.sub(bot.location);
-                    current_path.?.current_idx -= 1;
-                    return msg.Message{ .Open = msg.Open{ .target = delta.toMsgPt() } };
-                }
-                return bot.makeMove(next.?);
+                return next.?;
             } else {
                 target_tile = null;
                 current_path = null;
@@ -181,38 +167,17 @@ fn clientTick(circumstances: msg.PresentCircumstances) msg.Message {
                 wasmbotClient.logFmt("stopping exploration after {d} turns\n", .{number_of_turns});
                 setTarget(null);
                 exploring = false;
-                return msg.Message{ .Wait = msg.Wait{} };
+                return msg.Message{ .Resign = msg.Resign{} };
             } else {
-                if (bot.location.manhattanDistance(target_door.?) == 1) {
-                    const delta = target_door.?.sub(bot.location);
-                    setTarget(null);
-                    return msg.Message{ .Open = msg.Open{ .target = delta.toMsgPt() } };
-                }
                 setTarget(target_door.?);
-                const next = current_path.?.getNext();
-                return bot.makeMove(next.?);
+                return current_path.?.getNextMove(&bot, &mapping).?;
             }
         }
     } else {
-        const tt = target_tile.?;
-        const target_dist = bot.location.manhattanDistance(tt);
-        if (target_dist == 1 and mapping.get(tt).? == msg.TileType.ClosedDoor) {
-            const delta = tt.sub(bot.location);
-            setTarget(null);
-            return msg.Message{ .Open = msg.Open{ .target = delta.toMsgPt() } };
-        }
         if (current_path == null) {
             return msg.Message{ .Wait = msg.Wait{} };
         }
-        const nextTarget = current_path.?.getNext();
-        // if pathfinding is trustworthy, this is always non-null and one space away
-        const nt = nextTarget.?;
-        if (mapping.get(nt).? == msg.TileType.ClosedDoor) {
-            const delta = nt.sub(bot.location);
-            current_path.?.current_idx -= 1;
-            return msg.Message{ .Open = msg.Open{ .target = delta.toMsgPt() } };
-        }
-        return bot.makeMove(nt);
+        return current_path.?.getNextMove(&bot, &mapping).?;
     }
 
     // should be unreachable

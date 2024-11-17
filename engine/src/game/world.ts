@@ -267,8 +267,8 @@ export class World extends EventTarget {
 				// no-op
 				return CoreMsg.MoveResult.Succeeded;
 			case CoreMsg.MessageType.ResignType:
-				console.log("Unimplemented move: Resign")
-				return CoreMsg.MoveResult.Invalid;
+				player.coordinator.status = CoordinatorStatus.Shutdown;
+				return CoreMsg.MoveResult.Succeeded;
 			case CoreMsg.MessageType.OpenType:
 				const openMove = move as CoreMsg.Open;
 				const openTarget = {
