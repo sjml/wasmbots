@@ -76,6 +76,8 @@ fn updateMaps(circs: *const msg.PresentCircumstances) !void {
         bot.last_location = bot.location;
         bot.location = bot.location.add(bot.attempted_move);
         bot.attempted_move = Point{};
+    } else {
+        // TODO: log error and re-eval
     }
 
     try visited.put(bot.location, {});
@@ -94,7 +96,7 @@ fn updateMaps(circs: *const msg.PresentCircumstances) !void {
             const x_offset: i16 = x16 - rad16;
             const offset = Point{ .x = x_offset, .y = y_offset };
             const location = bot.toWorld(offset);
-            const value: msg.TileType = grid.get(x, y);
+            const value = grid.get(x, y);
 
             if (value == msg.TileType.Void) {
                 continue;
@@ -105,6 +107,9 @@ fn updateMaps(circs: *const msg.PresentCircumstances) !void {
             }
 
             if (value == msg.TileType.ClosedDoor or value == msg.TileType.OpenDoor) {
+                if (location.add(temp_origin).equals(Point{ .x = 16, .y = 23 })) {
+                    // wasmbotClient.log("HALT\n");
+                }
                 try doors.put(location, value);
             }
         }
@@ -132,10 +137,6 @@ fn clientTick(circumstances: msg.PresentCircumstances) msg.Message {
         wasmbotClient.logErr("Could not update maps!");
         unreachable;
     };
-    var debugging = false;
-    if (bot.location.equals(Point{ .x = 21, .y = -32 })) {
-        debugging = true;
-    }
 
     if (!exploring) {
         return msg.Message{ .Wait = msg.Wait{} };
@@ -146,12 +147,16 @@ fn clientTick(circumstances: msg.PresentCircumstances) msg.Message {
     }
 
     if (target_tile == null) {
-        // wasmbotClient.logFmt("{d} seen, unvisited tiles\n", .{unvisited.count()});
         if (unvisited.count() > 0) {
             const t = findClosestUnvisited(bot.location) catch @panic("Failed to find reachable tile");
             setTarget(t);
             const next = current_path.?.getNext();
             if (next != null) {
+                if (mapping.get(next.?).? == msg.TileType.ClosedDoor) {
+                    const delta = next.?.sub(bot.location);
+                    current_path.?.current_idx -= 1;
+                    return msg.Message{ .Open = msg.Open{ .target = delta.toMsgPt() } };
+                }
                 return bot.makeMove(next.?);
             } else {
                 target_tile = null;
@@ -202,6 +207,11 @@ fn clientTick(circumstances: msg.PresentCircumstances) msg.Message {
         const nextTarget = current_path.?.getNext();
         // if pathfinding is trustworthy, this is always non-null and one space away
         const nt = nextTarget.?;
+        if (mapping.get(nt).? == msg.TileType.ClosedDoor) {
+            const delta = nt.sub(bot.location);
+            current_path.?.current_idx -= 1;
+            return msg.Message{ .Open = msg.Open{ .target = delta.toMsgPt() } };
+        }
         return bot.makeMove(nt);
     }
 

@@ -208,7 +208,7 @@ pub fn pathfind(allocator: std.mem.Allocator, start: Point, goal: Point, map: *c
 
         for (curr.getNeighbors4()) |neighbor| {
             var total_cost = cost_so_far.get(curr).?;
-            const neighbor_type = map.get(neighbor).?;
+            const neighbor_type = map.get(neighbor) orelse msg.TileType.Void;
             if (neighbor_type == msg.TileType.Void) {
                 // we don't know what's there
                 continue;

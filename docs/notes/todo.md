@@ -1,7 +1,4 @@
 ## dev
-* add neighbors to "visited" to make the whole thing a little smoother
-    * did, but it leads to another freeze :-/
-    * gets locked at 11, 19, but had a weird hitch a few spots earlier
 * fix the reset functionality
     * (set player facing on reset while we're at it)
     * probably related: pressing pause when bot is crashed disables all flowcontrol
