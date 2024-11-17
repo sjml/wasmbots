@@ -234,7 +234,10 @@ export class World extends EventTarget {
 			}
 		}
 
-		// TODO: is there a winner or something?
+		const validPlayerCount = this.players.filter(p => World._playerIsValid(p)).length;
+		if (validPlayerCount == 0) {
+			this.stopGame();
+		}
 	}
 
 	processMove(player: Player, move: CoreMsg.Message): CoreMsg.MoveResult {
