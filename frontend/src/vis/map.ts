@@ -36,13 +36,19 @@ export class VisMap extends Phaser.Scene {
 		this.cameras.main.setBounds(0, 0, Config.gameWidth, Config.gameHeight);
 
 		VisEventBus.on("zoom-in", (data: {target: VisPlayer}) => {
-			this.cameras.main.pan(data.target.x, data.target.y, ZOOM_TIME, ZOOM_FUNC);
+			this.cameras.main.pan(data.target.x, data.target.y, ZOOM_TIME, ZOOM_FUNC, true, (cam: Phaser.Cameras.Scene2D.Camera, progress: number) => {
+				cam.panEffect.destination.x = data.target.x;
+				cam.panEffect.destination.y = data.target.y;
+				if (progress === 1) {
+					// fire callback if needed
+				}
+			});
 			this.cameras.main.zoomTo(5.0, ZOOM_TIME, ZOOM_FUNC);
 			this.cameras.main.startFollow(data.target, true);
 		});
 		VisEventBus.on("zoom-out", () => {
-			this.cameras.main.zoomTo(1.0, ZOOM_TIME, ZOOM_FUNC);
 			this.cameras.main.pan(Config.gameWidth / 2, Config.gameHeight / 2, ZOOM_TIME, ZOOM_FUNC);
+			this.cameras.main.zoomTo(1.0, ZOOM_TIME, ZOOM_FUNC);
 			this.cameras.main.stopFollow();
 		});
 	}

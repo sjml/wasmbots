@@ -53,6 +53,9 @@ export class WasmBotsVisualizer extends Phaser.Game {
 		this.worldObject.on("terrainChanged", (evt) => {
 			this._currentMapScene?.processTerrainChange(evt.detail.location, evt.detail.newTerrain);
 		});
+		this.worldObject.on("worldReset", (_) => {
+			VisEventBus.emit("world-reset");
+		});
 
 		this._booloaderPromise = new Promise<void>((resolve, reject) => {
 			this._bootloaderResolve = resolve;

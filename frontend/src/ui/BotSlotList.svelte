@@ -104,7 +104,7 @@
 	{#each playerList as _, pidx}
 		<BotSlot slotIdx={pidx+1} bind:playerUI={playerList[pidx]} {zoomChangeCallback} />
 	{/each}
-	{#if gameInSetup && playerList.length < maxPlayersAllowed}
+	{#if gameInSetup && (playerList.length < maxPlayersAllowed)}
 		<BotSlotLoader slotIdx={playerList.length+1} {exampleBotInfo} {newBotCallback} />
 	{/if}
 </div>

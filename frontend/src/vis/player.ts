@@ -3,6 +3,7 @@ import Phaser from "phaser";
 import { Config, type Point, Player, Deck } from "wasmbots";
 import { WasmBotsVisualizer } from "./game.ts";
 import { VisMap } from "./map.ts";
+import { VisEventBus } from "./events.ts";
 
 const PLAYER_IMG_FRAMES = [84, 87, 96, 99, 100, 111];
 
@@ -32,14 +33,21 @@ export class VisPlayer extends Phaser.GameObjects.Sprite {
 		this.imageIndex = imageIndex;
 		this.setOrigin(0, 0);
 
-		if (playerObject.location.x > (Config.gameWidth / Config.tileSize * 0.5)) {
+		this.resetFacing();
+		VisEventBus.on("world-reset", () => {
+			this.resetFacing();
+		});
+
+		mapScene.addPlayer(this);
+	}
+
+	resetFacing() {
+		if (this.playerObject.location.x > (Config.gameWidth / Config.tileSize * 0.5)) {
 			this.setFacing(PlayerFacing.Left);
 		}
 		else {
 			this.setFacing(PlayerFacing.Right);
 		}
-
-		mapScene.addPlayer(this);
 	}
 
 	setFacing(facing: PlayerFacing) {

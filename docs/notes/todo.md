@@ -1,7 +1,7 @@
 ## dev
 * fix the reset functionality
     * looks like issues related to spawn points not getting shuffled back in
-    * (set player facing on reset while we're at it)
+      * (hmm, they're not returning to their own spawn points? weird.)
     * probably related: pressing pause when bot is crashed disables all flowcontrol
     * also: coordinator status never changes to running?
 
@@ -9,11 +9,14 @@
 
 * UI: 
     * logs not going to UI again
+        * use the worker's message passing
     * file select or drag and drop for running your own bot
     * spinners when map or wasm is loading
 
 * fix client handshakes in go, rust
   * consider whether to yeet assemblyscript
+    * does the beschi generator actually work? it's untested...
+  * update general library readme
 
 * fix automated circumstances.json to handle enums and arrays
     * enum: might want to modify beschi to allow protocol to set encoding

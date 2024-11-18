@@ -15,6 +15,7 @@ export enum GameState {
 
 type WorldEvents = {
 	gameStateChange: { newState: GameState, oldState: GameState };
+	worldReset: {};
 	playerRegisterError: { rejectedPlayer: Player, reason: string; };
 	playerAdded: { newPlayer: Player };
 	playerDropped: { leavingPlayer: Player };
@@ -113,7 +114,9 @@ export class World extends EventTarget {
 		this._spawnPointDeck.restoreItem(leavingPlayer.spawnPoint);
 
 		this.emit("playerDropped", {leavingPlayer});
-		this.checkReady();
+		if (this._gameState < GameState.Running) {
+			this.checkReady();
+		}
 	}
 
 	async setMap(mapName: string) {
@@ -193,6 +196,7 @@ export class World extends EventTarget {
 			}
 		}
 		this.checkReady();
+		this.emit("worldReset", {});
 	}
 
 	private static _playerIsValid(p: Player): boolean {

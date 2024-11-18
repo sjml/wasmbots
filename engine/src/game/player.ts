@@ -7,7 +7,6 @@ import { LogLevel } from "../core/logger.ts";
 import { sleep } from "../core/util.ts";
 
 export class Player {
-	private _programBytes: Uint8Array = new Uint8Array();
 	coordinator!: Coordinator;
 	name: string;
 	version: number[];
