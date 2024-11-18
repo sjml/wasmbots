@@ -2,7 +2,6 @@ import config from "../core/config.ts";
 import { LogLevel, type LogFunction } from "../core/logger.ts";
 import * as Msg from "./messages.ts";
 import * as CoreMsg from "../core/messages.ts";
-import { sleep } from "../core/util.ts";
 import { Player } from "../game/player.ts";
 import { type Coordinator, CoordinatorStatus } from "../core/coordinator.ts";
 
@@ -13,13 +12,13 @@ export class WasmCoordinator implements Coordinator {
 	status: CoordinatorStatus;
 	logger: LogFunction;
 	rngSeed: number;
+	lastTickDuration: number;
 
 	private programBytes: Uint8Array;
 	private setupTimeout: number = -1;
 	private tickTimeout: number = -1;
 	private inTick: boolean = false;
 	private tickStartTime: number = 0;
-	private lastTickDuration: number = 0;
 	private tickPromise!: Promise<CoreMsg.Message>;
 	private tickResolve!: (val: CoreMsg.Message) => void;
 	private tickReject!: () => void;
@@ -34,6 +33,7 @@ export class WasmCoordinator implements Coordinator {
 		this.logger = logger;
 		this.rngSeed = rngSeed;
 		this.programBytes = programBytes;
+		this.lastTickDuration = 0;
 
 		this.worker = new Worker(
 			new URL("./wasmbot.worker.ts", import.meta.url).href,
@@ -182,10 +182,6 @@ export class WasmCoordinator implements Coordinator {
 			this.status = CoordinatorStatus.Shutdown;
 			this.tickReject();
 			return;
-		}
-		const remainder = config.minimumTickTime - this.lastTickDuration;
-		if (remainder > 0) {
-			await sleep(remainder);
 		}
 
 		let restoredMessage: CoreMsg.Message;

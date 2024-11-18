@@ -7,9 +7,6 @@
 
 * review [memory notes](./misc.md#memory-thoughts)
 
-* distribute the min tick across # of players?
-    * would also allow for tweening of movements (you know you have X amount of time before you're moving again)
-    * need a min and max value for it tho
 * UI: 
     * logs not going to UI again
     * file select or drag and drop for running your own bot

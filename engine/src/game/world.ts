@@ -210,6 +210,13 @@ export class World extends EventTarget {
 			console.error("ERROR: Trying to process turn on non-running game");
 			return;
 		}
+		let validPlayerCount = this.players.filter(p => World._playerIsValid(p)).length;
+		if (validPlayerCount == 0) {
+			console.error("ERROR: Game is still running, but no valid players");
+			return;
+		}
+
+		const visualTick = config.minimumTurnTime / validPlayerCount;
 
 		for (const player of this.players) {
 			if (World._playerIsValid(player)) {
@@ -224,7 +231,7 @@ export class World extends EventTarget {
 				).flat().map(t => t.terrainType);
 
 
-				const move = await player.tickTurn(circumstances);
+				const move = await player.tickTurn(circumstances, visualTick);
 
 
 				player.lastMoveStatus = this.processMove(player, move);
@@ -234,7 +241,7 @@ export class World extends EventTarget {
 			}
 		}
 
-		const validPlayerCount = this.players.filter(p => World._playerIsValid(p)).length;
+		validPlayerCount = this.players.filter(p => World._playerIsValid(p)).length;
 		if (validPlayerCount == 0) {
 			this.stopGame();
 		}

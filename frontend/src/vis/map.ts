@@ -33,6 +33,8 @@ export class VisMap extends Phaser.Scene {
 		this._backgroundLayer = tm.createLayer("terrain", tm.tilesets, 0, 0);
 		this._itemLayer = tm.createLayer("items", tm.tilesets, 0, 0);
 
+		this.cameras.main.setBounds(0, 0, Config.gameWidth, Config.gameHeight);
+
 		VisEventBus.on("zoom-in", (data: {target: VisPlayer}) => {
 			this.cameras.main.pan(data.target.x, data.target.y, ZOOM_TIME, ZOOM_FUNC);
 			this.cameras.main.zoomTo(5.0, ZOOM_TIME, ZOOM_FUNC);

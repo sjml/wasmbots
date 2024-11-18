@@ -10,17 +10,18 @@ export class TrainerCoordinator implements Coordinator {
 	status: CoordinatorStatus;
 	logger: LogFunction;
 	rngSeed: number;
+	lastTickDuration: number;
 
 	private readyPromise!: Promise<void>;
 	private readyResolve!: () => void;
 	private readyReject!: () => void;
 	private tickStartTime: number = 0;
-	private lastTickDuration: number = 0;
 
 	constructor(parent: Player, logger: LogFunction, rngSeed: number) {
 		this.player = parent;
 		this.logger = logger;
 		this.rngSeed = rngSeed;
+		this.lastTickDuration = 0;
 
 		this.status = CoordinatorStatus.Uninitialized;
 

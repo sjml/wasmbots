@@ -18,4 +18,5 @@ export interface Coordinator {
 	status: CoordinatorStatus;
 	logger: LogFunction;
 	rngSeed: number;
+	lastTickDuration: number;
 }

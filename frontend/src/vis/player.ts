@@ -62,10 +62,14 @@ export class VisPlayer extends Phaser.GameObjects.Sprite {
 				this.setFacing(PlayerFacing.Left);
 			}
 			this.tilePosition = this.playerObject.location;
-			this.setPosition(
-				this.tilePosition.x * Config.tileSize,
-				this.tilePosition.y * Config.tileSize,
-			);
+
+			this.scene.tweens.add({
+				targets: this,
+				x: this.tilePosition.x * Config.tileSize,
+				y: this.tilePosition.y * Config.tileSize,
+				duration: Config.minimumTurnTime - Config.turnTimeBuffer,
+				ease: 'Linear'
+			});
 		}
 	}
 }

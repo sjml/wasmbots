@@ -15,7 +15,8 @@ export fn logFunction(logLevel: i32, msgPtr: usize, msgLen: usize) void {
     const str = liftString(msgPtr, msgLen);
     const writer = if (logLevel == 0) stderr else stdout;
     writer.writeAll(str) catch @panic("Couldn't write to console?!");
-    writer.write("\n"); // so bot code can use the same log as normally
+    // so bot code can use the same log as normally
+    _ = writer.write("\n") catch @panic("Couldn't write to console?!");
 }
 
 export fn getRandomInt(min: i32, max: i32) i32 {

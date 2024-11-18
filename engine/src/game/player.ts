@@ -4,6 +4,7 @@ import * as CoreMsg from "../core/messages.ts";
 import config from "../core/config.ts";
 import { type Point } from "../core/math.ts";
 import { LogLevel } from "../core/logger.ts";
+import { sleep } from "../core/util.ts";
 
 export class Player {
 	private _programBytes: Uint8Array = new Uint8Array();
@@ -55,10 +56,14 @@ export class Player {
 		return true;
 	}
 
-	async tickTurn(circumstances: CoreMsg.PresentCircumstances): Promise<CoreMsg.Message> {
+	async tickTurn(circumstances: CoreMsg.PresentCircumstances, minTick: number): Promise<CoreMsg.Message> {
 		circumstances.lastMoveResult = this.lastMoveStatus;
 
 		const move = await this.coordinator.tick(circumstances);
+		const remainder = minTick - this.coordinator.lastTickDuration;
+		if (remainder > 0) {
+			await sleep(remainder);
+		}
 
 		return move;
 	}
