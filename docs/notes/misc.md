@@ -22,7 +22,7 @@
 ## memory thoughts
 * been ad-hoc-ing the memory read/write stuff for a while, should nail it down
     * always write circumstances starting at 0
-    * always read player input starting at N (for the sake of argument, say, MEMORY_SIZE / 2)
+    * always read player response starting at N (for the sake of argument, say, MEMORY_SIZE / 2)
     * potential issue if circumstances goes over N bytes?
         * nothing in there is hidden from the guest anyway, by definition, so no secrecy to worry about
         * reads beyond end of reserve block will fail (but again, all of that is already visible to guest)

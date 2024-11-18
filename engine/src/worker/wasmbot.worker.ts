@@ -91,7 +91,7 @@ async function initModule(payload: Msg.InitModulePayload) {
 }
 
 async function instantiate(payload: Msg.InstantiatePayload) {
-	program = new WasmGuestProgram(payload.rngSeed);
+	program = new WasmGuestProgram(payload.rngSeed, new Logger());
 	const initSuccess = await program.init(module);
 	if (!initSuccess) {
 		self.postMessage({

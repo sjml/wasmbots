@@ -51,6 +51,11 @@ fn findClosestUnvisited(pt: Point) !Point {
         if (man < minDistance) {
             minDistance = man;
             nearest = u.*;
+        } else if (man == minDistance) {
+            // break ties with a coin flip
+            if (wasmbotClient.getRandomInt(0, 2) == 0) {
+                nearest = u.*;
+            }
         }
     }
     return nearest orelse error.NoNearestUnvisited;

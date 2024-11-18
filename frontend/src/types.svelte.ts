@@ -23,13 +23,8 @@ export class UIPlayerData {
 	visPlayer: VisPlayer|null = $state(null);
 	isZoomed: boolean = $state(false);
 
-	private constructor() {}
-
-	static makingNewPlayer(world: World) {
-		const uipd = new UIPlayerData();
-		const player = new Player();
-		uipd.playerObject = player;
-		return uipd;
+	constructor() {
+		this.playerObject = new Player();
 	}
 
 	selfLog = (level: Logger.LogLevel, msg: string) => {

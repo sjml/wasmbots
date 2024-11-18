@@ -15,7 +15,10 @@ const config = {
 
 	// GameParameters
 	startingHitPoints: 10,
-	enabledMaps: ["dungeon", "arena"],
+	enabledMaps: [
+		"dungeon",
+		"arena",
+	],
 	diagonalMovement: false,
 	defaultPlayerStride: 1,
 	defaultPlayerOpenReach: 1,

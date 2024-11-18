@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { getContext } from "svelte";
-	import { Loader, WasmCoordinator, Logger } from "wasmbots";
+	import { Loader, WasmCoordinator } from "wasmbots";
 	import { UIPlayerData, type BotInfo } from "../types.svelte";
 
 	import { type WasmBotsState } from "../types.svelte";
+    import Spinner from "./Spinner.svelte";
 	const gameState: WasmBotsState = getContext("gameState");
 
 	interface Props {
@@ -13,8 +14,10 @@
 	}
 	let { slotIdx, exampleBotInfo, newBotCallback }: Props = $props();
 
+	let isLoading = $state(false);
+
 	async function makeNewPlayer(rawWasm: Uint8Array) {
-		const uipd = UIPlayerData.makingNewPlayer(gameState.world!);
+		const uipd = new UIPlayerData();
 		const rngSeed = gameState.world!.rng.randInt(0, Number.MAX_SAFE_INTEGER);
 		const coord = new WasmCoordinator(uipd.playerObject, uipd.selfLog, rngSeed, rawWasm);
 		await uipd.playerObject.init(coord);
@@ -23,6 +26,7 @@
 	}
 
 	async function handleExampleBotSelect(evt: Event) {
+		isLoading = true;
 		const fpath = `$rsc/../example_bots/${(evt.target as HTMLSelectElement).value}`;
 		const wasmBytes = await Loader.readBinaryFile(fpath);
 		await makeNewPlayer(wasmBytes);
@@ -30,18 +34,23 @@
 
 	let botSelector: HTMLSelectElement;
 	function resetUI() {
+		isLoading = false;
 		botSelector.value = "blank";
 	}
 </script>
 
 
 <div class="botSlot">
+	{#if isLoading}
+		<Spinner />
+	{/if}
 	<div class="slotNumber">#{slotIdx}</div>
 	<div class="botLoading">
 		<select
 			class="botSelector"
 			onchange={handleExampleBotSelect}
 			bind:this={botSelector}
+			disabled={isLoading}
 		>
 			<option disabled selected value="blank">— Example Bots —</option>
 			{#each Object.entries(exampleBotInfo) as [botFilename, botData]}
@@ -60,7 +69,7 @@
 
 		display: flex;
 		flex-direction: row;
-
+		position: relative;
 	}
 
 	.slotNumber {

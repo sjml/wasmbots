@@ -1,17 +1,17 @@
 ## dev
-* fix the reset functionality
-    * looks like issues related to spawn points not getting shuffled back in
-      * (hmm, they're not returning to their own spawn points? weird.)
-    * probably related: pressing pause when bot is crashed disables all flowcontrol
-    * also: coordinator status never changes to running?
-
-* review [memory notes](./misc.md#memory-thoughts)
+* review [memory thoughts](./misc.md#memory-thoughts)
 
 * UI: 
-    * logs not going to UI again
-        * use the worker's message passing
     * file select or drag and drop for running your own bot
-    * spinners when map or wasm is loading
+    * spinners when map is loading
+
+* map variations
+    * add map parameter to embedded component
+    * figure out an autotiling solution for generated maps
+        * if not too hard, refine generator and make dungeon procedural
+        * https://www.reddit.com/r/roguelikedev/comments/1bg4pp8/how_to_assign_tiles_to_map/
+        * https://www.reddit.com/r/roguelikedev/comments/b13zxk/algorithms_for_determining_which_tile_graphic_to/
+        * https://www.reddit.com/r/gamedev/comments/c0hw9o/autotiling_using_subtiles/
 
 * fix client handshakes in go, rust
   * consider whether to yeet assemblyscript
@@ -25,33 +25,28 @@
       * https://code.visualstudio.com/Docs/editor/debugging#_multitarget-debugging
     * clean the zig server code the heck up
         * would be nice if it could recover from a panic, but not sure what would even happen then
-* botloader not using Loader? (I assume I had a reason, because it *is* imported...)
-* toast messages / notifications
-  * like for player registration failure that right now just prints to console
-* BUG: failed instantiation still adds player to UI
 
-* is `makingNewPlayer` still needed or can we just make it separate?
-
-* map variations
-    * add map parameter to embedded component
 * testing
     * player class
-      * feeding non-wasm byte array
-      * feeding invalid wasm
-      * feeding program that refuses start
-      * feeding program that crashes on setup
-      * passing negative or invalid string length
-* line of sight and vision area
+        * feeding non-wasm byte array
+        * feeding invalid wasm
+        * feeding program that refuses start
+        * feeding program that crashes on setup
+        * passing negative or invalid string length
+    * BUGS: 
+      * failed instantiation still adds player to UI
+        * (maybe that's ok, because we can show errors in the console? just clear it when the game starts in that case.)
+      * pressing pause when bot is crashed disables all flowcontrol
+
 * items, weapons, armor, spells
 * web trainer
   * first UX:
-    * runtime configuration of timeout values (to disable)
-    * add hooks to wasmcoordinator to stop in the middle of a tick until advanced
+    * new coordinator that just stops in the middle of a tick until advanced
     * make a kind of "null bot" that just returns Wait messages
     * flowcontrol needs to know which function to call when pausing, etc. 
     * show game circumstances message on left (editable?), nothing on right
     * TICK
-    * gray out / lock game circumstances, show message received from the program on right
+    * gray out / lock game circumstances, show message received from the module on right
     * pull down menu to choose different message types
   * overlay values -- let bots draw on the screen, but only in the trainer (ignore otherwise)
     * coordinates given relative to spawn point
@@ -59,11 +54,6 @@
     * add/clear text at tile?
   * allow seeding of world (and show seed)
 * build out a few different example bots (./bot_concepts.md)
-
-# procgen
-* https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/
-* figure out how to make visual layer from data w/tiled for procgen
-    * this might be a pain in the ass... 
 
 
 ## polish

@@ -18,11 +18,15 @@
 	let displayLines: LogEntry[] = $state([]);
 	$effect(() => {
 		displayLines = playerUI.consoleLines;
+		deferScroll();
+	});
+	async function deferScroll() {
+		await svelteTick();
 		consoleDiv.scroll({
 			top: consoleDiv.scrollHeight,
 			behavior: "smooth",
 		});
-	});
+	}
 
 	function copyLogs() {
 		const output = playerUI.consoleLines.map(l => l.msg).join("\n");

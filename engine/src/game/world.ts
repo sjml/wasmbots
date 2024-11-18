@@ -96,7 +96,7 @@ export class World extends EventTarget {
 			return;
 		}
 		newPlayer.spawnPoint = loc;
-		newPlayer.location = newPlayer.spawnPoint;
+		newPlayer.location = loc;
 
 		this.players.push(newPlayer);
 
@@ -176,6 +176,9 @@ export class World extends EventTarget {
 		this.rng.shuffle(this.players); // randomize turn order
 
 		this.setState(GameState.Running);
+		for (const p of this.players) {
+			p.coordinator.status = CoordinatorStatus.Running;
+		}
 	}
 
 	stopGame() {
@@ -186,14 +189,7 @@ export class World extends EventTarget {
 		this.setState(GameState.Setup);
 		this._spawnPointDeck.reset();
 		for (const p of this.players) {
-			if (p != null) {
-				p.reset();
-				const loc = this._spawnPointDeck.drawNoReshuffle();
-				if (loc == null) {
-					throw new Error(`Not enough spawn points in map for ${this.players.length} players!`);
-				}
-				p.location = loc;
-			}
+			p?.reset();
 		}
 		this.checkReady();
 		this.emit("worldReset", {});

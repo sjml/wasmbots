@@ -124,8 +124,8 @@ export class WasmGuestProgram extends GuestProgram {
 	instance: WebAssembly.Instance|null;
 	private reservePtr: number;
 
-	constructor(rngSeed: number) {
-		super(rngSeed);
+	constructor(rngSeed: number, logger?: ILogger) {
+		super(rngSeed, logger);
 		this.exports = null;
 		this.instance = null;
 		this.reservePtr = 0;
