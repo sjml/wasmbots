@@ -23,3 +23,5 @@ for lang in "${!langs[@]}"; do
 
 	beschi "${flags[@]}"
 done
+
+./python_tools/env/bin/python ./python_tools/generate_circumstances.py
