@@ -32,11 +32,31 @@
 		await makeNewPlayer(wasmBytes);
 	}
 
+	async function handleFileUpload(file: File|null) {
+		if (file === null) {
+			console.error("Null file passed to upload handler");
+			return;
+		}
+		isLoading = true;
+		const wasmBuffer = await file.arrayBuffer();
+		const wasmBytes = new Uint8Array(wasmBuffer);
+		await makeNewPlayer(wasmBytes);
+	}
+
 	let botSelector: HTMLSelectElement;
+	let uploaderElement: HTMLInputElement;
+	let uploadedFiles: FileList|null = $state(null);
 	function resetUI() {
 		isLoading = false;
 		botSelector.value = "blank";
+		uploaderElement.value = "";
 	}
+	$effect(() => {
+		if (uploadedFiles) {
+			handleFileUpload(uploadedFiles.item(0));
+		}
+	});
+
 </script>
 
 
@@ -57,7 +77,7 @@
 				<option value={botFilename}>{botData.name}</option>
 			{/each}
 		</select>
-		<input type="file" name="botUpload" id="botUpload" disabled>
+		<input type="file" name="botUpload" id="botUpload" bind:files={uploadedFiles} bind:this={uploaderElement} >
 	</div>
 </div>
 

@@ -1,10 +1,6 @@
 ## dev
 * review [memory thoughts](./misc.md#memory-thoughts)
 
-* UI: 
-    * file select or drag and drop for running your own bot
-    * spinners when map is loading
-
 * map variations
     * add map parameter to embedded component
     * figure out an autotiling solution for generated maps

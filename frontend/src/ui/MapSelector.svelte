@@ -10,11 +10,12 @@
 	let dropdown: HTMLDivElement | null = $state(null);
 
 	let selectedMapName: string = $state("");
-	function selectMap(mapName: string) {
+	async function selectMap(mapName: string) {
 		selectedMapName = mapName;
 		selectorVisible = false;
-
-		gameState.world!.setMap(selectedMapName);
+		gameState.mapLoading = true;
+		await gameState.world!.setMap(selectedMapName);
+		gameState.mapLoading = false;
 	}
 
 	function outsideClick(event: MouseEvent) {
