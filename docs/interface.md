@@ -32,13 +32,13 @@ This is the order things happen in getting a module up and running in WasmBots.
     * at the start of the reserve memory should be written exactly 32 bytes of the following information:
         1. a utf-8 encoded string representing the name of the bot; it must be no longer than 26 bytes. If shorter than 26 bytes, the remaining space must be padded with `0`s. 
         2. three unsigned 16-bit integers (2 bytes each, little-endian) representing the bot's version in major.minor.patch format as specified by [semver](https://semver.org)
-4. `receiveGameParams`: before calling this, the host will write the initial game parameters into the reserved memory block from `setup`; they will be at a specified offset passed as an argument. The format is [described in the `gameParameters.json` file](../engine/src/data/gameParameters.json). Note that the initial value it writes is the version of the format, so your program can first check that it's something you understand. 
+4. `receiveGameParams`: before calling this, the host will write the initial game parameters into the reserved memory block from `setup`; they will be at a specified offset passed as an argument. The format is [described in the `messaging.toml` file](../engine/src/data/messaging.toml), in the `InitialParameters` message. Note that the first value it writes is the version of the format, so your program can first check that it's something you understand. 
     * given the circumstances, the bot determines whether it can participate (if it's a game it knows, etc.) and returns a boolean value from the function indicating its readiness. 
 
 Assuming that `receiveGameParameters` returns `true`, the module will be participating in the game and the next call it receives will be a `tick`. 
 
 ## During the Game
 
-The module will get a call to its exported `tick` function. This gets a single parameter that is an offset in the shared memory where the current circumstances begin. The data format for the circumstances is (or someday will be...) [documented in the `circumstances.json` file](../engine/src/data/circumstances.json). They tell you what the state of the world is as your bot currently perceives it. 
+The module will get a call to its exported `tick` function. This gets a single parameter that is an offset in the shared memory where the current circumstances begin. The data format for the circumstances is [documented in the `messaging.toml` file](../engine/src/data/messaging.toml) in the "PresentCircumstances" message. They tell you what the state of the world is as your bot currently perceives it. 
 
 _(Remaining documentation to be written, especially as the data formats actually get fleshed out.)_

@@ -18,9 +18,6 @@
     * does the beschi generator actually work? it's untested...
   * update general library readme
 
-* fix automated circumstances.json to handle enums and arrays
-    * enum: might want to modify beschi to allow protocol to set encoding
-
 * trainer
     * need to figure out debugger attaching to the process; maybe deno can just take a port number and hit it up instead of starting it directly? 
       * set up monorepo as a VS Code workspace? https://code.visualstudio.com/docs/editor/multi-root-workspaces
