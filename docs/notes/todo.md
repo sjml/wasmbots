@@ -1,5 +1,6 @@
 ## dev
 * fix the reset functionality
+    * looks like issues related to spawn points not getting shuffled back in
     * (set player facing on reset while we're at it)
     * probably related: pressing pause when bot is crashed disables all flowcontrol
     * also: coordinator status never changes to running?
@@ -12,8 +13,10 @@
 * UI: 
     * logs not going to UI again
     * file select or drag and drop for running your own bot
-    * button to zoom on particular bot
     * spinners when map or wasm is loading
+
+* fix client handshakes in go, rust
+  * consider whether to yeet assemblyscript
 
 * trainer
     * need to figure out debugger attaching to the process; maybe deno can just take a port number and hit it up instead of starting it directly? 

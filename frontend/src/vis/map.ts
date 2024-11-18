@@ -1,7 +1,11 @@
 import Phaser from "phaser";
 
-import { CoreMsg, WorldMap, type Point } from "wasmbots";
+import { Config, CoreMsg, WorldMap, type Point } from "wasmbots";
 import { type VisPlayer } from "./player";
+import { VisEventBus } from "./events";
+
+const ZOOM_TIME = 750;
+const ZOOM_FUNC = Phaser.Math.Easing.Sine.InOut;
 
 export class VisMap extends Phaser.Scene {
 	worldMap!: WorldMap;
@@ -28,6 +32,17 @@ export class VisMap extends Phaser.Scene {
 		}
 		this._backgroundLayer = tm.createLayer("terrain", tm.tilesets, 0, 0);
 		this._itemLayer = tm.createLayer("items", tm.tilesets, 0, 0);
+
+		VisEventBus.on("zoom-in", (data: {target: VisPlayer}) => {
+			this.cameras.main.pan(data.target.x, data.target.y, ZOOM_TIME, ZOOM_FUNC);
+			this.cameras.main.zoomTo(5.0, ZOOM_TIME, ZOOM_FUNC);
+			this.cameras.main.startFollow(data.target, true);
+		});
+		VisEventBus.on("zoom-out", () => {
+			this.cameras.main.zoomTo(1.0, ZOOM_TIME, ZOOM_FUNC);
+			this.cameras.main.pan(Config.gameWidth / 2, Config.gameHeight / 2, ZOOM_TIME, ZOOM_FUNC);
+			this.cameras.main.stopFollow();
+		});
 	}
 
 	processTerrainChange(location: Point, newTerrain: CoreMsg.TileType) {

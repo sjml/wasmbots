@@ -75,11 +75,34 @@
 		playerList.push(uipd);
 		gameState.world?.registerPlayer(uipd.playerObject);
 	}
+
+	function zoomChangeCallback(slotIdx: number, zoom: boolean) {
+		if (!zoom) {
+			console.log("zooming out");
+			VisEventBus.emit("zoom-out");
+			for (const uipd of playerList) {
+				uipd.isZoomed = false;
+			}
+		}
+		else {
+			for (const [idx, uipd] of playerList.entries()) {
+				if (slotIdx === idx + 1) {
+					console.log("zooming in on", idx + 1);
+					uipd.isZoomed = true;
+					VisEventBus.emit("zoom-in", { target: uipd.visPlayer });
+				}
+				else {
+					console.log("clearing zoom on", idx + 1)
+					uipd.isZoomed = false;
+				}
+			}
+		}
+	}
 </script>
 
 <div class="botList">
 	{#each playerList as _, pidx}
-		<BotSlot slotIdx={pidx+1} bind:playerUI={playerList[pidx]} />
+		<BotSlot slotIdx={pidx+1} bind:playerUI={playerList[pidx]} {zoomChangeCallback} />
 	{/each}
 	{#if gameInSetup && playerList.length < maxPlayersAllowed}
 		<BotSlotLoader slotIdx={playerList.length+1} {exampleBotInfo} {newBotCallback} />

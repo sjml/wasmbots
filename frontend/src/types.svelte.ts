@@ -21,6 +21,7 @@ export class UIPlayerData {
 	playerObject!: Player;
 	consoleLines: LogEntry[] = $state([]);
 	visPlayer: VisPlayer|null = $state(null);
+	isZoomed: boolean = $state(false);
 
 	private constructor() {}
 

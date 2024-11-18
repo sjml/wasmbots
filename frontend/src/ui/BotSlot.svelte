@@ -8,8 +8,9 @@
 	interface Props {
 		playerUI: UIPlayerData;
 		slotIdx: number;
+		zoomChangeCallback: (slotIdx: number, zoom: boolean) => void;
 	}
-	let { playerUI = $bindable(), slotIdx }: Props = $props();
+	let { playerUI = $bindable(), slotIdx, zoomChangeCallback }: Props = $props();
 
 	let consoleExpanded: boolean = $state(false);
 
@@ -36,14 +37,20 @@
 </script>
 
 <div class="botSlot">
-	<div class="slotNumber">#{slotIdx}</div>
-	{#if playerUI.visPlayer !== null }
-		<img
-			src="./rsc/img/kenny_tiny-dungeon_tiles/tile_{String(playerUI.visPlayer.imageIndex).padStart(4, "0")}.png"
-			alt="sprite for player #{slotIdx}"
-			class="playerSprite"
-		>
-	{/if}
+	<button
+		class="botNumberAndSprite"
+		class:zoomed={playerUI.isZoomed}
+		onclick={() => { zoomChangeCallback(slotIdx, !playerUI.isZoomed); }}
+	>
+		<div class="slotNumber">#{slotIdx}</div>
+		{#if playerUI.visPlayer !== null }
+			<img
+				src="./rsc/img/kenny_tiny-dungeon_tiles/tile_{String(playerUI.visPlayer.imageIndex).padStart(4, "0")}.png"
+				alt="sprite for player #{slotIdx}"
+				class="playerSprite"
+			>
+		{/if}
+	</button>
 	<div class="botStuffs">
 		<div class="botInfo">
 			<div class="name">
@@ -84,6 +91,20 @@
 
 		display: flex;
 		flex-direction: row;
+	}
+
+	.botNumberAndSprite {
+		display: flex;
+		cursor: zoom-in;
+
+		border: none;
+		background-color: #00000000;
+		color: white;
+	}
+
+	.botNumberAndSprite.zoomed {
+		background-color: rgb(31, 75, 73);
+		cursor: zoom-out;
 	}
 
 	.slotNumber {
