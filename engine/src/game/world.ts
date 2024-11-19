@@ -185,11 +185,11 @@ export class World extends EventTarget {
 		this.setState(GameState.Shutdown);
 	}
 
-	resetGame() {
+	async resetGame() {
 		this.setState(GameState.Setup);
 		this._spawnPointDeck.reset();
 		for (const p of this.players) {
-			p?.reset();
+			await p?.reset();
 		}
 		this.checkReady();
 		this.emit("worldReset", {});

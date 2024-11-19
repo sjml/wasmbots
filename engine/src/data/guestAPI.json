@@ -63,7 +63,7 @@
 			"wasmReturn": null
 		},
 		"getRandomInt": {
-			"doc": "gets a random 32-bit integer from the engine's PRNG; handy since you might otherwise not have a source of entropy to seed your own. If max < min, will return 0.",
+			"doc": "gets a random 32-bit integer from the engine's PRNG; handy since you might otherwise not have a source of entropy to seed your own. If max <= min, will return min.",
 			"paramsDoc": ["minimum value (inclusive)", "maximum value (exclusive)"],
 			"returnDoc": "a random integer in the range",
 			"sourceParams": ["i32", "i32"],

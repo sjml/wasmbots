@@ -147,8 +147,8 @@ export class WasmGuestProgram extends GuestProgram {
 						this.log(logLevel, msgPtr, msgLen);
 					},
 					getRandomInt: (min: number, max: number) => {
-						if (max < min) {
-							return 0;
+						if (max <= min) {
+							return min;
 						}
 						return this.localRng.randInt(min, max);
 					},

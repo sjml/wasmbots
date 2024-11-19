@@ -109,7 +109,7 @@
 	}
 
 	async function resetGame() {
-		gameState.world?.resetGame();
+		await gameState.world?.resetGame();
 	}
 
 	async function haltGame() {

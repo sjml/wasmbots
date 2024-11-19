@@ -78,7 +78,6 @@
 
 	function zoomChangeCallback(slotIdx: number, zoom: boolean) {
 		if (!zoom) {
-			console.log("zooming out");
 			VisEventBus.emit("zoom-out");
 			for (const uipd of playerList) {
 				uipd.isZoomed = false;
@@ -87,12 +86,10 @@
 		else {
 			for (const [idx, uipd] of playerList.entries()) {
 				if (slotIdx === idx + 1) {
-					console.log("zooming in on", idx + 1);
 					uipd.isZoomed = true;
 					VisEventBus.emit("zoom-in", { target: uipd.visPlayer });
 				}
 				else {
-					console.log("clearing zoom on", idx + 1)
 					uipd.isZoomed = false;
 				}
 			}
