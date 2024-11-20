@@ -93,10 +93,10 @@ export class RNG {
 			return [];
 		}
 		const subset: T[] = array.slice();
+		this.shuffle(subset);
 		if (count >= array.length) {
 			return subset;
 		}
-		this.shuffle(subset);
 		return subset.slice(0, count);
 	}
 
