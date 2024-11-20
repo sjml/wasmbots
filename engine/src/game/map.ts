@@ -194,7 +194,7 @@ export class WorldMap {
 					return "@";
 				}
 				switch (t.terrainType) {
-					case TerrainTileType.Empty:
+					case TerrainTileType.Floor:
 						return ".";
 					case TerrainTileType.Void:
 						return " ";

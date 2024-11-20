@@ -104,7 +104,7 @@ fn updateMaps(circs: *const msg.PresentCircumstances) !void {
                 continue;
             }
             try mapping.put(location, value);
-            if ((value == msg.TileType.Empty or value == msg.TileType.OpenDoor) and !visited.contains(location)) {
+            if ((value == msg.TileType.Floor or value == msg.TileType.OpenDoor) and !visited.contains(location)) {
                 try unvisited.put(location, {});
             }
 

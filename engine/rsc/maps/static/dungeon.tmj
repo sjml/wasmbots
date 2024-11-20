@@ -187,7 +187,7 @@
          "tiles":[
                 {
                  "id":0,
-                 "type":"Terrain.Empty"
+                 "type":"Terrain.Floor"
                 },
                 {
                  "id":1,

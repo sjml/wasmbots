@@ -286,7 +286,7 @@
                 },
                 {
                  "id":30,
-                 "type":"Terrain.Empty"
+                 "type":"Terrain.Floor"
                 },
                 {
                  "id":31,
@@ -307,15 +307,15 @@
                 {
                  "id":42,
                  "probability":0.00800000037997961,
-                 "type":"Terrain.Empty"
+                 "type":"Terrain.Floor"
                 },
                 {
                  "id":43,
-                 "type":"Terrain.Empty"
+                 "type":"Terrain.Floor"
                 },
                 {
                  "id":44,
-                 "type":"Terrain.Empty"
+                 "type":"Terrain.Floor"
                 },
                 {
                  "id":45,
@@ -331,29 +331,29 @@
                 },
                 {
                  "id":48,
-                 "type":"Terrain.Empty"
+                 "type":"Terrain.Floor"
                 },
                 {
                  "id":49,
                  "probability":0.0199999995529652,
-                 "type":"Terrain.Empty"
+                 "type":"Terrain.Floor"
                 },
                 {
                  "id":50,
-                 "type":"Terrain.Empty"
+                 "type":"Terrain.Floor"
                 },
                 {
                  "id":51,
                  "probability":0.150000005960464,
-                 "type":"Terrain.Empty"
+                 "type":"Terrain.Floor"
                 },
                 {
                  "id":52,
-                 "type":"Terrain.Empty"
+                 "type":"Terrain.Floor"
                 },
                 {
                  "id":53,
-                 "type":"Terrain.Empty"
+                 "type":"Terrain.Floor"
                 },
                 {
                  "id":57,

@@ -45,7 +45,7 @@ _values = [
 _name = "TileType"
 _values = [
     "Void",        # you don't know what's there; might be off the edge of the map, or maybe just behind a wall
-    "Empty",       # an open space you can move to
+    "Floor",       # an open space you can move to
     "OpenDoor",    # a door space that you can pass through or take a turn to target with Close
     "ClosedDoor",  # an impassible door space that you can take a turn to target with Open
     "Wall",        # an impassible space
@@ -321,7 +321,7 @@ export enum MoveResult {
 
 export enum TileType {
 	Void = 0,
-	Empty = 1,
+	Floor = 1,
 	OpenDoor = 2,
 	ClosedDoor = 3,
 	Wall = 4,

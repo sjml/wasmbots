@@ -162,7 +162,7 @@ const roomExtraSize = 0;
 const windingPercent = 0;
 
 function generate(mapWidth: number, mapHeight: number, rng?: RNG): Array2D<TileType> {
-	function carve(pos: Point, t: TileType = TileType.Empty) {
+	function carve(pos: Point, t: TileType = TileType.Floor) {
 		_tiles.set(pos, t);
 		_regions.set(pos, currentRegion);
 	}
@@ -177,7 +177,7 @@ function generate(mapWidth: number, mapHeight: number, rng?: RNG): Array2D<TileT
 
 	function addJunction(pos: Point) {
 		if (rng!.oneIn(4)) {
-			_tiles.set(pos, rng!.oneIn(3) ? TileType.OpenDoor : TileType.Empty);
+			_tiles.set(pos, rng!.oneIn(3) ? TileType.OpenDoor : TileType.Floor);
 		}
 		else {
 			_tiles.set(pos, TileType.ClosedDoor);
@@ -415,7 +415,7 @@ const templateData = JSON.parse(templateJson);
 templateData.width = world.width;
 templateData.height = world.height;
 
-templateData.layers[0].data = world.entries.flat().map(t => (t as number) + 1);
+templateData.layers[0].data = world.entries.flat().map(t => (t as number));
 templateData.layers[0].width = world.width;
 templateData.layers[0].height = world.height;
 

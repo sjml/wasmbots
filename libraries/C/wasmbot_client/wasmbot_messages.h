@@ -47,7 +47,7 @@ _values = [
 _name = "TileType"
 _values = [
     "Void",        # you don't know what's there; might be off the edge of the map, or maybe just behind a wall
-    "Empty",       # an open space you can move to
+    "Floor",       # an open space you can move to
     "OpenDoor",    # a door space that you can pass through or take a turn to target with Close
     "ClosedDoor",  # an impassible door space that you can take a turn to target with Open
     "Wall",        # an impassible space
@@ -195,7 +195,7 @@ bool WasmBots_IsValidMoveResult(uint8_t value);
 
 typedef enum WasmBots_TileType {
 	WasmBots_TileType_Void = 0,
-	WasmBots_TileType_Empty = 1,
+	WasmBots_TileType_Floor = 1,
 	WasmBots_TileType_OpenDoor = 2,
 	WasmBots_TileType_ClosedDoor = 3,
 	WasmBots_TileType_Wall = 4
@@ -854,7 +854,7 @@ bool WasmBots_IsValidMoveResult(uint8_t value) {
 bool WasmBots_IsValidTileType(uint8_t value) {
 	switch (value) {
 		case WasmBots_TileType_Void:
-		case WasmBots_TileType_Empty:
+		case WasmBots_TileType_Floor:
 		case WasmBots_TileType_OpenDoor:
 		case WasmBots_TileType_ClosedDoor:
 		case WasmBots_TileType_Wall:
