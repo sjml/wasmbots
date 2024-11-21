@@ -13,7 +13,11 @@ export class VisBootloader extends Phaser.Scene {
 		this.setLoadEvents();
 		this.load.setPath(Loader.getRscPath());
 
-		this.load.spritesheet("tiles-dungeon", "img/kenny_tiny-dungeon_tilemap.png", {
+		this.load.spritesheet("tiles-dungeon", "img/Dungeon_Tileset.png", {
+			frameWidth: 16,
+			frameHeight: 16,
+		});
+		this.load.spritesheet("tiles-kenny", "img/kenny_tiny-dungeon_tilemap.png", {
 			frameWidth: 16,
 			frameHeight: 16,
 		});

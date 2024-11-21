@@ -1,13 +1,24 @@
 ## dev
 * review [memory thoughts](./misc.md#memory-thoughts)
 
+* painting
+    * clutter
+
 * map variations
+    * first some general cleanup
+        * combine the color tilesets into 1
+        * change bootloader to only pull used tilesets (will have to iterate over supported levels)
+    * fix arena to use new map style
+    * integrate generator and painter, or at least have them as phases of a single generate process
+    * generator:
+        * add roomIndex to tiles
+        * seed with specific spawn rooms, pushed to the corners
+            * alternate layout: all spawn in the same central room, goal is in one of the corners?
+                * "**_GOAL?_** What's that?!"
+        * (need to make sure spawn rooms don't get filled in?)
+    * painter:
+        * read logical values from generator and make tiled map from there
     * add map parameter to embedded component
-    * figure out an autotiling solution for generated maps
-        * if not too hard, refine generator and make dungeon procedural
-        * https://www.reddit.com/r/roguelikedev/comments/1bg4pp8/how_to_assign_tiles_to_map/
-        * https://www.reddit.com/r/roguelikedev/comments/b13zxk/algorithms_for_determining_which_tile_graphic_to/
-        * https://www.reddit.com/r/gamedev/comments/c0hw9o/autotiling_using_subtiles/
 
 * fix client handshakes in go, rust
   * consider whether to yeet assemblyscript
@@ -34,7 +45,11 @@
         * (maybe that's ok, because we can show errors in the console? just clear it when the game starts in that case.)
       * pressing pause when bot is crashed disables all flowcontrol
 
-* items, weapons, armor, spells
+* game
+    * items, weapons, armor(?), spells
+    * trapdoors with tunnels, teleporters
+    * traps? 
+
 * web trainer
   * first UX:
     * new coordinator that just stops in the middle of a tick until advanced
@@ -62,7 +77,7 @@
   * single executable that hosts webpage
     * https://github.com/NfNitLoop/deno-embedder
     * or maybe move to bun? :-/
-    * or Go exe that runs server hosting frontend built with special flags
+    * or Go exe that runs server hosting a frontend that is built with special flags
 * CI to build/validate/deploy
 
 
@@ -82,3 +97,7 @@
 
 ## far-flung future
 * allow teams? hooboy, whole other layer of functionality
+* if/when this PR ships, push more data stuff into the tileset
+    * https://github.com/mapeditor/tiled/pull/4045
+    * classes, etc. could be done now, but don't want to overcommit until there's support for lists (https://github.com/mapeditor/tiled/pull/4002)
+    * then can use that to set wang tile matching, etc. 

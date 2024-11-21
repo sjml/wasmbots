@@ -9,8 +9,9 @@ const ZOOM_FUNC = Phaser.Math.Easing.Sine.InOut;
 
 export class VisMap extends Phaser.Scene {
 	worldMap!: WorldMap;
-	private _backgroundLayer: Phaser.Tilemaps.TilemapLayer | null = null;
-	private _itemLayer: Phaser.Tilemaps.TilemapLayer | null = null;
+	private _tilemap: Phaser.Tilemaps.Tilemap | null = null;
+	private _groundLayer: Phaser.Tilemaps.TilemapLayer | null = null;
+	private _wallsLayer: Phaser.Tilemaps.TilemapLayer | null = null;
 	playerList: Set<VisPlayer> = new Set();
 
 	private constructor(key: string) {
@@ -26,12 +27,12 @@ export class VisMap extends Phaser.Scene {
 	preload() {}
 
 	create() {
-		const tm = this.make.tilemap({key: `map-${this.worldMap.name}`});
-		for (const tsObj of tm.tilesets) {
-			tm.addTilesetImage(tsObj.name, `tiles-${tsObj.name}`);
+		this._tilemap = this.make.tilemap({key: `map-${this.worldMap.name}`});
+		for (const tsObj of this._tilemap.tilesets) {
+			this._tilemap.addTilesetImage(tsObj.name, `tiles-${tsObj.name}`);
 		}
-		this._backgroundLayer = tm.createLayer("terrain", tm.tilesets, 0, 0);
-		this._itemLayer = tm.createLayer("items", tm.tilesets, 0, 0);
+		this._groundLayer = this._tilemap.createLayer("ground", this._tilemap.tilesets, 0, 0);
+		this._wallsLayer = this._tilemap.createLayer("walls", this._tilemap.tilesets, 0, 0);
 
 		this.cameras.main.setBounds(0, 0, Config.gameWidth, Config.gameHeight);
 
@@ -71,14 +72,32 @@ export class VisMap extends Phaser.Scene {
 	}
 
 	processTerrainChange(location: Point, newTerrain: CoreMsg.TileType) {
-		const candidates = this.worldMap.terrainIndexLookup.get(newTerrain);
-		if (candidates === undefined) {
-			throw new Error(`Cannot change ${location} to terrain ${newTerrain}; does not exist in map.`);
+		// TODO: generalize this a bit (maybe pre-process at load) if we're going to lean into putting data in the tileset
+		function getProperty(t: Phaser.Tilemaps.Tile, property: string): number|null {
+			if (t.properties === undefined) {
+				return null;
+			}
+			for (const [key, value] of Object.entries(t.properties)) {
+				if (key === property) {
+					return value as number;
+				}
+			}
+			return null;
 		}
-		if (candidates.length === 0) {
-			throw new Error(`Cannot change ${location} to terrain ${newTerrain}; no candidates.`);
+
+		const currentTile = this._wallsLayer!.getTileAt(location.x, location.y);
+		let nextIndex: number = -1;
+		if (newTerrain === CoreMsg.TileType.OpenDoor) {
+			nextIndex = getProperty(currentTile, "openPairIndex") as number;
 		}
-		this._backgroundLayer?.putTileAt(candidates[0], location.x, location.y);
+		else if (newTerrain === CoreMsg.TileType.ClosedDoor) {
+			nextIndex = getProperty(currentTile, "closePairIndex") as number;
+		}
+		else {
+			throw new Error("Changing non-door terrain!"); // maybe someday, but not today
+		}
+		nextIndex += currentTile.tileset!.firstgid;
+		this._wallsLayer!.putTileAt(nextIndex, location.x, location.y);
 	}
 
 	update() {

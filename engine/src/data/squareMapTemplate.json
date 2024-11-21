@@ -42,19 +42,19 @@
 			"tiles": [
 				{
 					"id": 0,
-					"type": "Empty"
+					"type": "Terrain.Floor"
 				},
 				{
 					"id": 1,
-					"type": "OpenDoor"
+					"type": "Terrain.OpenDoor"
 				},
 				{
 					"id": 2,
-					"type": "ClosedDoor"
+					"type": "Terrain.ClosedDoor"
 				},
 				{
 					"id": 3,
-					"type": "Wall"
+					"type": "Terrain.Wall"
 				}
 			]
 		}

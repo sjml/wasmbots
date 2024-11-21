@@ -26,7 +26,7 @@ export class VisPlayer extends Phaser.GameObjects.Sprite {
 		super(
 			mapScene,
 			playerObject.location.x * Config.tileSize, playerObject.location.y * Config.tileSize,
-			"tiles-dungeon", imageIndex
+			"tiles-kenny", imageIndex
 		);
 		this.playerObject = playerObject;
 		this.tilePosition = playerObject.location;

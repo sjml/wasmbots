@@ -43,7 +43,6 @@ export class WorldMap {
 	spawnPoints: Point[] = [];
 	minPlayers: number = 1;
 	maxPlayers: number = 1;
-	terrainIndexLookup: Map<TerrainTileType, number[]> = new Map();
 
 	static async loadTiled(mapName: string): Promise<WorldMap> {
 		const newMap = new WorldMap();
@@ -55,6 +54,9 @@ export class WorldMap {
 		for (const tsd of rawMapData.tilesets) {
 			const tileData: Map<number, TileRecord> = new Map();
 			for (const td of tsd.tiles) {
+				if (td.type === undefined) {
+					continue; // nothing special here
+				}
 				const [genus, species] = td.type.split(".");
 				if (species === undefined) {
 					continue; // not one of ours
@@ -66,11 +68,6 @@ export class WorldMap {
 							throw new Error(`Invalid tile type: ${td.type}`);
 						}
 						tileData.set(td.id, { terrain });
-						const gid = tsd.firstgid + td.id;
-						if (!newMap.terrainIndexLookup.has(terrain)) {
-							newMap.terrainIndexLookup.set(terrain, []);
-						}
-						newMap.terrainIndexLookup.get(terrain)!.push(gid);
 						continue;
 					case "Meta":
 						const meta = stringToNumericEnum(MetaTileType, species);
@@ -127,7 +124,7 @@ export class WorldMap {
 				const tr = lookupTile(t);
 
 				if (tr.terrain === undefined) {
-					throw new Error("Non-terrain tile in terrain layer");
+					throw new Error(`Non-terrain tile in terrain layer: ${tr.terrain} at (${x}, ${y})`);
 				}
 				newMap.tiles[y][x].terrainType = tr.terrain;
 			}
