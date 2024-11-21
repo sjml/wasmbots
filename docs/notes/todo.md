@@ -1,9 +1,6 @@
 ## dev
 * review [memory thoughts](./misc.md#memory-thoughts)
 
-* painting
-    * clutter
-
 * map variations
     * first some general cleanup
         * combine the color tilesets into 1
@@ -69,6 +66,9 @@
 
 ## polish
 * clean up / organize Zig library; just kind of a mess right now
+* Visuals: clutter / lighting pass on rendering
+    * light following player showing sphere of awarenss? 
+    * kind of a pain with Phaser; also wouldn't easily reflect actual FOV
 * UI: landscape view on iPhone - the drawers don't extend into the island areas
 * Tech: ability to reseed player on reset
 * Trainer:

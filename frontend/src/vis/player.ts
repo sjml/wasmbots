@@ -39,6 +39,7 @@ export class VisPlayer extends Phaser.GameObjects.Sprite {
 		});
 
 		mapScene.addPlayer(this);
+		this.active = true;
 	}
 
 	resetFacing() {
@@ -59,7 +60,7 @@ export class VisPlayer extends Phaser.GameObjects.Sprite {
 		}
 	}
 
-	update() {
+	preUpdate() {
 		if (   this.tilePosition.x != this.playerObject.location.x
 			|| this.tilePosition.y != this.playerObject.location.y
 		) {

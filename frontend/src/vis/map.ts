@@ -12,7 +12,6 @@ export class VisMap extends Phaser.Scene {
 	private _tilemap: Phaser.Tilemaps.Tilemap | null = null;
 	private _groundLayer: Phaser.Tilemaps.TilemapLayer | null = null;
 	private _wallsLayer: Phaser.Tilemaps.TilemapLayer | null = null;
-	playerList: Set<VisPlayer> = new Set();
 
 	private constructor(key: string) {
 		super(key);
@@ -100,18 +99,7 @@ export class VisMap extends Phaser.Scene {
 		this._wallsLayer!.putTileAt(nextIndex, location.x, location.y);
 	}
 
-	update() {
-		for (const p of this.playerList) {
-			if (p.update) {
-				p.update();
-			}
-		}
-	}
-
 	addPlayer(p: VisPlayer) {
-		this.playerList.add(p);
 		this.add.existing(p);
-
-		p.once("destroy", () => {this.playerList.delete(p)});
 	}
 }
