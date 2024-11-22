@@ -42,6 +42,10 @@ export class RNG {
 		this._rng = prand.xoroshiro128plus(this._seed);
 	}
 
+	get seed(): number {
+		return this._seed;
+	}
+
 	randInt(min: number, max: number) {
 		if (min >= max) {
 		  throw new Error(`${min} is not less than ${max}!`);

@@ -187,9 +187,6 @@ export class WorldMap {
 	static debugDrawSlice(slice: Tile[][]) {
 		for (let y = 0; y < slice.length; y++) {
 			console.log(slice[y].map((t, x) => {
-				if (y == Math.floor(slice.length / 2) && (x == Math.floor(slice[0].length / 2))) {
-					return "@";
-				}
 				switch (t.terrainType) {
 					case TerrainTileType.Floor:
 						return ".";

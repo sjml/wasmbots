@@ -127,6 +127,10 @@ export interface Point {
 	y: number;
 }
 
+export function manhattanDistance(a: Point, b: Point): number {
+	return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+}
+
 export class Fraction {
 	numerator: number;
 	denominator: number;
@@ -195,4 +199,99 @@ export function roundTiesUp(n: number): number {
 
 export function roundTiesDown(n: number): number {
 	return Math.ceil(n - 0.5);
+}
+
+export class Array2D<T> {
+	entries: T[][] = [];
+	private _width: number = 0;
+	private _height: number = 0;
+
+	constructor(width: number, height: number, fill: T) {
+		this.entries = Array.from({ length: height }, () =>
+			Array.from({ length: width }, () => fill)
+		);
+		this._width = width;
+		this._height = height;
+	}
+
+	get width(): number {
+		return this._width;
+	}
+
+	get height(): number {
+		return this._height;
+	}
+
+	get(pos: Point): T {
+		return this.entries[pos.y][pos.x];
+	}
+
+	set(pos: Point, val: T) {
+		this.entries[pos.y][pos.x] = val;
+	}
+}
+
+export class Rect {
+	readonly x: number = 0;
+	readonly y: number = 0;
+	readonly width: number = 0;
+	readonly height: number = 0;
+	readonly top: number;
+	readonly right: number;
+	readonly bottom: number;
+	readonly left: number;
+
+	constructor(x: number, y: number, width: number, height: number) {
+		this.x = x;
+		this.y = y;
+		this.width = width;
+		this.height = height;
+		this.top = y;
+		this.right = x + width;
+		this.bottom = y + height;
+		this.left = x;
+	}
+
+	toString(): string {
+		return `[x: ${this.x}, y: ${this.y}; w: ${this.width}, h: ${this.height}]`;
+	}
+
+	overlaps(other: Rect): boolean {
+		if (this.right <= other.x || other.right <= this.left) {
+			return false;
+		}
+		if (this.bottom <= other.top || other.bottom <= this.top) {
+			return false;
+		}
+		return true;
+	}
+
+	contains(pt: Point): boolean {
+		if (
+			   (pt.x < this.left)
+			|| (pt.y < this.top)
+			|| (pt.x >= this.right)
+			|| (pt.y >= this.bottom)
+		) {
+			return false;
+		}
+		return true;
+	}
+
+	inflate(delta: number): Rect {
+		return new Rect(
+			this.x - delta,
+			this.y - delta,
+			this.width  + (delta * 2),
+			this.height + (delta * 2),
+		);
+	}
+
+	*squares(): Generator<Point> {
+		for (let y = this.y; y < this.y + this.height; y++) {
+			for (let x = this.x; x < this.x + this.width; x++) {
+				yield {x, y};
+			}
+		}
+	}
 }

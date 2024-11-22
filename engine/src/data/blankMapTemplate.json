@@ -1,0 +1,52 @@
+{
+	"version": "1.10",
+	"type": "map",
+	"compressionlevel": -1,
+	"width": 0,
+	"height": 0,
+	"tilewidth": 16,
+	"tileheight": 16,
+	"orientation": "orthogonal",
+	"renderorder": "right-down",
+	"infinite": false,
+	"layers": [],
+	"nextobjectid": 1,
+	"nextlayerid": 6,
+	"tiledversion": "1.11.0",
+	"tilesets": [
+		{
+			"name": "Abstract",
+			"columns": 4,
+			"firstgid": 1,
+			"image": "../../img/colors.png",
+			"imageheight": 16,
+			"imagewidth": 64,
+			"margin": 0,
+			"spacing": 0,
+			"tilecount": 4,
+			"tileheight": 16,
+			"tilewidth": 16,
+			"tiles":[
+        {
+         "id":0,
+         "type":"Terrain.Floor"
+        },
+        {
+         "id":1,
+         "type":"Terrain.OpenDoor"
+        },
+        {
+         "id":2,
+         "type":"Terrain.ClosedDoor"
+        },
+        {
+         "id":3,
+         "type":"Terrain.Wall"
+        },
+        {
+         "id":8,
+         "type":"Meta.SpawnPoint"
+        }]
+		}
+	]
+}

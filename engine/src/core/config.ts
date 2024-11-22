@@ -12,6 +12,7 @@ const config = {
 	memorySize: 2048,
 	writeBlockOffset: 1024,
 	minimumNameLength: 4,
+	asyncReset: true,
 
 	// GameParameters
 	startingHitPoints: 10,
