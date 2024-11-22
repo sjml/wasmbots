@@ -7,6 +7,7 @@ import {
 } from "../core/math.ts";
 import { RNG } from "../game/random.ts";
 import { TileType } from "../core/messages.ts";
+import { MapPainter } from "./painter.ts";
 
 import rawMapTemplate from "../data/blankMapTemplate.json" with { type: "json" };
 const mapTemplate = rawMapTemplate as typeof rawMapTemplate & { layers: any[] };
@@ -29,12 +30,9 @@ export abstract class MapBuilder {
 		console.log(`generating with seed {${this.rng.seed}}...`);
 	}
 
-	abstract generate(width: number, height: number): Array2D<TileType>;
+	abstract generate(width: number, height: number): void;
 
-	toTiledJSON(pretty?: boolean): string {
-		if (pretty === undefined) {
-			pretty = true;
-		}
+	toTiled(): any {
 		const templateData = structuredClone(mapTemplate);
 
 		templateData.width = this.tiles.width;
@@ -69,25 +67,26 @@ export abstract class MapBuilder {
 		metaLayer.id = templateData.layers.length + 1;
 		templateData.layers.push(metaLayer);
 
+		return templateData;
+	}
 
-		if (pretty) {
-			let outputJson = JSON.stringify(templateData, null, 2);
-			outputJson = outputJson.replaceAll(/"data": \[([^\]]+)\]/mg, (_, content: string) => {
-				const items = content.split(/,\s*/);
+	toJSON(): string {
+		const templateData = this.toTiled();
+		let outputJson = JSON.stringify(templateData, null, 2);
+		outputJson = outputJson.replaceAll(/"data": \[([^\]]+)\]/mg, (_, content: string) => {
+			const items = content.split(/,\s*/);
 
-				const wrapped = items.reduce((acc: string[][], item: string, idx: number) => {
-					if (idx % world.width == 0) {
-						acc.push([]);
-					}
-					acc[acc.length - 1].push(item.trim());
-					return acc;
-				}, []).map(row => `        ${row.join(", ")}`);
+			const wrapped = items.reduce((acc: string[][], item: string, idx: number) => {
+				if (idx % this.tiles.width == 0) {
+					acc.push([]);
+				}
+				acc[acc.length - 1].push(item.trim());
+				return acc;
+			}, []).map(row => `        ${row.join(", ")}`);
 
-				return `"data": [\n${wrapped.join(",\n")}\n      ]`;
-			});
-			return outputJson;
-		}
-		return JSON.stringify(templateData);
+			return `"data": [\n${wrapped.join(",\n")}\n      ]`;
+		});
+		return outputJson;
 	}
 }
 
@@ -140,7 +139,7 @@ export class DungeonBuilder extends MapBuilder {
 		Object.assign(this.opts, options || {});
 	}
 
-	generate(width: number, height: number, seedRooms?: DungeonRoomSpec[]): Array2D<TileType> {
+	generate(width: number, height: number, seedRooms?: DungeonRoomSpec[]) {
 		const originalWidth = width;
 		const originalHeight = height;
 
@@ -181,8 +180,6 @@ export class DungeonBuilder extends MapBuilder {
 		this.connectRegions();
 		this.removeDeadEnds();
 		this.fixDimensions(originalWidth, originalHeight);
-
-		return this.tiles;
 	}
 
 	addRoom(room: DungeonRoomSpec) {
@@ -437,8 +434,8 @@ if (Deno.args.length == 0) {
 	Deno.exit(1);
 }
 
-const builder = new DungeonBuilder({rng: new RNG(760086084)});
-const world = builder.generate(63, 39, [
+const builder = new DungeonBuilder();
+builder.generate(63, 39, [
 	{
 		id: "spawnRoom1",
 		rect: new Rect(1, 1, 3, 3),
@@ -473,6 +470,10 @@ const world = builder.generate(63, 39, [
 	},
 ]);
 
-Deno.writeTextFileSync(Deno.args[0], builder.toTiledJSON());
+const painter = new MapPainter(builder.toTiled(), builder.rng);
+// const tileset = JSON.parse(Deno.readTextFileSync("./engine/rsc/maps/tilesets/dungeon_tiles.tsj"));
+const tileset = JSON.parse(Deno.readTextFileSync("../../rsc/maps/tilesets/dungeon_tiles.tsj"));
 
-// see how this paints: 760086084
+painter.paint(tileset);
+
+Deno.writeTextFileSync(Deno.args[0], painter.toJSON());

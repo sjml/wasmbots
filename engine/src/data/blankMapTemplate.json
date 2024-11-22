@@ -23,7 +23,7 @@
 			"imagewidth": 64,
 			"margin": 0,
 			"spacing": 0,
-			"tilecount": 4,
+			"tilecount": 16,
 			"tileheight": 16,
 			"tilewidth": 16,
 			"tiles":[

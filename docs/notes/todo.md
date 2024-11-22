@@ -3,20 +3,12 @@
 
 * map variations
     * first some general cleanup
-        * combine the color tilesets into 1
         * change bootloader to only pull used tilesets (will have to iterate over supported levels)
     * fix arena to use new map style
-    * integrate generator and painter, or at least have them as phases of a single generate process
     * generator:
         * add roomIndex to tiles
         * make builder pull from the TSJ file instead of hardcoding it in the template
-        * seed with specific spawn rooms, pushed to the corners
-            * alternate layout: all spawn in the same central room, goal is in one of the corners?
-                * "**_GOAL?_** What's that?!"
-        * (need to make sure spawn rooms don't get filled in?)
-    * make "AOC" output from map class
-    * painter:
-        * read logical values from generator and make tiled map from there
+        * worth making the visuals one group?
     * add map parameter to embedded component
 
 * fix client handshakes in go, rust
