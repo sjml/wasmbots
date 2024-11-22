@@ -1,3 +1,18 @@
+import config from "./config.ts";
+
+export function getGitRevision(): string {
+	if (config.environment == "Deno") {
+		const process = new Deno.Command("git", {
+			args: ["rev-parse", "HEAD"],
+			stdout: "piped",
+		});
+		const { stdout } = process.outputSync();
+		return new TextDecoder().decode(stdout).trim();
+	}
+	// @ts-ignore
+	return __GIT_REVISION__;
+}
+
 export async function sleep(ms: number): Promise<void> {
 	return new Promise(resolve => setTimeout(resolve, ms));
 }

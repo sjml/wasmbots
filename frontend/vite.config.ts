@@ -1,5 +1,6 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
+import { execSync } from 'child_process';
 
 export default defineConfig({
 	plugins: [sveltekit()],
@@ -18,5 +19,6 @@ export default defineConfig({
 	define: {
 		'__RSC_PATH__': process.argv.includes('dev') ? `'/rsc'` : `'/projects/wasmbots/rsc'`,
 		'__IIFE_BUILD__': 'false',
+		'__GIT_REVISION__': `'${execSync('git rev-parse HEAD').toString().trim()}'`,
 	}
 });

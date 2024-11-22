@@ -8,6 +8,7 @@ import {
 import { RNG } from "../game/random.ts";
 import { TileType } from "../core/messages.ts";
 import { MapPainter } from "./painter.ts";
+import { getGitRevision } from "../core/util.ts";
 
 import rawMapTemplate from "../data/blankMapTemplate.json" with { type: "json" };
 const mapTemplate = rawMapTemplate as typeof rawMapTemplate & { layers: any[] };
@@ -34,6 +35,18 @@ export abstract class MapBuilder {
 
 	toTiled(): any {
 		const templateData = structuredClone(mapTemplate);
+
+		templateData.properties = [] as any[];
+		templateData.properties.push({
+			name: "gitRevision",
+			type: "string",
+			value: getGitRevision(),
+		});
+		templateData.properties.push({
+			name: "generationSeed",
+			type: "string",
+			value: this.rng.seed.toString(),
+		});
 
 		templateData.width = this.tiles.width;
 		templateData.height = this.tiles.height;
