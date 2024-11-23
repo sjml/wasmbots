@@ -7,7 +7,7 @@
 //   just doing enough work to have it look not *utter* garbage
 
 import { RNG } from "../game/random.ts";
-import { Point } from "../core/math.ts";
+import { type Point } from "../core/math.ts";
 import { TileType } from "../core/messages.ts";
 
 
@@ -34,7 +34,7 @@ const layerTemplate = {
 export class MapPainter {
 	map: any;
 	tileset: any;
-	wangBagLookup: Map<number, TileBag>;
+	wangBagLookup!: Map<number, TileBag>;
 	rng: RNG;
 
 	constructor(map: any, rng?: RNG) {
@@ -109,7 +109,7 @@ export class MapPainter {
 						}
 					}
 					else {
-						throw new Error(`Door in unexpected location! (${x}, ${y})`);
+						throw new Error(`Door in unexpected location! (${x}, ${y}), mask is ${mask}`);
 					}
 				}
 				else {
@@ -208,18 +208,18 @@ export class MapPainter {
 
 	// Most of this should eventually get pushed into the tileset
 	// #region Wang Lookup
-	floorBag: TileBag;
-	wallBag: TileBag;
-	capBag: TileBag;
-	runnerBag: TileBag;
-	cornerTopLeftBag: TileBag;
-	topVoidBag: TileBag;
-	cornerTopRightBag: TileBag;
-	leftVoidBag: TileBag;
-	rightVoidBag: TileBag;
-	spotTopRightBag: TileBag;
-	spotTopLeftBag: TileBag;
-	voidBag: TileBag;
+	floorBag!: TileBag;
+	wallBag!: TileBag;
+	capBag!: TileBag;
+	runnerBag!: TileBag;
+	cornerTopLeftBag!: TileBag;
+	topVoidBag!: TileBag;
+	cornerTopRightBag!: TileBag;
+	leftVoidBag!: TileBag;
+	rightVoidBag!: TileBag;
+	spotTopRightBag!: TileBag;
+	spotTopLeftBag!: TileBag;
+	voidBag!: TileBag;
 	setLookups(tileset: any) {
 		this.floorBag = new TileBag(tileset, [
 			6,  7,  8,  9,

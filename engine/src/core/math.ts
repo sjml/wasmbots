@@ -229,6 +229,20 @@ export class Array2D<T> {
 	set(pos: Point, val: T) {
 		this.entries[pos.y][pos.x] = val;
 	}
+
+	expand(x: number, y: number, fill: T) {
+		if (x > 0) {
+			for (const row of this.entries) {
+				row.push(...Array(x).fill(fill));
+			}
+			this._width += x;
+		}
+		if (y > 0) {
+			const newRows = Array.from({ length: y }, () => Array(this._width).fill(fill));
+			this.entries.push(...newRows);
+			this._height += y;
+		}
+	}
 }
 
 export class Rect {

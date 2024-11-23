@@ -7,7 +7,6 @@ import {
 } from "../core/math.ts";
 import { RNG } from "../game/random.ts";
 import { TileType } from "../core/messages.ts";
-import { MapPainter } from "./painter.ts";
 import { getGitRevision } from "../core/util.ts";
 
 import rawMapTemplate from "../data/blankMapTemplate.json" with { type: "json" };
@@ -25,9 +24,13 @@ export abstract class MapBuilder {
 	rng: RNG;
 	tiles: Array2D<TileType>;
 	metaTiles: Array2D<TileType>;
+	mapProperties?: any[];
 
-	constructor(rng?: RNG) {
+	constructor(rng?: RNG, props?: any[]) {
 		this.rng = rng || new RNG(null);
+		this.tiles = new Array2D<TileType>(0, 0, TileType.Void);
+		this.metaTiles = new Array2D<TileType>(0, 0, TileType.Void);
+		this.mapProperties = props;
 		console.log(`generating with seed {${this.rng.seed}}...`);
 	}
 
@@ -47,6 +50,7 @@ export abstract class MapBuilder {
 			type: "string",
 			value: this.rng.seed.toString(),
 		});
+		templateData.properties = templateData.properties.concat(this.mapProperties || []);
 
 		templateData.width = this.tiles.width;
 		templateData.height = this.tiles.height;
@@ -127,29 +131,46 @@ interface DungeonBuilderOptions {
 	extraConnectorChance?: number;
 	roomExtraSize?: number;
 	windingPercent?: number;
+	properties?: any[];
 }
+
 
 // a simple adaptation of Robert Nystrom's "Rooms and Mazes" generator
 //     https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/
 export class DungeonBuilder extends MapBuilder {
-	opts: DungeonBuilderOptions = {
+	private static readonly _defaults: DungeonBuilderOptions = {
 		numRoomTries: 200,
 		extraConnectorChance: 20,
 		roomExtraSize: 0,
 		windingPercent: 0,
+		properties: [
+			{
+				name: "maxPlayers",
+				type: "int",
+				value: 4
+			},
+			{
+				name: "minPlayers",
+				type: "int",
+				value: 1
+			},
+		],
 	};
+	opts: DungeonBuilderOptions = structuredClone(DungeonBuilder._defaults);
 
 	width: number = -1;
 	height: number = -1;
-	worldBounds: Rect;
-	rooms: DungeonRoomSpec[];
+	worldBounds: Rect = new Rect(0, 0, 0, 0);
+	rooms: DungeonRoomSpec[] = [];
 	currentRegion = -1;
-	regions: Array2D<number|null>;
-	regionNames: Map<number, string>;
+	regions: Array2D<number|null> = new Array2D(0, 0, null);
+	regionNames: Map<number, string> = new Map();
 
 	constructor(options?: DungeonBuilderOptions) {
-		super(options?.rng);
-		Object.assign(this.opts, options || {});
+		super(options?.rng, options?.properties || DungeonBuilder._defaults.properties);
+		if (options) {
+			this.opts = structuredClone({...DungeonBuilder._defaults, ...options});
+		}
 	}
 
 	generate(width: number, height: number, seedRooms?: DungeonRoomSpec[]) {
@@ -363,9 +384,17 @@ export class DungeonBuilder extends MapBuilder {
 					return true;
 				}
 
-				if (this.rng.oneIn(this.opts.extraConnectorChance!)) {
-					const rarr = Array.from(connectorsToRegions.get(pos)!);
-					this.addJunction(pos, rarr[0], rarr[1]);
+				// potential extra connector, but only if there are no doors around me
+				if (!Direction.Cardinal.some(d => {
+					const check = this.tiles.get(advance(pos, d));
+					if (check == TileType.OpenDoor || check == TileType.ClosedDoor) {
+						return true;
+					}
+				})) {
+					if (this.rng.oneIn(this.opts.extraConnectorChance!)) {
+						const rarr = Array.from(connectorsToRegions.get(pos)!);
+						this.addJunction(pos, rarr[0], rarr[1]);
+					}
 				}
 
 				return false;
@@ -438,55 +467,64 @@ export class DungeonBuilder extends MapBuilder {
 		if (this.width == originalWidth && this.height == originalHeight) {
 			return;
 		}
+
+		this.tiles.expand(originalWidth - this.width, originalHeight - this.height, TileType.Wall);
+		this.width = originalWidth;
+		this.height = originalHeight;
 	}
 }
 
 
-if (Deno.args.length == 0) {
-	console.error("Give an output path.");
-	Deno.exit(1);
-}
 
-const builder = new DungeonBuilder();
-builder.generate(63, 39, [
-	{
-		id: "spawnRoom1",
-		rect: new Rect(1, 1, 3, 3),
-		metas: [{
-			position: {x: 2, y: 2},
-			type: "SpawnPoint"
-		}]
-	},
-	{
-		id: "spawnRoom2",
-		rect: new Rect(59, 1, 3, 3),
-		metas: [{
-			position: {x: 60, y: 2},
-			type: "SpawnPoint"
-		}]
-	},
-	{
-		id: "spawnRoom3",
-		rect: new Rect(1, 35, 3, 3),
-		metas: [{
-			position: {x: 2, y: 36},
-			type: "SpawnPoint"
-		}]
-	},
-	{
-		id: "spawnRoom4",
-		rect: new Rect(59, 35, 3, 3),
-		metas: [{
-			position: {x: 60, y: 36},
-			type: "SpawnPoint"
-		}]
-	},
-]);
+// import { MapPainter } from "./painter.ts";
 
-const painter = new MapPainter(builder.toTiled(), builder.rng);
-// const tileset = JSON.parse(Deno.readTextFileSync("./engine/rsc/maps/tilesets/dungeon_tiles.tsj"));
-const tileset = JSON.parse(Deno.readTextFileSync("../../rsc/maps/tilesets/dungeon_tiles.tsj"));
+// if (Deno.args.length == 0) {
+// 	console.error("Give an output path.");
+// 	Deno.exit(1);
+// }
 
-painter.paint(tileset);
+// const builder = new DungeonBuilder({rng: new RNG(257911085)});
+// builder.generate(63, 39, [
+// 	{
+// 		id: "spawnRoom1",
+// 		rect: new Rect(1, 1, 3, 3),
+// 		metas: [{
+// 			position: {x: 2, y: 2},
+// 			type: "SpawnPoint"
+// 		}]
+// 	},
+// 	{
+// 		id: "spawnRoom2",
+// 		rect: new Rect(59, 1, 3, 3),
+// 		metas: [{
+// 			position: {x: 60, y: 2},
+// 			type: "SpawnPoint"
+// 		}]
+// 	},
+// 	{
+// 		id: "spawnRoom3",
+// 		rect: new Rect(1, 35, 3, 3),
+// 		metas: [{
+// 			position: {x: 2, y: 36},
+// 			type: "SpawnPoint"
+// 		}]
+// 	},
+// 	{
+// 		id: "spawnRoom4",
+// 		rect: new Rect(59, 35, 3, 3),
+// 		metas: [{
+// 			position: {x: 60, y: 36},
+// 			type: "SpawnPoint"
+// 		}]
+// 	},
+// ]);
 
-Deno.writeTextFileSync(Deno.args[0], painter.toJSON());
+// Deno.writeTextFileSync(Deno.args[0], builder.toJSON());
+
+// const painter = new MapPainter(builder.toTiled(), builder.rng);
+// // const tileset = JSON.parse(Deno.readTextFileSync("./engine/rsc/maps/tilesets/dungeon_tiles.tsj"));
+// const tileset = JSON.parse(Deno.readTextFileSync("../../rsc/maps/tilesets/dungeon_tiles.tsj"));
+
+// painter.paint(tileset);
+
+// Deno.writeTextFileSync(Deno.args[0], painter.toJSON());

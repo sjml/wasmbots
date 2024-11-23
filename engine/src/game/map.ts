@@ -1,8 +1,11 @@
 import { readJsonFile } from "../core/loader.ts";
 import { stringToNumericEnum } from "../core/util.ts";
-import { type Point } from "../core/math.ts";
+import { type Point, Rect } from "../core/math.ts";
 import { computeFOV } from "./fov.ts";
 import { TileType as TerrainTileType } from "../core/messages.ts";
+import { DungeonBuilder } from "../generation/builder.ts";
+import { MapPainter } from "../generation/painter.ts";
+
 
 // right now assuming all maps are the same size
 const MAP_WIDTH = 64;
@@ -35,7 +38,6 @@ interface TileRecord {
 }
 
 export class WorldMap {
-	source: string = "";
 	name: string = "";
 	tiles: Tile[][] = Array.from({length: MAP_HEIGHT}, () =>
 		Array.from({ length: MAP_WIDTH }, () => new Tile())
@@ -43,15 +45,70 @@ export class WorldMap {
 	spawnPoints: Point[] = [];
 	minPlayers: number = 1;
 	maxPlayers: number = 1;
+	rawMapData: any;
 
-	static async loadTiled(mapName: string): Promise<WorldMap> {
+	private constructor(){}
+
+	static async generate(generatorName: string): Promise<WorldMap> {
+		const builder = new DungeonBuilder();
+		builder.generate(MAP_WIDTH, MAP_HEIGHT, [
+			{
+				id: "spawnRoom1",
+				rect: new Rect(1, 1, 3, 3),
+				metas: [{
+					position: {x: 2, y: 2},
+					type: "SpawnPoint"
+				}]
+			},
+			{
+				id: "spawnRoom2",
+				rect: new Rect(59, 1, 3, 3),
+				metas: [{
+					position: {x: 60, y: 2},
+					type: "SpawnPoint"
+				}]
+			},
+			{
+				id: "spawnRoom3",
+				rect: new Rect(1, 35, 3, 3),
+				metas: [{
+					position: {x: 2, y: 36},
+					type: "SpawnPoint"
+				}]
+			},
+			{
+				id: "spawnRoom4",
+				rect: new Rect(59, 35, 3, 3),
+				metas: [{
+					position: {x: 60, y: 36},
+					type: "SpawnPoint"
+				}]
+			},
+		]);
+
+		const painter = new MapPainter(builder.toTiled(), builder.rng);
+		const tileset = await readJsonFile("$rsc/maps/tilesets/dungeon_tiles.tsj");
+		painter.paint(tileset);
+
+		const newMap = new WorldMap();
+		newMap.name = `${generatorName}-{${builder.rng.seed}}`;
+		newMap.rawMapData = painter.map;
+		newMap.setupFromJson();
+		return newMap;
+	}
+
+	static async loadStatic(mapName: string): Promise<WorldMap> {
 		const newMap = new WorldMap();
 		newMap.name = mapName;
-		newMap.source = `$rsc/maps/static/${mapName}.tmj`;
 
-		const rawMapData = await readJsonFile(newMap.source);
+		newMap.rawMapData = await readJsonFile(`$rsc/maps/static/${mapName}.tmj`);
 
-		for (const tsd of rawMapData.tilesets) {
+		newMap.setupFromJson();
+		return newMap;
+	}
+
+	private setupFromJson() {
+		for (const tsd of this.rawMapData.tilesets) {
 			const tileData: Map<number, TileRecord> = new Map();
 			for (const td of tsd.tiles) {
 				if (td.type === undefined) {
@@ -84,31 +141,31 @@ export class WorldMap {
 			tsd.tileData = tileData;
 		}
 
-		const terrainLayer  = rawMapData.layers.find((l: {name: string}) => l.name == "terrain");
-		const metadataLayer = rawMapData.layers.find((l: {name: string}) => l.name == "metadata");
+		const terrainLayer = this.rawMapData.layers.find((l: { name: string; }) => l.name == "terrain");
+		const metadataLayer = this.rawMapData.layers.find((l: { name: string; }) => l.name == "metadata");
 		if (!terrainLayer || !metadataLayer) {
 			throw new Error("Invalid map data, missing required layers!");
 		}
-		if (rawMapData.width != MAP_WIDTH || rawMapData.height != MAP_HEIGHT) {
+		if (this.rawMapData.width != MAP_WIDTH || this.rawMapData.height != MAP_HEIGHT) {
 			throw new Error("Invalid map data, wrong dimensions!");
 		}
 
 		const tileLookup: Map<number, TileRecord> = new Map();
 
-		function lookupTile(t: number): TileRecord {
+		const lookupTile = (t: number): TileRecord => {
 			if (tileLookup.has(t)) {
 				return tileLookup.get(t)!;
 			}
-			const gid = t & ~(TILED_FLAG_FLIPPED_HORIZONTALLY  |
-							  TILED_FLAG_FLIPPED_VERTICALLY    |
-							  TILED_FLAG_FLIPPED_DIAGONALLY    |
-							  TILED_FLAG_ROTATED_HEXAGONAL_120
-							 );
+			const gid = t & ~(TILED_FLAG_FLIPPED_HORIZONTALLY |
+				TILED_FLAG_FLIPPED_VERTICALLY |
+				TILED_FLAG_FLIPPED_DIAGONALLY |
+				TILED_FLAG_ROTATED_HEXAGONAL_120
+			);
 			if (gid == 0) {
 				return {};
 			}
-			for (let i = rawMapData.tilesets.length - 1; i >= 0; i--) {
-				const ts = rawMapData.tilesets[i];
+			for (let i = this.rawMapData.tilesets.length - 1; i >= 0; i--) {
+				const ts = this.rawMapData.tilesets[i];
 				if (ts.firstgid <= gid) {
 					const lookup = ts.tileData.get(gid - ts.firstgid)!;
 					tileLookup.set(t, lookup);
@@ -126,7 +183,7 @@ export class WorldMap {
 				if (tr.terrain === undefined) {
 					throw new Error(`Non-terrain tile in terrain layer: ${tr.terrain} at (${x}, ${y})`);
 				}
-				newMap.tiles[y][x].terrainType = tr.terrain;
+				this.tiles[y][x].terrainType = tr.terrain;
 			}
 		}
 
@@ -141,10 +198,10 @@ export class WorldMap {
 				if (tr.meta === undefined) {
 					continue;
 				}
-				newMap.tiles[y][x].metaDatums.add(tr.meta);
+				this.tiles[y][x].metaDatums.add(tr.meta);
 				switch (tr.meta) {
 					case MetaTileType.SpawnPoint:
-						newMap.spawnPoints.push({x, y});
+						this.spawnPoints.push({ x, y });
 						break;
 					case MetaTileType.Tombstone:
 						break;
@@ -154,20 +211,20 @@ export class WorldMap {
 			}
 		}
 
-		if (newMap.spawnPoints.length == 0) {
+		if (this.spawnPoints.length == 0) {
 			throw new Error("Map has no spawn points!");
 		}
 
-		newMap.maxPlayers = rawMapData.properties?.
-			find((prop: {name: string}) => prop.name === "maxPlayers")?.value as number
-			?? newMap.spawnPoints.length;
-		newMap.minPlayers = rawMapData.properties?.
-			find((prop: {name: string}) => prop.name === "minPlayers")?.value as number
+		this.maxPlayers = this.rawMapData.properties?.
+			find((prop: { name: string; }) => prop.name === "maxPlayers")?.value as number
+			?? this.spawnPoints.length;
+		this.minPlayers = this.rawMapData.properties?.
+			find((prop: { name: string; }) => prop.name === "minPlayers")?.value as number
 			?? 1;
 
-		if (newMap.maxPlayers > newMap.spawnPoints.length) {
-			console.warn(`Map ${mapName} declares ${newMap.maxPlayers} player(s) but only has ${newMap.spawnPoints.length} spawn point(s); using smaller value.`);
-			newMap.maxPlayers = newMap.spawnPoints.length;
+		if (this.maxPlayers > this.spawnPoints.length) {
+			console.warn(`Map ${this.name} declares ${this.maxPlayers} player(s) but only has ${this.spawnPoints.length} spawn point(s); using smaller value.`);
+			this.maxPlayers = this.spawnPoints.length;
 		}
 
 		for (let y = 0; y < MAP_HEIGHT; y++) {
@@ -176,12 +233,11 @@ export class WorldMap {
 				// (maybe someday a howling vortex somewhere?
 				//  more likely would be its own tile type and void
 				//  will remain a proper nil.)
-				if (newMap.tiles[y][x].terrainType === TerrainTileType.Void) {
-					throw new Error(`Tile at ${x}, ${y} was void after map parsing`)
+				if (this.tiles[y][x].terrainType === TerrainTileType.Void) {
+					throw new Error(`Tile at ${x}, ${y} was void after map parsing`);
 				}
 			}
 		}
-		return newMap;
 	}
 
 	static debugDrawSlice(slice: Tile[][]) {

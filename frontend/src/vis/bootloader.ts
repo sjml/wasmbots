@@ -1,6 +1,6 @@
 import Phaser from "phaser";
 
-import { Loader, Config } from "wasmbots";
+import { Loader } from "wasmbots";
 import { VisEventBus } from "./events";
 
 export class VisBootloader extends Phaser.Scene {
@@ -29,10 +29,6 @@ export class VisBootloader extends Phaser.Scene {
 			frameWidth: 16,
 			frameHeight: 16,
 		});
-
-		for (const mapName of Config.enabledMaps) {
-			this.load.tilemapTiledJSON(`map-${mapName}`, `maps/static/${mapName}.tmj`);
-		}
 	}
 
 	setLoadEvents() {

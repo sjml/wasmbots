@@ -23,7 +23,9 @@ export class VisMap extends Phaser.Scene {
 		return ms;
 	}
 
-	preload() {}
+	preload() {
+		this.load.tilemapTiledJSON(`map-${this.worldMap.name}`, this.worldMap.rawMapData);
+	}
 
 	create() {
 		this._tilemap = this.make.tilemap({key: `map-${this.worldMap.name}`});
