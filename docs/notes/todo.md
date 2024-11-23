@@ -1,22 +1,26 @@
 ## dev
-* review [memory thoughts](./misc.md#memory-thoughts)
 
 * map variations
-    * change bootloader to only pull used tilesets (have to iterate over supported levels?)
     * can the world dimensions be fixed reasonably? 
     * fix arena to use new map style
-    * generator:
-        * button on ui to download map? 
-        * figure out typings ffs
-        * add roomIndex to tiles? (or use objects?)
-        * make builder pull from the TSJ file instead of hardcoding it in the template
-        * worth making the visuals one group?
-    * add map parameter to embedded component
+        * then change map selector UI to distinguish between static and dynamic
+    * button on ui to download map
 
 * fix client handshakes in go, rust
   * consider whether to yeet assemblyscript
     * does the beschi generator actually work? it's untested...
   * update general library readme
+* review [memory thoughts](./misc.md#memory-thoughts)
+
+* separate pages (maybe need to be separate svelte apps? 🫠)
+    * current app
+    * trainer
+    * dungeon generator
+    * front page (static)
+    * embedded demo
+        * add map parameter to embedded component
+
+* then build the dungeon generator UI 😅
 
 * trainer
     * need to figure out debugger attaching to the process; maybe deno can just take a port number and hit it up instead of starting it directly? 

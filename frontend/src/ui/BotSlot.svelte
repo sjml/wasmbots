@@ -69,7 +69,7 @@
 		</div>
 		<div class="consoleContainer" class:expanded={consoleExpanded}>
 			<div class="controls">
-				<button class="disclosure" onclick={() => {consoleExpanded = !consoleExpanded;}} aria-label="Toggle expanded console">
+				<button class="disclosure" onclick={() => {consoleExpanded = !consoleExpanded; deferScroll();}} aria-label="Toggle expanded console">
 					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M181.66,133.66l-80,80A8,8,0,0,1,88,208V48a8,8,0,0,1,13.66-5.66l80,80A8,8,0,0,1,181.66,133.66Z"></path></svg>
 				</button>
 				{#if consoleExpanded}

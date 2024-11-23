@@ -88,8 +88,8 @@
 			<div class="divider"></div>
 		{/if} -->
 		{#if gameState.world }
-			<!-- <MapGenerator /> -->
-			<!-- <div class="divider"></div> -->
+			<MapGenerator />
+			<div class="divider"></div>
 			<FlowControl />
 		{/if}
 		<div class="divider"></div>

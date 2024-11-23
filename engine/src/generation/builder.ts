@@ -8,13 +8,19 @@ import {
 import { RNG } from "../game/random.ts";
 import { TileType } from "../core/messages.ts";
 import { getGitRevision } from "../core/util.ts";
+import * as Tiled from "./tileTypes.ts";
 
 import rawMapTemplate from "../data/blankMapTemplate.json" with { type: "json" };
-const mapTemplate = rawMapTemplate as typeof rawMapTemplate & { layers: any[] };
+const mapTemplate = rawMapTemplate as Tiled.TileMap;
+
+import rawAbstractTileset from "../data/abstractDataTileset.json" with { type: "json" };
+const abstractTileset = rawAbstractTileset as Tiled.Tileset;
+abstractTileset.image = abstractTileset.image.replace("../../rsc/img/", "../../img/");
+mapTemplate.tilesets.push(abstractTileset);
 
 const metaMapping = new Map<string, number>();
 for (const t of mapTemplate.tilesets[0].tiles) {
-	if (t.type.startsWith("Meta.")) {
+	if (t.type?.startsWith("Meta.")) {
 		metaMapping.set(t.type.slice("Meta.".length), t.id + mapTemplate.tilesets[0].firstgid);
 	}
 }
@@ -39,7 +45,7 @@ export abstract class MapBuilder {
 	toTiled(): any {
 		const templateData = structuredClone(mapTemplate);
 
-		templateData.properties = [] as any[];
+		templateData.properties = [];
 		templateData.properties.push({
 			name: "gitRevision",
 			type: "string",
@@ -55,7 +61,7 @@ export abstract class MapBuilder {
 		templateData.width = this.tiles.width;
 		templateData.height = this.tiles.height;
 
-		const layerTemplate = {
+		const layerTemplate: Tiled.TileLayer = {
 			id: -1,
 			name: "",
 			type: "tilelayer",
@@ -65,7 +71,7 @@ export abstract class MapBuilder {
 			opacity: 1,
 			x: 0,
 			y: 0,
-			data: [] as number[]
+			data: []
 		};
 
 		const terrainLayer = structuredClone(layerTemplate);
@@ -73,16 +79,18 @@ export abstract class MapBuilder {
 		terrainLayer.name = "terrain";
 		terrainLayer.width = this.tiles.width;
 		terrainLayer.height = this.tiles.height;
-		terrainLayer.id = templateData.layers.length + 1;
+		terrainLayer.id = templateData.nextlayerid;
 		templateData.layers.push(terrainLayer);
+		templateData.nextlayerid += 1;
 
 		const metaLayer = structuredClone(layerTemplate);
 		metaLayer.data = this.metaTiles.entries.flat().map(t => (t as number));
 		metaLayer.name = "metadata";
 		metaLayer.width = this.metaTiles.width;
 		metaLayer.height = this.metaTiles.height;
-		metaLayer.id = templateData.layers.length + 1;
+		metaLayer.id = templateData.nextlayerid;
 		templateData.layers.push(metaLayer);
+		templateData.nextlayerid += 1;
 
 		return templateData;
 	}
@@ -470,59 +478,3 @@ export class DungeonBuilder extends MapBuilder {
 	}
 }
 
-
-// if (import.meta.main) {
-
-// 	const paint = await import("./painter.ts");
-
-// 	if (Deno.args.length == 0) {
-// 		console.error("Give an output path.");
-// 		Deno.exit(1);
-// 	}
-
-// 	const builder = new DungeonBuilder({rng: new RNG(null)});
-// 	builder.generate(63, 39, [
-// 		{
-// 			id: "spawnRoom1",
-// 			rect: new Rect(1, 1, 3, 3),
-// 			metas: [{
-// 				position: {x: 2, y: 2},
-// 				type: "SpawnPoint"
-// 			}]
-// 		},
-// 		{
-// 			id: "spawnRoom2",
-// 			rect: new Rect(59, 1, 3, 3),
-// 			metas: [{
-// 				position: {x: 60, y: 2},
-// 				type: "SpawnPoint"
-// 			}]
-// 		},
-// 		{
-// 			id: "spawnRoom3",
-// 			rect: new Rect(1, 35, 3, 3),
-// 			metas: [{
-// 				position: {x: 2, y: 36},
-// 				type: "SpawnPoint"
-// 			}]
-// 		},
-// 		{
-// 			id: "spawnRoom4",
-// 			rect: new Rect(59, 35, 3, 3),
-// 			metas: [{
-// 				position: {x: 60, y: 36},
-// 				type: "SpawnPoint"
-// 			}]
-// 		},
-// 	]);
-
-// 	Deno.writeTextFileSync(Deno.args[0], builder.toJSON());
-
-// 	const painter = new paint.MapPainter(builder.toTiled(), builder.rng);
-// 	// const tileset = JSON.parse(Deno.readTextFileSync("./engine/rsc/maps/tilesets/dungeon_tiles.tsj"));
-// 	const tileset = JSON.parse(Deno.readTextFileSync("../../rsc/maps/tilesets/dungeon_tiles.tsj"));
-
-// 	painter.paint(tileset);
-
-// 	Deno.writeTextFileSync(Deno.args[0], painter.toJSON());
-// }

@@ -1,5 +1,3 @@
-// deno-lint-ignore-file no-explicit-any -- dealing with untyped Tiled JSON stuff
-
 // doing my own little autotiling with lots of magic numbers
 //   will I come to regret this? probably!
 //   if this project takes off enough that I want it to start
@@ -9,7 +7,7 @@
 import { RNG } from "../game/random.ts";
 import { type Point, Array2D } from "../core/math.ts";
 import { TileType } from "../core/messages.ts";
-
+import * as Tiled from "./tileTypes.ts";
 
 const TILED_FLAG_FLIPPED_HORIZONTALLY = 0x80000000;
 const TILED_FLAG_FLIPPED_VERTICALLY   = 0x40000000;
@@ -18,7 +16,7 @@ const ROTATE_90 = TILED_FLAG_FLIPPED_DIAGONALLY + TILED_FLAG_FLIPPED_HORIZONTALL
 const ROTATE_180 = TILED_FLAG_FLIPPED_VERTICALLY + TILED_FLAG_FLIPPED_HORIZONTALLY;
 const ROTATE_270 = TILED_FLAG_FLIPPED_DIAGONALLY + TILED_FLAG_FLIPPED_VERTICALLY;
 
-const layerTemplate = {
+const layerTemplate: Tiled.TileLayer = {
 	data: [] as number[],
 	width: -1,
 	height: -1,
@@ -32,23 +30,22 @@ const layerTemplate = {
 };
 
 export class MapPainter {
-	map: any;
-	tileset: any;
+	map: Tiled.TileMap;
+	tileset: Tiled.Tileset;
 	wangBagLookup!: Map<number, TileBag>;
 	rng: RNG;
 	private tileGrid: Array2D<TileType>;
 
-	constructor(map: any, rng?: RNG) {
+	constructor(map: Tiled.TileMap, rng?: RNG) {
 		this.rng = rng || new RNG(null);
 		this.map = map;
 		this.tileGrid = Array2D.from((this.map.layers[0]).data, this.map.width, this.map.height);
 	}
 
-	paint(ts: any) {
+	paint(ts: Tiled.Tileset) {
 		this.tileset = structuredClone(ts);
-		delete this.tileset.tiledversion;
-		delete this.tileset.type;
-		delete this.tileset.version;
+		delete (this.tileset as any).tiledversion;
+		delete (this.tileset as any).version;
 		if (this.map.tilesets.length == 0) {
 			this.tileset.firstgid = 1;
 		}
@@ -63,7 +60,7 @@ export class MapPainter {
 
 		const groundLayer = Object.assign({}, layerTemplate, {
 			name: "ground",
-			id: this.map.layers.length,
+			id: this.map.nextlayerid,
 			width: this.map.width,
 			height: this.map.height,
 		});
@@ -74,10 +71,11 @@ export class MapPainter {
 			}
 		}
 		this.map.layers.push(groundLayer);
+		this.map.nextlayerid += 1;
 
 		const wallLayer = Object.assign({}, layerTemplate, {
 			name: "walls",
-			id: this.map.layers.length,
+			id: this.map.nextlayerid,
 			width: this.map.width,
 			height: this.map.height,
 		});
@@ -186,8 +184,8 @@ export class MapPainter {
 			}
 		}
 
-
 		this.map.layers.push(wallLayer);
+		this.map.nextlayerid += 1;
 	}
 
 	toJSON(): string {
@@ -222,7 +220,7 @@ export class MapPainter {
 	spotTopRightBag!: TileBag;
 	spotTopLeftBag!: TileBag;
 	voidBag!: TileBag;
-	setLookups(tileset: any) {
+	setLookups(tileset: Tiled.Tileset) {
 		this.floorBag = new TileBag(tileset, [
 			6,  7,  8,  9,
 		   16, 17, 18, 19,
@@ -356,7 +354,7 @@ class TileBag {
 		probability: number,
 	}[];
 
-	constructor(ts: any, indices: number[]) {
+	constructor(ts: Tiled.Tileset, indices: number[]) {
 		this.probs = [];
 		for (const idx of indices) {
 			// first check if it's specified with a probability
