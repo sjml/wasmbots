@@ -47,14 +47,14 @@ _values = [
 [[enums]]
 _name = "Direction"
 _values = [
+    "North",
+    "Northeast",
     "East",
     "Southeast",
     "South",
     "Southwest",
     "West",
     "Northwest",
-    "North",
-    "Northeast",
 ]
 
 # player receives every tick

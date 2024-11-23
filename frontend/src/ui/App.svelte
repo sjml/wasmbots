@@ -11,6 +11,7 @@
 	import BotSlotList from "./BotSlotList.svelte";
 
 	import { type WasmBotsState } from "../types.svelte";
+    import MapGenerator from "./MapGenerator.svelte";
 
 	const gameState: WasmBotsState = $state({
 		world: null,
@@ -87,8 +88,8 @@
 			<div class="divider"></div>
 		{/if} -->
 		{#if gameState.world }
-			<MapSelector />
-			<div class="divider"></div>
+			<!-- <MapGenerator /> -->
+			<!-- <div class="divider"></div> -->
 			<FlowControl />
 		{/if}
 		<div class="divider"></div>

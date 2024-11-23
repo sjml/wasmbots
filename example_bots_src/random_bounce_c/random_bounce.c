@@ -23,6 +23,9 @@ void directionToDelta(WasmBots_Direction dir, int16_t* dx, int16_t* dy) {
 	*dx = 0;
 	*dy = 0;
 	switch (dir) {
+		case WasmBots_Direction_North:
+			*dy = -1;
+			break;
 		case WasmBots_Direction_East:
 			*dx = 1;
 			break;
@@ -31,9 +34,6 @@ void directionToDelta(WasmBots_Direction dir, int16_t* dx, int16_t* dy) {
 			break;
 		case WasmBots_Direction_West:
 			*dx = -1;
-			break;
-		case WasmBots_Direction_North:
-			*dy = -1;
 			break;
 		default:
 			wsmbt_logfErr("Invalid direction, %d", _currentDir);
@@ -57,10 +57,10 @@ void* clientTick(WasmBots_PresentCircumstances* circumstances) {
 	}
 
 	WasmBots_TileType neighbors[4] = {
+		getNeighborTile(WasmBots_Direction_North, circumstances),
 		getNeighborTile(WasmBots_Direction_East, circumstances),
 		getNeighborTile(WasmBots_Direction_South, circumstances),
 		getNeighborTile(WasmBots_Direction_West, circumstances),
-		getNeighborTile(WasmBots_Direction_North, circumstances),
 	};
 
 	// "southeast" == invalid, and not because of any geographical bias of mine
@@ -77,28 +77,28 @@ void* clientTick(WasmBots_PresentCircumstances* circumstances) {
 		if (neighbors[0] == WasmBots_TileType_OpenDoor) {
 			isOpened[doorCount] = true;
 		}
-		doors[doorCount] = WasmBots_Direction_East;
+		doors[doorCount] = WasmBots_Direction_North;
 		doorCount++;
 	}
 	if (neighbors[1] == WasmBots_TileType_OpenDoor || neighbors[1] == WasmBots_TileType_ClosedDoor) {
 		if (neighbors[1] == WasmBots_TileType_OpenDoor) {
 			isOpened[doorCount] = true;
 		}
-		doors[doorCount] = WasmBots_Direction_South;
+		doors[doorCount] = WasmBots_Direction_East;
 		doorCount++;
 	}
 	if (neighbors[2] == WasmBots_TileType_OpenDoor || neighbors[2] == WasmBots_TileType_ClosedDoor) {
 		if (neighbors[2] == WasmBots_TileType_OpenDoor) {
 			isOpened[doorCount] = true;
 		}
-		doors[doorCount] = WasmBots_Direction_West;
+		doors[doorCount] = WasmBots_Direction_South;
 		doorCount++;
 	}
 	if (neighbors[3] == WasmBots_TileType_OpenDoor || neighbors[3] == WasmBots_TileType_ClosedDoor) {
 		if (neighbors[3] == WasmBots_TileType_OpenDoor) {
 			isOpened[doorCount] = true;
 		}
-		doors[doorCount] = WasmBots_Direction_North;
+		doors[doorCount] = WasmBots_Direction_West;
 		doorCount++;
 	}
 

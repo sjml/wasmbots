@@ -2,14 +2,14 @@ import { Direction as MsgDir } from "./messages.ts";
 
 // transform direction values from `messages.toml` into more useful/powerful TypeScript things
 const DirectionValues = {
+	North: MsgDir.North,
+	Northeast: MsgDir.Northeast,
 	East: MsgDir.East,
 	Southeast: MsgDir.Southeast,
 	South: MsgDir.South,
 	Southwest: MsgDir.Southwest,
 	West: MsgDir.West,
 	Northwest: MsgDir.Northwest,
-	North: MsgDir.North,
-	Northeast: MsgDir.Northeast,
 } as const;
 
 type DirectionType = typeof DirectionValues[keyof typeof DirectionValues];
@@ -19,42 +19,71 @@ export class Direction {
 		private readonly name: string,
 	) {}
 
+	static readonly North = new Direction(DirectionValues.North, "North");
+	static readonly Northeast = new Direction(DirectionValues.Northeast, "Northeast");
 	static readonly East = new Direction(DirectionValues.East, "East");
 	static readonly Southeast = new Direction(DirectionValues.Southeast, "Southeast");
 	static readonly South = new Direction(DirectionValues.South, "South");
 	static readonly Southwest = new Direction(DirectionValues.Southwest, "Southwest");
 	static readonly West = new Direction(DirectionValues.West, "West");
 	static readonly Northwest = new Direction(DirectionValues.Northwest, "Northwest");
-	static readonly North = new Direction(DirectionValues.North, "North");
-	static readonly Northeast = new Direction(DirectionValues.Northeast, "Northeast");
 
 	static readonly Cardinal: readonly Direction[] = Object.freeze([
+		Direction.North,
 		Direction.East,
 		Direction.South,
 		Direction.West,
-		Direction.North,
+	]);
+
+	static readonly CardinalDeltas: readonly Point[] = Object.freeze([
+		Direction.North.moveDelta,
+		Direction.East.moveDelta,
+		Direction.South.moveDelta,
+		Direction.West.moveDelta,
 	]);
 
 	static readonly Ordinal: readonly Direction[] = Object.freeze([
+		Direction.Northeast,
 		Direction.Southeast,
 		Direction.Southwest,
 		Direction.Northwest,
-		Direction.Northeast,
+	]);
+
+	static readonly OrdinalDeltas: readonly Point[] = Object.freeze([
+		Direction.Northeast.moveDelta,
+		Direction.Southeast.moveDelta,
+		Direction.Southwest.moveDelta,
+		Direction.Northwest.moveDelta,
 	]);
 
 	static readonly All: readonly Direction[] = Object.freeze([
+		Direction.North,
+		Direction.Northeast,
 		Direction.East,
 		Direction.Southeast,
 		Direction.South,
 		Direction.Southwest,
 		Direction.West,
 		Direction.Northwest,
-		Direction.North,
-		Direction.Northeast,
+	]);
+
+	static readonly Deltas: readonly Point[] = Object.freeze([
+		Direction.North.moveDelta,
+		Direction.Northeast.moveDelta,
+		Direction.East.moveDelta,
+		Direction.Southeast.moveDelta,
+		Direction.South.moveDelta,
+		Direction.Southwest.moveDelta,
+		Direction.West.moveDelta,
+		Direction.Northwest.moveDelta,
 	]);
 
 	static from(d: MsgDir): Direction {
 		switch (d) {
+			case MsgDir.North:
+				return Direction.North;
+			case MsgDir.Northeast:
+				return Direction.Northeast;
 			case MsgDir.East:
 				return Direction.East;
 			case MsgDir.Southeast:
@@ -67,15 +96,15 @@ export class Direction {
 				return Direction.West;
 			case MsgDir.Northwest:
 				return Direction.Northwest;
-			case MsgDir.North:
-				return Direction.North;
-			case MsgDir.Northeast:
-				return Direction.Northeast;
 		}
 	}
 
 	get moveDelta(): Point {
 		switch (this.value) {
+			case DirectionValues.North:
+				return { x:  0, y: -1 };
+			case DirectionValues.Northeast:
+				return { x:  1, y: -1 };
 			case DirectionValues.East:
 				return { x:  1, y:  0 };
 			case DirectionValues.Southeast:
@@ -88,15 +117,15 @@ export class Direction {
 				return { x: -1, y:  0 };
 			case DirectionValues.Northwest:
 				return { x: -1, y: -1 };
-			case DirectionValues.North:
-				return { x:  0, y: -1 };
-			case DirectionValues.Northeast:
-				return { x:  1, y: -1 };
 		}
 	}
 
 	reverse(): Direction {
 		switch (this.value) {
+			case DirectionValues.North:
+				return Direction.South;
+			case DirectionValues.Northeast:
+				return Direction.Southwest;
 			case DirectionValues.East:
 				return Direction.West;
 			case DirectionValues.Southeast:
@@ -109,10 +138,6 @@ export class Direction {
 				return Direction.East;
 			case DirectionValues.Northwest:
 				return Direction.Southeast;
-			case DirectionValues.North:
-				return Direction.South;
-			case DirectionValues.Northeast:
-				return Direction.Southwest;
 		}
 	}
 
@@ -214,12 +239,30 @@ export class Array2D<T> {
 		this._height = height;
 	}
 
+	static from<T>(array1D: Array<T>, width: number, height: number): Array2D<T> {
+		if (width * height != array1D.length || array1D.length == 0) {
+			throw new Error(`Bad dimensions on 1D -> 2D array (width: ${width}, height: ${height}, length: ${array1D.length})`);
+		}
+		const entries = Array.from({length: height}, (_, i) =>
+			array1D.slice(i * width, (i + 1) * width)
+		) as unknown as T[][];
+		const array2D = Object.create(this.prototype) as Array2D<T>;
+		array2D.entries = entries;
+		array2D._width = width;
+		array2D._height = height;
+		return array2D;
+	}
+
 	get width(): number {
 		return this._width;
 	}
 
 	get height(): number {
 		return this._height;
+	}
+
+	flat(): T[] {
+		return this.entries.flat();
 	}
 
 	get(pos: Point): T {
@@ -242,6 +285,59 @@ export class Array2D<T> {
 			this.entries.push(...newRows);
 			this._height += y;
 		}
+	}
+
+	getBitmask4(position: Point, masked: T[]): number {
+		let mask = 0;
+		for (const [di, delta] of Direction.CardinalDeltas.entries()) {
+			const pt = {
+				x: position.x + delta.x,
+				y: position.y + delta.y,
+			};
+			if (
+				   pt.x < 0 || pt.x >= this._width
+				|| pt.y < 0 || pt.y >= this._height
+			) {
+				continue;
+			}
+			const value = this.get(pt);
+			if (masked.includes(value)) {
+				mask |= (1 << di);
+			}
+		}
+		return mask;
+	}
+
+	getBitmask8(position: Point, masked: T[]): number {
+		let mask = 0;
+		for (const [di, delta] of Direction.Deltas.entries()) {
+			const pt = {
+				x: position.x + delta.x,
+				y: position.y + delta.y,
+			};
+			if (
+				   pt.x < 0 || pt.x >= this._width
+				|| pt.y < 0 || pt.y >= this._height
+			) {
+				continue;
+			}
+			const value = this.get(pt);
+			if (masked.includes(value)) {
+				mask |= (1 << di);
+			}
+		}
+
+		// clear diagonals if their neighboring edges aren't set.
+		//    (this is what lets us reduce the wang set from 255 to 47)
+		// if there are other uses for bitmasks this should be
+		//    put behind a parameter
+		for (const [n1, n2, d] of [[1,4,2], [4,16,8], [16,64,32], [64,1,128]]) {
+			if (!((mask & n1) && (mask & n2))) {
+				mask &= ~d;
+			}
+		}
+
+		return mask;
 	}
 }
 

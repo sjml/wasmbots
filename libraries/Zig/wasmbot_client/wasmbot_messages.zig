@@ -53,14 +53,14 @@
 // [[enums]]
 // _name = "Direction"
 // _values = [
+//     "North",
+//     "Northeast",
 //     "East",
 //     "Southeast",
 //     "South",
 //     "Southwest",
 //     "West",
 //     "Northwest",
-//     "North",
-//     "Northeast",
 // ]
 // 
 // # player receives every tick
@@ -433,14 +433,14 @@ pub const TileType = enum(u8) {
 };
 
 pub const Direction = enum(u8) {
-	East = 0,
-	Southeast = 1,
-	South = 2,
-	Southwest = 3,
-	West = 4,
-	Northwest = 5,
-	North = 6,
-	Northeast = 7,
+	North = 0,
+	Northeast = 1,
+	East = 2,
+	Southeast = 3,
+	South = 4,
+	Southwest = 5,
+	West = 6,
+	Northwest = 7,
 };
 
 pub const Point = struct {
@@ -676,7 +676,7 @@ pub const Resign = struct {
 };
 
 pub const MoveTo = struct {
-	direction: Direction = Direction.East,
+	direction: Direction = Direction.North,
 	distance: u8 = 0,
 
 	pub fn getSizeInBytes(self: *const MoveTo) usize {

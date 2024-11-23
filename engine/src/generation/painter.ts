@@ -7,7 +7,7 @@
 //   just doing enough work to have it look not *utter* garbage
 
 import { RNG } from "../game/random.ts";
-import { type Point } from "../core/math.ts";
+import { type Point, Array2D } from "../core/math.ts";
 import { TileType } from "../core/messages.ts";
 
 
@@ -36,10 +36,12 @@ export class MapPainter {
 	tileset: any;
 	wangBagLookup!: Map<number, TileBag>;
 	rng: RNG;
+	private tileGrid: Array2D<TileType>;
 
 	constructor(map: any, rng?: RNG) {
 		this.rng = rng || new RNG(null);
 		this.map = map;
+		this.tileGrid = Array2D.from((this.map.layers[0]).data, this.map.width, this.map.height);
 	}
 
 	paint(ts: any) {
@@ -88,8 +90,8 @@ export class MapPainter {
 					continue;
 				}
 				if (this.isDoor({x,y})) {
-					const mask = this.getBitmask4({x,y}, false);
-					const isOpen = this.readTile({x,y}) == TileType.OpenDoor;
+					const mask = this.tileGrid.getBitmask4({x,y}, [TileType.Wall]);
+					const isOpen = this.tileGrid.get({x,y}) == TileType.OpenDoor;
 					if (mask == 5) {
 						// vertical door, hinge in bottom left corner, opens down
 						if (isOpen) {
@@ -113,7 +115,7 @@ export class MapPainter {
 					}
 				}
 				else {
-					const mask = this.getBitmask8({x, y}, true);
+					const mask = this.tileGrid.getBitmask8({x, y}, [TileType.Wall, TileType.OpenDoor, TileType.ClosedDoor]);
 					const bag = this.wangBagLookup.get(mask);
 					if (bag === undefined) {
 						throw new Error(`No wang tile for mask ${mask}`);
@@ -130,7 +132,7 @@ export class MapPainter {
 				if (this.isWall({x,y}) || this.isDoor({x, y})) {
 					continue;
 				}
-				const mask = this.getBitmask4({x, y}, false);
+				const mask = this.tileGrid.getBitmask4({x,y}, [TileType.Wall]);
 				switch (mask) {
 					case 0:
 						wallLayer.data[targetIndex] = 0;
@@ -261,7 +263,7 @@ export class MapPainter {
 			78
 		]);
 
-		this.wangBagLookup.set(0, this.floorBag);
+		this.wangBagLookup.set(0, this.wallBag);
 		this.wangBagLookup.set(4, this.wallBag);
 		this.wangBagLookup.set(92, this.cornerTopLeftBag);
 		this.wangBagLookup.set(124, this.topVoidBag);
@@ -315,11 +317,6 @@ export class MapPainter {
 		return (pt.y * this.map.width) + pt.x;
 	}
 
-	readTile(pt: Point): TileType {
-		const idx = this.pointToIndex(pt);
-		return (this.map.layers[0]).data[idx] as TileType;
-	}
-
 	isWall(pt: Point, countDoors?: boolean): boolean {
 		countDoors ||= false;
 		if (   pt.x < 0 || pt.x >= this.map.width!
@@ -328,7 +325,7 @@ export class MapPainter {
 			return true;
 		}
 
-		const value = this.readTile(pt);
+		const value = this.tileGrid.get(pt);
 		if (countDoors) {
 			return value === TileType.Wall || value === TileType.ClosedDoor || value == TileType.OpenDoor;
 		}
@@ -344,61 +341,8 @@ export class MapPainter {
 			return true;
 		}
 
-		const value = this.readTile(pt);
+		const value = this.tileGrid.get(pt);
 		return value === TileType.ClosedDoor || value == TileType.OpenDoor;
-	}
-
-	getBitmask8(position: Point, countDoors?: boolean) {
-		countDoors ||= false;
-		const deltas: Point[] = [
-			{x:  0, y: -1}, // north (1)
-			{x:  1, y: -1}, // northeast (2)
-			{x:  1, y:  0}, // east (4)
-			{x:  1, y:  1}, // southeast (8)
-			{x:  0, y:  1}, // south (16)
-			{x: -1, y:  1}, // southwest (32)
-			{x: -1, y:  0}, // west (64)
-			{x: -1, y: -1}, // northwest (128)
-		];
-		let mask = 0;
-		for (let di = 0; di < deltas.length; di++) {
-			const pt = {
-				x: position.x + deltas[di].x,
-				y: position.y + deltas[di].y,
-			};
-			if (this.isWall(pt, countDoors)) {
-				mask |= (1 << di);
-			}
-		}
-		// clear diagonals if their neighboring edges aren't set
-		//   (this is what lets us reduce the wang set from 255 to 47)
-		for (const [n1, n2, d] of [[1,4,2], [4,16,8], [16,64,32], [64,1,128]]) {
-			if (!((mask & n1) && (mask & n2))) {
-				mask &= ~d;
-			}
-		}
-		return mask;
-	}
-
-	getBitmask4(position: Point, countDoors?: boolean) {
-		countDoors ||= false;
-		const deltas: Point[] = [
-			{x:  0, y: -1}, // north (1)
-			{x:  1, y:  0}, // east (2)
-			{x:  0, y:  1}, // south (4)
-			{x: -1, y:  0}, // west (8)
-		];
-		let mask = 0;
-		for (let di = 0; di < deltas.length; di++) {
-			const pt = {
-				x: position.x + deltas[di].x,
-				y: position.y + deltas[di].y,
-			};
-			if (this.isWall(pt, countDoors)) {
-				mask |= (1 << di);
-			}
-		}
-		return mask;
 	}
 }
 

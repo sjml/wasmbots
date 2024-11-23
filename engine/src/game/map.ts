@@ -8,8 +8,8 @@ import { MapPainter } from "../generation/painter.ts";
 
 
 // right now assuming all maps are the same size
-const MAP_WIDTH = 64;
-const MAP_HEIGHT = 40;
+const MAP_WIDTH = 63;
+const MAP_HEIGHT = 39;
 
 
 const TILED_FLAG_FLIPPED_HORIZONTALLY    = 0x80000000;

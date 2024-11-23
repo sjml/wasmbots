@@ -54,14 +54,14 @@ _values = [
 [[enums]]
 _name = "Direction"
 _values = [
+    "North",
+    "Northeast",
     "East",
     "Southeast",
     "South",
     "Southwest",
     "West",
     "Northwest",
-    "North",
-    "Northeast",
 ]
 
 # player receives every tick
@@ -328,14 +328,14 @@ export enum TileType {
 }
 
 export enum Direction {
-	East = 0,
-	Southeast = 1,
-	South = 2,
-	Southwest = 3,
-	West = 4,
-	Northwest = 5,
-	North = 6,
-	Northeast = 7,
+	North = 0,
+	Northeast = 1,
+	East = 2,
+	Southeast = 3,
+	South = 4,
+	Southwest = 5,
+	West = 6,
+	Northwest = 7,
 }
 
 export class Point {
@@ -653,7 +653,7 @@ export class Resign extends Message {
 }
 
 export class MoveTo extends Message {
-	direction: Direction = Direction.East;
+	direction: Direction = Direction.North;
 	distance: number = 0;
 
 	getMessageType() : MessageType { return MessageType.MoveToType; }

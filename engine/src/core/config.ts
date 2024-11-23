@@ -24,8 +24,8 @@ const config = {
 	defaultPlayerOpenReach: 1,
 
 	// visualization stuff
-	gameWidth: 1024,
-	gameHeight: 640,
+	gameWidth: 63 * 16,
+	gameHeight: 39 * 16,
 	tileSize: 16,
 	minimumTurnTime: 200, // minimum amount of time each turn will take, to give space for animations
 	turnTimeBuffer: 75,   // set to zero for completely smooth player movement (assuming they all stay w/in tick budget)

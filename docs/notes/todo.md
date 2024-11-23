@@ -2,11 +2,13 @@
 * review [memory thoughts](./misc.md#memory-thoughts)
 
 * map variations
-    * first some general cleanup
-        * change bootloader to only pull used tilesets (will have to iterate over supported levels)
+    * change bootloader to only pull used tilesets (have to iterate over supported levels?)
+    * can the world dimensions be fixed reasonably? 
     * fix arena to use new map style
     * generator:
-        * add roomIndex to tiles
+        * button on ui to download map? 
+        * figure out typings ffs
+        * add roomIndex to tiles? (or use objects?)
         * make builder pull from the TSJ file instead of hardcoding it in the template
         * worth making the visuals one group?
     * add map parameter to embedded component
@@ -62,6 +64,7 @@
 
 ## polish
 * clean up / organize Zig library; just kind of a mess right now
+* consistency on underscore prefixing for private variables; commit one way or the other
 * Visuals: clutter / lighting pass on rendering
     * light following player showing sphere of awarenss? 
     * kind of a pain with Phaser; also wouldn't easily reflect actual FOV

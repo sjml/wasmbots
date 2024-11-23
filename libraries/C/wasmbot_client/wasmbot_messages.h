@@ -56,14 +56,14 @@ _values = [
 [[enums]]
 _name = "Direction"
 _values = [
+    "North",
+    "Northeast",
     "East",
     "Southeast",
     "South",
     "Southwest",
     "West",
     "Northwest",
-    "North",
-    "Northeast",
 ]
 
 # player receives every tick
@@ -203,14 +203,14 @@ typedef enum WasmBots_TileType {
 bool WasmBots_IsValidTileType(uint8_t value);
 
 typedef enum WasmBots_Direction {
-	WasmBots_Direction_East = 0,
-	WasmBots_Direction_Southeast = 1,
-	WasmBots_Direction_South = 2,
-	WasmBots_Direction_Southwest = 3,
-	WasmBots_Direction_West = 4,
-	WasmBots_Direction_Northwest = 5,
-	WasmBots_Direction_North = 6,
-	WasmBots_Direction_Northeast = 7
+	WasmBots_Direction_North = 0,
+	WasmBots_Direction_Northeast = 1,
+	WasmBots_Direction_East = 2,
+	WasmBots_Direction_Southeast = 3,
+	WasmBots_Direction_South = 4,
+	WasmBots_Direction_Southwest = 5,
+	WasmBots_Direction_West = 6,
+	WasmBots_Direction_Northwest = 7
 } WasmBots_Direction;
 bool WasmBots_IsValidDirection(uint8_t value);
 
@@ -866,14 +866,14 @@ bool WasmBots_IsValidTileType(uint8_t value) {
 
 bool WasmBots_IsValidDirection(uint8_t value) {
 	switch (value) {
+		case WasmBots_Direction_North:
+		case WasmBots_Direction_Northeast:
 		case WasmBots_Direction_East:
 		case WasmBots_Direction_Southeast:
 		case WasmBots_Direction_South:
 		case WasmBots_Direction_Southwest:
 		case WasmBots_Direction_West:
 		case WasmBots_Direction_Northwest:
-		case WasmBots_Direction_North:
-		case WasmBots_Direction_Northeast:
 			return true;
 		default:
 			return false;
@@ -1279,7 +1279,7 @@ WasmBots_err_t WasmBots_Resign_WriteBytes(WasmBots_DataAccess* w, const WasmBots
 
 const WasmBots_MoveTo WasmBots_MoveTo_default = {
 	._mt = WasmBots_MessageType_MoveTo,
-	.direction = WasmBots_Direction_East,
+	.direction = WasmBots_Direction_North,
 	.distance = 0,
 };
 

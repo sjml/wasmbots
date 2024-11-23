@@ -9,14 +9,14 @@ pub const Map = std.AutoHashMap(Point, msg.TileType);
 // maps to Direction; wish Zig had a way to make this more explicit
 pub const Movement = [_]Point{
     // zig fmt: off
+    Point{ .x =  0, .y = -1 }, // North
+    Point{ .x =  1, .y = -1 }, // Northeast
     Point{ .x =  1, .y =  0 }, // East
     Point{ .x =  1, .y =  1 }, // Southeast
     Point{ .x =  0, .y =  1 }, // South
     Point{ .x = -1, .y =  1 }, // Southwest
     Point{ .x = -1, .y =  0 }, // West
     Point{ .x = -1, .y = -1 }, // Northwest
-    Point{ .x =  0, .y = -1 }, // North
-    Point{ .x =  1, .y = -1 }, // Northeast
     // zig fmt: on
 };
 
@@ -91,23 +91,23 @@ pub const Point = struct {
 
     pub fn getNeighbors4(self: Point) [4]Point {
         return [4]Point{
+            self.add(Movement[@intFromEnum(msg.Direction.North)]),
             self.add(Movement[@intFromEnum(msg.Direction.East)]),
             self.add(Movement[@intFromEnum(msg.Direction.South)]),
             self.add(Movement[@intFromEnum(msg.Direction.West)]),
-            self.add(Movement[@intFromEnum(msg.Direction.North)]),
         };
     }
 
     pub fn getNeighbors8(self: Point) [8]Point {
         return [8]Point{
+            self.add(Movement[@intFromEnum(msg.Direction.North)]),
+            self.add(Movement[@intFromEnum(msg.Direction.Northeast)]),
             self.add(Movement[@intFromEnum(msg.Direction.East)]),
             self.add(Movement[@intFromEnum(msg.Direction.Southeast)]),
             self.add(Movement[@intFromEnum(msg.Direction.South)]),
             self.add(Movement[@intFromEnum(msg.Direction.Southwest)]),
             self.add(Movement[@intFromEnum(msg.Direction.West)]),
             self.add(Movement[@intFromEnum(msg.Direction.Northwest)]),
-            self.add(Movement[@intFromEnum(msg.Direction.North)]),
-            self.add(Movement[@intFromEnum(msg.Direction.Northeast)]),
         };
     }
 };
