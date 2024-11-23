@@ -1,13 +1,26 @@
 <script lang="ts">
 	import { getContext } from "svelte";
-	import { GameState } from "wasmbots";
+	import { GameState, RNG } from "wasmbots";
 
 	import { type WasmBotsState } from "../types.svelte";
 	const gameState: WasmBotsState = getContext("gameState");
 
 	async function regenMap() {
 		gameState.mapLoading = true;
-		await gameState.world!.setMap("dungeon");
+		let rng: RNG;
+		if (gameState.mapSeedLocked) {
+			const seedNumber = Number(gameState.mapSeed);
+			if (!Number.isNaN(seedNumber) && Number.isFinite(seedNumber)){
+				rng = new RNG(seedNumber);
+			}
+			else {
+				rng = new RNG(gameState.mapSeed);
+			}
+		}
+		else {
+			rng = new RNG(null);
+		}
+		await gameState.world!.setMap("dungeon", { rng });
 		gameState.mapLoading = false;
 	}
 

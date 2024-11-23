@@ -1,5 +1,4 @@
 ## dev
-
 * map variations
     * can the world dimensions be fixed reasonably? 
     * fix arena to use new map style
@@ -11,6 +10,12 @@
     * does the beschi generator actually work? it's untested...
   * update general library readme
 * review [memory thoughts](./misc.md#memory-thoughts)
+
+* settings?
+    * download map button can also go there 
+        * along with map generator settings
+    * add spinner during world reset
+    * maybe get more clever on what is passed through the generator parameters from the UI? `any` is a code smell. 
 
 * separate pages (maybe need to be separate svelte apps? 🫠)
     * current app
@@ -70,7 +75,7 @@
 * clean up / organize Zig library; just kind of a mess right now
 * consistency on underscore prefixing for private variables; commit one way or the other
 * Visuals: clutter / lighting pass on rendering
-    * light following player showing sphere of awarenss? 
+    * light following player showing sphere of awareness? 
     * kind of a pain with Phaser; also wouldn't easily reflect actual FOV
 * UI: landscape view on iPhone - the drawers don't extend into the island areas
 * Tech: ability to reseed player on reset

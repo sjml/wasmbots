@@ -5,7 +5,10 @@ import type { VisPlayer } from "./vis/player";
 export interface WasmBotsState {
 	world: World|null;
 	vis: WasmBotsVisualizer|null;
+
 	mapLoading: boolean;
+	mapSeed: string,
+	mapSeedLocked: boolean;
 }
 
 export type BotInfo = {

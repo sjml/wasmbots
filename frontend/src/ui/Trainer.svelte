@@ -11,7 +11,10 @@
 	const gameState: WasmBotsState = $state({
 		world: null,
 		vis: null,
+
 		mapLoading: false,
+		mapSeed: "",
+		mapSeedLocked: false,
 	});
 	setContext("gameState", gameState);
 

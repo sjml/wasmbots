@@ -42,8 +42,13 @@ export class RNG {
 		this._rng = prand.xoroshiro128plus(this._seed);
 	}
 
-	get seed(): number {
-		return this._seed;
+	get seed(): string {
+		if (this._seedStr != null) {
+			return this._seedStr;
+		}
+		else {
+			return this._seed.toString();
+		}
 	}
 
 	randInt(min: number, max: number) {

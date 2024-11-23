@@ -3,6 +3,9 @@
 // does not express the fullness of the file format,
 //   but just what I need to make TypeScript stop yelling.
 
+// https://doc.mapeditor.org/en/stable/reference/json-map-format/
+
+
 export type TileMap = {
 	type: "map",
 	version: string,
@@ -51,6 +54,9 @@ export type Tileset = {
 	tileheight: number,
 	firstgid: number,
 	tiles: Tile[],
+
+	// my own addition 😬
+	tileData?: any,
 };
 
 export type Tile = {

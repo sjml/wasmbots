@@ -13,6 +13,15 @@ body {
 	box-sizing: border-box;
 }
 
+a, a:visited {
+	color: darkgreen;
+}
+
+code {
+	font-family: 'Courier New', Courier, monospace;
+	font-weight: 600;
+}
+
 /* fixes the iOS landscape problem with UI chrome */
 @supports (-webkit-touch-callout: none) {
 	body {

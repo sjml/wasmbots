@@ -21,7 +21,7 @@ export class VisBootloader extends Phaser.Scene {
 			frameWidth: 16,
 			frameHeight: 16,
 		});
-		this.load.spritesheet("tiles-colors", "img/colors.png", {
+		this.load.spritesheet("tiles-data", "img/colors.png", {
 			frameWidth: 16,
 			frameHeight: 16,
 		});

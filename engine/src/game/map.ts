@@ -5,7 +5,7 @@ import { computeFOV } from "./fov.ts";
 import { TileType as TerrainTileType } from "../core/messages.ts";
 import { DungeonBuilder } from "../generation/builder.ts";
 import { MapPainter } from "../generation/painter.ts";
-
+import * as Tiled from "../generation/tileTypes.ts";
 
 // right now assuming all maps are the same size
 const MAP_WIDTH = 63;
@@ -45,12 +45,13 @@ export class WorldMap {
 	spawnPoints: Point[] = [];
 	minPlayers: number = 1;
 	maxPlayers: number = 1;
-	rawMapData: any;
+	rawMapData!: Tiled.TileMap;
+	randomSeed: string = "";
 
 	private constructor(){}
 
-	static async generate(generatorName: string): Promise<WorldMap> {
-		const builder = new DungeonBuilder();
+	static async generate(generatorName: string, options?: any): Promise<WorldMap> {
+		const builder = new DungeonBuilder(options ?? {});
 		builder.generate(MAP_WIDTH, MAP_HEIGHT, [
 			{
 				id: "spawnRoom1",
@@ -108,6 +109,12 @@ export class WorldMap {
 	}
 
 	private setupFromJson() {
+		for (const prop of this.rawMapData.properties ?? []) {
+			if (prop.name == "generationSeed") {
+				this.randomSeed = prop.value as string;
+				break;
+			}
+		}
 		for (const tsd of this.rawMapData.tilesets) {
 			const tileData: Map<number, TileRecord> = new Map();
 			for (const td of tsd.tiles) {

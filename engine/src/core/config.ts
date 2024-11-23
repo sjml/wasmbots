@@ -17,7 +17,7 @@ const config = {
 	// GameParameters
 	startingHitPoints: 10,
 	enabledMaps: [
-		"dungeon.painted",
+		"dungeon",
 	],
 	diagonalMovement: false,
 	defaultPlayerStride: 1,

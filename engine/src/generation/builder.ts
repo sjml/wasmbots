@@ -54,7 +54,7 @@ export abstract class MapBuilder {
 		templateData.properties.push({
 			name: "generationSeed",
 			type: "string",
-			value: this.rng.seed.toString(),
+			value: this.rng.seed,
 		});
 		templateData.properties = templateData.properties.concat(this.mapProperties || []);
 

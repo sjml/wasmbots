@@ -119,13 +119,13 @@ export class World extends EventTarget {
 		}
 	}
 
-	async setMap(mapName: string) {
+	async setMap(mapName: string, options?: any) {
 		if (this._gameState > GameState.Ready) {
 			throw new Error("Cannot change map after game start!");
 		}
 
 		// const newMap = await WorldMap.loadStatic(mapName);
-		const newMap = await WorldMap.generate("dungeon");
+		const newMap = await WorldMap.generate(mapName, options);
 
 		// handle potential player changes
 		if (this.currentMap) {
