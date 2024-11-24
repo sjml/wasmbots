@@ -20,7 +20,7 @@
 		else {
 			rng = new RNG(null);
 		}
-		await gameState.world!.setMap("dungeon", { rng });
+		await gameState.world!.setMap("dungeon", rng, $state.snapshot(gameState.mapGeneratorOptions));
 		gameState.mapLoading = false;
 	}
 

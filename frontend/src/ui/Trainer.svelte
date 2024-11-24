@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { setContext } from "svelte";
-	import { Player, CoreMsg } from "wasmbots";
+	import { Player, CoreMsg, DungeonBuilder } from "wasmbots";
 
 	import { type WasmBotsState } from "../types.svelte";
 	import Navbar from "./Navbar.svelte";
@@ -15,6 +15,7 @@
 		mapLoading: false,
 		mapSeed: "",
 		mapSeedLocked: false,
+		mapGeneratorOptions: DungeonBuilder.optionsDefaults,
 	});
 	setContext("gameState", gameState);
 

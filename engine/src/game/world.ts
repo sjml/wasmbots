@@ -5,6 +5,7 @@ import { WorldMap } from "./map.ts";
 import config from "../core/config.ts";
 import { type Point, Direction } from "../core/math.ts";
 import * as CoreMsg from "../core/messages.ts";
+import { type DungeonBuilderOptions } from "../generation/builder.ts";
 
 export enum GameState {
 	Setup,
@@ -119,13 +120,13 @@ export class World extends EventTarget {
 		}
 	}
 
-	async setMap(mapName: string, options?: any) {
+	async setMap(mapName: string, rng: RNG, options?: DungeonBuilderOptions) {
 		if (this._gameState > GameState.Ready) {
 			throw new Error("Cannot change map after game start!");
 		}
 
 		// const newMap = await WorldMap.loadStatic(mapName);
-		const newMap = await WorldMap.generate(mapName, options);
+		const newMap = await WorldMap.generate(mapName, rng, options);
 
 		// handle potential player changes
 		if (this.currentMap) {

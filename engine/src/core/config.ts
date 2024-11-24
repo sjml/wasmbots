@@ -1,3 +1,9 @@
+// right now assuming all maps are the same size
+	// (were originally 64x40, but map gen algorithm needs odd dimensions)
+const MAP_WIDTH = 65;
+const MAP_HEIGHT = 41;
+const TILE_SIZE = 16;
+
 const config = {
 	version: [0, 0, 1],
 
@@ -22,11 +28,13 @@ const config = {
 	diagonalMovement: false,
 	defaultPlayerStride: 1,
 	defaultPlayerOpenReach: 1,
+	mapWidth: MAP_WIDTH,
+	mapHeight: MAP_HEIGHT,
 
 	// visualization stuff
-	gameWidth: 63 * 16,
-	gameHeight: 39 * 16,
-	tileSize: 16,
+	gameWidth: MAP_WIDTH * TILE_SIZE,
+	gameHeight: MAP_HEIGHT * TILE_SIZE,
+	tileSize: TILE_SIZE,
 	minimumTurnTime: 200, // minimum amount of time each turn will take, to give space for animations
 	turnTimeBuffer: 75,   // set to zero for completely smooth player movement (assuming they all stay w/in tick budget)
 }

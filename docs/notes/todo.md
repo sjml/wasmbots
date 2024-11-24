@@ -1,31 +1,25 @@
 ## dev
 * map variations
-    * can the world dimensions be fixed reasonably? 
     * fix arena to use new map style
         * then change map selector UI to distinguish between static and dynamic
-    * button on ui to download map
 * BUG: switching maps makes character sprites change, and sometimes doubles
+* add spinner during world reset
+
+* review [memory thoughts](./misc.md#memory-thoughts)
 
 * fix client handshakes in go, rust
   * consider whether to yeet assemblyscript
     * does the beschi generator actually work? it's untested...
   * update general library readme
-* review [memory thoughts](./misc.md#memory-thoughts)
-
-* settings?
-    * map generator settings
-    * add spinner during world reset
-    * maybe get more clever on what is passed through the generator parameters from the UI? `any` is a code smell. 
 
 * separate pages (maybe need to be separate svelte apps? 🫠)
     * current app
     * trainer
-    * dungeon generator
+    * dungeon generator?
     * front page (static)
     * embedded demo
+        * need to do some work to get it running again
         * add map parameter to embedded component
-
-* then build the dungeon generator UI 😅
 
 * trainer
     * need to figure out debugger attaching to the process; maybe deno can just take a port number and hit it up instead of starting it directly? 

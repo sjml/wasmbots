@@ -6,11 +6,8 @@ import { TileType as TerrainTileType } from "../core/messages.ts";
 import { DungeonBuilder } from "../generation/builder.ts";
 import { MapPainter } from "../generation/painter.ts";
 import * as Tiled from "../generation/tileTypes.ts";
-
-// right now assuming all maps are the same size
-const MAP_WIDTH = 63;
-const MAP_HEIGHT = 39;
-
+import config from "../core/config.ts";
+import { RNG } from "./random.ts";
 
 const TILED_FLAG_FLIPPED_HORIZONTALLY    = 0x80000000;
 const TILED_FLAG_FLIPPED_VERTICALLY      = 0x40000000;
@@ -39,8 +36,8 @@ interface TileRecord {
 
 export class WorldMap {
 	name: string = "";
-	tiles: Tile[][] = Array.from({length: MAP_HEIGHT}, () =>
-		Array.from({ length: MAP_WIDTH }, () => new Tile())
+	tiles: Tile[][] = Array.from({length: config.mapHeight}, () =>
+		Array.from({ length: config.mapWidth }, () => new Tile())
 	);
 	spawnPoints: Point[] = [];
 	minPlayers: number = 1;
@@ -50,9 +47,9 @@ export class WorldMap {
 
 	private constructor(){}
 
-	static async generate(generatorName: string, options?: any): Promise<WorldMap> {
-		const builder = new DungeonBuilder(options ?? {});
-		builder.generate(MAP_WIDTH, MAP_HEIGHT, [
+	static async generate(generatorName: string, rng: RNG, options?: any): Promise<WorldMap> {
+		const builder = new DungeonBuilder(rng, [], options ?? {});
+		builder.generate(config.mapWidth, config.mapHeight, [
 			{
 				id: "spawnRoom1",
 				rect: new Rect(1, 1, 3, 3),
@@ -63,25 +60,25 @@ export class WorldMap {
 			},
 			{
 				id: "spawnRoom2",
-				rect: new Rect(59, 1, 3, 3),
+				rect: new Rect(61, 1, 3, 3),
 				metas: [{
-					position: {x: 60, y: 2},
+					position: {x: 62, y: 2},
 					type: "SpawnPoint"
 				}]
 			},
 			{
 				id: "spawnRoom3",
-				rect: new Rect(1, 35, 3, 3),
+				rect: new Rect(1, 37, 3, 3),
 				metas: [{
-					position: {x: 2, y: 36},
+					position: {x: 2, y: 38},
 					type: "SpawnPoint"
 				}]
 			},
 			{
 				id: "spawnRoom4",
-				rect: new Rect(59, 35, 3, 3),
+				rect: new Rect(61, 37, 3, 3),
 				metas: [{
-					position: {x: 60, y: 36},
+					position: {x: 62, y: 38},
 					type: "SpawnPoint"
 				}]
 			},
@@ -92,7 +89,7 @@ export class WorldMap {
 		painter.paint(tileset);
 
 		const newMap = new WorldMap();
-		newMap.name = `${generatorName}-{${builder.rng.seed}}`;
+		newMap.name = `${generatorName}-${crypto.randomUUID().replaceAll('-', '')}`;
 		newMap.rawMapData = painter.map;
 		newMap.setupFromJson();
 		return newMap;
@@ -153,7 +150,7 @@ export class WorldMap {
 		if (!terrainLayer || !metadataLayer) {
 			throw new Error("Invalid map data, missing required layers!");
 		}
-		if (this.rawMapData.width != MAP_WIDTH || this.rawMapData.height != MAP_HEIGHT) {
+		if (this.rawMapData.width != config.mapWidth || this.rawMapData.height != config.mapHeight) {
 			throw new Error("Invalid map data, wrong dimensions!");
 		}
 
@@ -182,9 +179,9 @@ export class WorldMap {
 			throw new Error(`Invalid tile mapping in lookup (${gid})`);
 		}
 
-		for (let y = 0; y < MAP_HEIGHT; y++) {
-			for (let x = 0; x < MAP_WIDTH; x++) {
-				const t = terrainLayer.data[(y * MAP_WIDTH) + x];
+		for (let y = 0; y < config.mapHeight; y++) {
+			for (let x = 0; x < config.mapWidth; x++) {
+				const t = terrainLayer.data[(y * config.mapWidth) + x];
 				const tr = lookupTile(t);
 
 				if (tr.terrain === undefined) {
@@ -194,9 +191,9 @@ export class WorldMap {
 			}
 		}
 
-		for (let y = 0; y < MAP_HEIGHT; y++) {
-			for (let x = 0; x < MAP_WIDTH; x++) {
-				const t = metadataLayer.data[(y * MAP_WIDTH) + x];
+		for (let y = 0; y < config.mapHeight; y++) {
+			for (let x = 0; x < config.mapWidth; x++) {
+				const t = metadataLayer.data[(y * config.mapWidth) + x];
 				const tr = lookupTile(t);
 
 				if (tr.terrain !== undefined) {
@@ -234,8 +231,8 @@ export class WorldMap {
 			this.maxPlayers = this.spawnPoints.length;
 		}
 
-		for (let y = 0; y < MAP_HEIGHT; y++) {
-			for (let x = 0; x < MAP_WIDTH; x++) {
+		for (let y = 0; y < config.mapHeight; y++) {
+			for (let x = 0; x < config.mapWidth; x++) {
 				// for now, should not be any void spots in the map
 				// (maybe someday a howling vortex somewhere?
 				//  more likely would be its own tile type and void
@@ -267,7 +264,7 @@ export class WorldMap {
 	}
 
 	getTile(x: number, y: number): Tile {
-		if (x < 0 || y < 0 || x >= MAP_WIDTH || y >= MAP_WIDTH) {
+		if (x < 0 || y < 0 || x >= config.mapWidth || y >= config.mapWidth) {
 			return new Tile();
 		}
 		return this.tiles[y][x];

@@ -47,10 +47,10 @@ export abstract class MapBuilder {
 	rng: RNG;
 	tiles: Array2D<TileType>;
 	metaTiles: Array2D<TileType>;
-	mapProperties?: any[];
+	mapProperties?: Tiled.TiledProperty[];
 
-	constructor(rng?: RNG, props?: any[]) {
-		this.rng = rng || new RNG(null);
+	constructor(rng: RNG, props: Tiled.TiledProperty[] = []) {
+		this.rng = rng;
 		this.tiles = new Array2D<TileType>(0, 0, TileType.Void);
 		this.metaTiles = new Array2D<TileType>(0, 0, TileType.Void);
 		this.mapProperties = props;
@@ -83,6 +83,13 @@ export abstract class MapBuilder {
 			type: "string",
 			value: this.rng.seed,
 		});
+		if ("generatorOptions" in this) {
+			templateData.properties.push({
+				name: "generatorOptions",
+				type: "string",
+				value: JSON.stringify(this.generatorOptions),
+			});
+		}
 		templateData.properties = templateData.properties.concat(this.mapProperties || []);
 
 		templateData.width = this.tiles.width;
@@ -146,38 +153,26 @@ interface DungeonRoomSpec {
 	}[];
 }
 
-interface DungeonBuilderOptions {
-	rng?: RNG;
+export interface DungeonBuilderOptions {
 	numRoomTries?: number;
 	extraConnectorChance?: number;
 	roomExtraSize?: number;
 	windingPercent?: number;
-	properties?: any[];
+	fillDeadEnds?: boolean;
 }
 
 
 // a simple adaptation of Robert Nystrom's "Rooms and Mazes" generator
 //     https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/
 export class DungeonBuilder extends MapBuilder {
-	private static readonly _defaults: DungeonBuilderOptions = {
+	static readonly optionsDefaults: DungeonBuilderOptions = {
 		numRoomTries: 200,
 		extraConnectorChance: 30,
 		roomExtraSize: 0,
 		windingPercent: 0,
-		properties: [
-			{
-				name: "maxPlayers",
-				type: "int",
-				value: 4
-			},
-			{
-				name: "minPlayers",
-				type: "int",
-				value: 1
-			},
-		],
+		fillDeadEnds: true,
 	};
-	opts: DungeonBuilderOptions = structuredClone(DungeonBuilder._defaults);
+	generatorOptions: DungeonBuilderOptions = structuredClone(DungeonBuilder.optionsDefaults);
 
 	width: number = -1;
 	height: number = -1;
@@ -187,21 +182,34 @@ export class DungeonBuilder extends MapBuilder {
 	regions: Array2D<number|null> = new Array2D(0, 0, null);
 	regionNames: Map<number, string> = new Map();
 
-	constructor(options?: DungeonBuilderOptions) {
-		super(options?.rng, options?.properties || DungeonBuilder._defaults.properties);
+	constructor(rng: RNG, properties: Tiled.TiledProperty[] = [], options?: DungeonBuilderOptions) {
+		if (properties.length == 0) {
+			properties = [
+				{
+					name: "maxPlayers",
+					type: "int",
+					value: 4
+				},
+				{
+					name: "minPlayers",
+					type: "int",
+					value: 1
+				},
+			];
+		}
+		super(rng, properties);
 		if (options) {
-			this.opts = structuredClone({...DungeonBuilder._defaults, ...options});
+			this.generatorOptions = structuredClone({...DungeonBuilder.optionsDefaults, ...options});
 		}
 	}
 
 	generate(width: number, height: number, seedRooms?: DungeonRoomSpec[]) {
-		const originalWidth = width;
-		const originalHeight = height;
+		if (width % 2 == 0 || height % 2 == 0) {
+			throw new Error("Map generation requires odd dimensions");
+		}
 
-		// this algorithm needs odd-sized dimensions;
-		//   will re-expand after if needed
-		this.width = width % 2 == 1 ? width : width - 1;
-		this.height = height % 2 == 1 ? height : height - 1;
+		this.width = width;
+		this.height = height;
 
 		this.rooms = [];
 		this.currentRegion = -1;
@@ -233,8 +241,9 @@ export class DungeonBuilder extends MapBuilder {
 		this.addRandomRooms();
 		this.mazeFill();
 		this.connectRegions();
-		this.removeDeadEnds();
-		this.fixDimensions(originalWidth, originalHeight);
+		if (this.generatorOptions.fillDeadEnds) {
+			this.removeDeadEnds();
+		}
 	}
 
 	addRoom(room: DungeonRoomSpec) {
@@ -255,8 +264,8 @@ export class DungeonBuilder extends MapBuilder {
 	}
 
 	addRandomRooms() {
-		for (let i = 0; i < this.opts.numRoomTries!; i++) {
-			const size = this.rng.randInt(1, 3 + this.opts.roomExtraSize!) * 2 + 1;
+		for (let i = 0; i < this.generatorOptions.numRoomTries!; i++) {
+			const size = this.rng.randInt(1, 3 + this.generatorOptions.roomExtraSize!) * 2 + 1;
 			const rectangularity = this.rng.randInt(0, 1 + Math.floor(size/2)) * 2;
 			let roomWidth = size;
 			let roomHeight = size;
@@ -319,7 +328,7 @@ export class DungeonBuilder extends MapBuilder {
 				if (
 					   lastDirection !== null
 					&& unmadeCells.indexOf(lastDirection) >= 0
-					&& this.rng.randInt(0, 100) > this.opts.windingPercent!
+					&& this.rng.randInt(0, 100) > this.generatorOptions.windingPercent!
 				) {
 					dir = lastDirection;
 				}
@@ -408,7 +417,7 @@ export class DungeonBuilder extends MapBuilder {
 				// potential extra connector, but only if we're in a good spot for it
 				const mask = this.tiles.getBitmask4(pos, [TileType.Wall]);
 				if (mask == 5 || mask == 10) {
-					if (this.rng.oneIn(this.opts.extraConnectorChance!)) {
+					if (this.rng.oneIn(this.generatorOptions.extraConnectorChance!)) {
 						const rarr = Array.from(connectorsToRegions.get(pos)!);
 						this.addJunction(pos, rarr[0], rarr[1]);
 					}
@@ -478,16 +487,6 @@ export class DungeonBuilder extends MapBuilder {
 			type = TileType.ClosedDoor;
 		}
 		this.tiles.set(pos, type);
-	}
-
-	fixDimensions(originalWidth: number, originalHeight: number) {
-		if (this.width == originalWidth && this.height == originalHeight) {
-			return;
-		}
-
-		this.tiles.expand(originalWidth - this.width, originalHeight - this.height, TileType.Wall);
-		this.width = originalWidth;
-		this.height = originalHeight;
 	}
 }
 

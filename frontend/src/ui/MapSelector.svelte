@@ -14,7 +14,9 @@
 		selectedMapName = mapName;
 		selectorVisible = false;
 		gameState.mapLoading = true;
-		await gameState.world!.setMap(selectedMapName);
+		// this needs to be updated to take an RNG
+		// await gameState.world!.setMap(selectedMapName);
+		throw new Error("needs to be updated before it's used");
 		gameState.mapLoading = false;
 	}
 

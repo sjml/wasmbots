@@ -3,7 +3,7 @@
 
 	import { getContext } from "svelte";
 	import { Config, Loader } from "wasmbots";
-	import LogSlider from "./LogSlider.svelte";
+	import MagicSlider from "./MagicSlider.svelte";
 	import ToggleLock from "./ToggleLock.svelte";
 	import { type WasmBotsState } from "../types.svelte";
     import { mapObjectToJSON } from "wasmbots/generation/builder";
@@ -74,16 +74,17 @@
 
 <div class="settings">
 	<h2>Simulation Settings</h2>
-	<LogSlider
+	<MagicSlider
 		bind:value={minTurnTime}
 		min={0}
 		max={5000}
 		name={"minimumTurnTime"}
+		sliderType={"logarithmic"}
 	/>
 	<div class="description">
-		Controls the minimum amount of time that it takes
-		for all bots to take their turn. (If some bots are
-		ticking slowly, it could go longer.) The default of
+		Controls the minimum amount of time in which all bots
+		take their turn. (If some bots are ticking slowly, it
+		could go longer than this minimum.) The default of
 		200ms gives them an urgent look without it feeling
 		like <a href="https://www.youtube.com/watch?v=ZnHmskwqCCQ&t=4s"
 		target="_blank">“Yakety Sax”</a> should be playing.
@@ -91,22 +92,28 @@
 		0ms to 5000ms.)
 	</div>
 
-	<LogSlider
+	<MagicSlider
 		bind:value={turnBuffer}
 		min={0}
 		max={500}
 		name={"turnTimeBuffer"}
+		sliderType={"logarithmic"}
 	/>
 	<div class="description">
 		A little harder to describe, but this is the amount
 		of slop time given between the <code>minimumTurnTime</code>
 		and the next bot starting its turn. Setting it to zero
-		makes for very fluid movement when everyone is staying
+		makes for very fluid movement… when everyone is staying
 		in their tick budgets.
 	</div>
 
 	<hr>
 	<h2>Map Generation</h2>
+	<div class="description">
+		The generator is a slightly modified implementation of Bob Nystrom’s
+		<a href="https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/" target="_blank"
+		>“Rooms and Mazes”</a> algorithm.
+	</div>
 	<div class="mapKnobs">
 		<button class="mapDownloadButton"
 			onclick={downloadMap}
@@ -128,7 +135,70 @@
 			>
 			<ToggleLock bind:locked={gameState.mapSeedLocked} />
 		</div>
-		<div class="caveat"><em>(will put some more knobs here eventually, along with a button to download the generated map)</em></div>
+
+		<MagicSlider
+			bind:value={gameState.mapGeneratorOptions.numRoomTries!}
+			min={1}
+			max={600}
+			name={"numRoomTries"}
+			sliderType={"linear"}
+		/>
+		<div class="description">
+			Controls how many times the algorithm will attempt to randomly
+			place rooms before carving the connecting mazes.
+		</div>
+
+		<MagicSlider
+			bind:value={gameState.mapGeneratorOptions.extraConnectorChance!}
+			min={1}
+			max={100}
+			name={"extraConnectorChance"}
+			sliderType={"linear"}
+		/>
+		<div class="description">
+			The “one-in-[X]” chance that a connector (door or hole in the wall)
+			will be added to a room that already has one. It’s an inverse
+			value; at 1, there will be enough doors to make even Monty Hall’s
+			head spin.
+		</div>
+
+		<MagicSlider
+			bind:value={gameState.mapGeneratorOptions.roomExtraSize!}
+			min={0}
+			max={10}
+			name={"roomExtraSize"}
+			sliderType={"linear"}
+		/>
+		<div class="description">
+			Increases the top-end of the room size range to allow for
+			larger spaces.
+		</div>
+
+		<MagicSlider
+			bind:value={gameState.mapGeneratorOptions.windingPercent!}
+			min={0}
+			max={100}
+			name={"windingPercent"}
+			sliderType={"linear"}
+		/>
+		<div class="description">
+			How twisty the maze connectors will be. (Note that this will
+			likely have no <em>visible</em> effect if you’re filling in
+			dead ends.)
+		</div>
+
+		<div class="checkboxSetting">
+			<label for="fillDeadEndsCheckbox"><code>fillDeadEnds</code></label>
+			<input type="checkbox"
+				name="fillDeadEndsCheckbox"
+				id="fillDeadEndsCheckbox"
+				bind:checked={gameState.mapGeneratorOptions.fillDeadEnds!}
+			>
+		</div>
+		<div class="description">
+			Whether dead ends will be backfilled to create empty spaces
+			on the map.
+		</div>
 	</div>
 
 </div>
@@ -139,9 +209,10 @@
 	}
 
 	.description {
-		margin-top: 10px;
-		margin-bottom: 20px;
+		margin-top: 5px;
+		margin-bottom: 25px;
 		font-size: small;
+		margin-left: 30px;
 	}
 
 	.description code {
@@ -171,8 +242,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		margin-bottom: 20px;
 	}
-
 
 	.mapSeedInput {
 		flex-grow: 1;
@@ -188,13 +259,14 @@
 		border: none;
 	}
 
+	.checkboxSetting label {
+		user-select: none;
+		margin-right: 5px;
+	}
+
 	.name {
 		margin-right: 10px;
 		display: flex;
 		align-items: center;
-	}
-
-	.caveat {
-		margin: 20px 50px;
 	}
 </style>

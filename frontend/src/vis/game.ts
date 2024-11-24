@@ -77,7 +77,9 @@ export class WasmBotsVisualizer extends Phaser.Game {
 	async loadMap(map: WorldMap) {
 		const newScene = await VisMap.from(map);
 		if (this._currentMapScene) {
-			this.scene.remove(`${this._currentMapScene.worldMap!.name}_Scene`);
+			const deadKey = `${this._currentMapScene.worldMap!.name}_Scene`;
+			this.scene.stop(deadKey);
+			this.scene.remove(deadKey);
 		}
 		this._currentMapScene = newScene;
 		this.scene.add(`${map.name}_Scene`, this._currentMapScene, true);

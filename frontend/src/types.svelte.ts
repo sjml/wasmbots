@@ -1,4 +1,4 @@
-import { World, Logger, Player } from "wasmbots";
+import { World, Logger, Player, type DungeonBuilderOptions } from "wasmbots";
 import { WasmBotsVisualizer } from "./vis/game";
 import type { VisPlayer } from "./vis/player";
 
@@ -9,6 +9,7 @@ export interface WasmBotsState {
 	mapLoading: boolean;
 	mapSeed: string,
 	mapSeedLocked: boolean;
+	mapGeneratorOptions: DungeonBuilderOptions;
 }
 
 export type BotInfo = {

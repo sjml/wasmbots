@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount, getContext } from "svelte";
-	import { Config, World } from "wasmbots";
+	import { RNG, World } from "wasmbots";
 
 	import { WasmBotsVisualizer } from "../vis/game";
 
@@ -15,7 +15,7 @@
 		gameState.vis = new WasmBotsVisualizer(parentDiv, gameState.world);
 		await gameState.vis.untilBootloaderDone();
 		gameState.mapLoading = true;
-		await gameState.world.setMap("dungeon");
+		await gameState.world.setMap("dungeon", new RNG(null));
 		gameState.mapLoading = false;
 	}
 

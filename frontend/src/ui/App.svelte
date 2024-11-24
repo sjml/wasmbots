@@ -13,6 +13,7 @@
 	import { type WasmBotsState } from "../types.svelte";
     import MapGenerator from "./MapGenerator.svelte";
     import SettingsList from "./SettingsList.svelte";
+    import { DungeonBuilder } from "wasmbots";
 
 	const gameState: WasmBotsState = $state({
 		world: null,
@@ -21,6 +22,7 @@
 		mapLoading: false,
 		mapSeed: "",
 		mapSeedLocked: false,
+		mapGeneratorOptions: DungeonBuilder.optionsDefaults,
 	});
 	setContext("gameState", gameState);
 

@@ -4,14 +4,15 @@ import { DungeonBuilder } from "../generation/builder.ts";
 import { MapPainter } from "../generation/painter.ts";
 import { RNG } from "../game/random.ts";
 import { Rect } from "../core/math.ts";
+import config from "../core/config.ts";
 
 if (Deno.args.length == 0) {
 	console.error("Give an output path.");
 	Deno.exit(1);
 }
 
-const builder = new DungeonBuilder({rng: new RNG(null)});
-builder.generate(63, 39, [
+const builder = new DungeonBuilder(new RNG(null));
+builder.generate(config.mapWidth, config.mapHeight, [
 	{
 		id: "spawnRoom1",
 		rect: new Rect(1, 1, 3, 3),

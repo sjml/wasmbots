@@ -12,3 +12,5 @@ export { WorldMap } from "./game/map.ts";
 export * from "./game/random.ts";
 export * from "./game/world.ts";
 export { Player } from "./game/player.ts";
+
+export { type DungeonBuilderOptions, DungeonBuilder } from "./generation/builder.ts";

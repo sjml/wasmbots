@@ -32,13 +32,13 @@ const layerTemplate: Tiled.TileLayer = {
 
 export class MapPainter {
 	map: Tiled.TileMap;
-	tileset: Tiled.Tileset;
+	tileset!: Tiled.Tileset;
 	wangBagLookup!: Map<number, TileBag>;
 	rng: RNG;
 	private tileGrid: Array2D<TileType>;
 
-	constructor(map: Tiled.TileMap, rng?: RNG) {
-		this.rng = rng || new RNG(null);
+	constructor(map: Tiled.TileMap, rng: RNG) {
+		this.rng = rng;
 		this.map = map;
 		this.tileGrid = Array2D.from((this.map.layers[0]).data, this.map.width, this.map.height);
 	}

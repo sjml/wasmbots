@@ -110,6 +110,9 @@ export class RNG {
 	}
 
 	oneIn(chance: number): boolean {
+		if (chance <= 0) {
+			return false;
+		}
 		return this.randInt(0, chance) == 0;
 	}
 }
