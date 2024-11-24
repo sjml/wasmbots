@@ -1,9 +1,12 @@
 <script lang="ts">
+	import { BlobReader, BlobWriter, TextReader, Uint8ArrayReader, ZipWriter } from "@zip.js/zip.js"
+
 	import { getContext } from "svelte";
-	import { Config } from "wasmbots";
+	import { Config, Loader } from "wasmbots";
 	import LogSlider from "./LogSlider.svelte";
 	import ToggleLock from "./ToggleLock.svelte";
 	import { type WasmBotsState } from "../types.svelte";
+    import { mapObjectToJSON } from "wasmbots/generation/builder";
 	const gameState: WasmBotsState = getContext("gameState");
 
 
@@ -25,6 +28,48 @@
 			gameState.mapSeed = evt.detail.newMap.randomSeed;
 		});
 	});
+
+	async function downloadMap() {
+		if (gameState.world == null || gameState.world.currentMap == null) {
+			return;
+		}
+
+		const zipWriter = new ZipWriter(new BlobWriter("application/zip"));
+
+		const mapDL = structuredClone(gameState.world.currentMap.rawMapData);
+		const imgList: string[] = [];
+		const base = "../../img/";
+		for (const ts of mapDL.tilesets) {
+			if (!ts.image.startsWith(base)) {
+				console.error(`Map tileset image with unknown path: ${ts.image}`);
+				continue;
+			}
+			const filename = ts.image.slice(base.length);
+			imgList.push(filename);
+			ts.image = `./img/${filename}`;
+		}
+		const downloads = imgList.map(async (imgFilename) => {
+			const bytes = await Loader.readBinaryFile(`$rsc/img/${imgFilename}`);
+			await zipWriter.add(`./img/${imgFilename}`, new Uint8ArrayReader(bytes));
+		});
+		await Promise.all(downloads);
+		await zipWriter.add(
+			`${gameState.world.currentMap.name}.tmj`,
+			new TextReader(mapObjectToJSON(mapDL))
+		);
+		const pkg = await zipWriter.close();
+		const url = window.URL.createObjectURL(pkg);
+		const a = document.createElement("a");
+		a.href = url;
+		a.download = `${gameState.world.currentMap.name}.zip`;
+		a.style.display = "none";
+		document.body.appendChild(a);
+		a.click();
+		a.remove();
+		setTimeout(() => {
+			window.URL.revokeObjectURL(url);
+		}, 1000);
+	}
 </script>
 
 <div class="settings">
@@ -62,18 +107,30 @@
 
 	<hr>
 	<h2>Map Generation</h2>
-	<div class="mapSeed">
-		<div class="name">Random Seed</div>
-		<input
-			type="text" name="mapSeed"
-			class="mapSeedInput"
-			maxlength="50"
-			readonly={gameState.mapSeedLocked}
-			bind:value={gameState.mapSeed}
+	<div class="mapKnobs">
+		<button class="mapDownloadButton"
+			onclick={downloadMap}
+			disabled={gameState.mapLoading}
 		>
-		<ToggleLock bind:locked={gameState.mapSeedLocked} />
+			<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"></path></svg>
+			Download Current Map
+		</button>
+
+		<div class="mapSeed">
+			<div class="name">Random Seed</div>
+			<input
+				type="text" name="mapSeed"
+				class="mapSeedInput"
+				maxlength="50"
+				readonly={gameState.mapSeedLocked}
+				disabled={gameState.mapLoading}
+				bind:value={gameState.mapSeed}
+			>
+			<ToggleLock bind:locked={gameState.mapSeedLocked} />
+		</div>
+		<div class="caveat"><em>(will put some more knobs here eventually, along with a button to download the generated map)</em></div>
 	</div>
-	<div class="caveat"><em>(will put some more knobs here eventually, along with a button to download the generated map)</em></div>
+
 </div>
 
 <style>
@@ -91,11 +148,31 @@
 		font-size: 110%;
 	}
 
+	.mapKnobs {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.mapDownloadButton {
+		width: 80%;
+		margin: 5px auto 20px auto;
+		font-size: larger;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.mapDownloadButton svg {
+		height: 25px;
+		margin-right: 10px;
+	}
+
 	.mapSeed {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 	}
+
 
 	.mapSeedInput {
 		flex-grow: 1;

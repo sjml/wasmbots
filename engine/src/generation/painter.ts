@@ -8,6 +8,7 @@ import { RNG } from "../game/random.ts";
 import { type Point, Array2D } from "../core/math.ts";
 import { TileType } from "../core/messages.ts";
 import * as Tiled from "./tileTypes.ts";
+import { mapObjectToJSON } from "./builder.ts";
 
 const TILED_FLAG_FLIPPED_HORIZONTALLY = 0x80000000;
 const TILED_FLAG_FLIPPED_VERTICALLY   = 0x40000000;
@@ -189,21 +190,7 @@ export class MapPainter {
 	}
 
 	toJSON(): string {
-		let outputJson = JSON.stringify(this.map, null, 2);
-		outputJson = outputJson.replaceAll(/"data": \[([^\]]+)\]/mg, (_, content: string) => {
-			const items = content.split(/,\s*/);
-
-			const wrapped = items.reduce((acc: string[][], item: string, idx: number) => {
-				if (idx % this.map.width == 0) {
-					acc.push([]);
-				}
-				acc[acc.length - 1].push(item.trim());
-				return acc;
-			}, []).map(row => `        ${row.join(", ")}`);
-
-			return `"data": [\n${wrapped.join(",\n")}\n      ]`;
-		});
-		return outputJson;
+		return mapObjectToJSON(this.map);
 	}
 
 	// Most of this should eventually get pushed into the tileset

@@ -31,7 +31,7 @@
 	onMount(() => {
 		if (!isSmallScreen) {
 			leftPanelVisible = true;
-			rightPanelVisible = true;
+			rightPanelVisible = false;
 		}
 
 		window.addEventListener("resize", updatePanelState);

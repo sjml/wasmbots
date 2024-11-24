@@ -4,6 +4,7 @@
     * fix arena to use new map style
         * then change map selector UI to distinguish between static and dynamic
     * button on ui to download map
+* BUG: switching maps makes character sprites change, and sometimes doubles
 
 * fix client handshakes in go, rust
   * consider whether to yeet assemblyscript
@@ -12,8 +13,7 @@
 * review [memory thoughts](./misc.md#memory-thoughts)
 
 * settings?
-    * download map button can also go there 
-        * along with map generator settings
+    * map generator settings
     * add spinner during world reset
     * maybe get more clever on what is passed through the generator parameters from the UI? `any` is a code smell. 
 

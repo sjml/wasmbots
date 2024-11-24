@@ -25,6 +25,23 @@ for (const t of mapTemplate.tilesets[0].tiles) {
 	}
 }
 
+export function mapObjectToJSON(map: Tiled.TileMap): string {
+	let outputJson = JSON.stringify(map, null, 2);
+	outputJson = outputJson.replaceAll(/"data": \[([^\]]+)\]/mg, (_, content: string) => {
+		const items = content.split(/,\s*/);
+
+		const wrapped = items.reduce((acc: string[][], item: string, idx: number) => {
+			if (idx % map.width == 0) {
+				acc.push([]);
+			}
+			acc[acc.length - 1].push(item.trim());
+			return acc;
+		}, []).map(row => `        ${row.join(", ")}`);
+
+		return `"data": [\n${wrapped.join(",\n")}\n      ]`;
+	});
+	return outputJson;
+}
 
 export abstract class MapBuilder {
 	rng: RNG;
@@ -42,10 +59,20 @@ export abstract class MapBuilder {
 
 	abstract generate(width: number, height: number): void;
 
-	toTiled(): any {
+	toTiled(): Tiled.TileMap {
 		const templateData = structuredClone(mapTemplate);
 
 		templateData.properties = [];
+		templateData.properties.push({
+			name: "generatedBy",
+			type: "string",
+			value: "https://github.com/sjml/wasmbots",
+		});
+		templateData.properties.push({
+			name: "generationTimestamp",
+			type: "string",
+			value: new Date().toISOString(),
+		});
 		templateData.properties.push({
 			name: "gitRevision",
 			type: "string",
@@ -97,21 +124,7 @@ export abstract class MapBuilder {
 
 	toJSON(): string {
 		const templateData = this.toTiled();
-		let outputJson = JSON.stringify(templateData, null, 2);
-		outputJson = outputJson.replaceAll(/"data": \[([^\]]+)\]/mg, (_, content: string) => {
-			const items = content.split(/,\s*/);
-
-			const wrapped = items.reduce((acc: string[][], item: string, idx: number) => {
-				if (idx % this.tiles.width == 0) {
-					acc.push([]);
-				}
-				acc[acc.length - 1].push(item.trim());
-				return acc;
-			}, []).map(row => `        ${row.join(", ")}`);
-
-			return `"data": [\n${wrapped.join(",\n")}\n      ]`;
-		});
-		return outputJson;
+		return mapObjectToJSON(templateData);
 	}
 }
 
