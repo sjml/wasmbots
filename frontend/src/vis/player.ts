@@ -76,7 +76,7 @@ export class VisPlayer extends Phaser.GameObjects.Sprite {
 				targets: this,
 				x: this.tilePosition.x * Config.tileSize,
 				y: this.tilePosition.y * Config.tileSize,
-				duration: Config.minimumTurnTime - Config.turnTimeBuffer,
+				duration: Math.min(Config.minimumTurnTime - Config.turnTimeBuffer, 200),
 				ease: 'Linear'
 			});
 		}

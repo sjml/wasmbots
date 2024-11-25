@@ -51,7 +51,7 @@ export class VisMap extends Phaser.Scene {
 					// fire callback if needed
 				}
 			});
-			this.cameras.main.zoomTo(5.0, duration, ZOOM_FUNC);
+			this.cameras.main.zoomTo(Config.zoomInDistance, duration, ZOOM_FUNC);
 			this.cameras.main.startFollow(data.target, true);
 		}, this);
 		VisEventBus.on("zoom-out", () => {

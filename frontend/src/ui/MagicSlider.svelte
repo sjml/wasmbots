@@ -7,9 +7,10 @@
 		min: number;
 		max: number;
 		name: string;
-		sliderType: "linear"|"logarithmic";
+		integral?: boolean;
+		sliderType?: "linear"|"logarithmic";
 	}
-	let { value = $bindable(), min, max, name, sliderType }: Props = $props();
+	let { value = $bindable(), min, max, name, integral = true, sliderType = "linear" }: Props = $props();
 
 	function sliderToValue(n: number): number {
 		if (sliderType == "logarithmic") {
@@ -18,11 +19,19 @@
 			const vmax = Math.log(max);
 
 			const scale = (vmax - vmin) / (internalMax - internalMin);
-			return Math.round(Math.exp(vmin + scale * (n - internalMin)));
+			const val = Math.exp(vmin + scale * (n - internalMin));
+			if (integral) {
+				return Math.round(val);
+			}
+			return val;
 		}
 		else { // if (sliderType == "linear")
 			const scale = (max - min) / (internalMax - internalMin);
-			return Math.round(min + scale * (n - internalMin));
+			const val = min + scale * (n - internalMin);
+			if (integral) {
+				return Math.round(val);
+			}
+			return val;
 		}
 	}
 
@@ -33,11 +42,19 @@
 			const vmax = Math.log(max);
 
 			const scale = (vmax - vmin) / (internalMax - internalMin);
-			return Math.round((Math.log(n) - vmin) / scale + internalMin);
+			const val = (Math.log(n) - vmin) / scale + internalMin;
+			if (integral) {
+				return Math.round(val);
+			}
+			return val;
 		}
 		else { // if (sliderType == "linear")
 			const scale = (max - min) / (internalMax - internalMin);
-			return Math.round((n - min) / scale + internalMin);
+			const val = (n - min) / scale + internalMin;
+			if (integral) {
+				return Math.round(val);
+			}
+			return val;
 		}
 	}
 
@@ -50,7 +67,7 @@
 <div class="logSlider">
 	<div class="nameValue">
 		<div class="name"><code>{name}</code></div>
-		<div class="value">{value}</div>
+		<div class="value">{integral ? value : value.toFixed(2)}</div>
 	</div>
 	<input type="range"
 		class="slider"

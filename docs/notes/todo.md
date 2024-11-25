@@ -1,8 +1,9 @@
 ## dev
-* map variations
-    * fix arena to use new map style
-        * then change map selector UI to distinguish between static and dynamic
+* fix arena to use new map style
+    * then change map selector UI to distinguish between static and dynamic
+
 * BUG: switching maps makes character sprites change, and sometimes doubles
+    * can't delete bots from list after reset
 * add spinner during world reset
 
 * review [memory thoughts](./misc.md#memory-thoughts)
@@ -66,9 +67,12 @@
 
 
 ## polish
-* clean up / organize Zig library; just kind of a mess right now
-* consistency on underscore prefixing for private variables; commit one way or the other
-* Visuals: clutter / lighting pass on rendering
+* Code
+    * clean up / organize Zig library; just kind of a mess right now
+    * consistency on underscore prefixing for private variables; commit one way or the other
+    * organize imports in .ts files
+* Visuals: 
+    * clutter / lighting pass on rendering
     * light following player showing sphere of awareness? 
     * kind of a pain with Phaser; also wouldn't easily reflect actual FOV
 * UI: landscape view on iPhone - the drawers don't extend into the island areas

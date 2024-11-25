@@ -37,5 +37,6 @@ const config = {
 	tileSize: TILE_SIZE,
 	minimumTurnTime: 200, // minimum amount of time each turn will take, to give space for animations
 	turnTimeBuffer: 75,   // set to zero for completely smooth player movement (assuming they all stay w/in tick budget)
+	zoomInDistance: 5.0,
 }
 export default config;

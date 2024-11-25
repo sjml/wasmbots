@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { BlobReader, BlobWriter, TextReader, Uint8ArrayReader, ZipWriter } from "@zip.js/zip.js"
+	import { BlobWriter, TextReader, Uint8ArrayReader, ZipWriter } from "@zip.js/zip.js"
 
 	import { getContext } from "svelte";
 	import { Config, Loader } from "wasmbots";
@@ -9,6 +9,10 @@
     import { mapObjectToJSON } from "wasmbots/generation/builder";
 	const gameState: WasmBotsState = getContext("gameState");
 
+	let zoomInDistance = $state(Config.zoomInDistance);
+	$effect(() => {
+		Config.zoomInDistance = zoomInDistance;
+	});
 
 	let minTurnTime = $state(Config.minimumTurnTime);
 	$effect(() => {
@@ -73,6 +77,21 @@
 </script>
 
 <div class="settings">
+	<h2>UI Settings</h2>
+	<MagicSlider
+		bind:value={zoomInDistance}
+		min={1.5}
+		max={12.0}
+		integral={false}
+		name={"zoomInDistance"}
+	/>
+	<div class="description">
+		Controls how far the view zooms in when you click on a
+		character portrait. (Does not reframe it live; you have
+		to zoom out and back in to see its effect.)
+	</div>
+
+	<hr>
 	<h2>Simulation Settings</h2>
 	<MagicSlider
 		bind:value={minTurnTime}
@@ -104,7 +123,9 @@
 		of slop time given between the <code>minimumTurnTime</code>
 		and the next bot starting its turn. Setting it to zero
 		makes for very fluid movement… when everyone is staying
-		in their tick budgets.
+		in their tick budgets. The default of 75ms makes it clear
+		that the movements are discrete, but they don't linger too
+		long. (Slider is also logarithmic, from 0ms to 500ms.)
 	</div>
 
 	<hr>
@@ -141,7 +162,6 @@
 			min={1}
 			max={600}
 			name={"numRoomTries"}
-			sliderType={"linear"}
 		/>
 		<div class="description">
 			Controls how many times the algorithm will attempt to randomly
@@ -153,7 +173,6 @@
 			min={1}
 			max={100}
 			name={"extraConnectorChance"}
-			sliderType={"linear"}
 		/>
 		<div class="description">
 			The “one-in-[X]” chance that a connector (door or hole in the wall)
@@ -165,9 +184,8 @@
 		<MagicSlider
 			bind:value={gameState.mapGeneratorOptions.roomExtraSize!}
 			min={0}
-			max={10}
+			max={7}
 			name={"roomExtraSize"}
-			sliderType={"linear"}
 		/>
 		<div class="description">
 			Increases the top-end of the room size range to allow for
@@ -179,7 +197,6 @@
 			min={0}
 			max={100}
 			name={"windingPercent"}
-			sliderType={"linear"}
 		/>
 		<div class="description">
 			How twisty the maze connectors will be. (Note that this will
