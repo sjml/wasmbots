@@ -23,7 +23,8 @@ const config = {
 	// GameParameters
 	startingHitPoints: 10,
 	enabledMaps: [
-		"dungeon",
+		"dynamic:dungeon",
+		"static:arena",
 	],
 	diagonalMovement: false,
 	defaultPlayerStride: 1,

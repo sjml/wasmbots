@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getContext, onMount } from "svelte";
-	import { Config, GameState } from "wasmbots";
+	import { Config, GameState, RNG } from "wasmbots";
 
 	import { type WasmBotsState } from "../types.svelte";
 	const gameState: WasmBotsState = getContext("gameState");
@@ -9,14 +9,52 @@
 	let button: HTMLButtonElement;
 	let dropdown: HTMLDivElement | null = $state(null);
 
-	let selectedMapName: string = $state("");
+	function handleKeyDown(evt: KeyboardEvent) {
+		const isRegenerateCommand = (evt.ctrlKey || evt.metaKey)
+									&& evt.altKey
+									&& evt.code === "KeyR";
+		if (gameState.currentMapOptionString.startsWith("dynamic:") && isRegenerateCommand) {
+			evt.preventDefault();
+			selectMap(gameState.currentMapOptionString);
+		}
+	}
+
+	interface MapSelectorOption {
+		isDynamic: boolean;
+		name: string;
+		full: string;
+	};
+	let options: MapSelectorOption[] = $state([]);
+	onMount(() => {
+		options = Config.enabledMaps.map(mapName => {
+			const [mapType, name] = mapName.split(":");
+			return { isDynamic: mapType == "dynamic", name, full: mapName };
+		});
+
+		window.addEventListener("keydown", handleKeyDown);
+		return () => {
+			window.removeEventListener("keydown", handleKeyDown)
+		};
+	});
+
 	async function selectMap(mapName: string) {
-		selectedMapName = mapName;
+		gameState.currentMapOptionString = mapName;
 		selectorVisible = false;
 		gameState.mapLoading = true;
-		// this needs to be updated to take an RNG
-		// await gameState.world!.setMap(selectedMapName);
-		throw new Error("needs to be updated before it's used");
+		let rng: RNG;
+		if (gameState.mapSeedLocked) {
+			const seedNumber = Number(gameState.mapSeed);
+			if (!Number.isNaN(seedNumber) && Number.isFinite(seedNumber)){
+				rng = new RNG(seedNumber);
+			}
+			else {
+				rng = new RNG(gameState.mapSeed);
+			}
+		}
+		else {
+			rng = new RNG(null);
+		}
+		await gameState.world!.setMap(gameState.currentMapOptionString, rng, $state.snapshot(gameState.mapGeneratorOptions));
 		gameState.mapLoading = false;
 	}
 
@@ -46,8 +84,10 @@
 			iAmEnabled = evt.detail.newState <= GameState.Ready;
 		});
 		gameState.world.on("mapChanged", (evt) => {
-			if (selectedMapName.length == 0) {
-				selectedMapName = evt.detail.newMap.name;
+			if (gameState.currentMapOptionString.length == 0) {
+				const prefix = evt.detail.newMap.isDynamic ? "dynamic" : "static";
+				const name = evt.detail.newMap.isDynamic ? evt.detail.newMap.name.split("-")[0] : evt.detail.newMap.name;
+				gameState.currentMapOptionString = `${prefix}:${name}`;
 			}
 		});
 	});
@@ -60,16 +100,27 @@
 
 	{#if selectorVisible}
 		<div bind:this={dropdown} class="mapSelectDropdown" role="listbox">
-			{#each Config.enabledMaps as mapName }
+			{#each options as mapOption }
+				{@const isCurrent = mapOption.full === gameState.currentMapOptionString}
 				<label class="mapOption">
 					<input
 						type="radio"
 						name="mapSelection"
-						value={mapName}
-						checked={mapName === selectedMapName}
-						onchange={() => selectMap(mapName)}
+						value={mapOption.full}
+						checked={isCurrent}
+						onchange={() => selectMap(mapOption.full)}
 					/>
-					{mapName}
+					{mapOption.name}
+					{#if isCurrent && gameState.currentMapOptionString.startsWith("dynamic:") && gameState.world !== null && gameState.world.gameState < GameState.Running }
+						<div class="regenNote">
+							{#if navigator.platform.includes("Mac")}
+								⌘+⌥+R
+							{:else}
+								Ctrl+Alt+R
+							{/if}
+							to regenerate
+						</div>
+					{/if}
 				</label>
 			{/each}
 		</div>
@@ -106,5 +157,13 @@
 
 	.mapOption:hover {
 		background-color: rgb(32, 32, 32);
+	}
+
+	.regenNote {
+		background-color: rgb(110, 110, 110);
+		padding: 5px 10px;
+		border-radius: 4px;
+		font-size: x-small;
+		white-space: nowrap;
 	}
 </style>

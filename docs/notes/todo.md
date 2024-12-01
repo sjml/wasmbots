@@ -1,7 +1,4 @@
 ## dev
-* fix arena to use new map style
-    * then change map selector UI to distinguish between static and dynamic
-
 * BUG: switching maps makes character sprites change, and sometimes doubles
     * can't delete bots from list after reset
 * add spinner during world reset
@@ -20,7 +17,7 @@
     * front page (static)
     * embedded demo
         * need to do some work to get it running again
-        * add map parameter to embedded component
+        * add map parameter(s?) to embedded component
 
 * trainer
     * need to figure out debugger attaching to the process; maybe deno can just take a port number and hit it up instead of starting it directly? 
@@ -45,6 +42,9 @@
 
 * game
     * players should(?) collide with each other
+    * need to figure out how to convey other stuff you see beside terrain
+        * if a square can contain more than one thing (and it probably should) it gets tough
+        * probably a generic-ish "Entity" type with an enum for Monster/Player/Item/etc., a location field, and, say, four bytes worth of data that have to be parsed on the client side? (annoying, but anything else would require something much more complicated than beschi)
     * items, weapons, armor(?), spells
     * trapdoors with tunnels, teleporters
     * traps? 
@@ -71,6 +71,18 @@
     * clean up / organize Zig library; just kind of a mess right now
     * consistency on underscore prefixing for private variables; commit one way or the other
     * organize imports in .ts files
+    * clean up / clear out old test code and deno-cli stuff in engine
+    * set up a single version number that can progress in lockstep
+        * will probably need a custom script to get libraries versioned similarly
+            * (or maybe they should just track manually and align with major.minor?)
+        * code points:
+            * frontend/package.json
+            * engine/package.json
+            * engine/src/core/config.ts
+            * client libraries
+                * hmmm, allegedly Rust crate doesn't **need** a version number, Go actually doesn't even have them, Zig doesn't really have packages yet, C is C... 
+                * if doable, just kill version numbers in the client libraries
+                  * (if this thing ever takes off and they should be published in package registries: pull them out to their own git repos and version them then)
 * Visuals: 
     * clutter / lighting pass on rendering
     * light following player showing sphere of awareness? 

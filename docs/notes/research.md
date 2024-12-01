@@ -50,3 +50,7 @@
 * https://www.youtube.com/watch?v=btnH0x7_1g8
 * https://github.com/sporadic-labs/tile-extruder?tab=readme-ov-file
 * https://www.sandromaglione.com/articles/how-to-create-a-pixel-art-tileset-complete-guide
+
+### "tech" "art"
+* https://blog.ourcade.co/posts/2020/phaser-3-object-reveal-scratch-off-alpha-mask/
+* https://blog.ourcade.co/posts/2020/phaser-3-object-reveal-flashlight-spotlight-magic-lens/

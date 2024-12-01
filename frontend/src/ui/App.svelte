@@ -10,20 +10,10 @@
 	import DrawerPanel from "./DrawerPanel.svelte";
 	import BotSlotList from "./BotSlotList.svelte";
 
-	import { type WasmBotsState } from "../types.svelte";
-    import MapGenerator from "./MapGenerator.svelte";
+	import { type WasmBotsState, DefaultWasmBotsState } from "../types.svelte";
     import SettingsList from "./SettingsList.svelte";
-    import { DungeonBuilder } from "wasmbots";
 
-	const gameState: WasmBotsState = $state({
-		world: null,
-		vis: null,
-
-		mapLoading: false,
-		mapSeed: "",
-		mapSeedLocked: false,
-		mapGeneratorOptions: DungeonBuilder.optionsDefaults,
-	});
+	const gameState: WasmBotsState = $state(structuredClone(DefaultWasmBotsState));
 	setContext("gameState", gameState);
 
 	let leftPanelVisible = $state(false);
@@ -98,7 +88,7 @@
 			<div class="divider"></div>
 		{/if}
 		{#if gameState.world }
-			<MapGenerator />
+			<MapSelector />
 			<div class="divider"></div>
 			<FlowControl />
 		{/if}

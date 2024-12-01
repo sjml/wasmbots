@@ -7,10 +7,13 @@
 		min: number;
 		max: number;
 		name: string;
-		integral?: boolean;
+		integral?: boolean; // if we're only working with integers (default true)
+		precision?: number;  // if we're not integral, how many numbers after the decimal to show (default 2)
 		sliderType?: "linear"|"logarithmic";
+		// yes, "linear" is kind of silly because it's just re-implementing the default behavior
+		//    of a ranged input but it lets me use the same component and styling for both.
 	}
-	let { value = $bindable(), min, max, name, integral = true, sliderType = "linear" }: Props = $props();
+	let { value = $bindable(), min, max, name, integral = true, precision = 2, sliderType = "linear" }: Props = $props();
 
 	function sliderToValue(n: number): number {
 		if (sliderType == "logarithmic") {
@@ -67,7 +70,7 @@
 <div class="logSlider">
 	<div class="nameValue">
 		<div class="name"><code>{name}</code></div>
-		<div class="value">{integral ? value : value.toFixed(2)}</div>
+		<div class="value">{integral ? value : value.toFixed(precision)}</div>
 	</div>
 	<input type="range"
 		class="slider"

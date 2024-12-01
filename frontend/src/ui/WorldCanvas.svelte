@@ -15,7 +15,7 @@
 		gameState.vis = new WasmBotsVisualizer(parentDiv, gameState.world);
 		await gameState.vis.untilBootloaderDone();
 		gameState.mapLoading = true;
-		await gameState.world.setMap("dungeon", new RNG(null));
+		await gameState.world.setMap("dynamic:dungeon", new RNG(null));
 		gameState.mapLoading = false;
 	}
 

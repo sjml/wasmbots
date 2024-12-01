@@ -44,10 +44,11 @@ export class WorldMap {
 	maxPlayers: number = 1;
 	rawMapData!: Tiled.TileMap;
 	randomSeed: string = "";
+	isDynamic: boolean = false;
 
 	private constructor(){}
 
-	static async generate(generatorName: string, rng: RNG, options?: any): Promise<WorldMap> {
+	static async loadDynamic(generatorName: string, rng: RNG, options?: any): Promise<WorldMap> {
 		const builder = new DungeonBuilder(rng, [], options ?? {});
 		builder.generate(config.mapWidth, config.mapHeight, [
 			{
@@ -92,6 +93,7 @@ export class WorldMap {
 		newMap.name = `${generatorName}-${crypto.randomUUID().replaceAll('-', '')}`;
 		newMap.rawMapData = painter.map;
 		newMap.setupFromJson();
+		newMap.isDynamic = true;
 		return newMap;
 	}
 
@@ -185,7 +187,7 @@ export class WorldMap {
 				const tr = lookupTile(t);
 
 				if (tr.terrain === undefined) {
-					throw new Error(`Non-terrain tile in terrain layer: ${tr.terrain} at (${x}, ${y})`);
+					throw new Error(`Non-terrain tile in terrain layer: ${t} at (${x}, ${y})`);
 				}
 				this.tiles[y][x].terrainType = tr.terrain;
 			}

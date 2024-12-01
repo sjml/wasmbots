@@ -125,8 +125,18 @@ export class World extends EventTarget {
 			throw new Error("Cannot change map after game start!");
 		}
 
-		// const newMap = await WorldMap.loadStatic(mapName);
-		const newMap = await WorldMap.generate(mapName, rng, options);
+		const [mapType, name] = mapName.split(":");
+		let newMap: WorldMap;
+		switch (mapType) {
+			case "static":
+				newMap = await WorldMap.loadStatic(name);
+				break;
+			case "dynamic":
+				newMap = await WorldMap.loadDynamic(name, rng, options);
+				break;
+			default:
+				throw new Error(`Unknown map type "${mapType}"`);
+		}
 
 		// handle potential player changes
 		if (this.currentMap) {

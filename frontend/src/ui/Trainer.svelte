@@ -2,21 +2,13 @@
 	import { setContext } from "svelte";
 	import { Player, CoreMsg, DungeonBuilder } from "wasmbots";
 
-	import { type WasmBotsState } from "../types.svelte";
+	import { type WasmBotsState, DefaultWasmBotsState } from "../types.svelte";
 	import Navbar from "./Navbar.svelte";
 	import WorldCanvas from "./WorldCanvas.svelte";
 	import FlowControl from "./FlowControl.svelte";
 
 
-	const gameState: WasmBotsState = $state({
-		world: null,
-		vis: null,
-
-		mapLoading: false,
-		mapSeed: "",
-		mapSeedLocked: false,
-		mapGeneratorOptions: DungeonBuilder.optionsDefaults,
-	});
+	const gameState: WasmBotsState = $state(structuredClone(DefaultWasmBotsState));
 	setContext("gameState", gameState);
 
 	let player: Player|null = $state(null);
