@@ -28,6 +28,9 @@ export class VisPlayer extends Phaser.GameObjects.Sprite {
 			playerObject.location.x * Config.tileSize, playerObject.location.y * Config.tileSize,
 			"tiles-kenny", imageIndex
 		);
+		this.on("destroy", () => {
+			VisPlayer.playerImageDeck?.restoreItem(imageIndex);
+		});
 		this.playerObject = playerObject;
 		this.tilePosition = playerObject.location;
 		this.imageIndex = imageIndex;

@@ -34,7 +34,7 @@ export class World extends EventTarget {
 	constructor(randomSeed: string | null) {
 		super();
 		this.rng = new RNG(randomSeed);
-		this._spawnPointDeck = new Deck([{x: -1, y: -1}], this.rng);
+		this._spawnPointDeck = new Deck([{x: -1, y: -1}], this.rng, (a: Point, b: Point) => a.x === b.x && a.y === b.y);
 		this.currentMap = null;
 	}
 
@@ -47,8 +47,9 @@ export class World extends EventTarget {
 	on<K extends keyof WorldEvents>(
 		type: K,
 		callback: (evt: CustomEvent<WorldEvents[K]>) => void
-	) {
+	): () => void {
 		this.addEventListener(type, callback as EventListener);
+		return () => this.removeEventListener(type, callback as EventListener);
 	}
 
 	get gameState(): GameState {
@@ -150,7 +151,7 @@ export class World extends EventTarget {
 			}
 		}
 
-		this._spawnPointDeck = new Deck(newMap.spawnPoints, this.rng);
+		this._spawnPointDeck = new Deck(newMap.spawnPoints, this.rng, (a: Point, b: Point) => a.x === b.x && a.y === b.y);
 
 		for (const p of this.players) {
 			p.reset();
@@ -159,6 +160,7 @@ export class World extends EventTarget {
 				throw new Error(`Not enough spawn points in map for ${this.players.length} players!`);
 			}
 			p.location = loc;
+			p.spawnPoint = loc;
 		}
 
 		this.currentMap = newMap;
@@ -199,7 +201,6 @@ export class World extends EventTarget {
 
 	async resetGame() {
 		this.setState(GameState.Setup);
-		this._spawnPointDeck.reset();
 		if (config.asyncReset) {
 			await Promise.all(this.players.map(p => p.reset()));
 		}

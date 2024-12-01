@@ -1,8 +1,4 @@
 ## dev
-* BUG: switching maps makes character sprites change, and sometimes doubles
-    * can't delete bots from list after reset
-* add spinner during world reset
-
 * review [memory thoughts](./misc.md#memory-thoughts)
 
 * fix client handshakes in go, rust
