@@ -13,7 +13,11 @@
 		const isRegenerateCommand = (evt.ctrlKey || evt.metaKey)
 									&& evt.altKey
 									&& evt.code === "KeyR";
-		if (gameState.currentMapOptionString.startsWith("dynamic:") && isRegenerateCommand) {
+		if (   gameState.world != null
+			&& gameState.world.gameState < GameState.Running
+			&& gameState.currentMapOptionString.startsWith("dynamic:")
+			&& isRegenerateCommand
+		) {
 			evt.preventDefault();
 			selectMap(gameState.currentMapOptionString);
 		}
