@@ -37,6 +37,8 @@
 		display: flex;
 		justify-content: center;
 		align-items: center;
+		background-color: transparent;
+		border: 0;
 	}
 	:global(.navLink svg) {
 		width: 38px;
