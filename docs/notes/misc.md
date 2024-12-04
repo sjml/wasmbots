@@ -19,27 +19,6 @@
     * **_Resolution for now:_** Leave it alone; all the bounces are aesthetically annoying but that's about the only real impact right now. Might actually become _less_ maintainable by attempting to collapse it. 
     * **_Follow-up:_** Ah, seems like a good thing that I didn't collapse `WasmCoordinator` into player since I'm thinking the trainer will involve swapping it out for a `HumanCoordinator` with the same/similar interface so yay, good job Past!Shane. 
 
-## memory thoughts
-* been ad-hoc-ing the memory read/write stuff for a while, should nail it down
-    * always write circumstances starting at 0
-    * always read player response starting at N (for the sake of argument, say, MEMORY_SIZE / 2)
-    * potential issue if circumstances goes over N bytes?
-        * nothing in there is hidden from the guest anyway, by definition, so no secrecy to worry about
-        * reads beyond end of reserve block will fail (but again, all of that is already visible to guest)
-        * if non-zero block after first message, it'll try to keep reading, garbage data
-            * Beschi: should ProcessRawBytes take a maximum number of messages? and/or maximum byte read size? 
-            * here's the closest thing to actual issue
-            * but will reject entire read and discard whole list -- is that legit? 
-                * Beschi: maybe the "append nil and return what you had so far" was good actually
-            * if the message is somehow valid, host will detect length >1 and fail, so no way to submit multiple moves
-    * can it calculate max circumstances? 
-        * definitely -- GetSizeInBytes works, and we could formalize on our end the limits of array sizes
-            * surroundings will max out at X; # of events will max out at Y (oh no, actually... howzatgunnawork)
-    * would there be benefits in having module allocate two blocks, one for reading and one for writing?
-        * would need to return two values from setup then, ugh
-        * in practice would likely be right next to each other anyway
-    * flip this around? write circumstances at N and expect message at 0? 
-      * OR circumstances always goes at very end of buffer? 
 
 ## Diagram
 

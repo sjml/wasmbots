@@ -246,9 +246,9 @@ export class WorldMap {
 		}
 	}
 
-	static debugDrawSlice(slice: Tile[][]) {
-		for (let y = 0; y < slice.length; y++) {
-			console.log(slice[y].map((t, x) => {
+	static getDebugSlice(slice: Tile[][]) {
+		return slice.map(row =>
+			row.map(t => {
 				switch (t.terrainType) {
 					case TerrainTileType.Floor:
 						return ".";
@@ -261,8 +261,12 @@ export class WorldMap {
 					case TerrainTileType.Wall:
 						return "#";
 				}
-			}).join(""));
-		}
+			}).join("")
+		).join("\n");
+	}
+
+	get aoc(): string {
+		return WorldMap.getDebugSlice(this.tiles);
 	}
 
 	getTile(x: number, y: number): Tile {
@@ -302,7 +306,7 @@ export class WorldMap {
 // 	const opaqueList = [TerrainTileType.Wall, TerrainTileType.ClosedDoor];
 // 	// const opaqueList = [TerrainTileType.Wall]; // letting us see through closed doors for the purposes of testing
 // 	const view = m.computeFOV({x: 21, y: 4}, 2, opaqueList);
-// 	WorldMap.debugDrawSlice(view);
+// 	console.log(WorldMap.getDebugSlice(view));
 // }
 
 // // @ts-ignore

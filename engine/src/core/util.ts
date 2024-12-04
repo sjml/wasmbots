@@ -2,6 +2,7 @@ import config from "./config.ts";
 
 export function getGitRevision(): string {
 	if (config.environment == "Deno") {
+		// @ts-ignore
 		const process = new Deno.Command("git", {
 			args: ["rev-parse", "HEAD"],
 			stdout: "piped",
@@ -82,4 +83,13 @@ export function encodeBase64(arr: Uint8Array): string {
 export function decodeBase64(str: string): Uint8Array {
 	const binaryStr = atob(str);
 	return Uint8Array.from(binaryStr, char => char.charCodeAt(0));
+}
+
+export function debugDataView(dataView: DataView): string {
+	const hexArray: string[] = [];
+	for (let i = 0; i < dataView.byteLength; i++) {
+		const byte = dataView.getUint8(i);
+		hexArray.push(byte.toString(16).padStart(2, '0'));
+	}
+	return hexArray.join(' ');
 }

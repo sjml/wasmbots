@@ -34,7 +34,7 @@
 			"wasmReturn": "i32"
 		},
 		"tick": {
-			"doc": "a prompt from the engine for you to make your move; the current circumstances will be waiting for you in the reserved block",
+			"doc": "a prompt from the engine for you to make your move; the current circumstances will be waiting for you in the reserved block. before your turn ends, you need to write your move into the beginning of the reserve block",
 			"paramsDoc": ["the offset in the shared memory where the circumstances begin"],
 			"returnDoc": "",
 			"sourceParams": ["usize"],

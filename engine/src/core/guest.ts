@@ -92,12 +92,15 @@ export abstract class GuestProgram {
 		gp.playerStride = config.defaultPlayerStride;
 		gp.playerOpenReach = config.defaultPlayerOpenReach;
 
-		gp.writeBytes(dv, false);
+		const gpSize = gp.getSizeInBytes();
+		const rb = this.getReserveBlock();
+		const gpStart = rb.byteLength - gpSize;
+		const gpWriteDV = new DataView(rb.buffer, rb.byteOffset + gpStart, gpSize);
+		gp.writeBytes(gpWriteDV, false);
 
-		const resultOffset = 1024; // TODO: use this again; swapped to 0 just while debugging some stuff
 		let ready: boolean;
 		try {
-			ready = await this.runReceiveGameParams(0);
+			ready = await this.runReceiveGameParams(gpStart);
 		}
 		catch (err) {
 			this.logger.error(`FATAL ERROR: Crash during client setup:\n  ${err}`);
@@ -240,11 +243,13 @@ export class WasmGuestProgram extends GuestProgram {
 		const rb = this.getReserveBlock();
 		rb.fill(0);
 
-		let rbdv = new DataView(rb.buffer, rb.byteOffset + config.writeBlockOffset, rb.byteLength - config.writeBlockOffset);
+		const pcSize = circumstances.getSizeInBytes();
+		const pcOffset = rb.byteLength - pcSize;
+		let rbdv = new DataView(rb.buffer, rb.byteOffset + pcOffset, pcSize);
 		circumstances.writeBytes(rbdv, false);
 
 		try {
-			this.exports!.tick(config.writeBlockOffset);
+			this.exports!.tick(pcOffset);
 		}
 		catch (err) {
 			const msg = `FATAL ERROR: Crash during tick function:\n  ${err}`;
@@ -257,7 +262,7 @@ export class WasmGuestProgram extends GuestProgram {
 
 		// have to get it again because the tick might have grown memory
 		rbdv = this.getReserveBlockDV();
-		const msgList = CoreMsg.ProcessRawBytes(rbdv);
+		const msgList = CoreMsg.ProcessRawBytes(rbdv, 1);
 		if (msgList.length != 1) {
 			const err = new CoreMsg._Error();
 			err.description = `Unexpected number of submitted player moves: ${msgList}`;
@@ -323,10 +328,12 @@ export class TrainerGuestProgram extends GuestProgram {
 
 	async runTick(circumstances: CoreMsg.PresentCircumstances): Promise<CoreMsg.Message> {
 		let reserveBlock = new Uint8Array(config.memorySize);
+		const pcSize = circumstances.getSizeInBytes();
+		const pcOffset = reserveBlock.byteLength - pcSize;
 		let writeBlock = new DataView(
 			reserveBlock.buffer,
-			reserveBlock.byteOffset + config.writeBlockOffset,
-			reserveBlock.byteLength - config.writeBlockOffset
+			reserveBlock.byteOffset + pcOffset,
+			pcSize
 		);
 
 		circumstances.writeBytes(writeBlock, false);
@@ -335,7 +342,7 @@ export class TrainerGuestProgram extends GuestProgram {
 			const res = await fetch("http://localhost:9090/tick", {
 				method: "POST",
 				body: JSON.stringify({
-					offset: config.writeBlockOffset,
+					offset: pcOffset,
 					mem: encodeBase64(reserveBlock),
 				}),
 			});
@@ -359,7 +366,7 @@ export class TrainerGuestProgram extends GuestProgram {
 		}
 
 		const readBlock = new DataView(reserveBlock.buffer, reserveBlock.byteOffset, reserveBlock.byteLength);
-		const msgList = CoreMsg.ProcessRawBytes(readBlock);
+		const msgList = CoreMsg.ProcessRawBytes(readBlock, 1);
 		if (msgList.length != 1) {
 			const err = new CoreMsg._Error();
 			err.description = `Unexpected number of submitted player moves: ${msgList}`;

@@ -1,10 +1,10 @@
 ## dev
-* review [memory thoughts](./misc.md#memory-thoughts)
-
 * fix client handshakes in go, rust
   * consider whether to yeet assemblyscript
     * does the beschi generator actually work? it's untested...
   * update general library readme
+
+* give larger view radius to arena (which means it becomes a map parameter...?)
 
 * separate pages (maybe need to be separate svelte apps? 🫠)
     * current app
@@ -13,6 +13,9 @@
     * front page (static)
     * embedded demo
         * need to do some work to get it running again
+          * add async or defer to script tag
+          * optionally have json in separate script tag?
+          * figure out cache-busting on main script?
         * add map parameter(s?) to embedded component
 
 * trainer
