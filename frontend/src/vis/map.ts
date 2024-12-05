@@ -12,6 +12,10 @@ export class VisMap extends Phaser.Scene {
 	private _tilemap: Phaser.Tilemaps.Tilemap | null = null;
 	private _groundLayer: Phaser.Tilemaps.TilemapLayer | null = null;
 	private _wallsLayer: Phaser.Tilemaps.TilemapLayer | null = null;
+	private _dark: boolean = true;
+	private _darkOverlay: Phaser.GameObjects.RenderTexture | null = null;
+	private _playerList: VisPlayer[] = [];
+	private _lightswitch: Phaser.Input.Keyboard.Key|null = null;
 
 	private constructor(key: string) {
 		super(key);
@@ -28,6 +32,8 @@ export class VisMap extends Phaser.Scene {
 	}
 
 	create() {
+		this._lightswitch = this.input.keyboard?.addKey("L") ?? null;
+
 		this._tilemap = this.make.tilemap({key: `map-${this.worldMap.name}`});
 		for (const tsObj of this._tilemap.tilesets) {
 			this._tilemap.addTilesetImage(tsObj.name, `tiles-${tsObj.name}`);
@@ -70,6 +76,32 @@ export class VisMap extends Phaser.Scene {
 			VisEventBus.off("zoom-in", undefined, this);
 			VisEventBus.off("zoom-out", undefined, this);
 		});
+
+		this._darkOverlay = this.add.renderTexture(0, 0, this.scale.width, this.scale.height);
+		this._darkOverlay.setOrigin(0, 0);
+		this.events.on("render", function () {
+
+		});
+	}
+
+	update() {
+		this._dark = this._lightswitch?.isDown || false;
+
+		if (this._darkOverlay == null) {
+			return;
+		}
+		this._darkOverlay.clear();
+		if (this._dark) {
+			this.cameras.main.setRoundPixels(false);
+			this._darkOverlay.fill(0x000000, 0.7);
+			for (const p of this._playerList) {
+				this._darkOverlay.erase("light-mask-5x5",
+					// mask is 80x80; midpoint is 40,
+					//   minus half of player's sprite gives 32
+					p.x - 32, p.y - 32
+				);
+			}
+		}
 	}
 
 	processTerrainChange(location: Point, newTerrain: CoreMsg.TileType) {
@@ -103,5 +135,6 @@ export class VisMap extends Phaser.Scene {
 
 	addPlayer(p: VisPlayer) {
 		this.add.existing(p);
+		this._playerList.push(p);
 	}
 }

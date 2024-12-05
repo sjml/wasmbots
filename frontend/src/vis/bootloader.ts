@@ -25,6 +25,7 @@ export class VisBootloader extends Phaser.Scene {
 			frameWidth: 16,
 			frameHeight: 16,
 		});
+		this.load.image("light-mask-5x5", "img/light-mask-5x5.png");
 	}
 
 	setLoadEvents() {

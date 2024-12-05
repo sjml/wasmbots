@@ -52,5 +52,8 @@
 * https://www.sandromaglione.com/articles/how-to-create-a-pixel-art-tileset-complete-guide
 
 ### "tech" "art"
-* https://blog.ourcade.co/posts/2020/phaser-3-object-reveal-scratch-off-alpha-mask/
-* https://blog.ourcade.co/posts/2020/phaser-3-object-reveal-flashlight-spotlight-magic-lens/
+* render texture spotlight
+  * https://labs.phaser.io/edit.html?src=src/tilemap\collision\tilemap%20spotlight.js
+  * https://phaser.discourse.group/t/use-multiple-masks-on-a-render-texture/8578
+* shaders
+  * https://www.youtube.com/watch?v=4Dj5PSKwjak
