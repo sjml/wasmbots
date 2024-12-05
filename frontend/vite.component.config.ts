@@ -1,7 +1,8 @@
 import { svelte, vitePreprocess } from "@sveltejs/vite-plugin-svelte";
+import { defineConfig } from "vite";
 import base from "./vite.config";
 
-const conf = Object.assign(base, {
+export default Object.assign(base, defineConfig({
 	plugins: [svelte({
 		preprocess: vitePreprocess(),
 		compilerOptions: {
@@ -21,6 +22,4 @@ const conf = Object.assign(base, {
 	define: {
 		'__IIFE_BUILD__': 'true',
 	}
-});
-
-export default conf;
+}));
