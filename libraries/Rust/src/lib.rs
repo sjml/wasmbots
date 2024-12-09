@@ -2,15 +2,22 @@ use std::sync::Mutex;
 
 mod host_reserve;
 pub mod params;
+pub mod wasmbot_messages;
 pub use host_reserve::HostReserve;
+use wasmbot_messages::MessageCodec;
 
-pub type TickFn = fn(u32);
-static CLIENT_TICK: Mutex<TickFn> = Mutex::new(_noop);
-fn _noop(_: u32) {}
+pub type TickFn = fn(wasmbot_messages::PresentCircumstances) -> wasmbot_messages::Message;
+static CLIENT_TICK: Mutex<TickFn> = Mutex::new(_client_tick_noop);
+fn _client_tick_noop(_: wasmbot_messages::PresentCircumstances) -> wasmbot_messages::Message {
+	wasmbot_messages::Message::_Error(wasmbot_messages::_Error::default())
+}
 
 extern "C" {
 	#[link_name = "logFunction"]
 	fn host_log_function(log_level: i32, msg_ptr: usize, msg_len: usize);
+
+	#[link_name = "getRandomInt"]
+	fn host_get_random_int(min: i32, max: i32) -> i32;
 }
 
 pub fn log(msg: &str) {
@@ -23,16 +30,10 @@ pub fn log_err(msg: &str) {
 		host_log_function(0, msg.as_ptr() as usize, msg.len() as usize);
 	}
 }
-
-#[no_mangle]
-extern "C" fn setup(request_reserve: usize) -> usize {
-	if !host_reserve::reserve_host_memory(request_reserve) {
-		log_err("CLIENT ERROR: Could not allocate reserve memory");
-		return 0;
+pub fn get_random_int(min: i32, max: i32) -> i32 {
+	unsafe {
+		host_get_random_int(min, max)
 	}
-	let reserve = HostReserve::new();
-
-	reserve.raw_ptr() as usize
 }
 
 pub fn register_tick_callback(cb: TickFn) {
@@ -43,8 +44,31 @@ pub fn register_tick_callback(cb: TickFn) {
 #[no_mangle]
 extern "C" fn tick(offset: usize) {
 	let reserve = HostReserve::new();
-	let last_duration: u32 = reserve.read(offset);
+	let data: Vec<u8> = {
+		let read_guard = reserve.read();
+		let circumstances = {
+			let data = read_guard.to_vec();
+			let mut reader = wasmbot_messages::BufferReader::new(&data);
+			reader.current_position = offset;
+			match wasmbot_messages::PresentCircumstances::from_bytes(&mut reader) {
+				Ok(c) => c,
+				Err(e) => {
+					log_err(&std::format!("Could not parse PresentCircumstances in host reserve: {:?}", e));
+					return;
+				},
+			}
+		};
 
-	let ct = CLIENT_TICK.lock().unwrap();
-	ct(last_duration);
+		let ct = CLIENT_TICK.lock().unwrap();
+		let submitted_move = ct(circumstances);
+
+		let mut move_bytes = vec![];
+		submitted_move.write_bytes(&mut move_bytes, true);
+
+		move_bytes
+	};
+
+	reserve.with_locked_memory(|mem| {
+		mem[0..data.len()].copy_from_slice(&data);
+	});
 }

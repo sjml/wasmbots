@@ -1,8 +1,14 @@
 ## dev
-* fix client handshakes in go, rust
+* fix client handshake in go
   * consider whether to yeet assemblyscript
     * does the beschi generator actually work? it's untested...
   * update general library readme
+
+* mobile layout is borked (at least on safari)
+* track down why crashing on receivegameparams doesn't properly log errors
+  * wasmbot.worker's instantiate: const setupStatus = await program.runSetup();
+    * if it returns false, everything falls apart
+  * (same problem with tick -- the UI console needs to be helpful here)
 
 * give larger view radius to arena (which means it becomes a map parameter...?)
 * fix up (or bail on) lighting thing

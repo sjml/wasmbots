@@ -1,15 +1,18 @@
 use std::sync::Mutex;
 
-use crate::host_reserve::HostReserve;
+use crate::host_reserve::{self,HostReserve};
 use crate::log_err;
+use crate::wasmbot_messages;
+use crate::wasmbot_messages::BufferReader;
+use crate::wasmbot_messages::MessageCodec;
 
 const GP_VERSION: u16 = 7;
 const MAX_NAME_LEN: usize = 26;
 
-pub type ClientSetupFn = fn(&GameParameters) -> BotMetadata;
+pub type ClientSetupFn = fn() -> BotMetadata;
 static CLIENT_SETUP: Mutex<ClientSetupFn> = Mutex::new(_setup_noop);
-fn _setup_noop(_: &GameParameters) -> BotMetadata {
-	BotMetadata { name: make_bot_name("[INVALID]"), version: [0,0,0], ready: false }
+fn _setup_noop() -> BotMetadata {
+	BotMetadata { name: make_bot_name("[INVALID]"), version: [0,0,0]}
 }
 
 pub fn register_client_setup(cs: ClientSetupFn) {
@@ -17,17 +20,46 @@ pub fn register_client_setup(cs: ClientSetupFn) {
 	*csf = cs;
 }
 
-#[repr(C)]
-pub struct GameParameters {
-	pub params_version: u16,
-	pub engine_version: [u16; 3],
+#[no_mangle]
+extern "C" fn setup(request_reserve: usize) -> usize {
+	if !host_reserve::reserve_host_memory(request_reserve) {
+		log_err("CLIENT ERROR: Could not allocate reserve memory");
+		return 0;
+	}
+
+	let cs = CLIENT_SETUP.lock().unwrap();
+	let bot_data = cs();
+
+	let reserve = HostReserve::new();
+	let mut offset = 0;
+	reserve.with_locked_memory(|mem| {
+		let valid_len = bot_data
+			.name
+			.iter()
+			.position(|&x| x == 0)
+			.unwrap_or(bot_data.name.len());
+		mem[offset..valid_len].copy_from_slice(&bot_data.name[..valid_len]);
+		offset += valid_len;
+		while offset < MAX_NAME_LEN {
+			mem[offset] = 0;
+			offset += 1;
+		}
+		bot_data.version.iter()
+			.enumerate()
+			.for_each(|(i, &ve)| {
+				mem[offset+i*2..offset+i*2+2].copy_from_slice(&ve.to_le_bytes());
+			});
+		offset += 2 * bot_data.version.len();
+	});
+
+
+	reserve.raw_ptr() as usize
 }
 
 #[repr(C)]
 pub struct BotMetadata {
 	pub name: [u8; MAX_NAME_LEN],
 	pub version: [u16; 3],
-	pub ready: bool,
 }
 
 pub fn make_bot_name(name: &str) -> [u8; MAX_NAME_LEN] {
@@ -38,51 +70,36 @@ pub fn make_bot_name(name: &str) -> [u8; MAX_NAME_LEN] {
 }
 
 #[no_mangle]
-extern "C" fn receiveGameParams(mut offset: usize, mut info_offset: usize) -> bool {
+extern "C" fn receiveGameParams(offset: usize) -> bool {
 	let res = HostReserve::new();
-
-	let gp_version = res.read::<u16>(offset);
-	offset += std::mem::size_of::<u16>();
-	if gp_version != GP_VERSION {
-		log_err(&format!(
-			"ERROR: Can't parse GameParams v{}; only prepared for v{}",
-			gp_version, GP_VERSION
-		));
+	let data = &*res.read();
+	let mut reader = BufferReader::new(data);
+	reader.current_position = offset;
+	let init_params = match wasmbot_messages::InitialParameters::from_bytes(&mut reader) {
+		Ok(ip) => ip,
+		Err(e) => {
+			log_err(&std::format!("ERROR: Could not read reserve memory: {:?}", e));
+			return false;
+		},
+	};
+	if init_params.params_version != GP_VERSION {
+		log_err(&std::format!("ERROR: Can't parse GameParams v{}; only prepared for v{}", init_params.params_version, GP_VERSION));
 		return false;
 	}
 
-	let mut eng_version = [0u16; 3];
-	eng_version[0] = res.read::<u16>(offset);
-	offset += std::mem::size_of::<u16>();
-	eng_version[1] = res.read::<u16>(offset);
-	offset += std::mem::size_of::<u16>();
-	eng_version[2] = res.read::<u16>(offset);
-
-	let gp = GameParameters {
-		params_version: gp_version,
-		engine_version: eng_version,
-	};
-
-	let bot_data = CLIENT_SETUP.lock().unwrap()(&gp);
-
-	let mut reserve = HostReserve::new();
-
-	let info_zero = info_offset;
-	let valid_len = bot_data
-		.name
-		.iter()
-		.position(|&x| x == 0)
-		.unwrap_or(bot_data.name.len());
-
-	let name_str =
-		std::str::from_utf8(&bot_data.name[..valid_len]).expect("Invalid UTF-8 in bot name");
-	info_offset = reserve.write_string(info_offset, name_str);
-	while info_offset < info_zero + MAX_NAME_LEN {
-		info_offset = reserve.write::<u8>(info_offset, 0);
-	}
-	bot_data.version.iter().for_each(|ve| {
-		info_offset = reserve.write::<u16>(info_offset, *ve);
-	});
-
-	bot_data.ready
+	let crgp = CLIENT_RECEIVE_GAME_PARAMS.lock().unwrap();
+	crgp(init_params)
 }
+
+pub type ClientReceiveGameParamsFn = fn(wasmbot_messages::InitialParameters) -> bool;
+static CLIENT_RECEIVE_GAME_PARAMS: Mutex<ClientReceiveGameParamsFn> = Mutex::new(_client_receive_noop);
+fn _client_receive_noop(_: wasmbot_messages::InitialParameters) -> bool {
+	log_err("no ClientReceiveGameParamsFn set!");
+	true
+}
+
+pub fn register_client_receive_game_params(cb: ClientReceiveGameParamsFn) {
+	let mut crgp = CLIENT_RECEIVE_GAME_PARAMS.lock().unwrap();
+	*crgp = cb;
+}
+

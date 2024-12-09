@@ -9,6 +9,7 @@ handshake is changing, but not all the libraries are moved over yet. leaving not
   * client libraries + examples
     * ✅ C
     * ✅ Zig
+    * ✅ Rust
     * (leaving others for now while I let these shake out for a bit)
 
 ## procedure

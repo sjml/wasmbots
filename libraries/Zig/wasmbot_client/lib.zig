@@ -109,8 +109,8 @@ pub const ClientReceiveGameParamsFn = fn (messages.InitialParameters) bool;
 var _client_receive_game_params: *const ClientReceiveGameParamsFn = _clientReceiveNoop;
 fn _clientReceiveNoop(params: messages.InitialParameters) bool {
     _ = params;
-    logErr("no clientReceiveGameParamsFn set!");
-    return false;
+    logErr("no ClientReceiveGameParamsFn set!");
+    return true;
 }
 
 pub fn registerClientReceiveGameParams(cb: *const ClientReceiveGameParamsFn) void {
