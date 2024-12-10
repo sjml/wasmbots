@@ -47,14 +47,6 @@ fn client_setup() -> params::BotMetadata {
 }
 
 fn tick(pc: wasmbot_messages::PresentCircumstances) -> wasmbot_messages::Message {
-	if pc.last_move_result == wasmbot_messages::MoveResult::Failed {
-		let mut diri = DIRECTION.with_borrow(|dir| *dir as u8);
-		diri += 2;
-		diri %= 8;
-		log(&std::format!("new direction: {}", diri));
-		DIRECTION.with_borrow_mut(|dir| *dir = (diri).try_into().expect("Bad direction"));
-	}
-
 	let last_move_was_door = LAST_MOVE_TYPE.with_borrow(|dir| match *dir {
 		wasmbot_messages::MessageType::Open => true,
 		wasmbot_messages::MessageType::Close => true,
@@ -86,6 +78,14 @@ fn tick(pc: wasmbot_messages::PresentCircumstances) -> wasmbot_messages::Message
 				_ => {},
 			}
 		}
+	}
+
+	if last_move_was_door || pc.last_move_result == wasmbot_messages::MoveResult::Failed {
+		let mut diri = DIRECTION.with_borrow(|dir| *dir as u8);
+		diri += 2;
+		diri %= 8;
+		log(&std::format!("new direction: {}", diri));
+		DIRECTION.with_borrow_mut(|dir| *dir = (diri).try_into().expect("Bad direction"));
 	}
 
 	let dir = DIRECTION.with(|dir| *dir.borrow());

@@ -3,6 +3,7 @@
   * consider whether to yeet assemblyscript
     * does the beschi generator actually work? it's untested...
   * update general library readme
+* trainers for go and rust
 
 * mobile layout is borked (at least on safari)
 * track down why crashing on receivegameparams doesn't properly log errors
