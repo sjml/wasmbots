@@ -130,7 +130,8 @@ export class VisMap extends Phaser.Scene {
 			throw new Error("Changing non-door terrain!"); // maybe someday, but not today
 		}
 		nextIndex += currentTile.tileset!.firstgid;
-		this._wallsLayer!.putTileAt(nextIndex, location.x, location.y);
+		const newTile = this._wallsLayer!.putTileAt(nextIndex, location.x, location.y);
+		newTile.properties = currentTile.tileset!.getTileProperties(nextIndex);
 	}
 
 	addPlayer(p: VisPlayer) {
