@@ -3,7 +3,7 @@
 version = 4
 
 [[package]]
-name = "circler_rust"
+name = "circler"
 version = "0.1.0"
 dependencies = [
  "wasmbots_client",

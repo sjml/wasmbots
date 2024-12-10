@@ -1,4 +1,4 @@
-EXE_NAME = circler_rust
+EXE_NAME = circler
 
 target/wasm32-unknown-unknown/release/$(EXE_NAME).wasm: src/lib.rs
 	cargo build --release

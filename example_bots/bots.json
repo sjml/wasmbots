@@ -7,7 +7,7 @@
 		"source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/explorer_zig",
 		"name": "explorer (Zig)"
 	},
-	"circler_rust.wasm": {
+	"circler.wasm": {
 		"source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/circler_rust",
 		"name": "circler (Rust)"
 	}
