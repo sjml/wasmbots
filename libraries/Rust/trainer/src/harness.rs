@@ -39,13 +39,14 @@ fn lift_string(offset: usize, len: usize) -> Result<String, std::str::Utf8Error>
 }
 
 extern "C" {
+	fn clientInitialize();
 	fn setup(request_reserve: usize) -> usize;
 	fn receiveGameParams(offset: usize) -> bool;
 	fn tick(offset: usize);
 }
 
 pub fn simulate_setup(reserve_request: usize) -> Result<*mut u8, String> {
-	circler::client_initialize();
+	unsafe { clientInitialize(); }
 	let reserve_offset = unsafe { setup(reserve_request) };
 	if reserve_offset == 0 {
 		return Err("Could not allocate reserve block.".to_string());
