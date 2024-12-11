@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
 #include <string.h>
@@ -6,18 +7,24 @@
 #include "civetweb.h"
 #include "cJSON.h"
 
+#include "harness.h"
+
+
 const bool CHATTY_SERVER = true;
 
 static int setup_handler(struct mg_connection *conn, void *cbdata) {
 	if (CHATTY_SERVER) {
-		printf("/setup\n");
+		printf("/setup");
 	}
 
 	char buffer[4096];
 	int buffer_len = mg_read(conn, buffer, sizeof(buffer) - 1);
 	buffer[buffer_len] = 0;
-	cJSON *obj, *elem;
+	if (CHATTY_SERVER) {
+		printf(" w/%s", buffer);
+	}
 
+	cJSON *obj, *elem;
 	obj = cJSON_Parse(buffer);
 	if (obj == NULL) {
 		mg_send_http_error(conn, 400, "Could not parse JSON");
@@ -30,17 +37,30 @@ static int setup_handler(struct mg_connection *conn, void *cbdata) {
 		mg_send_http_error(conn, 400, "No reserve size given in JSON");
 		return 400;
 	}
-
 	size_t reserve = elem->valueint;
-
 	cJSON_Delete(obj);
 
-	const char* output = "{ \"success\": 1 }";
 
-	mg_send_http_ok(conn, "application/json", strlen(output));
-	mg_write(conn, output, strlen(output));
+	const uint8_t* reserveBlockPtr = (uint8_t* )simulateSetup(reserve);
+	if (reserveBlockPtr == NULL) {
+		mg_send_http_error(conn, 500, "Could not reserve memory");
+		return 500;
+	}
+
+	// size_t encodedBlockLen = ((reserve + 2) / 3) * 4 + 1;
+	// char* encodedBuffer = (char*)malloc(encodedBlockLen + 1);
+	// int res = mg_base64_encode((const unsigned char*)reserveBlockPtr, reserve, encodedBuffer, &encodedBlockLen);
+	// if (res != -1) {
+	// 	free(encodedBuffer);
+	// 	mg_send_http_error(conn, 500, "Could not encode reserve memory");
+	// 	return 500;
+	// }
+	// encodedBuffer[encodedBlockLen] = 0;
+	// free(encodedBuffer);
+
+	mg_send_http_ok(conn, "application/octet-stream", reserve);
+	mg_write(conn, reserveBlockPtr, reserve);
 	mg_close_connection(conn);
-
 	return 0;
 }
 

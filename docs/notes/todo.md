@@ -87,6 +87,7 @@
 * Code
     * clean up / organize Zig library; just kind of a mess right now
     * consistency on underscore prefixing for private variables; commit one way or the other
+    * consistency on error messages
     * organize imports in .ts files
     * clean up / clear out old test code and deno-cli stuff in engine
     * set up a single version number that can progress in lockstep
