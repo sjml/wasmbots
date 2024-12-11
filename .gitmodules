@@ -1,0 +1,6 @@
+[submodule "libraries/C/trainer/lib/civetweb"]
+	path = libraries/C/trainer/lib/civetweb
+	url = https://github.com/civetweb/civetweb
+[submodule "libraries/C/trainer/lib/cJSON"]
+	path = libraries/C/trainer/lib/cJSON
+	url = https://github.com/DaveGamble/cJSON
