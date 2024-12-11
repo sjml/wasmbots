@@ -26,22 +26,25 @@ async function main(): Promise<void> {
 	Config.minimumTurnTime = 0;
 
 	const world = new World(null);
-	await world.setMap("dungeon", new RNG(null), {});
+	await world.setMap("dynamic:dungeon", new RNG(null), {});
 	world.registerPlayer(player);
 	world.startGame();
 
 
 	console.log("start:", player.location);
 
-	function loop(numIterations: number = 0) {
+	function loop (numIterations: number = 0) {
 		let iterations = 0;
 		return () => numIterations <= 0 || iterations++ < numIterations;
 	}
 
-	while (loop(MAX_TURNS)()) {
+	let count = 0;
+	const limiter = loop(MAX_TURNS);
+	while (limiter()) {
+		count += 1;
 		await sleep(1); // servers don't like getting hammered, but this almost nominal delay seems to be enough
 		await world.runTurn();
-		console.log(player.location);
+		console.log(count, player.location);
 		if (player.coordinator.status === CoordinatorStatus.Shutdown) {
 			break;
 		}

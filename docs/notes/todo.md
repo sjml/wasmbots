@@ -3,7 +3,14 @@
   * consider whether to yeet assemblyscript
     * does the beschi generator actually work? it's untested...
   * update general library readme
-* trainers for go and rust
+* trainers
+  * rust 
+    * basic functionality in; now remove direct references to circler so it can be used with other bots
+  * go
+  * clean up zig trainer
+    * would be nice if it could recover from panic somehow? not sure what that would even mean since the library is likely not in a usable state (so maybe don't bother)
+    * have some better routing/mapping going on, less copypasta
+    * explicit about method (POST for everything right now)
 
 * mobile layout is borked (at least on safari)
 * track down why crashing on receivegameparams doesn't properly log errors
@@ -37,8 +44,6 @@
       * set up monorepo as a VS Code workspace? https://code.visualstudio.com/docs/editor/multi-root-workspaces
       * https://code.visualstudio.com/docs/editor/debugging#_compound-launch-configurations
       * https://code.visualstudio.com/Docs/editor/debugging#_multitarget-debugging
-    * clean the zig server code the heck up
-        * would be nice if it could recover from a panic, but not sure what would even happen then
 
 * testing
     * player class
@@ -100,7 +105,11 @@
     * clutter / lighting pass on rendering
     * light following player showing sphere of awareness? 
     * kind of a pain with Phaser; also wouldn't easily reflect actual FOV
-* UI: landscape view on iPhone - the drawers don't extend into the island areas
+* UI: 
+  * landscape view on iPhone - the drawers don't extend into the island areas
+  * drag-and-drop to load files on page
+    * whole bot panel is target
+    * can drag multiple and will fill them up
 * Tech: ability to reseed player on reset
 * Trainer:
   * author + load JSON files of message sequences

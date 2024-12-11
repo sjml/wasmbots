@@ -1,9 +1,9 @@
 {
-	"random_bounce_c.wasm": {
+	"random_bounce.wasm": {
 		"source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/random_bounce_c",
 		"name": "randBounce (C)"
 	},
-	"explorer_zig.wasm": {
+	"explorer.wasm": {
 		"source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/explorer_zig",
 		"name": "explorer (Zig)"
 	},

@@ -101,7 +101,8 @@ Would it be possible to have a native trainer library for at least some of the l
     * https://rocket.rs/ (24k stars, industrial strength)
     * https://actix.rs/ (21k stars, industrial strength)
     * https://github.com/tokio-rs/axum (19k stars, pretty straightforward, part of tokio)
-    * https://docs.rs/tide/ (5.1 stars, more minimal/simple)
+    * https://docs.rs/tide/ (5.1k stars, more minimal/simple)
+    * https://github.com/tiny-http/tiny-http/ (1k stars but much smaller; could be a good swap later)
   * AssemblyScript
     * 🤬
     * given its difficulty here and with beschi (at least testing) maybe this gets dropped? or moved to second-class status? 

@@ -291,6 +291,9 @@ export class TrainerGuestProgram extends GuestProgram {
 	async setupMemory(): Promise<boolean> {
 		const res = await fetch("http://localhost:9090/setup", {
 			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
 			body: JSON.stringify({reserve: config.memorySize}),
 		});
 		if (res.ok) {
@@ -311,6 +314,9 @@ export class TrainerGuestProgram extends GuestProgram {
 		await sleep(1); // TODO: Zig server seems to not like being hammered; is that universally true?
 		const res = await fetch("http://localhost:9090/receiveGameParams", {
 			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
 			body: JSON.stringify({
 				offset: offset,
 				mem: encodeBase64(new Uint8Array(this.getReserveBlock())),
@@ -341,6 +347,9 @@ export class TrainerGuestProgram extends GuestProgram {
 		try {
 			const res = await fetch("http://localhost:9090/tick", {
 				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
 				body: JSON.stringify({
 					offset: pcOffset,
 					mem: encodeBase64(reserveBlock),

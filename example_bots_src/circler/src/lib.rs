@@ -3,7 +3,7 @@ use std::cell::RefCell;
 pub mod exploration;
 
 use exploration::Point;
-use wasmbots_client::{params, wasmbot_messages, log};
+use wasmbot_client::{params, wasmbot_messages, log};
 use crate::exploration::Grid;
 
 thread_local! {
@@ -20,7 +20,7 @@ fn client_setup() -> params::BotMetadata {
 	let version_str = env!("CARGO_PKG_VERSION");
 	let mut version_parts = version_str.split('.');
 	if version_parts.clone().count() != 3 {
-		wasmbots_client::log_err("CLIENT ERROR: version must be semver");
+		wasmbot_client::log_err("CLIENT ERROR: version must be semver");
 		return bot_meta;
 	}
 	let major = version_parts
@@ -40,7 +40,7 @@ fn client_setup() -> params::BotMetadata {
 		.expect("Semver parts must fit in u16");
 	bot_meta.version = [major, minor, patch];
 
-	let random_dir = wasmbots_client::get_random_int(0, 3) * 2;
+	let random_dir = wasmbot_client::get_random_int(0, 3) * 2;
 	DIRECTION.with_borrow_mut(|dir| *dir = (random_dir as u8).try_into().expect("Bad direction"));
 
 	bot_meta
@@ -110,5 +110,5 @@ fn receive_game_params(_: wasmbot_messages::InitialParameters) -> bool {
 pub extern "C" fn client_initialize() {
 	params::register_client_setup(client_setup);
 	params::register_client_receive_game_params(receive_game_params);
-	wasmbots_client::register_tick_callback(tick);
+	wasmbot_client::register_tick_callback(tick);
 }

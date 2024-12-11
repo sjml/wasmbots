@@ -218,7 +218,7 @@ fn _validate_wasm(wasm_bytes: &[u8], expect_json: &str) -> Result<(), WatParserE
 
 #[no_mangle]
 pub extern "C" fn request_allocation(num_bytes: usize) -> *mut u8 {
-	let layout = std::alloc::Layout::array::<u8>(num_bytes).expect("Could not allocated memory");
+	let layout = std::alloc::Layout::array::<u8>(num_bytes).expect("Could not allocate memory");
 	unsafe { std::alloc::alloc(layout) }
 }
 
@@ -263,7 +263,7 @@ mod tests {
 
 	#[test]
 	fn validate() {
-		let wasm = include_bytes!("../../example_bots/random_bounce_c.wasm");
+		let wasm = include_bytes!("../../example_bots/random_bounce.wasm");
 		let exp = include_str!("../../engine/src/data/guestAPI.json");
 		match _validate_wasm(wasm, exp) {
 			Ok(()) => {},

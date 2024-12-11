@@ -20,6 +20,20 @@ extern "C" {
 	fn host_get_random_int(min: i32, max: i32) -> i32;
 }
 
+// native placeholders to make the linker happy (will be overridden in trainer)
+#[cfg(not(target_arch = "wasm32"))]
+mod native_fallbacks {
+    #[no_mangle]
+    pub extern "C" fn logFunction(log_level: i32, _msg_ptr: usize, _msg_len: usize) {
+        println!("Native log function called with level: {}", log_level);
+    }
+
+    #[no_mangle]
+    pub extern "C" fn getRandomInt(min: i32, max: i32) -> i32 {
+        (min + max) / 2
+    }
+}
+
 pub fn log(msg: &str) {
 	unsafe {
 		host_log_function(2, msg.as_ptr() as usize, msg.len() as usize);

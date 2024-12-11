@@ -16,6 +16,6 @@ clean:
 
 .PHONY: install
 install: all
-	rsync -u -t -p $(EXE_NAME).wasm ../../example_bots/$(EXE_NAME)_c.wasm
+	rsync -u -t -p $(EXE_NAME).wasm ../../example_bots/$(EXE_NAME).wasm
 
 .DEFAULT_GOAL = all

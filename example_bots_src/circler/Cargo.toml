@@ -1,0 +1,15 @@
+[package]
+name = "circler"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"] # cdylib for wasm; lib for native
+
+[profile.release]
+strip = true
+lto = true
+
+[dependencies]
+wasmbot_client = { path = "../../libraries/Rust/wasmbot_client"}
+

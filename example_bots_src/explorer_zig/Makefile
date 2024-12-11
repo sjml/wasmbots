@@ -22,6 +22,6 @@ clean:
 
 .PHONY: install
 install: all
-	rsync -u -t -p zig-out/bin/$(EXE_NAME).wasm ../../example_bots/$(EXE_NAME)_zig.wasm
+	rsync -u -t -p zig-out/bin/$(EXE_NAME).wasm ../../example_bots/$(EXE_NAME).wasm
 
 .DEFAULT_GOAL = all

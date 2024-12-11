@@ -1,4 +1,4 @@
-use wasmbots_client::wasmbot_messages;
+use wasmbot_client::wasmbot_messages;
 
 pub const MOVEMENT: [Point; 8] = [
     Point{ x:  0, y: -1 }, // North
