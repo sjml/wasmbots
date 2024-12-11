@@ -9,6 +9,5 @@ serde = { version = "1.0.215", features = ["derive"] }
 tokio = { version = "1.42.0", features = ["full", "rt"] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
-circler = { path = "../../../example_bots_src/circler" }
 base64 = "0.22.1"
 rand = "0.8.5"

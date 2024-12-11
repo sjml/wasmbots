@@ -4,8 +4,6 @@
     * does the beschi generator actually work? it's untested...
   * update general library readme
 * trainers
-  * rust 
-    * basic functionality in; now remove direct references to circler so it can be used with other bots
   * go
   * clean up zig trainer
     * would be nice if it could recover from panic somehow? not sure what that would even mean since the library is likely not in a usable state (so maybe don't bother)

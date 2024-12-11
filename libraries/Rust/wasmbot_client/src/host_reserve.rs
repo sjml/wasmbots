@@ -4,17 +4,17 @@ static HOST_RESERVE: OnceLock<RwLock<Box<[u8]>>> = OnceLock::new();
 
 
 pub fn reserve_host_memory(size: usize) -> bool {
-    if size == 0 {
-        return false;
-    }
+	if size == 0 {
+		return false;
+	}
 
-    let vec = vec![0u8; size];
-    let boxed_slice = vec.into_boxed_slice();
-    let rw_lock = RwLock::new(boxed_slice);
+	let vec = vec![0u8; size];
+	let boxed_slice = vec.into_boxed_slice();
+	let rw_lock = RwLock::new(boxed_slice);
 
-    let _ = HOST_RESERVE.get_or_init(|| rw_lock);
+	let _ = HOST_RESERVE.get_or_init(|| rw_lock);
 
-    true
+	true
 }
 
 pub struct HostReserve {

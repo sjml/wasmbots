@@ -1,14 +1,14 @@
 use wasmbot_client::wasmbot_messages;
 
 pub const MOVEMENT: [Point; 8] = [
-    Point{ x:  0, y: -1 }, // North
-    Point{ x:  1, y: -1 }, // Northeast
-    Point{ x:  1, y:  0 }, // East
-    Point{ x:  1, y:  1 }, // Southeast
-    Point{ x:  0, y:  1 }, // South
-    Point{ x: -1, y:  1 }, // Southwest
-    Point{ x: -1, y:  0 }, // West
-    Point{ x: -1, y: -1 }, // Northwest
+	Point{ x:  0, y: -1 }, // North
+	Point{ x:  1, y: -1 }, // Northeast
+	Point{ x:  1, y:  0 }, // East
+	Point{ x:  1, y:  1 }, // Southeast
+	Point{ x:  0, y:  1 }, // South
+	Point{ x: -1, y:  1 }, // Southwest
+	Point{ x: -1, y:  0 }, // West
+	Point{ x: -1, y: -1 }, // Northwest
 ];
 
 #[derive(Debug,Copy,Clone)]
@@ -100,23 +100,23 @@ pub struct Grid<T> {
 
 impl<T> Grid<T> {
 	pub fn new(data: Vec<T>, width: usize, height: usize) -> Self {
-        Self {
-            data,
-            width,
-            height,
-        }
-    }
+		Self {
+			data,
+			width,
+			height,
+		}
+	}
 
-    pub fn get(&self, x: usize, y: usize) -> T
-    where
-        T: Copy,
-    {
-        let idx = (y * self.width) + x;
-        if idx >= self.data.len() {
-            panic!("Bad grid access!");
-        }
-        self.data[idx]
-    }
+	pub fn get(&self, x: usize, y: usize) -> T
+	where
+		T: Copy,
+	{
+		let idx = (y * self.width) + x;
+		if idx >= self.data.len() {
+			panic!("Bad grid access!");
+		}
+		self.data[idx]
+	}
 
 	pub fn get_from_origin(&self, origin: &Point, offset: &Point) -> T
 	where

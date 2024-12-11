@@ -2,8 +2,6 @@ use std::cell::RefCell;
 
 use rand::Rng;
 
-use circler;
-
 thread_local! {
 	static HOST_RESERVE_PTR: RefCell<*mut u8> = RefCell::new(std::ptr::null_mut());
 	static HOST_RESERVE_LEN: RefCell<usize> = RefCell::new(0);
