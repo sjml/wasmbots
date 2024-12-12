@@ -93,8 +93,16 @@ async fn receive_game_params(Json(payload): Json<MemoryRequest>) -> impl IntoRes
 			if CHATTY_SERVER {
 				println!("  <error> {}", msg);
 			}
+			let return_code = {
+				if msg == "Bot declined game parameters" {
+					StatusCode::BAD_REQUEST
+				}
+				else {
+					StatusCode::INTERNAL_SERVER_ERROR
+				}
+			};
 			(
-				StatusCode::INTERNAL_SERVER_ERROR,
+				return_code,
 				Json(MemoryResult {
 					success: false,
 					mem: msg,
