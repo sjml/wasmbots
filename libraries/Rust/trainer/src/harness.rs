@@ -26,8 +26,11 @@ pub extern "C" fn logFunction(log_level: i32, msg_ptr: usize, msg_len: usize) {
 
 #[no_mangle]
 pub extern "C" fn getRandomInt(min: i32, max: i32) -> i32 {
+	if max <= min {
+		return min;
+	}
 	let mut rng = rand::thread_rng();
-	rng.gen_range(min..=max)
+	rng.gen_range(min..max)
 }
 
 fn lift_string(offset: usize, len: usize) -> Result<String, std::str::Utf8Error> {

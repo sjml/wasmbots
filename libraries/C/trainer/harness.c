@@ -17,6 +17,9 @@ static size_t _hostReserveLen = 0;
 // (seeded in the simulateSetup)
 // yes, there are many better RNGs, but this will do for our purposes
 int32_t getRandomInt(int32_t min, int32_t max) {
+	if (max <= min) {
+		return min;
+	}
 	return rand() % (max - min) + min;
 }
 

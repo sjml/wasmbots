@@ -20,6 +20,9 @@ export fn logFunction(logLevel: i32, msgPtr: usize, msgLen: usize) void {
 }
 
 export fn getRandomInt(min: i32, max: i32) i32 {
+    if (max <= min) {
+        return min;
+    }
     return rng.random().intRangeLessThan(i32, min, max);
 }
 
