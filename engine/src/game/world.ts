@@ -179,7 +179,12 @@ export class World extends EventTarget {
 	}
 
 	isReadyToStart(): boolean {
-		return (this.currentMap != null) && (this.players.length >= this.currentMap.minPlayers);
+		if (this.currentMap == null) {
+			return false;
+		}
+		const validPlayers = this.players.filter(p => World._playerIsValid(p));
+
+		return validPlayers.length >= this.currentMap.minPlayers;
 	}
 
 	startGame() {
@@ -249,8 +254,14 @@ export class World extends EventTarget {
 				).flat().map(t => t.terrainType);
 
 
-				const move = await player.tickTurn(circumstances, visualTick);
-
+				let move: CoreMsg.Message;
+				try {
+					move = await player.tickTurn(circumstances, visualTick);
+				} catch (error) {
+					console.error("Exception in player tick:", error);
+					player.lastMoveStatus = CoreMsg.MoveResult.Error;
+					continue;
+				}
 
 				player.lastMoveStatus = this.processMove(player, move);
 				// if (player.lastMoveStatus !== CoreMsg.MoveResult.Succeeded) {

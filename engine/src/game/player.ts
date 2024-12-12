@@ -34,7 +34,11 @@ export class Player {
 	async init(coordinator: Coordinator): Promise<boolean> {
 		this.coordinator = coordinator;
 		this.coordinator.kickoff();
-		await this.coordinator.untilReady();
+		try {
+			await this.coordinator.untilReady();
+		} catch (error) {
+			console.error(error);
+		}
 		if (this.coordinator.status == CoordinatorStatus.Shutdown) {
 			return false;
 		}

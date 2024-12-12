@@ -16,17 +16,14 @@ type BotMetadata struct {
 	Version [3]uint16
 }
 
-//go:wasmimport env logFunction
-func hostLogFunction(logLevel int32, msgPtr uintptr, msgLen uint)
-
 func Log(msg string) {
 	msgBytes := []byte(msg)
-	hostLogFunction(2, uintptr(unsafe.Pointer(&msgBytes[0])), uint(len(msgBytes)))
+	HostLogFunction(2, uintptr(unsafe.Pointer(&msgBytes[0])), uintptr(len(msgBytes)))
 }
 
 func LogErr(msg string) {
 	msgBytes := []byte(msg)
-	hostLogFunction(0, uintptr(unsafe.Pointer(&msgBytes[0])), uint(len(msgBytes)))
+	HostLogFunction(0, uintptr(unsafe.Pointer(&msgBytes[0])), uintptr(len(msgBytes)))
 }
 
 type ClientSetupFunction func() BotMetadata
@@ -38,6 +35,7 @@ var clientReceiveGameParams ClientReceiveGameParamsFunction = _clientReceiveGame
 var clientTick TickFunction = _clientTickNoop
 
 func _clientSetupNoop() BotMetadata {
+	LogErr("No ClientSetupFunction set!")
 	return BotMetadata{Name: "[INVALID]", Version: [3]uint16{0, 0, 0}}
 }
 
@@ -47,7 +45,8 @@ func _clientReceiveGameParamsNoop(params InitialParameters) bool {
 }
 
 func _clientTickNoop(_ PresentCircumstances) Message {
-	return New_ErrorDefault()
+	LogErr("No TickFunction set!")
+	return NewWaitDefault()
 }
 
 func RegisterClientSetup(setup ClientSetupFunction) {
@@ -70,18 +69,19 @@ func reserveHostMemory(size uintptr) bool {
 }
 
 //export setup
-func setup(request uintptr) uintptr {
+func Setup(request uintptr) uintptr {
 	reserveHostMemory(request)
 
 	botData := clientSetup()
 
 	offset := 0
 	copy(hostReserve[offset:], []byte(botData.Name))
+	offset += len(botData.Name)
 	paddingSize := MAX_NAME_LEN - len(botData.Name)
 	if paddingSize > 0 {
 		copy(hostReserve[offset:offset+paddingSize], make([]byte, paddingSize))
 	}
-	offset += MAX_NAME_LEN
+	offset = MAX_NAME_LEN
 	for vei, ve := range botData.Version {
 		binary.LittleEndian.PutUint16(hostReserve[offset+vei*2:], ve)
 	}
@@ -91,7 +91,7 @@ func setup(request uintptr) uintptr {
 }
 
 //export receiveGameParams
-func receiveGameParams(offset uintptr) bool {
+func ReceiveGameParams(offset uintptr) bool {
 	paramsReader := bytes.NewReader(hostReserve[offset:])
 	initParams, err := InitialParametersFromBytes(paramsReader)
 	if err != nil {
@@ -122,8 +122,8 @@ func (w *sliceWriter) Write(p []byte) (n int, err error) {
 }
 
 //export tick
-func tick(offset uintptr) {
-	circsReader := bytes.NewReader(hostReserve[:offset])
+func Tick(offset uintptr) {
+	circsReader := bytes.NewReader(hostReserve[offset:])
 	circumstances, err := PresentCircumstancesFromBytes(circsReader)
 
 	var submittedMove Message

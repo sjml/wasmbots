@@ -20,8 +20,10 @@
 		const uipd = new UIPlayerData();
 		const rngSeed = gameState.world!.rng.randInt(0, Number.MAX_SAFE_INTEGER);
 		const coord = new WasmCoordinator(uipd.playerObject, uipd.selfLog, rngSeed, rawWasm);
-		await uipd.playerObject.init(coord);
-		newBotCallback(uipd);
+		const playerReady = await uipd.playerObject.init(coord);
+		if (playerReady) {
+			newBotCallback(uipd);
+		}
 		resetUI();
 	}
 

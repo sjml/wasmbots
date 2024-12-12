@@ -10,5 +10,9 @@
 	"circler.wasm": {
 		"source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/circler",
 		"name": "circler (Rust)"
+	},
+	"wallflower.wasm": {
+		"source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/wallflower",
+		"name": "wallflower (Go)"
 	}
 }

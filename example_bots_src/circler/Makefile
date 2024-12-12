@@ -8,10 +8,7 @@ target/wasm32-unknown-unknown/release/$(EXE_NAME).wasm: $(BOT_SRCS)
 trainer: $(BOT_SRCS)
 	cargo build
 	BOT_LIBRARY_NAME=$(EXE_NAME) BOT_LIBRARY_PATH=../../../example_bots_src/circler/target/debug/ cargo build --manifest-path ../../libraries/Rust/trainer/Cargo.toml --target-dir ./target
-
-.PHONY: run-trainer
-run-trainer: trainer
-	./target/debug/trainer
+	ln -s ./target/debug/trainer ./$(EXE_NAME)-trainer
 
 .PHONY: wasm
 wasm: target/wasm32-unknown-unknown/release/$(EXE_NAME).wasm
@@ -22,6 +19,7 @@ all: wasm trainer
 .PHONY: clean
 clean:
 	cargo clean
+	rm -rf ./$(EXE_NAME)-trainer
 
 .PHONY: install
 install: wasm

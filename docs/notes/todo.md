@@ -1,10 +1,9 @@
 ## dev
-* fix client handshake in go
-  * consider whether to yeet assemblyscript
-    * does the beschi generator actually work? it's untested...
-  * update general library readme
+* consider whether to yeet assemblyscript
+  * does the beschi generator actually work? it's untested...
+* update general library readme
 * trainers
-  * go
+  * all the noop functions should log an error but return a nothing
   * clean up zig trainer
     * would be nice if it could recover from panic somehow? not sure what that would even mean since the library is likely not in a usable state (so maybe don't bother)
     * have some better routing/mapping going on, less copypasta
@@ -12,9 +11,8 @@
 
 * mobile layout is borked (at least on safari)
 * track down why crashing on receivegameparams doesn't properly log errors
-  * wasmbot.worker's instantiate: const setupStatus = await program.runSetup();
-    * if it returns false, everything falls apart
-  * (same problem with tick -- the UI console needs to be helpful here)
+  * confirm that a crash at each of the three call points will log
+  * don't let uninstantiated start
 
 * give larger view radius to arena (which means it becomes a map parameter...?)
 * fix up (or bail on) lighting thing
