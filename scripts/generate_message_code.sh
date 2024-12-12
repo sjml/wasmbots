@@ -7,7 +7,7 @@ set -e
 
 declare -A langs
 langs["c"]="./libraries/C/wasmbot_client/wasmbot_messages.h"
-# langs["go"]="./libraries/Go/messages/messages.go"
+langs["go"]="./libraries/Go/wasmbot_client/messages.go"
 langs["rust"]="./libraries/Rust/wasmbot_client/src/wasmbot_messages.rs"
 # langs["assemblyscript"]="./libraries/AssemblyScript/assembly/wasmbot_messages.ts"
 langs["typescript"]="./engine/src/core/messages.ts"
@@ -21,6 +21,10 @@ for lang in "${!langs[@]}"; do
 		--indent $'\t'
 		--output "${langs[$lang]}"
 	)
+
+	if [[ "$lang" == "go" ]]; then
+		flags+=(--namespace=wasmbot_client)
+	fi
 
 	beschi "${flags[@]}"
 done
