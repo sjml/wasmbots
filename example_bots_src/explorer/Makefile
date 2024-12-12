@@ -14,14 +14,14 @@ trainer: zig-out/bin/$(EXE_NAME)-trainer
 wasm: zig-out/bin/$(EXE_NAME).wasm
 
 .PHONY: all
-all: zig-out/bin/$(EXE_NAME).wasm trainer
+all: wasm trainer
 
 .PHONY: clean
 clean:
 	rm -rf ./.zig-cache ./zig-out
 
 .PHONY: install
-install: all
+install: wasm
 	rsync -u -t -p zig-out/bin/$(EXE_NAME).wasm ../../example_bots/$(EXE_NAME).wasm
 
 .DEFAULT_GOAL = all

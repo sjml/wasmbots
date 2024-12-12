@@ -140,12 +140,14 @@ fn clientTick(circumstances: msg.PresentCircumstances) msg.Message {
     }
 
     if ((target_tile != null and bot.location.equals(target_tile.?)) or (current_path != null and current_path.?.isFinished())) {
+        wasmbotClient.log("reached end of path");
         setTarget(null);
     }
 
     if (target_tile == null) {
         if (unvisited.count() > 0) {
             const t = findClosestUnvisited(bot.location) catch @panic("Failed to find reachable tile");
+            wasmbotClient.logFmt("setting new path target: {d}, {d}", .{ t.x, t.y });
             setTarget(t);
             const next = current_path.?.getNextMove(&bot, &mapping);
             if (next != null) {
@@ -175,6 +177,7 @@ fn clientTick(circumstances: msg.PresentCircumstances) msg.Message {
                 exploring = false;
                 return msg.Message{ .Resign = msg.Resign{} };
             } else {
+                wasmbotClient.logFmt("returning to door at {d}, {d}", .{ target_door.?.x, target_door.?.y });
                 setTarget(target_door.?);
                 return current_path.?.getNextMove(&bot, &mapping).?;
             }
