@@ -12,11 +12,33 @@
 extern void logFunction(int logLevel, unsigned int msgPtr, unsigned int msgLen);
 
 void wsmbt_log(const char* msg) {
-	logFunction(2, (size_t)msg, strlen(msg));
+	#if !defined(__EMSCRIPTEN__)
+		// doing straight pointer casts from potentially read-only memory
+		//   is problematic; this is hacky and slightly wasteful
+		//   but gets the job done when compiling for native.
+		size_t copyLen = strlen(msg) + 1;
+		char* copy = malloc(copyLen);
+		strlcpy(copy, msg, copyLen);
+		logFunction(2, (size_t)copy, copyLen-1);
+		free(copy);
+	#else
+		logFunction(2, (size_t)msg, strlen(msg));
+	#endif
 }
 
 void wsmbt_logErr(const char* msg) {
-	logFunction(0, (size_t)msg, strlen(msg));
+	#if !defined(__EMSCRIPTEN__)
+		// doing straight pointer casts from potentially read-only memory
+		//   is problematic; this is hacky and slightly wasteful
+		//   but gets the job done when compiling for native.
+		size_t copyLen = strlen(msg) + 1;
+		char* copy = malloc(copyLen);
+		strlcpy(copy, msg, copyLen);
+		logFunction(0, (size_t)copy, copyLen-1);
+		free(copy);
+	#else
+		logFunction(0, (size_t)msg, strlen(msg));
+	#endif
 }
 
 void wsmbt_logf(const char* fmt, ...) {

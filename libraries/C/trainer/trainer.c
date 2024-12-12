@@ -10,7 +10,9 @@
 #include "harness.h"
 
 
-const bool CHATTY_SERVER = true;
+const bool CHATTY_SERVER = false;
+
+static size_t _reserveMemSize = 0;
 
 static int setup_handler(struct mg_connection *conn, void *cbdata) {
 	if (CHATTY_SERVER) {
@@ -21,7 +23,7 @@ static int setup_handler(struct mg_connection *conn, void *cbdata) {
 	int buffer_len = mg_read(conn, buffer, sizeof(buffer) - 1);
 	buffer[buffer_len] = 0;
 	if (CHATTY_SERVER) {
-		printf(" w/%s", buffer);
+		printf(" w/%s\n", buffer);
 	}
 
 	cJSON *obj, *elem;
@@ -37,32 +39,152 @@ static int setup_handler(struct mg_connection *conn, void *cbdata) {
 		mg_send_http_error(conn, 400, "No reserve size given in JSON");
 		return 400;
 	}
-	size_t reserve = elem->valueint;
+	_reserveMemSize = elem->valueint;
 	cJSON_Delete(obj);
 
-
-	const uint8_t* reserveBlockPtr = (uint8_t* )simulateSetup(reserve);
+	const uint8_t* reserveBlockPtr = (uint8_t* )simulateSetup(_reserveMemSize);
 	if (reserveBlockPtr == NULL) {
 		mg_send_http_error(conn, 500, "Could not reserve memory");
 		return 500;
 	}
 
-	// size_t encodedBlockLen = ((reserve + 2) / 3) * 4 + 1;
-	// char* encodedBuffer = (char*)malloc(encodedBlockLen + 1);
-	// int res = mg_base64_encode((const unsigned char*)reserveBlockPtr, reserve, encodedBuffer, &encodedBlockLen);
-	// if (res != -1) {
-	// 	free(encodedBuffer);
-	// 	mg_send_http_error(conn, 500, "Could not encode reserve memory");
-	// 	return 500;
-	// }
-	// encodedBuffer[encodedBlockLen] = 0;
-	// free(encodedBuffer);
-
-	mg_send_http_ok(conn, "application/octet-stream", reserve);
-	mg_write(conn, reserveBlockPtr, reserve);
-	mg_close_connection(conn);
+	mg_send_http_ok(conn, "application/octet-stream", _reserveMemSize);
+	mg_write(conn, reserveBlockPtr, _reserveMemSize);
 	return 0;
 }
+
+int send_json_mem_response(struct mg_connection *conn, int code, bool success, char* msg) {
+	mg_printf(conn, "HTTP/1.1 %d %s\r\n", code, mg_get_response_code_text(conn, code));
+	mg_printf(conn, "Content-Type: application/json;\r\n");
+	mg_printf(conn, "\r\n");
+	mg_printf(conn, "{\"success\": %s, \"mem\": \"%s\"}", success ? "true" : "false", msg);
+	return code;
+}
+
+static int receiveGameParams_handler(struct mg_connection *conn, void *cbdata) {
+	if (CHATTY_SERVER) {
+		printf("/receiveGameParams");
+	}
+
+	char buffer[4096];
+	int buffer_len = mg_read(conn, buffer, sizeof(buffer) - 1);
+	buffer[buffer_len] = 0;
+	if (CHATTY_SERVER) {
+		printf(" w/%s\n", buffer);
+	}
+
+	cJSON *obj, *elem;
+	obj = cJSON_Parse(buffer);
+	if (obj == NULL) {
+		return send_json_mem_response(conn, 400, false, "Could not parse JSON");
+	}
+
+	elem = cJSON_GetObjectItem(obj, "offset");
+	if (!cJSON_IsNumber(elem)) {
+		cJSON_Delete(obj);
+		return send_json_mem_response(conn, 400, false, "No offset given in JSON");
+	}
+	size_t offset = elem->valueint;
+
+	elem = cJSON_GetObjectItem(obj, "mem");
+	if (!cJSON_IsString(elem)) {
+		cJSON_Delete(obj);
+		return send_json_mem_response(conn, 400, false, "No memory string given in JSON");
+	}
+	char* encodedMem = elem->valuestring;
+	size_t encodedMemLen = strlen(encodedMem);
+
+	size_t decodedBlockLen = _reserveMemSize + 1;
+	uint8_t* decodedBuffer = (uint8_t*)malloc(decodedBlockLen);
+	int res = mg_base64_decode(encodedMem, encodedMemLen, decodedBuffer, &decodedBlockLen);
+	if (res != -1 || decodedBlockLen - 1 != _reserveMemSize) {
+		cJSON_Delete(obj);
+		free(decodedBuffer);
+		return send_json_mem_response(conn, 400, false, "Could not decode passed memory string");
+	}
+	cJSON_Delete(obj);
+
+	uint8_t* updatedBuffer = (uint8_t*)simulateReceiveGameParams(decodedBuffer, offset);
+	free(decodedBuffer);
+
+	if (updatedBuffer == NULL) {
+		return send_json_mem_response(conn, 400, false, "Bot declined game parameters");
+	}
+
+	size_t encodedBufferLen = ((_reserveMemSize + 2) / 3) * 4 + 1;
+	char* encodedBuffer = malloc(encodedBufferLen);
+	res = mg_base64_encode((const unsigned char*)updatedBuffer, _reserveMemSize, encodedBuffer, &encodedBufferLen);
+	if (res != -1) {
+		free(encodedBuffer);
+		return send_json_mem_response(conn, 500, false, "Could not encode reserve memory");
+	}
+
+	send_json_mem_response(conn, 200, true, encodedBuffer);
+
+	free(encodedBuffer);
+	return 200;
+}
+
+static int tick_handler(struct mg_connection *conn, void *cbdata) {
+	if (CHATTY_SERVER) {
+		printf("/tick");
+	}
+
+	char buffer[4096];
+	int buffer_len = mg_read(conn, buffer, sizeof(buffer) - 1);
+	buffer[buffer_len] = 0;
+	if (CHATTY_SERVER) {
+		printf(" w/%s\n", buffer);
+	}
+
+	cJSON *obj, *elem;
+	obj = cJSON_Parse(buffer);
+	if (obj == NULL) {
+		return send_json_mem_response(conn, 400, false, "Could not parse JSON");
+	}
+
+	elem = cJSON_GetObjectItem(obj, "offset");
+	if (!cJSON_IsNumber(elem)) {
+		cJSON_Delete(obj);
+		return send_json_mem_response(conn, 400, false, "No offset given in JSON");
+	}
+	size_t offset = elem->valueint;
+
+	elem = cJSON_GetObjectItem(obj, "mem");
+	if (!cJSON_IsString(elem)) {
+		cJSON_Delete(obj);
+		return send_json_mem_response(conn, 400, false, "No memory string given in JSON");
+	}
+	char* encodedMem = elem->valuestring;
+	size_t encodedMemLen = strlen(encodedMem);
+
+	size_t decodedBlockLen = _reserveMemSize + 1;
+	uint8_t* decodedBuffer = (uint8_t*)malloc(decodedBlockLen);
+	int res = mg_base64_decode(encodedMem, encodedMemLen, decodedBuffer, &decodedBlockLen);
+	if (res != -1 || decodedBlockLen - 1 != _reserveMemSize) {
+		cJSON_Delete(obj);
+		free(decodedBuffer);
+		return send_json_mem_response(conn, 400, false, "Could not decode passed memory string");
+	}
+	cJSON_Delete(obj);
+
+	uint8_t* updatedBuffer = (uint8_t*)simulateTick(decodedBuffer, offset);
+	free(decodedBuffer);
+
+	size_t encodedBufferLen = ((_reserveMemSize + 2) / 3) * 4 + 1;
+	char* encodedBuffer = malloc(encodedBufferLen);
+	res = mg_base64_encode((const unsigned char*)updatedBuffer, _reserveMemSize, encodedBuffer, &encodedBufferLen);
+	if (res != -1) {
+		free(encodedBuffer);
+		return send_json_mem_response(conn, 500, false, "Could not encode reserve memory");
+	}
+
+	send_json_mem_response(conn, 200, true, encodedBuffer);
+
+	free(encodedBuffer);
+	return 200;
+}
+
 
 int main(void) {
 	struct mg_context *ctx;
@@ -82,6 +204,8 @@ int main(void) {
 	}
 
 	mg_set_request_handler(ctx, "/setup", setup_handler, NULL);
+	mg_set_request_handler(ctx, "/receiveGameParams", receiveGameParams_handler, NULL);
+	mg_set_request_handler(ctx, "/tick", tick_handler, NULL);
 
 	printf("Listening...\n\n");
 

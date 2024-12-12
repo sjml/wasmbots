@@ -4,9 +4,12 @@
 #include <time.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdbool.h>
 
 extern void clientInitialize(void);
 extern size_t setup(size_t);
+extern bool receiveGameParams(size_t);
+extern void tick(size_t);
 
 static uint8_t* _hostReservePtr = NULL;
 static size_t _hostReserveLen = 0;
@@ -64,6 +67,27 @@ uint8_t* simulateSetup(size_t reserveRequest) {
 
 	_hostReservePtr = (uint8_t*)reserveOffset;
 	_hostReserveLen = reserveRequest;
+
+	return _hostReservePtr;
+}
+
+uint8_t* simulateReceiveGameParams(uint8_t* incomingBlock, size_t offset) {
+	memcpy(_hostReservePtr, incomingBlock, _hostReserveLen);
+
+	bool botReady = receiveGameParams(offset);
+
+	if (!botReady) {
+		harness_logErr("Bot declined game parameters");
+		return NULL;
+	}
+
+	return _hostReservePtr;
+}
+
+uint8_t* simulateTick(uint8_t* incomingBlock, size_t offset) {
+	memcpy(_hostReservePtr, incomingBlock, _hostReserveLen);
+
+	tick(offset);
 
 	return _hostReservePtr;
 }

@@ -5,7 +5,6 @@
   * update general library readme
 * trainers
   * go
-  * C
   * clean up zig trainer
     * would be nice if it could recover from panic somehow? not sure what that would even mean since the library is likely not in a usable state (so maybe don't bother)
     * have some better routing/mapping going on, less copypasta
