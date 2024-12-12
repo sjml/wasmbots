@@ -88,11 +88,11 @@ fn tick(pc: wasmbot_messages::PresentCircumstances) -> wasmbot_messages::Message
 	match peek {
 		wasmbot_messages::TileType::Floor => {},
 		_ => {
-			log("changing direction because next tile is not floor");
+			// log("changing direction because next tile is not floor");
 			let mut diri = DIRECTION.with_borrow(|dir| *dir as u8);
 			diri += 2;
 			diri %= 8;
-			log(&std::format!("new direction: {}", diri));
+			// log(&std::format!("new direction: {}", diri));
 			dir = diri.try_into().unwrap();
 			DIRECTION.with_borrow_mut(|dir| *dir = (diri).try_into().expect("Bad direction"));
 		}
