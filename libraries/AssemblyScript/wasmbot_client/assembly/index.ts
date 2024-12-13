@@ -15,7 +15,9 @@ declare function hostGetRandomInt(min: i32, max: i32): i32;
 
 export type TickFunction = (pc: CoreMsg.PresentCircumstances) => CoreMsg.Message;
 let CLIENT_TICK: TickFunction = (_: CoreMsg.PresentCircumstances): CoreMsg.Message => {
-	return new CoreMsg._Error();
+	const err = new CoreMsg._Error();
+	err.description = "No client tick function registered";
+	return err;
 };
 
 export function as_abort(msg: usize, file: usize, line: u32, col: u32): void {

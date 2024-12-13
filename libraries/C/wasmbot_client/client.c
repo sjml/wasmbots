@@ -151,7 +151,13 @@ size_t setup(size_t requestReserve) {
 	return (size_t)WSMBT_HOST_RESERVE;
 }
 
-void* _noop(WasmBots_PresentCircumstances* circumstances) { return NULL; }
+void* _noop(WasmBots_PresentCircumstances* circumstances) {
+	char* errMsg = "No client tick function registered";
+	WasmBots__Error* err = WasmBots__Error_Create();
+	err->description = errMsg;
+	err->description_len = strlen(errMsg);
+	return err;
+}
 wsmbt_TickFunction _clientTick = &_noop;
 
 void wsmbt_registerTickCallback(wsmbt_TickFunction tickFunc) {

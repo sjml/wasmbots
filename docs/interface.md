@@ -42,3 +42,11 @@ Assuming that `receiveGameParameters` returns `true`, the module will be partici
 The module will get a call to its exported `tick` function. This gets a single parameter that is an offset in the shared memory where the current circumstances begin. The data format for the circumstances is [documented in the `messaging.toml` file](../engine/src/data/messaging.toml) in the "PresentCircumstances" message. They tell you what the state of the world is as your bot currently perceives it. 
 
 _(Remaining documentation to be written, especially as the data formats actually get fleshed out.)_
+
+
+### (Lack of) Memory Constraints
+
+My original idea was to limit the memory sizes of the WebAssembly programs to something very small, just as an exercise in old-school parsimony. At first just a single page of memory (64k) then I went up to a megabyte... but what I found was that when the WebAssembly **host** manages memory, the programs themselves have to be compiled with directives to import their memory, and you also have to manually tell them how much to expect to have. Seems simple enough EXCEPT most programming languages these days don't seem to play well with such restrictions, at least not if I make them low enough to be interesting. Rust's default allocator in particular [doesn't work if it can't grow the memory](https://github.com/rustwasm/wasm-bindgen/issues/1389#issuecomment-476224477). 
+
+For now I'm letting each hosted program just do whatever it wants with memory, at least until it runs into the actual engine's memory limits (which I think are around 4 GB?). This might change in the future! 
+

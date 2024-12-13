@@ -9,7 +9,7 @@ use wasmbot_messages::MessageCodec;
 pub type TickFn = fn(wasmbot_messages::PresentCircumstances) -> wasmbot_messages::Message;
 static CLIENT_TICK: Mutex<TickFn> = Mutex::new(_client_tick_noop);
 fn _client_tick_noop(_: wasmbot_messages::PresentCircumstances) -> wasmbot_messages::Message {
-	wasmbot_messages::Message::_Error(wasmbot_messages::_Error::default())
+	wasmbot_messages::Message::_Error(wasmbot_messages::_Error{description: "No client tick function registered".to_string()})
 }
 
 extern "C" {

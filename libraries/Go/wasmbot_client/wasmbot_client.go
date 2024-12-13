@@ -45,8 +45,8 @@ func _clientReceiveGameParamsNoop(params InitialParameters) bool {
 }
 
 func _clientTickNoop(_ PresentCircumstances) Message {
-	LogErr("No TickFunction set!")
-	return NewWaitDefault()
+	errMsg := _Error{Description: "No client tick function registered"}
+	return errMsg
 }
 
 func RegisterClientSetup(setup ClientSetupFunction) {
@@ -64,6 +64,10 @@ func RegisterTickCallback(cb TickFunction) {
 var hostReserve []byte
 
 func reserveHostMemory(size uintptr) bool {
+	if hostReserve != nil {
+		LogErr("CLIENT ERROR: Attempting to reserve memory twice")
+		return false
+	}
 	hostReserve = make([]byte, size)
 	return true
 }

@@ -1,18 +1,5 @@
 ## dev
-* library cleanups:
-  * make sure you can't reserve memory twice
-* update general library readme
-* trainers
-  * all the noop functions should log an error but return a nothing
-  * clean up zig trainer
-    * would be nice if it could recover from panic somehow? not sure what that would even mean since the library is likely not in a usable state (so maybe don't bother)
-    * have some better routing/mapping going on, less copypasta
-    * explicit about method (POST for everything right now)
-
 * mobile layout is borked (at least on safari)
-* track down why crashing on receivegameparams doesn't properly log errors
-  * confirm that a crash at each of the three call points will log
-  * don't let uninstantiated start
 
 * give larger view radius to arena (which means it becomes a map parameter...?)
 * fix up (or bail on) lighting thing
@@ -35,12 +22,6 @@
           * figure out cache-busting on main script?
         * add map parameter(s?) to embedded component
 
-* trainer
-    * need to figure out debugger attaching to the process; maybe deno can just take a port number and hit it up instead of starting it directly? 
-      * set up monorepo as a VS Code workspace? https://code.visualstudio.com/docs/editor/multi-root-workspaces
-      * https://code.visualstudio.com/docs/editor/debugging#_compound-launch-configurations
-      * https://code.visualstudio.com/Docs/editor/debugging#_multitarget-debugging
-
 * testing
     * player class
         * feeding non-wasm byte array
@@ -48,6 +29,8 @@
         * feeding program that refuses start
         * feeding program that crashes on setup
         * passing negative or invalid string length
+        * crash at each of the three call points: setup, receiveGameParams, and tick
+          * have one that plays just fine for X turns and THEN crashes
     * BUGS: 
       * failed instantiation still adds player to UI
         * (maybe that's ok, because we can show errors in the console? just clear it when the game starts in that case.)
@@ -87,17 +70,6 @@
     * consistency on error messages
     * organize imports in .ts files
     * clean up / clear out old test code and deno-cli stuff in engine
-    * set up a single version number that can progress in lockstep
-        * will probably need a custom script to get libraries versioned similarly
-            * (or maybe they should just track manually and align with major.minor?)
-        * code points:
-            * frontend/package.json
-            * engine/package.json
-            * engine/src/core/config.ts
-            * client libraries
-                * hmmm, allegedly Rust crate doesn't **need** a version number, Go actually doesn't even have them, Zig doesn't really have packages yet, C is C... 
-                * if doable, just kill version numbers in the client libraries
-                  * (if this thing ever takes off and they should be published in package registries: pull them out to their own git repos and version them then)
 * Visuals: 
     * clutter / lighting pass on rendering
     * light following player showing sphere of awareness? 
@@ -115,6 +87,10 @@
     * https://github.com/NfNitLoop/deno-embedder
     * or maybe move to bun? :-/
     * or Go exe that runs server hosting a frontend that is built with special flags
+  * set up monorepo as a VS Code workspace? 
+    * https://code.visualstudio.com/docs/editor/multi-root-workspaces
+  * https://code.visualstudio.com/docs/editor/debugging#_compound-launch-configurations
+  * https://code.visualstudio.com/Docs/editor/debugging#_multitarget-debugging
 * CI to build/validate/deploy
 
 
@@ -127,10 +103,9 @@
   * stat blocks read from JSON?
 * game player objects should have labels that world can see
   * update world.ts processMove error handler once they do
-* with the move away from extern linking, maybe more libraries can use normal strings in their BotMetadata structs
-* readmes for individual libraries
 * custom Phaser3 build to trim down export size
   * then lower the `chunkSizeWarningLimit`
+
 
 ## far-flung future
 * allow teams? hooboy, whole other layer of functionality

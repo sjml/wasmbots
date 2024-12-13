@@ -3,7 +3,7 @@ export class HostReserve {
 
 	static reserveHostMemory(size: usize): void {
 		if (HostReserve.MEMORY.byteLength > 0) {
-			throw new Error("RUNTIME ERROR: Already reserved host memory");
+			throw new Error("CLIENT ERROR: Attempting to reserve memory twice");
 		}
 		HostReserve.MEMORY = new Uint8Array(size as i32);
 	}
