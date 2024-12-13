@@ -26,7 +26,6 @@ all: wasm trainer
 .PHONY: clean
 clean:
 	rm -rf $(EXE_NAME).wasm
-	rm -rf $(EXE_NAME).so
 	rm -rf $(EXE_NAME)-trainer
 
 .PHONY: install

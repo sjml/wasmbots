@@ -111,7 +111,6 @@ type Grid[T any] struct {
 }
 
 func NewGrid[T any](data []T, width, height int) *Grid[T] {
-	wasmbot_client.Log(fmt.Sprintf("grid: %v", data))
 	return &Grid[T]{
 		data:   data,
 		width:  width,
