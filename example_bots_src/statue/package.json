@@ -1,0 +1,22 @@
+{
+  "name": "statue",
+  "version": "0.1.0",
+  "main": "index.js",
+  "scripts": {
+    "asbuild": "asc assembly/index.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "assemblyscript": "^0.27.30",
+    "wasmbot_client": "file:../../libraries/AssemblyScript/wasmbot_client"
+  },
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./build/release.js",
+      "types": "./build/release.d.ts"
+    }
+  }
+}

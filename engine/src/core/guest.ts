@@ -103,7 +103,7 @@ export abstract class GuestProgram {
 			ready = await this.runReceiveGameParams(gpStart);
 		}
 		catch (err) {
-			this.logger.error(`FATAL ERROR: Crash during client setup:\n  ${err}`);
+			this.logger.error(`FATAL ERROR: Crash during reception of game parameters:\n  ${err}`);
 			this.isShutDown = true;
 			return errStatus;
 		}

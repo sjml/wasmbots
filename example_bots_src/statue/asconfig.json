@@ -1,0 +1,20 @@
+{
+  "targets": {
+    "memoryImport": {
+      "importMemory": true,
+      "initialMemory": 1,
+      "maximumMemory": 16
+    }
+  },
+  "options": {
+    "sourceMap": false,
+    "optimizeLevel": 3,
+    "shrinkLevel": 0,
+    "converge": false,
+    "noAssert": false,
+    "bindings": "esm"
+  },
+  "include": [
+    "../../librarys/AssemblyScript/assembly"
+  ]
+}

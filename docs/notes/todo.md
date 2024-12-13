@@ -1,6 +1,6 @@
 ## dev
-* consider whether to yeet assemblyscript
-  * does the beschi generator actually work? it's untested...
+* library cleanups:
+  * make sure you can't reserve memory twice
 * update general library readme
 * trainers
   * all the noop functions should log an error but return a nothing
