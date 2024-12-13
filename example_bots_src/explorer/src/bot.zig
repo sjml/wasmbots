@@ -172,6 +172,7 @@ fn clientTick(circumstances: msg.PresentCircumstances) msg.Message {
                 }
             }
             if (target_door == null) {
+                wasmbotClient.log("“I’ve seen everything. I’ve seen it all.”");
                 wasmbotClient.logFmt("stopping exploration after {d} turns", .{number_of_turns});
                 setTarget(null);
                 exploring = false;
