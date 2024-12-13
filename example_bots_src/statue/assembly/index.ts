@@ -33,14 +33,16 @@ const idleThoughts: string[] = [
 ];
 
 let turnsSinceThought = 0;
+let turnCount = 0;
 
 function tick(pc: wasmbots.CoreMsg.PresentCircumstances): wasmbots.CoreMsg.Message {
+	turnCount += 1;
 	turnsSinceThought += 1;
 	const dieRoll = wasmbots.getRandomInt(0, 200);
-	if (dieRoll < turnsSinceThought) {
+	if (dieRoll < (turnsSinceThought * turnsSinceThought) / 300) {
 		turnsSinceThought = 0;
 		const thoughtIdx = wasmbots.getRandomInt(0, idleThoughts.length);
-		wasmbots.log(idleThoughts[thoughtIdx]);
+		wasmbots.log(`Turn ${turnCount}: ${idleThoughts[thoughtIdx]}`);
 	}
 	return new wasmbots.CoreMsg.Wait();
 }
