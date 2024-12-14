@@ -1,4 +1,9 @@
 ## dev
+* embeddable
+  * reorg embeddable so that the custom component never gets compiled in the main app
+  * add simulation parameters to the embeddable component
+  * expose pause and step
+
 * testing
     * player class
         * feeding non-wasm byte array
@@ -58,12 +63,9 @@
     * clean up / organize Zig library; just kind of a mess right now
     * consistency on underscore prefixing for private variables; commit one way or the other
     * consistency on error messages
-    * organize imports in .ts files
     * clean up / clear out old test code and deno-cli stuff in engine
 * Visuals: 
     * clutter / lighting pass on rendering
-    * light following player showing sphere of awareness? 
-    * kind of a pain with Phaser; also wouldn't easily reflect actual FOV
 * UI: 
   * landscape view on iPhone - the drawers don't extend into the island areas
   * drag-and-drop to load files on page
@@ -85,9 +87,6 @@
 
 
 ## horizon
-* move to library for phosphor icons?
-  * https://github.com/haruaki07/phosphor-svelte
-  * https://github.com/babakfp/phosphor-icons-svelte
 * monsters! 
   * TypeScript-driven AIs, very basic behaviors
   * stat blocks read from JSON?

@@ -1,11 +1,11 @@
+import config from "../core/config.ts";
+import * as CoreMsg from "../core/messages.ts";
+import { CoordinatorStatus } from "../core/coordinator.ts";
+import { type Point, Direction } from "../core/math.ts";
+import { type DungeonBuilderOptions } from "../generation/builder.ts";
 import { RNG, Deck } from "./random.ts";
 import { Player } from "./player.ts";
-import { CoordinatorStatus } from "../core/coordinator.ts";
 import { WorldMap } from "./map.ts";
-import config from "../core/config.ts";
-import { type Point, Direction } from "../core/math.ts";
-import * as CoreMsg from "../core/messages.ts";
-import { type DungeonBuilderOptions } from "../generation/builder.ts";
 
 export enum GameState {
 	Setup,

@@ -1,8 +1,8 @@
-import { RNG } from "../game/random.ts";
-import { type ILogger } from "./logger.ts";
 import config from "./config.ts";
-import { type InstantiateDonePayload } from "../worker/messages.ts";
 import { CoreMsg } from "../index.ts";
+import { type InstantiateDonePayload } from "../worker/messages.ts";
+import { type ILogger } from "./logger.ts";
+import { RNG } from "../game/random.ts";
 import { sleep, encodeBase64, decodeBase64 } from "../core/util.ts";
 
 interface WasmBotsExports {

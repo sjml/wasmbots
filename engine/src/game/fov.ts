@@ -1,6 +1,6 @@
-import { Tile, WorldMap } from "./map.ts";
 import { TileType as TerrainTileType } from "../core/messages.ts";
 import { Direction, Fraction, roundTiesDown, roundTiesUp, type Point } from "../core/math.ts";
+import { Tile, WorldMap } from "./map.ts";
 
 
 // uses symmetric shadowcast (based on https://www.albertford.com/shadowcasting/)

@@ -1,5 +1,5 @@
-import { LogLevel } from "../core/logger.ts";
 import * as CoreMsg from "../core/messages.ts";
+import { LogLevel } from "../core/logger.ts";
 
 export enum GuestToHostMessageType {
 	InitModuleDone,

@@ -1,9 +1,9 @@
 import config from "../core/config.ts";
-import { LogLevel, type LogFunction } from "../core/logger.ts";
-import * as Msg from "./messages.ts";
 import * as CoreMsg from "../core/messages.ts";
-import { Player } from "../game/player.ts";
+import { LogLevel, type LogFunction } from "../core/logger.ts";
 import { type Coordinator, CoordinatorStatus } from "../core/coordinator.ts";
+import { Player } from "../game/player.ts";
+import * as Msg from "./messages.ts";
 
 
 export class WasmCoordinator implements Coordinator {

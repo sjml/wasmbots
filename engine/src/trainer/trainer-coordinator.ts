@@ -1,7 +1,7 @@
+import * as CoreMsg from "../core/messages.ts";
 import { type Coordinator, CoordinatorStatus } from "../core/coordinator.ts";
 import { TrainerGuestProgram } from "../core/guest.ts";
 import { LogFunction, LogLevel } from "../core/logger.ts";
-import * as CoreMsg from "../core/messages.ts";
 import { Player } from "../game/player.ts";
 
 export class TrainerCoordinator implements Coordinator {

@@ -4,9 +4,9 @@
 //     looking polished, this can be revisited
 //   just doing enough work to have it look not *utter* garbage
 
-import { RNG } from "../game/random.ts";
-import { type Point, Array2D } from "../core/math.ts";
 import { TileType } from "../core/messages.ts";
+import { type Point, Array2D } from "../core/math.ts";
+import { RNG } from "../game/random.ts";
 import * as Tiled from "./tileTypes.ts";
 import { mapObjectToJSON } from "./builder.ts";
 

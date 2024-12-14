@@ -1,10 +1,10 @@
-import { type Coordinator, CoordinatorStatus } from "../core/coordinator.ts";
-import * as CoreMsg from "../core/messages.ts";
-
 import config from "../core/config.ts";
-import { type Point } from "../core/math.ts";
 import { LogLevel } from "../core/logger.ts";
+import * as CoreMsg from "../core/messages.ts";
+import { type Coordinator, CoordinatorStatus } from "../core/coordinator.ts";
+import { type Point } from "../core/math.ts";
 import { sleep } from "../core/util.ts";
+
 
 export class Player {
 	coordinator!: Coordinator;

@@ -1,3 +1,4 @@
+import { TileType } from "../core/messages.ts";
 import {
 	Array2D,
 	type Point,
@@ -5,9 +6,8 @@ import {
 	Direction,
 	Rect,
 } from "../core/math.ts";
-import { RNG } from "../game/random.ts";
-import { TileType } from "../core/messages.ts";
 import { getGitRevision } from "../core/util.ts";
+import { RNG } from "../game/random.ts";
 import * as Tiled from "./tileTypes.ts";
 
 import rawMapTemplate from "../data/blankMapTemplate.json" with { type: "json" };

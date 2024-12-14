@@ -1,13 +1,13 @@
-import { readJsonFile } from "../core/loader.ts";
-import { stringToNumericEnum } from "../core/util.ts";
-import { type Point, Rect } from "../core/math.ts";
-import { computeFOV } from "./fov.ts";
+import config from "../core/config.ts";
 import { TileType as TerrainTileType } from "../core/messages.ts";
+import { readJsonFile } from "../core/loader.ts";
+import { type Point, Rect } from "../core/math.ts";
+import { stringToNumericEnum } from "../core/util.ts";
 import { DungeonBuilder } from "../generation/builder.ts";
 import { MapPainter } from "../generation/painter.ts";
 import * as Tiled from "../generation/tileTypes.ts";
-import config from "../core/config.ts";
 import { RNG } from "./random.ts";
+import { computeFOV } from "./fov.ts";
 
 const TILED_FLAG_FLIPPED_HORIZONTALLY    = 0x80000000;
 const TILED_FLAG_FLIPPED_VERTICALLY      = 0x40000000;

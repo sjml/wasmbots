@@ -1,8 +1,8 @@
-import * as Msg from "./messages.ts";
 import * as CoreMsg from "../core/messages.ts";
 import { WasmGuestProgram } from "../core/guest.ts";
 import { validateWasm } from "../core/validator.ts";
 import { LogLevel, type ILogger } from "../core/logger.ts";
+import * as Msg from "./messages.ts";
 
 let module!: WebAssembly.Module;
 let program!: WasmGuestProgram;
