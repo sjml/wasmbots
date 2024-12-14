@@ -1,6 +1,5 @@
 <script lang="ts">
-	import Trainer from "../../ui/Trainer.svelte";
+	import Trainer from "$lib/mainComponents/Trainer.svelte";
 </script>
-
 
 <Trainer />

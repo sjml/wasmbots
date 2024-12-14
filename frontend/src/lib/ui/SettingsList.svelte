@@ -2,11 +2,14 @@
 	import { BlobWriter, TextReader, Uint8ArrayReader, ZipWriter } from "@zip.js/zip.js"
 
 	import { getContext } from "svelte";
+
 	import { Config, Loader } from "wasmbots";
-	import MagicSlider from "./MagicSlider.svelte";
-	import ToggleLock from "./ToggleLock.svelte";
-	import { type WasmBotsState } from "../types.svelte";
     import { mapObjectToJSON } from "wasmbots/generation/builder";
+
+	import { type WasmBotsState } from "../../types.svelte";
+	import MagicSlider from "$lib/ui/MagicSlider.svelte";
+	import ToggleLock from "$lib/ui/ToggleLock.svelte";
+
 	const gameState: WasmBotsState = getContext("gameState");
 
 	// don't love this boilerplate (and I know Svelte devs would probably scold me

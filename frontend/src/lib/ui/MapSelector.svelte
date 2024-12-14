@@ -1,8 +1,10 @@
 <script lang="ts">
 	import { getContext, onMount } from "svelte";
+
 	import { Config, GameState, RNG } from "wasmbots";
 
-	import { type WasmBotsState } from "../types.svelte";
+	import { type WasmBotsState } from "../../types.svelte";
+
 	const gameState: WasmBotsState = getContext("gameState");
 
 	let selectorVisible = $state(false);

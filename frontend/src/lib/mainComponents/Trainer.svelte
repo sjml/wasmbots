@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { setContext } from "svelte";
-	import { Player, CoreMsg, DungeonBuilder } from "wasmbots";
 
-	import { type WasmBotsState, DefaultWasmBotsState } from "../types.svelte";
-	import Navbar from "./Navbar.svelte";
-	import WorldCanvas from "./WorldCanvas.svelte";
-	import FlowControl from "./FlowControl.svelte";
+	import { Player, CoreMsg } from "wasmbots";
+
+	import { type WasmBotsState, DefaultWasmBotsState } from "../../types.svelte";
+	import Navbar from "$lib/ui/Navbar.svelte";
+	import WorldCanvas from "$lib/ui/WorldCanvas.svelte";
+	import FlowControl from "$lib/ui/FlowControl.svelte";
 
 
 	const gameState: WasmBotsState = $state(structuredClone(DefaultWasmBotsState));

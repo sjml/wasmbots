@@ -1,12 +1,12 @@
 <svelte:options customElement="wasmbots-embed" />
 
 <script lang="ts">
-	import { onMount, setContext } from "svelte";
-	import { Loader, Logger, Player, RNG, WasmCoordinator, World, type DungeonBuilderOptions } from "wasmbots";
+	import { setContext } from "svelte";
 
-	import WorldCanvas from "./WorldCanvas.svelte";
-	import { DefaultWasmBotsState, type WasmBotsState, type SetupInfo } from "../types.svelte";
+	import { Loader, Logger, Player, RNG, WasmCoordinator, World } from "wasmbots";
 
+	import { DefaultWasmBotsState, type WasmBotsState, type SetupInfo } from "../../types.svelte";
+	import WorldCanvas from "$lib/ui/WorldCanvas.svelte";
 
 	const gameState: WasmBotsState = $state(structuredClone(DefaultWasmBotsState));
 	setContext("gameState", gameState);

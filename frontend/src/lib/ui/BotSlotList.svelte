@@ -2,12 +2,12 @@
 	import { getContext, onMount } from "svelte";
 
 	import { Loader, Player, WorldMap, GameState } from "wasmbots";
-	import { type WasmBotsState } from "../types.svelte";
-	import BotSlot from "./BotSlot.svelte";
-	import { UIPlayerData, type BotInfo } from "../types.svelte";
-	import BotSlotLoader from "./BotSlotLoader.svelte";
-	import { VisEventBus } from "../vis/events";
-	import { VisPlayer } from "../vis/player";
+
+	import { UIPlayerData, type BotInfo, type WasmBotsState } from "../../types.svelte";
+	import BotSlot from "$lib/ui/BotSlot.svelte";
+	import BotSlotLoader from "$lib/ui/BotSlotLoader.svelte";
+	import { VisEventBus } from "../../vis/events";
+	import { VisPlayer } from "../../vis/player";
 
 	const gameState: WasmBotsState = getContext("gameState");
 

@@ -1,17 +1,15 @@
 <script lang="ts">
 	import { onMount, setContext } from "svelte";
 
-	import Navbar from "./Navbar.svelte";
-	import ToggleButton from "./ToggleButton.svelte";
-	import FlowControl from "./FlowControl.svelte";
-	import MapSelector from "./MapSelector.svelte";
-	import WorldCanvas from "./WorldCanvas.svelte";
-
-	import DrawerPanel from "./DrawerPanel.svelte";
-	import BotSlotList from "./BotSlotList.svelte";
-
-	import { type WasmBotsState, DefaultWasmBotsState } from "../types.svelte";
-	import SettingsList from "./SettingsList.svelte";
+	import { type WasmBotsState, DefaultWasmBotsState } from "../../types.svelte";
+	import Navbar from "$lib/ui/Navbar.svelte";
+	import ToggleButton from "$lib/ui/ToggleButton.svelte";
+	import FlowControl from "$lib/ui/FlowControl.svelte";
+	import MapSelector from "$lib/ui/MapSelector.svelte";
+	import WorldCanvas from "$lib/ui/WorldCanvas.svelte";
+	import DrawerPanel from "$lib/ui/DrawerPanel.svelte";
+	import BotSlotList from "$lib/ui/BotSlotList.svelte";
+	import SettingsList from "$lib/ui/SettingsList.svelte";
 
 	const gameState: WasmBotsState = $state(structuredClone(DefaultWasmBotsState));
 	setContext("gameState", gameState);

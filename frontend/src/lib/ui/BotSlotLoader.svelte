@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { getContext } from "svelte";
-	import { Loader, WasmCoordinator } from "wasmbots";
-	import { UIPlayerData, type BotInfo } from "../types.svelte";
 
-	import { type WasmBotsState } from "../types.svelte";
-    import Spinner from "./Spinner.svelte";
+	import { Loader, WasmCoordinator } from "wasmbots";
+
+	import { UIPlayerData, type BotInfo, type WasmBotsState } from "../../types.svelte";
+	import Spinner from "$lib/ui/Spinner.svelte";
+
 	const gameState: WasmBotsState = getContext("gameState");
 
 	interface Props {

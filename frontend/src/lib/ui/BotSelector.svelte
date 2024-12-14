@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from "svelte";
+
 	import { Loader } from "wasmbots";
 
 	interface Props {

@@ -1,11 +1,12 @@
 <script lang="ts">
 	import { onMount, getContext } from "svelte";
+
 	import { RNG, World } from "wasmbots";
 
-	import { WasmBotsVisualizer } from "../vis/game";
+	import { type WasmBotsState } from "../../types.svelte";
+	import Spinner from "$lib/ui/Spinner.svelte";
+	import { WasmBotsVisualizer } from "../../vis/game";
 
-	import { type WasmBotsState } from "../types.svelte";
-	import Spinner from "./Spinner.svelte";
 	const gameState: WasmBotsState = getContext("gameState");
 
 	interface Props {

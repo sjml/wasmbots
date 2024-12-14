@@ -11,9 +11,15 @@ export default Object.assign(base, defineConfig({
 		},
 	})],
 
+	resolve: {
+		alias: {
+			$lib: "src/lib",
+		}
+	},
+
 	build: {
 		lib: {
-			entry: "src/lib/component.ts",
+			entry: "src/lib/embeddableWasmBots.ts",
 			name: "WasmBotsComponent",
 			fileName: "wasmbots-embedded",
 			formats: ["iife"],

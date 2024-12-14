@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { getContext, onMount, tick as svelteTick } from "svelte";
-	import { type LogEntry, type UIPlayerData } from "../types.svelte";
 
-	import { type WasmBotsState } from "../types.svelte";
     import { GameState, Loader } from "wasmbots";
+
+	import { type LogEntry, type UIPlayerData, type WasmBotsState } from "../../types.svelte";
+
 	const gameState: WasmBotsState = getContext("gameState");
 
 	interface Props {
