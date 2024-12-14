@@ -52,9 +52,9 @@ export class UIPlayerData {
 }
 
 export type SetupInfo = {
-	botUrlList: string[],
-	map: string;
-	worldSeed: string | null;
-	mapSeed: string | null;
-	mapOptions: DungeonBuilderOptions;
+	botUrlList?: string[],
+	map?: string;
+	worldSeed?: string | null;
+	mapSeed?: string | null;
+	mapOptions?: DungeonBuilderOptions;
 };

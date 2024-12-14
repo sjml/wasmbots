@@ -29,11 +29,11 @@
 
 	async function setupFromProps(setupProperty: string, autoRunProperty: boolean) {
 		const setupInfo: SetupInfo = Object.assign(structuredClone(defaultSetup), JSON.parse(setupProperty));
-		const w = new World(setupInfo.worldSeed);
-		await w.setMap(setupInfo.map, new RNG(setupInfo.mapSeed), setupInfo.mapOptions);
+		const w = new World(setupInfo.worldSeed!);
+		await w.setMap(setupInfo.map!, new RNG(setupInfo.mapSeed!), setupInfo.mapOptions);
 		gameState.world = w;
-		for (const botUrl of setupInfo.botUrlList) {
-			const wasmBytes = await Loader.readBinaryFile(botUrl);
+		await Promise.all(setupInfo.botUrlList!.map(async (burl) => {
+			const wasmBytes = await Loader.readBinaryFile(burl);
 			const player = new Player();
 			const coord = new WasmCoordinator(
 				player,
@@ -43,7 +43,7 @@
 			)
 			await player.init(coord);
 			gameState.world!.registerPlayer(player);
-		}
+		}));
 		if (gameState.world!.isReadyToStart()) {
 			gameState.world.startGame();
 			if (autoRunProperty !== false) {

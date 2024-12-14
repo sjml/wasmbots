@@ -1,5 +1,11 @@
 <script lang="ts">
-	let {data} = $props();
+	let { data } = $props();
 </script>
 
-This is a document page called {data.docname}.
+<h1>Testing Data Flow</h1>
+
+This document exists? — ({data.exists})
+
+<div class="contents">
+	{data.contents}
+</div>

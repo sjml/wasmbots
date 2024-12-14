@@ -34,8 +34,8 @@
 		see for yourself!</a>
 	</p>
 	<p>
-		You can <a href="./wasmbots-embed.tar.gz">download the component scripts
-		here</a>.
+		You can <a href="./wasmbots-embed.tar.gz">download the embedded component
+		scripts here</a>.
 	</p>
 
 
@@ -74,7 +74,14 @@
 				"map": "dynamic:dungeon",
 				"mapSeed": null
 			}'
-		/>
+		>
+			<!--
+				Have a loading message here in case the
+				network is slow or the script fails for
+				some reason.
+			-->
+			<em>Loading…</em>
+		</wasmbots-embed>
 	</div>
 
 

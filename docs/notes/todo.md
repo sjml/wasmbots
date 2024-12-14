@@ -1,11 +1,4 @@
 ## dev
-* separate pages (maybe need to be separate svelte apps? 🫠)
-    * current app
-    * trainer
-    * dungeon generator?
-    * front page (static)
-    * embedded demo
-
 * testing
     * player class
         * feeding non-wasm byte array
@@ -38,6 +31,10 @@
     * items, weapons, armor(?), spells
     * trapdoors with tunnels, teleporters
     * traps? 
+
+* documentation
+    * how everything works, I guess
+    * video intro?
 
 * web trainer
   * first UX:
