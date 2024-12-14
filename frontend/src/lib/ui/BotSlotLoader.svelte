@@ -17,8 +17,9 @@
 
 	let isLoading = $state(false);
 
-	async function makeNewPlayer(rawWasm: Uint8Array) {
+	async function makeNewPlayer(rawWasm: Uint8Array, sourcePath?: string) {
 		const uipd = new UIPlayerData();
+		uipd.srcLink = sourcePath;
 		const rngSeed = gameState.world!.rng.randInt(0, Number.MAX_SAFE_INTEGER);
 		const coord = new WasmCoordinator(uipd.playerObject, uipd.selfLog, rngSeed, rawWasm);
 		const playerReady = await uipd.playerObject.init(coord);
@@ -30,9 +31,11 @@
 
 	async function handleExampleBotSelect(evt: Event) {
 		isLoading = true;
-		const fpath = `$rsc/../example_bots/${(evt.target as HTMLSelectElement).value}`;
+		const fname = (evt.target as HTMLSelectElement).value;
+		const src = exampleBotInfo[fname].source;
+		const fpath = `$rsc/../example_bots/${fname}`;
 		const wasmBytes = await Loader.readBinaryFile(fpath);
-		await makeNewPlayer(wasmBytes);
+		await makeNewPlayer(wasmBytes, src);
 	}
 
 	async function handleFileUpload(file: File|null) {

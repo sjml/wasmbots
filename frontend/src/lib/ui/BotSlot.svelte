@@ -73,7 +73,11 @@
 			<div class="name">
 				{playerUI.playerObject.name}
 				<div class="version">
-					{playerUI.playerObject.version.join(".")}
+					{#if playerUI.srcLink !== undefined && playerUI.srcLink.length >0 }
+						<a href={playerUI.srcLink} target="_blank">{playerUI.playerObject.version.join(".")}</a>
+					{:else}
+						{playerUI.playerObject.version.join(".")}
+					{/if}
 				</div>
 			</div>
 			<button class="delete" onclick={dropPlayer} aria-label="delete this bot" disabled={!deleteEnabled}>
@@ -151,6 +155,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+		margin: 3px 0;
 	}
 
 	.botInfo .name {
@@ -166,6 +171,7 @@
 	.consoleContainer {
 		display: flex;
 		flex-direction: row;
+		align-items: center;
 		opacity: 0.6;
 	}
 
@@ -189,6 +195,10 @@
 	.consoleContainer .controls {
 		display: flex;
 		justify-content: space-between;
+	}
+
+	.consoleContainer.expanded .controls {
+		width: 100%;
 	}
 
 	.consoleContainer .controls button {

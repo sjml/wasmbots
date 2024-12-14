@@ -1,22 +1,22 @@
 {
 	"wanderer.wasm": {
-		"source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/wanderer",
+		"source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/wanderer#readme",
 		"name": "wanderer (C)"
 	},
 	"explorer.wasm": {
-		"source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/explorer_zig",
+		"source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/explorer#readme",
 		"name": "explorer (Zig)"
 	},
 	"circler.wasm": {
-		"source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/circler",
+		"source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/circler#readme",
 		"name": "circler (Rust)"
 	},
 	"wallflower.wasm": {
-		"source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/wallflower",
+		"source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/wallflower#readme",
 		"name": "wallflower (Go)"
 	},
 	"statue.wasm": {
-		"source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/statue",
+		"source": "https://github.com/sjml/wasmbots/tree/main/example_bots_src/statue#readme",
 		"name": "statue (AssemblyScript)"
 	}
 }

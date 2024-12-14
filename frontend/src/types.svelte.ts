@@ -35,6 +35,7 @@ export interface LogEntry {
 const MAX_LOG_ENTRIES = 1000;
 export class UIPlayerData {
 	playerObject!: Player;
+	srcLink?: string;
 	consoleLines: LogEntry[] = $state([]);
 	visPlayer: VisPlayer|null = $state(null);
 	isZoomed: boolean = $state(false);
