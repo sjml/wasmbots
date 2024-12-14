@@ -155,6 +155,7 @@
 		cursor: pointer;
 		display: flex;
 		align-items: center;
+		padding: 0 5px;
 	}
 	.flowControlButton svg {
 		width: 27px;

@@ -90,7 +90,16 @@ export class WorldMap {
 		painter.paint(tileset);
 
 		const newMap = new WorldMap();
-		newMap.name = `${generatorName}-${crypto.randomUUID().replaceAll('-', '')}`;
+		let id = "";
+		if (crypto.randomUUID !== undefined) {
+			id = crypto.randomUUID().replaceAll("-", "");
+		}
+		else {
+			// just for debugging across a local network where we don't have
+			//   access to randomUUID; don't use the game RNG
+			id = Math.random().toString(36).slice(2, 11);
+		}
+		newMap.name = `${generatorName}-${id}`;
 		newMap.rawMapData = painter.map;
 		newMap.setupFromJson();
 		newMap.isDynamic = true;

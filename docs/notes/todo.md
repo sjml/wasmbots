@@ -1,15 +1,4 @@
 ## dev
-* mobile layout is borked (at least on safari)
-
-* give larger view radius to arena (which means it becomes a map parameter...?)
-* fix up (or bail on) lighting thing
-    * jitters when zoomed in -- might be drawing to the player's position in the last frame
-      * not sure how to fix that since I don't have control over update ordering
-    * maybe make them objects following the player which then get drawn into the texture? 
-      * unclear if that would work or even solve the problem if it did
-      * seems a little better if camera has roundpixels off, but still not great
-    * there's also a FOLLOW_UPDATE_EVENT github says might help? it does not say how, tho 
-
 * separate pages (maybe need to be separate svelte apps? 🫠)
     * current app
     * trainer
@@ -36,6 +25,15 @@
         * (maybe that's ok, because we can show errors in the console? just clear it when the game starts in that case.)
       * pressing pause when bot is crashed disables all flowcontrol
       * on mobile, stepping through can lead to hang where all flowcontrol buttons are disabled
+
+* give larger view radius to arena (which means it becomes a map parameter...?)
+* fix up (or bail on) lighting thing
+    * jitters when zoomed in -- might be drawing to the player's position in the last frame
+      * not sure how to fix that since I don't have control over update ordering
+    * maybe make them objects following the player which then get drawn into the texture? 
+      * unclear if that would work or even solve the problem if it did
+      * seems a little better if camera has roundpixels off, but still not great
+    * there's also a FOLLOW_UPDATE_EVENT github says might help? it does not say how, tho 
 
 * game
     * players should(?) collide with each other

@@ -4,6 +4,7 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev",
+		"dev-host": "vite dev --host",
 		"build:component": "npx tsx scripts/buildComponentDist.ts",
 		"build:site": "rm -rf build && vite build",
 		"build": "npm run build:site",

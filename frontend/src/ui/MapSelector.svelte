@@ -136,6 +136,9 @@
 		position: relative;
 		display: flex;
 	}
+	.mapSelect button {
+		padding: 0 5px;
+	}
 
 	.mapSelectDropdown {
 		position: absolute;

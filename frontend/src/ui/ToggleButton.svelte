@@ -36,7 +36,7 @@
 		align-items: center;
 		border-radius: 11px;
 	}
-	button svg {
+	:global(button svg) {
 		width: 30px;
 		height: 30px;
 		flex-shrink: 0;
