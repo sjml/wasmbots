@@ -5,11 +5,6 @@
     * dungeon generator?
     * front page (static)
     * embedded demo
-        * need to do some work to get it running again
-          * add async or defer to script tag
-          * optionally have json in separate script tag?
-          * figure out cache-busting on main script?
-        * add map parameter(s?) to embedded component
 
 * testing
     * player class

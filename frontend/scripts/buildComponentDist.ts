@@ -24,10 +24,18 @@ await fs.cp(
 	{dereference: true, preserveTimestamps: true, recursive: true}
 );
 
-const iifeFile = `${embeddedOutputBase}/wasmbots/wasmbots-embedded.iife.js`;
-let iifeSrc = await fs.readFile(iifeFile, {encoding: "utf-8"});
+const iifeFilename = `${embeddedOutputBase}/wasmbots/wasmbots-embedded.iife.js`;
+let iifeSrc = await fs.readFile(iifeFilename, {encoding: "utf-8"});
 iifeSrc = iifeSrc.replaceAll('new URL("/wasmbot.worker-', 'new URL("./wasmbot.worker-');
-await fs.writeFile(iifeFile, iifeSrc);
+// const iifeBytes = new TextEncoder().encode(iifeSrc);
+// const hashBuffer = await crypto.subtle.digest("SHA-256", iifeBytes);
+// const hashArray = Array.from(new Uint8Array(hashBuffer));
+// const base62chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+// const hashBase62 = hashArray.map(b => base62chars[b % base62chars.length]).join("");
+// const shortHash = hashBase62.slice(0,8);
+// const outputFilename = iifeFile.replace("wasmbots-embedded.iife.js", `wasmbots-embedded.iife-${shortHash}.js`);
+const outputFilename = iifeFilename;
+await fs.writeFile(outputFilename, iifeSrc);
 
 
 // make the actual distribution

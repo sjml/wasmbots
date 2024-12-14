@@ -1,6 +1,7 @@
 import { svelte, vitePreprocess } from "@sveltejs/vite-plugin-svelte";
 import { defineConfig } from "vite";
 import base from "./vite.config";
+import { execSync } from "child_process";
 
 export default Object.assign(base, defineConfig({
 	plugins: [svelte({
@@ -21,5 +22,6 @@ export default Object.assign(base, defineConfig({
 	},
 	define: {
 		'__IIFE_BUILD__': 'true',
+		'__GIT_REVISION__': `'${execSync('git rev-parse HEAD').toString().trim()}'`,
 	}
 }));

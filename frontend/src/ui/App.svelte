@@ -11,7 +11,7 @@
 	import BotSlotList from "./BotSlotList.svelte";
 
 	import { type WasmBotsState, DefaultWasmBotsState } from "../types.svelte";
-    import SettingsList from "./SettingsList.svelte";
+	import SettingsList from "./SettingsList.svelte";
 
 	const gameState: WasmBotsState = $state(structuredClone(DefaultWasmBotsState));
 	setContext("gameState", gameState);

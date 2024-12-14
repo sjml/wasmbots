@@ -2,25 +2,30 @@
 
 <script lang="ts">
 	import { onMount, setContext } from "svelte";
-	import { Loader, Logger, Player, WasmCoordinator } from "wasmbots";
+	import { Loader, Logger, Player, RNG, WasmCoordinator, World, type DungeonBuilderOptions } from "wasmbots";
 
 	import WorldCanvas from "./WorldCanvas.svelte";
-	import { type WasmBotsState } from "../types.svelte";
+	import { DefaultWasmBotsState, type WasmBotsState } from "../types.svelte";
 
 
-	const gameState: WasmBotsState = $state({
-		world: null,
-		vis: null,
-	});
+	const gameState: WasmBotsState = $state(structuredClone(DefaultWasmBotsState));
 	setContext("gameState", gameState);
 
 	function log(level: Logger.LogLevel, msg: string) {}
 
 	type SetupInfo = {
 		botUrlList: string[],
+		map: string;
+		worldSeed: string | null;
+		mapSeed: string | null;
+		mapOptions: DungeonBuilderOptions;
 	};
 	const defaultSetup: SetupInfo = {
 		botUrlList: [],
+		map: "dynamic:dungeon",
+		worldSeed: null,
+		mapSeed: null,
+		mapOptions: {},
 	}
 
 	interface Props {
@@ -29,7 +34,10 @@
 	}
 	let { setup = JSON.stringify(defaultSetup), autoRun = false, }: Props = $props();
 	async function setupFromProps() {
-		const setupInfo: SetupInfo = JSON.parse(setup);
+		const setupInfo: SetupInfo = Object.assign(structuredClone(defaultSetup), JSON.parse(setup));
+		const w = new World(setupInfo.worldSeed);
+		await w.setMap(setupInfo.map, new RNG(setupInfo.mapSeed), setupInfo.mapOptions);
+		gameState.world = w;
 		for (const botUrl of setupInfo.botUrlList) {
 			const wasmBytes = await Loader.readBinaryFile(botUrl);
 			const player = new Player();
@@ -40,11 +48,11 @@
 				wasmBytes,
 			)
 			await player.init(coord);
-			gameState.world?.registerPlayer(player);
+			gameState.world!.registerPlayer(player);
 		}
-		if (gameState.world?.isReadyToStart()) {
+		if (gameState.world!.isReadyToStart()) {
 			gameState.world.startGame();
-			if (autoRun) {
+			if (autoRun !== false) {
 				runForever();
 			}
 		}
@@ -66,7 +74,7 @@
 </script>
 
 
-<WorldCanvas/>
+<WorldCanvas createWorld={false} />
 
 
 

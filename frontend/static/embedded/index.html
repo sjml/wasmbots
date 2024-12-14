@@ -28,7 +28,7 @@
 		and then hooking it to a custom element.
 	</p>
 
-	<p>Look at those little guys running around! They get loaded from a list of
+	<p>Look at those little folks running around! They get loaded from a list of
 		module files set as an attribute on the component.
 		<a href="./index.html.txt" target="_blank">Take a look at the source and
 		see for yourself!</a>
@@ -49,12 +49,12 @@
 			autoRun -- makes it start and loop forever,
 					   otherwise you can call the step()
 					   function on the element to go one
-					   turn at a time
+					   turn at a time.
 
-			setup -- is a string of JSON; at the moment
-					 just a list of bots, but you could
-					 imagine this specifying the map,
-					 game parameters, etc.
+			setup -- is a string of JSON specifying bots
+					 and world parameters. most of them
+					 are optional, but you probably want
+					 to AT LEAST give some bots.
 
 					 the urls need to either be absolute
 					 or relative to the page that is
@@ -65,9 +65,14 @@
 			autoRun
 			setup='{
 				"botUrlList": [
-					"../example_bots/random_bounce_c.wasm",
-					"../example_bots/random_bounce_zig.wasm"
-				]
+					"../example_bots/wallflower.wasm",
+					"../example_bots/wallflower.wasm",
+					"../example_bots/explorer.wasm",
+					"../example_bots/explorer.wasm"
+				],
+				"worldSeed": null,
+				"map": "dynamic:dungeon",
+				"mapSeed": null
 			}'
 		/>
 	</div>
@@ -75,24 +80,15 @@
 
 
 	<!--
-		Just a little button with an image from
-		Phosophor Icons <https://phosphoricons.com/>
-		that makes the bots run full screen
-		(if allowed on this platform).
+		just a little button that makes the game
+		run full screen (if allowed on this platform).
 	-->
 	<button
 		class="fullScreen" aria-labelledby="fsButtonLabel"
 		onclick="document.querySelector('.aquarium').requestFullscreen();"
-		style="margin-top: 10px; display: flex; justify-content: center; align-items: center; padding: 5px;"
+		style="margin: 10px auto; display: flex; justify-content: center; align-items: center; padding: 5px;"
 	>
-		<svg style="flex-shrink: 0;" aria-hidden="true"
-			xmlns="http://www.w3.org/2000/svg"
-			width="32" height="32" fill="currentColor"
-			viewBox="0 0 256 256">
-			<path d="M220,48V96a12,12,0,0,1-24,0V77l-35.51,35.52a12,12,0,0,1-17-17L179,60H160a12,12,0,0,1,0-24h48A12,12,0,0,1,220,48ZM95.51,143.51,60,179V160a12,12,0,0,0-24,0v48a12,12,0,0,0,12,12H96a12,12,0,0,0,0-24H77l35.52-35.51a12,12,0,0,0-17-17ZM208,148a12,12,0,0,0-12,12v19l-35.51-35.52a12,12,0,0,0-17,17L179,196H160a12,12,0,0,0,0,24h48a12,12,0,0,0,12-12V160A12,12,0,0,0,208,148ZM77,60H96a12,12,0,0,0,0-24H48A12,12,0,0,0,36,48V96a12,12,0,0,0,24,0V77l35.51,35.52a12,12,0,0,0,17-17Z">
-			</path>
-		</svg>
+		Show fullscreen (doesn’t work on iPhones 😔)
 	</button>
-	<label id="fsButtonLabel">Show fullscreen (doesn’t work on iPhones 😔)</label>
 </body>
 </html>
