@@ -50,3 +50,11 @@ export class UIPlayerData {
 		].slice(-MAX_LOG_ENTRIES);
 	}
 }
+
+export type SetupInfo = {
+	botUrlList: string[],
+	map: string;
+	worldSeed: string | null;
+	mapSeed: string | null;
+	mapOptions: DungeonBuilderOptions;
+};

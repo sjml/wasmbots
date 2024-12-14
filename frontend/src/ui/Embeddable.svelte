@@ -5,7 +5,7 @@
 	import { Loader, Logger, Player, RNG, WasmCoordinator, World, type DungeonBuilderOptions } from "wasmbots";
 
 	import WorldCanvas from "./WorldCanvas.svelte";
-	import { DefaultWasmBotsState, type WasmBotsState } from "../types.svelte";
+	import { DefaultWasmBotsState, type WasmBotsState, type SetupInfo } from "../types.svelte";
 
 
 	const gameState: WasmBotsState = $state(structuredClone(DefaultWasmBotsState));
@@ -13,13 +13,6 @@
 
 	function log(level: Logger.LogLevel, msg: string) {}
 
-	type SetupInfo = {
-		botUrlList: string[],
-		map: string;
-		worldSeed: string | null;
-		mapSeed: string | null;
-		mapOptions: DungeonBuilderOptions;
-	};
 	const defaultSetup: SetupInfo = {
 		botUrlList: [],
 		map: "dynamic:dungeon",
@@ -29,12 +22,13 @@
 	}
 
 	interface Props {
-		setup: string;
-		autoRun: boolean;
+		setup?: string;
+		autoRun?: boolean;
 	}
 	let { setup = JSON.stringify(defaultSetup), autoRun = false, }: Props = $props();
-	async function setupFromProps() {
-		const setupInfo: SetupInfo = Object.assign(structuredClone(defaultSetup), JSON.parse(setup));
+
+	async function setupFromProps(setupProperty: string, autoRunProperty: boolean) {
+		const setupInfo: SetupInfo = Object.assign(structuredClone(defaultSetup), JSON.parse(setupProperty));
 		const w = new World(setupInfo.worldSeed);
 		await w.setMap(setupInfo.map, new RNG(setupInfo.mapSeed), setupInfo.mapOptions);
 		gameState.world = w;
@@ -52,7 +46,7 @@
 		}
 		if (gameState.world!.isReadyToStart()) {
 			gameState.world.startGame();
-			if (autoRun !== false) {
+			if (autoRunProperty !== false) {
 				runForever();
 			}
 		}
@@ -68,8 +62,8 @@
 		}
 	}
 
-	onMount(() => {
-		setupFromProps();
+	$effect(() => {
+		setupFromProps(setup, autoRun);
 	});
 </script>
 

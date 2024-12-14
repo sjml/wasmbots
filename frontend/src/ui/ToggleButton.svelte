@@ -11,7 +11,7 @@
 	let { side, isOpened = $bindable(), label = "", toggle, children }: Props = $props();
 </script>
 
-<button onclick={() => toggle(side)} title={label.length > 0 ? label : null}>
+<button class="toggle" onclick={() => toggle(side)} title={label.length > 0 ? label : null}>
 	{#if isOpened}
 		{#if side == "left"}
 			<svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 256 256"><path d="M232,112a64.07,64.07,0,0,1-64,64H88v40a8,8,0,0,1-13.66,5.66l-48-48a8,8,0,0,1,0-11.32l48-48A8,8,0,0,1,88,120v40h80a48,48,0,0,0,0-96H80a8,8,0,0,1,0-16h88A64.07,64.07,0,0,1,232,112Z"></path></svg>
@@ -36,7 +36,7 @@
 		align-items: center;
 		border-radius: 11px;
 	}
-	:global(button svg) {
+	:global(button.toggle svg) {
 		width: 30px;
 		height: 30px;
 		flex-shrink: 0;

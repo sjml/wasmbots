@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { getContext, onMount, tick as svelteTick } from "svelte";
-	import { type LogEntry, type UIPlayerData,  } from "../types.svelte";
+	import { type LogEntry, type UIPlayerData } from "../types.svelte";
 
 	import { type WasmBotsState } from "../types.svelte";
-    import { GameState } from "wasmbots";
+    import { GameState, Loader } from "wasmbots";
 	const gameState: WasmBotsState = getContext("gameState");
 
 	interface Props {
@@ -61,7 +61,7 @@
 		<div class="slotNumber">#{slotIdx}</div>
 		{#if playerUI.visPlayer !== null }
 			<img
-				src="./rsc/img/kenny_tiny-dungeon_tiles/tile_{String(playerUI.visPlayer.imageIndex).padStart(4, "0")}.png"
+				src="{Loader.getRscPath()}/img/kenny_tiny-dungeon_tiles/tile_{String(playerUI.visPlayer.imageIndex).padStart(4, "0")}.png"
 				alt="sprite for player #{slotIdx}"
 				class="playerSprite"
 			>
@@ -147,7 +147,6 @@
 	}
 
 	.botInfo {
-		margin-bottom: 5px;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -177,6 +176,10 @@
 		cursor: pointer;
 	}
 
+	.delete svg {
+		width: 25px;
+	}
+
 	.delete:disabled {
 		opacity: 0.3;
 		cursor: not-allowed;
@@ -185,6 +188,14 @@
 	.consoleContainer .controls {
 		display: flex;
 		justify-content: space-between;
+	}
+
+	.consoleContainer .controls button {
+		height: 24px;
+	}
+
+	.consoleContainer .controls button svg {
+		height: 20px;
 	}
 
 	.console {
