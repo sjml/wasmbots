@@ -341,32 +341,41 @@ export function ProcessRawBytes(data: DataView|DataAccess, max: number): Message
 	}
 	while (!da.isFinished() && (max < 0 || msgList.length < max)) {
 		const msgType: number = da.getByte();
+		let newMsg: Message | null;
 		switch (msgType) {
 			case 0:
 				return msgList;
 			case MessageType._ErrorType:
-				msgList.push(_Error.fromBytes(da));
+				newMsg = _Error.fromBytes(da);
+				msgList.push(newMsg);
 				break;
 			case MessageType.InitialParametersType:
-				msgList.push(InitialParameters.fromBytes(da));
+				newMsg = InitialParameters.fromBytes(da);
+				msgList.push(newMsg);
 				break;
 			case MessageType.PresentCircumstancesType:
-				msgList.push(PresentCircumstances.fromBytes(da));
+				newMsg = PresentCircumstances.fromBytes(da);
+				msgList.push(newMsg);
 				break;
 			case MessageType.WaitType:
-				msgList.push(Wait.fromBytes(da));
+				newMsg = Wait.fromBytes(da);
+				msgList.push(newMsg);
 				break;
 			case MessageType.ResignType:
-				msgList.push(Resign.fromBytes(da));
+				newMsg = Resign.fromBytes(da);
+				msgList.push(newMsg);
 				break;
 			case MessageType.MoveToType:
-				msgList.push(MoveTo.fromBytes(da));
+				newMsg = MoveTo.fromBytes(da);
+				msgList.push(newMsg);
 				break;
 			case MessageType.OpenType:
-				msgList.push(Open.fromBytes(da));
+				newMsg = Open.fromBytes(da);
+				msgList.push(newMsg);
 				break;
 			case MessageType.CloseType:
-				msgList.push(Close.fromBytes(da));
+				newMsg = Close.fromBytes(da);
+				msgList.push(newMsg);
 				break;
 			default:
 				throw new Error(`Unknown message type: ${msgType}`);
@@ -416,7 +425,6 @@ export class Point {
 		da.setInt16(this.x);
 		da.setInt16(this.y);
 	}
-
 }
 
 export class _Error extends Message {
@@ -469,7 +477,6 @@ export class _Error extends Message {
 		}
 		da.setString(this.description);
 	}
-
 }
 
 export class InitialParameters extends Message {
@@ -537,7 +544,6 @@ export class InitialParameters extends Message {
 		da.setByte(this.playerStride);
 		da.setByte(this.playerOpenReach);
 	}
-
 }
 
 export class PresentCircumstances extends Message {
@@ -618,7 +624,6 @@ export class PresentCircumstances extends Message {
 		}
 		da.setByte(this.surroundingsRadius);
 	}
-
 }
 
 export class Wait extends Message {
@@ -665,7 +670,6 @@ export class Wait extends Message {
 			da.setByte(MessageType.WaitType);
 		}
 	}
-
 }
 
 export class Resign extends Message {
@@ -712,7 +716,6 @@ export class Resign extends Message {
 			da.setByte(MessageType.ResignType);
 		}
 	}
-
 }
 
 export class MoveTo extends Message {
@@ -769,7 +772,6 @@ export class MoveTo extends Message {
 		da.setByte(this.direction);
 		da.setByte(this.distance);
 	}
-
 }
 
 export class Open extends Message {
@@ -819,7 +821,6 @@ export class Open extends Message {
 		}
 		this.target.writeBytes(da);
 	}
-
 }
 
 export class Close extends Message {
@@ -869,7 +870,6 @@ export class Close extends Message {
 		}
 		this.target.writeBytes(da);
 	}
-
 }
 
 export const MessageTypeMap = new Map<MessageType, { new(): Message }>([

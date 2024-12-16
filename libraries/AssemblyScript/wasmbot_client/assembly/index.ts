@@ -48,6 +48,11 @@ export function tick(offset: u32): void {
 	const readDV = new DataView(HostReserve.arrayBuffer, offset as u32, (HostReserve.length - offset) as u32);
 	const pc = CoreMsg.PresentCircumstances.fromBytes(readDV);
 
+	if (pc === null) {
+		logErr("Could not read PresentCircumstances.");
+		return;
+	}
+
 	const submittedMove = CLIENT_TICK(pc);
 
 	const writeDV = HostReserve.dataView;

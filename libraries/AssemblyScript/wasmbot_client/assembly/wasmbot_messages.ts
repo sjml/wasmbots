@@ -104,69 +104,107 @@ END DATA PROTOCOL
 export class DataAccess {
 	data: DataView;
 	currentOffset: u32;
+	hasError: bool;
 
 	constructor(buffer: DataView) {
 		this.currentOffset = 0;
 		this.data = buffer;
+		this.hasError = false;
 	}
 
-	isFinished(): boolean {
-		return this.currentOffset >= this.data.byteLength;
+	isFinished(): bool {
+		return this.currentOffset > (this.data.byteLength as u32);
 	}
 
 	getByte(): u8 {
+		if (this.currentOffset + 1 > (this.data.byteLength as u32)) {
+				this.hasError = true;
+				return 0;
+		}
 		const ret = this.data.getUint8(this.currentOffset);
 		this.currentOffset += 1;
 		return ret;
 	}
 
-	getBool(): boolean {
+	getBool(): bool {
 		return this.getByte() > 0;
 	}
 
 	getInt16(): i16 {
+		if (this.currentOffset + 2 > (this.data.byteLength as u32)) {
+				this.hasError = true;
+				return 0;
+		}
 		const ret = this.data.getInt16(this.currentOffset, true);
 		this.currentOffset += 2;
 		return ret;
 	}
 
 	getUint16(): u16 {
+		if (this.currentOffset + 2 > (this.data.byteLength as u32)) {
+				this.hasError = true;
+				return 0;
+		}
 		const ret = this.data.getUint16(this.currentOffset, true);
 		this.currentOffset += 2;
 		return ret;
 	}
 
 	getInt32(): i32 {
+		if (this.currentOffset + 4 > (this.data.byteLength as u32)) {
+				this.hasError = true;
+				return 0;
+		}
 		const ret = this.data.getInt32(this.currentOffset, true);
 		this.currentOffset += 4;
 		return ret;
 	}
 
 	getUint32(): u32 {
+		if (this.currentOffset + 4 > (this.data.byteLength as u32)) {
+				this.hasError = true;
+				return 0;
+		}
 		const ret = this.data.getUint32(this.currentOffset, true);
 		this.currentOffset += 4;
 		return ret;
 	}
 
 	getInt64(): i64 {
-		const ret = this.data.getBigInt64(this.currentOffset, true);
+		if (this.currentOffset + 8 > (this.data.byteLength as u32)) {
+				this.hasError = true;
+				return 0;
+		}
+		const ret = this.data.getInt64(this.currentOffset, true);
 		this.currentOffset += 8;
 		return ret;
 	}
 
 	getUint64(): u64 {
-		const ret = this.data.getBigUint64(this.currentOffset, true);
+		if (this.currentOffset + 8 > (this.data.byteLength as u32)) {
+				this.hasError = true;
+				return 0;
+		}
+		const ret = this.data.getUint64(this.currentOffset, true);
 		this.currentOffset += 8;
 		return ret;
 	}
 
 	getFloat32(): f32 {
+		if (this.currentOffset + 4 > (this.data.byteLength as u32)) {
+				this.hasError = true;
+				return 0;
+		}
 		const ret = this.data.getFloat32(this.currentOffset, true);
 		this.currentOffset += 4;
-		return Math.fround(ret);
+		return ret;
 	}
 
 	getFloat64(): f64 {
+		if (this.currentOffset + 8 > (this.data.byteLength as u32)) {
+				this.hasError = true;
+				return 0;
+		}
 		const ret = this.data.getFloat64(this.currentOffset, true);
 		this.currentOffset += 8;
 		return ret;
@@ -174,57 +212,102 @@ export class DataAccess {
 
 	getString(): string {
 		const len = this.getByte();
-		const strBuffer = new Uint8Array(this.data.buffer, this.currentOffset, len);
-		this.currentOffset += len;
-		return String.UTF8.decode(strBuffer, false);
+		if (this.hasError) {
+				return "";
+		}
+		if (this.currentOffset + len > (this.data.byteLength as u32)) {
+				this.hasError = true;
+				return "";
+		}
+		const strBuffer = new Uint8Array(len);
+		for (let i = 0; i < strBuffer.byteLength; i++) {
+				strBuffer[i] = this.getByte();
+		}
+		return String.UTF8.decode(strBuffer.buffer, false);
 	}
 
 
 	setByte(val: u8): void {
+		if (this.currentOffset + 1 > (this.data.byteLength as u32)) {
+				this.hasError = true;
+				return;
+		}
 		this.data.setUint8(this.currentOffset, val);
 		this.currentOffset += 1;
 	}
 
-	setBool(val: boolean): void {
+	setBool(val: bool): void {
 		this.setByte(val ? 1 : 0);
 	}
 
 	setInt16(val: i16): void {
+		if (this.currentOffset + 2 > (this.data.byteLength as u32)) {
+				this.hasError = true;
+				return;
+		}
 		this.data.setInt16(this.currentOffset, val, true);
 		this.currentOffset += 2;
 	}
 
 	setUint16(val: u16): void {
+		if (this.currentOffset + 2 > (this.data.byteLength as u32)) {
+				this.hasError = true;
+				return;
+		}
 		this.data.setUint16(this.currentOffset, val, true);
 		this.currentOffset += 2;
 	}
 
 	setInt32(val: i32): void {
+		if (this.currentOffset + 4 > (this.data.byteLength as u32)) {
+				this.hasError = true;
+				return;
+		}
 		this.data.setInt32(this.currentOffset, val, true);
 		this.currentOffset += 4;
 	}
 
 	setUint32(val: u32): void {
+		if (this.currentOffset + 4 > (this.data.byteLength as u32)) {
+				this.hasError = true;
+				return;
+		}
 		this.data.setUint32(this.currentOffset, val, true);
 		this.currentOffset += 4;
 	}
 
 	setInt64(val: i64): void {
-		this.data.setBigInt64(this.currentOffset, val, true);
+		if (this.currentOffset + 8 > (this.data.byteLength as u32)) {
+				this.hasError = true;
+				return;
+		}
+		this.data.setInt64(this.currentOffset, val, true);
 		this.currentOffset += 8;
 	}
 
 	setUint64(val: u64): void {
-		this.data.setBigUint64(this.currentOffset, val, true);
+		if (this.currentOffset + 8 > (this.data.byteLength as u32)) {
+				this.hasError = true;
+				return;
+		}
+		this.data.setUint64(this.currentOffset, val, true);
 		this.currentOffset += 8;
 	}
 
 	setFloat32(val: f32): void {
+		if (this.currentOffset + 4 > (this.data.byteLength as u32)) {
+				this.hasError = true;
+				return;
+		}
 		this.data.setFloat32(this.currentOffset, val, true);
 		this.currentOffset += 4;
 	}
 
 	setFloat64(val: f64): void {
+		if (this.currentOffset + 8 > (this.data.byteLength as u32)) {
+				this.hasError = true;
+				return;
+		}
 		this.data.setFloat64(this.currentOffset, val, true);
 		this.currentOffset += 8;
 	}
@@ -233,6 +316,13 @@ export class DataAccess {
 		const strBuffer = String.UTF8.encode(val, false);
 		const bufferArray = Uint8Array.wrap(strBuffer);
 		this.setByte(strBuffer.byteLength as u8);
+		if (this.hasError) {
+				return;
+		}
+		if (this.currentOffset + bufferArray.byteLength > (this.data.byteLength as u32)) {
+				this.hasError = true;
+				return;
+		}
 		for (let i = 0; i < bufferArray.byteLength; i++) {
 			this.setByte(bufferArray[i] as u8);
 		}
@@ -241,18 +331,23 @@ export class DataAccess {
 
 export abstract class Message {
 	abstract getMessageType(): MessageType;
-	abstract writeBytes(dv: DataView, tag: boolean): void;
-	abstract getSizeInBytes(): number;
+	abstract writeBytes(dv: DataView, tag: bool): bool;
+	abstract writeBytesDA(da: DataAccess, tag: bool): bool;
+	abstract getSizeInBytes(): usize;
 
 	static fromBytes(data: DataView): Message | null {
 		throw new Error("Cannot read abstract Message from bytes.");
-	};
+};
+
+	static fromBytesDA(data: DataAccess): Message | null {
+		throw new Error("Cannot read abstract Message from bytes.");
+	}
 }
 
 export function GetPackedSize(msgList: Message[]): usize {
-	let size = 0;
-	for (const msg of msgList) {
-		size += msg.getSizeInBytes();
+	let size: usize = 0;
+	for (let i = 0; i < msgList.length; i++) {
+		size += msgList[i].getSizeInBytes();
 	}
 	size += msgList.length;
 	size += 9;
@@ -261,30 +356,40 @@ export function GetPackedSize(msgList: Message[]): usize {
 
 export function PackMessages(msgList: Message[], data: DataView): void {
 	const da = new DataAccess(data);
-	const headerBytes = _textEnc.encode("BSCI");
-	const arr = new Uint8Array(da.data.buffer);
-	arr.set(headerBytes, da.currentOffset);
-	da.currentOffset += headerBytes.byteLength;
+	const headerBytes = String.UTF8.encode("BSCI", false);
+	const arr = Uint8Array.wrap(headerBytes);
+	for (let i = 0; i < arr.byteLength; i++) {
+		da.setByte(arr[i] as u8);
+		if (da.hasError) { return; }
+}
 	da.setUint32(msgList.length);
-	for (const msg of msgList) {
-		msg.writeBytes(da, true);
+	if (da.hasError) { return; }
+	for (let i = 0; i < msgList.length; i++) {
+			msgList[i].writeBytesDA(da, true);
+			if (da.hasError) { return; }
 	}
 	da.setByte(0);
 }
 
 export function UnpackMessages(data: DataView): Message[] {
 	const da = new DataAccess(data);
-	const headerBuffer = new Uint8Array(da.data.buffer, da.currentOffset, 4);
-	da.currentOffset += 4;
-	const headerLabel = _textDec.decode(headerBuffer);
+	if (da.data.byteLength < 12) {
+		throw new Error("Packed message buffer is too short.");
+	}
+	const headerBuffer = new Uint8Array(4);
+	for (let i = 0; i < 4; i++) {
+		headerBuffer[i] = da.getByte();
+	}
+	const headerLabel = String.UTF8.decode(headerBuffer.buffer, false);
 	if (headerLabel !== "BSCI") {
-		throw new Error("Packed message buffer has invalid header.");
+		throw new Error("Packed message buffer has invalid header: " + headerLabel);
 	}
 	const msgCount = da.getUint32();
 	if (msgCount == 0) {
 		return [];
 	}
-	const msgList = ProcessRawBytes(da, msgCount);
+	const dv = new DataView(data.buffer, da.currentOffset, data.byteLength - da.currentOffset);
+	const msgList = ProcessRawBytes(dv, msgCount);
 	if (msgList.length == 0) {
 		throw new Error("No messages in buffer.");
 	}
@@ -307,45 +412,75 @@ export enum MessageType {
 }
 
 export function ProcessRawBytes(data: DataView, max: number): Message[] {
-	if (max === undefined) {
-		max = -1;
-	}
 	const da = new DataAccess(data);
 	const msgList: Message[] = [];
 	if (max == 0) {
 		return msgList;
 	}
 	while (!da.isFinished() && (max < 0 || msgList.length < max)) {
-		const msgType: number = da.getByte();
+		const msgType: u8 = da.getByte();
+		let newMsg: Message | null;
 		switch (msgType) {
 			case 0:
 				return msgList;
 			case MessageType._ErrorType:
-				msgList.push(_Error.fromBytes(da));
+				newMsg = _Error.fromBytesDA(da);
+				if (newMsg == null) {
+					return msgList;
+				}
+				msgList.push(newMsg);
 				break;
 			case MessageType.InitialParametersType:
-				msgList.push(InitialParameters.fromBytes(da));
+				newMsg = InitialParameters.fromBytesDA(da);
+				if (newMsg == null) {
+					return msgList;
+				}
+				msgList.push(newMsg);
 				break;
 			case MessageType.PresentCircumstancesType:
-				msgList.push(PresentCircumstances.fromBytes(da));
+				newMsg = PresentCircumstances.fromBytesDA(da);
+				if (newMsg == null) {
+					return msgList;
+				}
+				msgList.push(newMsg);
 				break;
 			case MessageType.WaitType:
-				msgList.push(Wait.fromBytes(da));
+				newMsg = Wait.fromBytesDA(da);
+				if (newMsg == null) {
+					return msgList;
+				}
+				msgList.push(newMsg);
 				break;
 			case MessageType.ResignType:
-				msgList.push(Resign.fromBytes(da));
+				newMsg = Resign.fromBytesDA(da);
+				if (newMsg == null) {
+					return msgList;
+				}
+				msgList.push(newMsg);
 				break;
 			case MessageType.MoveToType:
-				msgList.push(MoveTo.fromBytes(da));
+				newMsg = MoveTo.fromBytesDA(da);
+				if (newMsg == null) {
+					return msgList;
+				}
+				msgList.push(newMsg);
 				break;
 			case MessageType.OpenType:
-				msgList.push(Open.fromBytes(da));
+				newMsg = Open.fromBytesDA(da);
+				if (newMsg == null) {
+					return msgList;
+				}
+				msgList.push(newMsg);
 				break;
 			case MessageType.CloseType:
-				msgList.push(Close.fromBytes(da));
+				newMsg = Close.fromBytesDA(da);
+				if (newMsg == null) {
+					return msgList;
+				}
+				msgList.push(newMsg);
 				break;
 			default:
-				throw new Error(`Unknown message type: ${msgType}`);
+				return msgList;
 		}
 	}
 	return msgList;
@@ -384,18 +519,22 @@ export class Point {
 	x: i16 = 0;
 	y: i16 = 0;
 
-	static fromBytes(da: DataAccess): Point {
+	static fromBytes(da: DataAccess): Point | null {
 		const nPoint = new Point();
 		nPoint.x = da.getInt16();
+		if (da.hasError) { return null; }
 		nPoint.y = da.getInt16();
+		if (da.hasError) { return null; }
 		return nPoint;
 	}
 
-	writeBytes(da: DataAccess): void {
+	writeBytes(da: DataAccess): bool {
 		da.setInt16(this.x);
+		if (da.hasError) { return false; }
 		da.setInt16(this.y);
+		if (da.hasError) { return false; }
+		return true;
 	}
-
 }
 
 export class _Error extends Message {
@@ -403,28 +542,39 @@ export class _Error extends Message {
 
 	getMessageType() : MessageType { return MessageType._ErrorType; }
 
-	getSizeInBytes(): number {
-		let size: number = 0;
-		size += _textEnc.encode(this.description).byteLength;
+	getSizeInBytes(): usize {
+		let size: usize = 0;
+		size += String.UTF8.encode(this.description, false).byteLength;
 		size += 1;
 		return size;
 	}
 
-	static override fromBytes(data: DataView): _Error {
+	static override fromBytes(data: DataView): _Error | null {
 		const da = new DataAccess(data);
+		return _Error.fromBytesDA(da);
+	}
+
+	static override fromBytesDA(da: DataAccess): _Error | null {
 		const n_Error = new _Error();
 		n_Error.description = da.getString();
+		if (da.hasError) { return null; }
 		return n_Error;
 	}
 
-	writeBytes(data: DataView, tag: boolean): void {
+	writeBytes(data: DataView, tag: boolean): bool {
 		const da = new DataAccess(data);
-		if (tag) {
-			da.setByte(MessageType._ErrorType as u8);
-		}
-		da.setString(this.description);
+		return this.writeBytesDA(da, tag);
 	}
 
+	writeBytesDA(da: DataAccess, tag: boolean): bool {
+		if (tag) {
+			da.setByte(MessageType._ErrorType as u8);
+			if (da.hasError) { return false; }
+		}
+		da.setString(this.description);
+		if (da.hasError) { return false; }
+		return true;
+	}
 }
 
 export class InitialParameters extends Message {
@@ -438,37 +588,60 @@ export class InitialParameters extends Message {
 
 	getMessageType() : MessageType { return MessageType.InitialParametersType; }
 
-	getSizeInBytes(): number {
+	getSizeInBytes(): usize {
 		return 11;
 	}
 
-	static override fromBytes(data: DataView): InitialParameters {
+	static override fromBytes(data: DataView): InitialParameters | null {
 		const da = new DataAccess(data);
+		return InitialParameters.fromBytesDA(da);
+	}
+
+	static override fromBytesDA(da: DataAccess): InitialParameters | null {
 		const nInitialParameters = new InitialParameters();
 		nInitialParameters.paramsVersion = da.getUint16();
+		if (da.hasError) { return null; }
 		nInitialParameters.engineVersionMajor = da.getUint16();
+		if (da.hasError) { return null; }
 		nInitialParameters.engineVersionMinor = da.getUint16();
+		if (da.hasError) { return null; }
 		nInitialParameters.engineVersionPatch = da.getUint16();
+		if (da.hasError) { return null; }
 		nInitialParameters.diagonalMovement = da.getBool();
+		if (da.hasError) { return null; }
 		nInitialParameters.playerStride = da.getByte();
+		if (da.hasError) { return null; }
 		nInitialParameters.playerOpenReach = da.getByte();
+		if (da.hasError) { return null; }
 		return nInitialParameters;
 	}
 
-	writeBytes(data: DataView, tag: boolean): void {
+	writeBytes(data: DataView, tag: boolean): bool {
 		const da = new DataAccess(data);
-		if (tag) {
-			da.setByte(MessageType.InitialParametersType as u8);
-		}
-		da.setUint16(this.paramsVersion);
-		da.setUint16(this.engineVersionMajor);
-		da.setUint16(this.engineVersionMinor);
-		da.setUint16(this.engineVersionPatch);
-		da.setBool(this.diagonalMovement);
-		da.setByte(this.playerStride);
-		da.setByte(this.playerOpenReach);
+		return this.writeBytesDA(da, tag);
 	}
 
+	writeBytesDA(da: DataAccess, tag: boolean): bool {
+		if (tag) {
+			da.setByte(MessageType.InitialParametersType as u8);
+			if (da.hasError) { return false; }
+		}
+		da.setUint16(this.paramsVersion);
+		if (da.hasError) { return false; }
+		da.setUint16(this.engineVersionMajor);
+		if (da.hasError) { return false; }
+		da.setUint16(this.engineVersionMinor);
+		if (da.hasError) { return false; }
+		da.setUint16(this.engineVersionPatch);
+		if (da.hasError) { return false; }
+		da.setBool(this.diagonalMovement);
+		if (da.hasError) { return false; }
+		da.setByte(this.playerStride);
+		if (da.hasError) { return false; }
+		da.setByte(this.playerOpenReach);
+		if (da.hasError) { return false; }
+		return true;
+	}
 }
 
 export class PresentCircumstances extends Message {
@@ -480,98 +653,137 @@ export class PresentCircumstances extends Message {
 
 	getMessageType() : MessageType { return MessageType.PresentCircumstancesType; }
 
-	getSizeInBytes(): number {
-		let size: number = 0;
+	getSizeInBytes(): usize {
+		let size: usize = 0;
 		size += this.surroundings.length * 1;
 		size += 10;
 		return size;
 	}
 
-	static override fromBytes(data: DataView): PresentCircumstances {
+	static override fromBytes(data: DataView): PresentCircumstances | null {
 		const da = new DataAccess(data);
+		return PresentCircumstances.fromBytesDA(da);
+	}
+
+	static override fromBytesDA(da: DataAccess): PresentCircumstances | null {
 		const nPresentCircumstances = new PresentCircumstances();
 		nPresentCircumstances.lastTickDuration = da.getUint32();
-		const _lastMoveResult = da.getByte();
+		if (da.hasError) { return null; }
+		let _lastMoveResult = da.getByte();
+		if (da.hasError) { return null; }
 		if (_lastMoveResult < 0 || _lastMoveResult >= (MoveResult._Unknown as u8)) {
-			throw new Error(`Enum (${_lastMoveResult}) out of range for MoveResult`);
+			_lastMoveResult = MoveResult._Unknown as u8;
 		}
 		nPresentCircumstances.lastMoveResult = _lastMoveResult;
 		nPresentCircumstances.currentHitPoints = da.getUint16();
+		if (da.hasError) { return null; }
 		const surroundings_Length = da.getUint16();
+		if (da.hasError) { return null; }
 		nPresentCircumstances.surroundings = new Array<TileType>(surroundings_Length);
 		for (let i2: u16 = 0; i2 < surroundings_Length; i2++) {
-			const _surroundings = da.getByte();
+			let _surroundings = da.getByte();
+			if (da.hasError) { return null; }
 			if (_surroundings < 0 || _surroundings >= (TileType._Unknown as u8)) {
-				throw new Error(`Enum (${_surroundings}) out of range for TileType`);
+				_surroundings = TileType._Unknown as u8;
 			}
 			nPresentCircumstances.surroundings[i2] = _surroundings;
 		}
 		nPresentCircumstances.surroundingsRadius = da.getByte();
+		if (da.hasError) { return null; }
 		return nPresentCircumstances;
 	}
 
-	writeBytes(data: DataView, tag: boolean): void {
+	writeBytes(data: DataView, tag: boolean): bool {
 		const da = new DataAccess(data);
+		return this.writeBytesDA(da, tag);
+	}
+
+	writeBytesDA(da: DataAccess, tag: boolean): bool {
 		if (tag) {
 			da.setByte(MessageType.PresentCircumstancesType as u8);
+			if (da.hasError) { return false; }
 		}
 		da.setUint32(this.lastTickDuration);
+		if (da.hasError) { return false; }
 		da.setByte(this.lastMoveResult as u8);
+		if (da.hasError) { return false; }
 		da.setUint16(this.currentHitPoints);
-		da.setUint16(this.surroundings.length as u8);
+		if (da.hasError) { return false; }
+		da.setUint16(this.surroundings.length as u16);
+		if (da.hasError) { return false; }
 		for (let i = 0; i < this.surroundings.length; i++) {
 			let el = this.surroundings[i];
 			da.setByte(el as u8);
+			if (da.hasError) { return false; }
 		}
 		da.setByte(this.surroundingsRadius);
+		if (da.hasError) { return false; }
+		return true;
 	}
-
 }
 
 export class Wait extends Message {
 
 	getMessageType() : MessageType { return MessageType.WaitType; }
 
-	getSizeInBytes(): number {
+	getSizeInBytes(): usize {
 		return 0;
 	}
 
-	static override fromBytes(data: DataView): Wait {
+	static override fromBytes(data: DataView): Wait | null {
 		const da = new DataAccess(data);
+		return Wait.fromBytesDA(da);
+	}
+
+	static override fromBytesDA(da: DataAccess): Wait | null {
 		const nWait = new Wait();
 		return nWait;
 	}
 
-	writeBytes(data: DataView, tag: boolean): void {
+	writeBytes(data: DataView, tag: boolean): bool {
 		const da = new DataAccess(data);
-		if (tag) {
-			da.setByte(MessageType.WaitType as u8);
-		}
+		return this.writeBytesDA(da, tag);
 	}
 
+	writeBytesDA(da: DataAccess, tag: boolean): bool {
+		if (tag) {
+			da.setByte(MessageType.WaitType as u8);
+			if (da.hasError) { return false; }
+		}
+		return true;
+	}
 }
 
 export class Resign extends Message {
 
 	getMessageType() : MessageType { return MessageType.ResignType; }
 
-	getSizeInBytes(): number {
+	getSizeInBytes(): usize {
 		return 0;
 	}
 
-	static override fromBytes(data: DataView): Resign {
+	static override fromBytes(data: DataView): Resign | null {
 		const da = new DataAccess(data);
+		return Resign.fromBytesDA(da);
+	}
+
+	static override fromBytesDA(da: DataAccess): Resign | null {
 		const nResign = new Resign();
 		return nResign;
 	}
 
-	writeBytes(data: DataView, tag: boolean): void {
+	writeBytes(data: DataView, tag: boolean): bool {
 		const da = new DataAccess(data);
-		if (tag) {
-			da.setByte(MessageType.ResignType as u8);
-		}
+		return this.writeBytesDA(da, tag);
 	}
 
+	writeBytesDA(da: DataAccess, tag: boolean): bool {
+		if (tag) {
+			da.setByte(MessageType.ResignType as u8);
+			if (da.hasError) { return false; }
+		}
+		return true;
+	}
 }
 
 export class MoveTo extends Message {
@@ -580,31 +792,44 @@ export class MoveTo extends Message {
 
 	getMessageType() : MessageType { return MessageType.MoveToType; }
 
-	getSizeInBytes(): number {
+	getSizeInBytes(): usize {
 		return 2;
 	}
 
-	static override fromBytes(data: DataView): MoveTo {
+	static override fromBytes(data: DataView): MoveTo | null {
 		const da = new DataAccess(data);
+		return MoveTo.fromBytesDA(da);
+	}
+
+	static override fromBytesDA(da: DataAccess): MoveTo | null {
 		const nMoveTo = new MoveTo();
-		const _direction = da.getByte();
+		let _direction = da.getByte();
+		if (da.hasError) { return null; }
 		if (_direction < 0 || _direction >= (Direction._Unknown as u8)) {
-			throw new Error(`Enum (${_direction}) out of range for Direction`);
+			_direction = Direction._Unknown as u8;
 		}
 		nMoveTo.direction = _direction;
 		nMoveTo.distance = da.getByte();
+		if (da.hasError) { return null; }
 		return nMoveTo;
 	}
 
-	writeBytes(data: DataView, tag: boolean): void {
+	writeBytes(data: DataView, tag: boolean): bool {
 		const da = new DataAccess(data);
-		if (tag) {
-			da.setByte(MessageType.MoveToType as u8);
-		}
-		da.setByte(this.direction as u8);
-		da.setByte(this.distance);
+		return this.writeBytesDA(da, tag);
 	}
 
+	writeBytesDA(da: DataAccess, tag: boolean): bool {
+		if (tag) {
+			da.setByte(MessageType.MoveToType as u8);
+			if (da.hasError) { return false; }
+		}
+		da.setByte(this.direction as u8);
+		if (da.hasError) { return false; }
+		da.setByte(this.distance);
+		if (da.hasError) { return false; }
+		return true;
+	}
 }
 
 export class Open extends Message {
@@ -612,25 +837,40 @@ export class Open extends Message {
 
 	getMessageType() : MessageType { return MessageType.OpenType; }
 
-	getSizeInBytes(): number {
+	getSizeInBytes(): usize {
 		return 4;
 	}
 
-	static override fromBytes(data: DataView): Open {
+	static override fromBytes(data: DataView): Open | null {
 		const da = new DataAccess(data);
+		return Open.fromBytesDA(da);
+	}
+
+	static override fromBytesDA(da: DataAccess): Open | null {
 		const nOpen = new Open();
-		nOpen.target = Point.fromBytes(da);
+		const _target = Point.fromBytes(da);
+		if (_target == null) {
+			return null;
+		}
+		else {
+			nOpen.target = _target;
+		}
 		return nOpen;
 	}
 
-	writeBytes(data: DataView, tag: boolean): void {
+	writeBytes(data: DataView, tag: boolean): bool {
 		const da = new DataAccess(data);
-		if (tag) {
-			da.setByte(MessageType.OpenType as u8);
-		}
-		this.target.writeBytes(da);
+		return this.writeBytesDA(da, tag);
 	}
 
+	writeBytesDA(da: DataAccess, tag: boolean): bool {
+		if (tag) {
+			da.setByte(MessageType.OpenType as u8);
+			if (da.hasError) { return false; }
+		}
+		if (!this.target.writeBytes(da)) { return false; };
+		return true;
+	}
 }
 
 export class Close extends Message {
@@ -638,24 +878,39 @@ export class Close extends Message {
 
 	getMessageType() : MessageType { return MessageType.CloseType; }
 
-	getSizeInBytes(): number {
+	getSizeInBytes(): usize {
 		return 4;
 	}
 
-	static override fromBytes(data: DataView): Close {
+	static override fromBytes(data: DataView): Close | null {
 		const da = new DataAccess(data);
+		return Close.fromBytesDA(da);
+	}
+
+	static override fromBytesDA(da: DataAccess): Close | null {
 		const nClose = new Close();
-		nClose.target = Point.fromBytes(da);
+		const _target = Point.fromBytes(da);
+		if (_target == null) {
+			return null;
+		}
+		else {
+			nClose.target = _target;
+		}
 		return nClose;
 	}
 
-	writeBytes(data: DataView, tag: boolean): void {
+	writeBytes(data: DataView, tag: boolean): bool {
 		const da = new DataAccess(data);
-		if (tag) {
-			da.setByte(MessageType.CloseType as u8);
-		}
-		this.target.writeBytes(da);
+		return this.writeBytesDA(da, tag);
 	}
 
+	writeBytesDA(da: DataAccess, tag: boolean): bool {
+		if (tag) {
+			da.setByte(MessageType.CloseType as u8);
+			if (da.hasError) { return false; }
+		}
+		if (!this.target.writeBytes(da)) { return false; };
+		return true;
+	}
 }
 

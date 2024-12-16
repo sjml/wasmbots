@@ -65,6 +65,11 @@ export function receiveGameParams(offset: usize): boolean {
 	const readDV = new DataView(HostReserve.arrayBuffer, offset as u32, (HostReserve.length - offset) as u32);
 	const initParams = CoreMsg.InitialParameters.fromBytes(readDV);
 
+	if (initParams === null) {
+		logErr(`ERROR: Can't parse GameParameters message`);
+		return false;
+	}
+
 	if (initParams.paramsVersion != GP_VERSION) {
 		logErr(`ERROR: Can't parse GameParams v${initParams.paramsVersion}; only prepared for v${GP_VERSION}`);
 		return false;
