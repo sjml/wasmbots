@@ -75,11 +75,12 @@ export class VisPlayer extends Phaser.GameObjects.Sprite {
 			}
 			this.tilePosition = this.playerObject.location;
 
+			const world = (this.scene.game as WasmBotsVisualizer).worldObject;
 			this.scene.tweens.add({
 				targets: this,
 				x: this.tilePosition.x * Config.tileSize,
 				y: this.tilePosition.y * Config.tileSize,
-				duration: Math.min(Config.minimumTurnTime - Config.turnTimeBuffer, 200),
+				duration: Math.min(world.minimumTurnTime - world.turnTimeBuffer, 200),
 				ease: 'Linear'
 			});
 		}

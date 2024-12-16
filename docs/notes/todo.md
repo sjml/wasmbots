@@ -1,9 +1,4 @@
 ## dev
-* embeddable
-  * reorg embeddable so that the custom component never gets compiled in the main app
-  * add simulation parameters to the embeddable component
-* expose pause and step
-
 * testing
     * player class
         * feeding non-wasm byte array

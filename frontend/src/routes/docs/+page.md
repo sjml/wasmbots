@@ -8,9 +8,11 @@ Playing with [mdxsvex](https://mdsvex.pngwn.io/). Eventually some docs or someth
 
 <Standalone autoRun={true} setupInfo={{
     botUrlList: [
-        "./example_bots/wanderer.wasm",
-        "./example_bots/explorer.wasm",
-        "./example_bots/wallflower.wasm",
-        "./example_bots/explorer.wasm",
-    ]
+        "../example_bots/wanderer.wasm",
+        "../example_bots/explorer.wasm",
+        "../example_bots/wallflower.wasm",
+        "../example_bots/explorer.wasm",
+    ],
+    minimumTurnTime: 50,
+    turnTimeBuffer: 3,
 }} />

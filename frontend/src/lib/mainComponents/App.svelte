@@ -36,15 +36,18 @@
 	function handleKeyDown(evt: KeyboardEvent) {
 		if (evt.code === "ArrowLeft") {
 			evt.preventDefault();
-			leftPanelVisible = !leftPanelVisible;
+			togglePanel("left");
 			return;
 		}
 		if (evt.code === "ArrowRight") {
 			evt.preventDefault();
-			rightPanelVisible = !rightPanelVisible;
+			togglePanel("right");
 			return;
 		}
 		if (evt.code === "ArrowUp") {
+			if (isSmallScreen) {
+				return;
+			}
 			evt.preventDefault();
 			if (leftPanelVisible && rightPanelVisible) {
 				leftPanelVisible = rightPanelVisible = false;

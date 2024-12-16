@@ -61,16 +61,22 @@
 		}
 	}
 
+	function valToDisplay(val: number): string {
+		return integral ? Math.floor(val).toString() : val.toFixed(precision);
+	}
+
 	let internalValue = $state(valueToSlider(value));
+	let displayValue = $state(valToDisplay(value));
 	function sliderChange() {
 		value = sliderToValue(internalValue);
+		displayValue = valToDisplay(value);
 	}
 </script>
 
 <div class="logSlider">
 	<div class="nameValue">
 		<div class="name"><code>{name}</code></div>
-		<div class="value">{integral ? value : value.toFixed(precision)}</div>
+		<div class="value">{displayValue}</div>
 	</div>
 	<input type="range"
 		class="slider"

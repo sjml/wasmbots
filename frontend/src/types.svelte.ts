@@ -21,7 +21,7 @@ export const DefaultWasmBotsState: WasmBotsState = Object.freeze({
 	mapSeed: "",
 	mapSeedLocked: false,
 	mapGeneratorOptions: DungeonBuilder.optionsDefaults,
-});
+} as WasmBotsState);
 
 export type BotInfo = {
 	[K in string]: { source: string, name: string};
@@ -52,10 +52,22 @@ export class UIPlayerData {
 	}
 }
 
-export type SetupInfo = {
+export type StandaloneSetupInfo = {
 	botUrlList?: string[],
 	map?: string;
 	worldSeed?: string | null;
 	mapSeed?: string | null;
 	mapOptions?: DungeonBuilderOptions;
+	minimumTurnTime?: number,
+	turnTimeBuffer?: number,
 };
+
+export const DefaultStandaloneSetupInfo: StandaloneSetupInfo = Object.freeze({
+	botUrlList: [],
+	map: "dynamic:dungeon",
+	worldSeed: null,
+	mapSeed: null,
+	mapOptions: DungeonBuilder.optionsDefaults,
+	minimumTurnTime: Config.minimumTurnTime,
+	turnTimeBuffer: Config.turnTimeBuffer,
+} as StandaloneSetupInfo);

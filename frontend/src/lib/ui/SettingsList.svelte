@@ -12,7 +12,7 @@
 
 	const gameState: WasmBotsState = getContext("gameState");
 
-	// don't love this boilerplate (and I know Svelte devs would probably scold me
+	// don't love this (and I know Svelte devs would probably scold me
 	//   about using $effect here) but I think the only alternative is making
 	//   making the Config object have $state stuff internally?
 	// this is odd because the svelte docs imply that Config's members should
@@ -24,16 +24,6 @@
 	let zoomInDistance = $state(Config.zoomInDistance);
 	$effect(() => {
 		Config.zoomInDistance = zoomInDistance;
-	});
-
-	let minTurnTime = $state(Config.minimumTurnTime);
-	$effect(() => {
-		Config.minimumTurnTime = minTurnTime;
-	});
-
-	let turnBuffer = $state(Config.turnTimeBuffer);
-	$effect(() => {
-		Config.turnTimeBuffer = turnBuffer;
 	});
 
 
@@ -103,42 +93,44 @@
 		to zoom out and back in to see its effect.)
 	</div>
 
-	<hr>
-	<h2>Simulation Settings</h2>
-	<MagicSlider
-		bind:value={minTurnTime}
-		min={0}
-		max={5000}
-		name={"minimumTurnTime"}
-		sliderType={"logarithmic"}
-	/>
-	<div class="description">
-		Controls the minimum amount of time in which all bots
-		take their turn. (If some bots are ticking slowly, it
-		could go longer than this minimum.) The default of
-		200ms gives them an urgent look without it feeling
-		like <a href="https://www.youtube.com/watch?v=ZnHmskwqCCQ&t=4s"
-		target="_blank">“Yakety Sax”</a> should be playing.
-		(Note the slider above is logarithmic, going from
-		0ms to 5000ms.)
-	</div>
+	{#if gameState.world != null}
+		<hr>
+		<h2>Simulation Settings</h2>
+		<MagicSlider
+			bind:value={gameState.world!.minimumTurnTime}
+			min={0}
+			max={5000}
+			name={"minimumTurnTime"}
+			sliderType={"logarithmic"}
+		/>
+		<div class="description">
+			Controls the minimum amount of time in which all bots
+			take their turn. (If some bots are ticking slowly, it
+			could go longer than this minimum.) The default of
+			200ms gives them an urgent look without it feeling
+			like <a href="https://www.youtube.com/watch?v=ZnHmskwqCCQ&t=4s"
+			target="_blank">“Yakety Sax”</a> should be playing.
+			(Note the slider above is logarithmic, going from
+			0ms to 5000ms.)
+		</div>
 
-	<MagicSlider
-		bind:value={turnBuffer}
-		min={0}
-		max={500}
-		name={"turnTimeBuffer"}
-		sliderType={"logarithmic"}
-	/>
-	<div class="description">
-		A little harder to describe, but this is the amount
-		of slop time given between the <code>minimumTurnTime</code>
-		and the next bot starting its turn. Setting it to zero
-		makes for very fluid movement… when everyone is staying
-		in their tick budgets. The default of 75ms makes it clear
-		that the movements are discrete, but they don't linger too
-		long. (Slider is also logarithmic, from 0ms to 500ms.)
-	</div>
+		<MagicSlider
+			bind:value={gameState.world!.turnTimeBuffer}
+			min={0}
+			max={500}
+			name={"turnTimeBuffer"}
+			sliderType={"logarithmic"}
+		/>
+		<div class="description">
+			A little harder to describe, but this is the amount
+			of slop time given between the <code>minimumTurnTime</code>
+			and the next bot starting its turn. Setting it to zero
+			makes for very fluid movement… when everyone is staying
+			in their tick budgets. The default of 75ms makes it clear
+			that the movements are discrete, but they don't linger too
+			long. (Slider is also logarithmic, from 0ms to 500ms.)
+		</div>
+	{/if}
 
 	{#if gameState.currentMapOptionString.startsWith("dynamic:")}
 		<hr>

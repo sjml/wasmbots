@@ -1,4 +1,4 @@
-import config from "../core/config.ts";
+import Config from "../core/config.ts";
 import * as CoreMsg from "../core/messages.ts";
 import { CoordinatorStatus } from "../core/coordinator.ts";
 import { type Point, Direction } from "../core/math.ts";
@@ -29,13 +29,17 @@ export class World extends EventTarget {
 	players: Player[] = [];
 	currentMap: WorldMap | null;
 	rng: RNG;
+	minimumTurnTime: number;
+	turnTimeBuffer: number;
 	private _spawnPointDeck: Deck<Point>;
 
 	constructor(randomSeed: string | null) {
 		super();
-		this.rng = new RNG(randomSeed);
-		this._spawnPointDeck = new Deck([{x: -1, y: -1}], this.rng, (a: Point, b: Point) => a.x === b.x && a.y === b.y);
 		this.currentMap = null;
+		this.rng = new RNG(randomSeed);
+		this.minimumTurnTime = Config.minimumTurnTime;
+		this.turnTimeBuffer = Config.turnTimeBuffer;
+		this._spawnPointDeck = new Deck([{x: -1, y: -1}], this.rng, (a: Point, b: Point) => a.x === b.x && a.y === b.y);
 	}
 
 	emit<K extends keyof WorldEvents>(
@@ -206,7 +210,7 @@ export class World extends EventTarget {
 
 	async resetGame() {
 		this.setState(GameState.Setup);
-		if (config.asyncReset) {
+		if (Config.asyncReset) {
 			await Promise.all(this.players.map(p => p.reset()));
 		}
 		else {
@@ -239,7 +243,7 @@ export class World extends EventTarget {
 			return;
 		}
 
-		const visualTick = config.minimumTurnTime / validPlayerCount;
+		const visualTick = this.minimumTurnTime / validPlayerCount;
 
 		for (const player of this.players) {
 			if (World._playerIsValid(player)) {
@@ -285,7 +289,7 @@ export class World extends EventTarget {
 			case CoreMsg.MessageType.MoveToType:
 				const playerMove = move as CoreMsg.MoveTo;
 				const direction = Direction.from(playerMove.direction);
-				if (!config.diagonalMovement && Direction.Ordinal.includes(direction)) {
+				if (!Config.diagonalMovement && Direction.Ordinal.includes(direction)) {
 					return CoreMsg.MoveResult.Invalid;
 				}
 				if (playerMove.distance > player.stride) {

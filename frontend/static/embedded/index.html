@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>WasmBots Embedding Demonstration</title>
-	<link rel="stylesheet" href="https://shaneliesegang.com/style.css">
+	<link rel="stylesheet" href="./basic_style.css">
 
 	<!--
 		Include this script file and **make sure** to set
@@ -21,7 +21,7 @@
 	<h1>WasmBots Embedding Demonstration</h1>
 	<hr/>
 	<p>
-		This is just a simple example of how WasmBots can be embedded in a webpage
+		This is a simple example of how WasmBots can be embedded in a webpage
 		as a standalone element. Everything else for this project is running as a
 		<a href="https://svelte.dev/" target="_blank">SvelteKit</a> app, but this
 		one is just plain old HTML, loading the entire engine as a single script
@@ -38,13 +38,24 @@
 		scripts here</a>.
 	</p>
 
-
+	<!--
+		you can control the simulation with only basic HTML
+		and JavaScript (in the `script` element at the bottom
+		of the page)
+	-->
+	<div class="simControls">
+		<label>
+			<input type="checkbox" name="embeddedRunningCheckbox" id="embeddedRunningCheckbox" checked>
+			Run
+		</label>
+		<button id="stepButton" disabled>▶│</button>
+	</div>
 
 	<!--
 		You can stick it in whatever div you want, obviously,
 		and style/size it to your liking.
 	-->
-	<div class="aquarium" style="margin: auto;">
+	<div id="aquarium">
 		<!--
 			autoRun -- makes it start and loop forever,
 					   otherwise you can call the step()
@@ -62,6 +73,7 @@
 					 attribute on an img element.
 		-->
 		<wasmbots-embed
+			id="embeddedElement"
 			autoRun
 			setup='{
 				"botUrlList": [
@@ -84,18 +96,47 @@
 		</wasmbots-embed>
 	</div>
 
-
-
 	<!--
-		just a little button that makes the game
-		run full screen (if allowed on this platform).
+		if the platform supports it, clicking this will
+		make the div with the game in it take over the screen.
 	-->
-	<button
-		class="fullScreen" aria-labelledby="fsButtonLabel"
-		onclick="document.querySelector('.aquarium').requestFullscreen();"
-		style="margin: 10px auto; display: flex; justify-content: center; align-items: center; padding: 5px;"
-	>
+	<button id="fullScreenButton">
 		Show fullscreen (doesn’t work on iPhones 😔)
 	</button>
+
+	<script>
+		// Of course if you just want to let the game run without
+		//   interfering, you don't need any of this. Just embed
+		//   the component, point it at some bot files, and call
+		//   it a day. Either way, the code here is pretty
+		//   straightforward.
+
+		const embeddedElement = document.getElementById("embeddedElement");
+		const runToggle = document.getElementById("embeddedRunningCheckbox");
+		const stepButton = document.getElementById("stepButton");
+		const aquarium = document.getElementById("aquarium");
+		const fullScreenButton = document.getElementById("fullScreenButton");
+
+		runToggle.addEventListener("change", (evt) => {
+			if (evt.target.checked) {
+				embeddedElement.run();
+				stepButton.setAttribute("disabled", "");
+			}
+			else {
+				embeddedElement.pause();
+				stepButton.removeAttribute("disabled");
+			}
+		});
+
+		stepButton.addEventListener("click", async () => {
+			stepButton.setAttribute("disabled", "");
+			await embeddedElement.step();
+			stepButton.removeAttribute("disabled");
+		});
+
+		fullScreenButton.addEventListener("click", () => {
+			aquarium.requestFullscreen();
+		});
+	</script>
 </body>
 </html>
