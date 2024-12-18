@@ -1,0 +1,5 @@
+There is no "native" mode for running AssemblyScript, so no good way to make a trainer for it that would let you step through and debug.
+
+Maybe something with browser dev tools? I know I can make debug builds from AssemblyScript, but it's less clear how I would integrate those the way the other libraries are.
+
+Hmmm.

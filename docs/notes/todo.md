@@ -1,19 +1,4 @@
 ## dev
-* testing
-    * player class
-        * feeding non-wasm byte array
-        * feeding invalid wasm
-        * feeding program that refuses start
-        * feeding program that crashes on setup
-        * passing negative or invalid string length
-        * crash at each of the three call points: setup, receiveGameParams, and tick
-          * have one that plays just fine for X turns and THEN crashes
-    * BUGS: 
-      * failed instantiation still adds player to UI
-        * (maybe that's ok, because we can show errors in the console? just clear it when the game starts in that case.)
-      * pressing pause when bot is crashed disables all flowcontrol
-      * on mobile, stepping through can lead to hang where all flowcontrol buttons are disabled
-
 * give larger view radius to arena (which means it becomes a map parameter...?)
 * fix up (or bail on) lighting thing
     * jitters when zoomed in -- might be drawing to the player's position in the last frame
