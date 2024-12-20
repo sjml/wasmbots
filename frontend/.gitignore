@@ -7,6 +7,7 @@ node_modules
 /build
 /static/embedded/*
 !/static/embedded/index.html
+/static/docs
 
 # OS
 .DS_Store

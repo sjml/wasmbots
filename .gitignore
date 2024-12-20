@@ -1,10 +1,9 @@
 # for the most part, each sub-project has its own .gitignore
 
 /.vscode
-/scripts/deploy_frontend.sh
 /.envrc
-
-/package-lock.json
 /node_modules
 
+
+/scripts/deploy_frontend.sh
 /docs/notes/private.md

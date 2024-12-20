@@ -3,7 +3,7 @@ A set of libraries that make it easier to write client modules for WasmBots in v
 They all leverage messaging code that is automatically generated from [the message protocol](../engine/src/data/messaging.toml), so you don't need to worry about encoding and decoding the communications to/from the engine. You should know what each of those messages means, though! 
 
 The rough notion of each library, though there are some differences based on how the languages work:
-* The [low-level multi-step handshake](../docs/interface.md#handshake) is abstracted away and you get two calls instead:
+* The [low-level multi-step handshake](./interface.md#handshake) is abstracted away and you get two calls instead:
   * one to a client setup function which takes no parameters and expects you to return a structure indicating the name of your bot and its version. 
   * another to a function that receives a `GameParameters` message and expects you to return a boolean value indicating whether you can participate under those parameters. 
 * You also must create a tick function that will be called every time it is your turn. That function takes a `PresentCircumstances` message and expects you to return a message in response. (Should be one of the ones acceptable for a player to submit as a move; anything else will get rejected by the host as an error.)

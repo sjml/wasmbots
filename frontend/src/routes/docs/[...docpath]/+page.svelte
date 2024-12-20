@@ -2,10 +2,10 @@
 	let { data } = $props();
 </script>
 
-<h1>Testing Data Flow</h1>
-
-This document exists? — ({data.exists})
+<div class="path">
+	{data.fpath}
+</div>
 
 <div class="contents">
-	{data.contents}
+	{@html data.content}
 </div>

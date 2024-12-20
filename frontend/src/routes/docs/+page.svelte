@@ -1,0 +1,1 @@
+./[...docpath]/+page.svelte

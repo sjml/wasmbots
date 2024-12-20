@@ -3,7 +3,9 @@ import { defineConfig } from 'vite';
 import { execSync } from 'child_process';
 
 export default defineConfig({
-	plugins: [sveltekit()],
+	plugins: [
+		sveltekit()
+	],
 	resolve: {
 		preserveSymlinks: true
 	},

@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { setContext, onMount } from "svelte";
 
-	import { Loader, Logger, Player, RNG, WasmCoordinator, World } from "wasmbots";
+	import { Config, Loader, Logger, Player, RNG, WasmCoordinator, World } from "wasmbots";
 
 	import { DefaultWasmBotsState, type WasmBotsState, type StandaloneSetupInfo, DefaultStandaloneSetupInfo } from "../../types.svelte";
 	import WorldCanvas from "$lib/ui/WorldCanvas.svelte";
+
+	const aspectRatio = Config.gameWidth / Config.gameHeight;
 
 	const gameState: WasmBotsState = $state(structuredClone(DefaultWasmBotsState));
 	setContext("gameState", gameState);
@@ -66,7 +68,12 @@
 	});
 </script>
 
+<div class="worldSizer" style="--aspectRatio: {aspectRatio};">
+	<WorldCanvas createWorld={false} />
+</div>
 
-<WorldCanvas createWorld={false} />
-
-
+<style>
+	.worldSizer {
+		aspect-ratio: var(--aspectRatio);
+	}
+</style>

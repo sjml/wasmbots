@@ -1,5 +1,4 @@
 import { Config, World, Logger, Player, type DungeonBuilderOptions, DungeonBuilder } from "wasmbots";
-import { WasmBotsVisualizer } from "./vis/game";
 import type { VisPlayer } from "./vis/player";
 
 export interface WasmBotsState {
