@@ -1,3 +1,60 @@
+@font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/Lato-Regular.woff2") format("woff2");
+}
+@font-face {
+    font-family: 'Lato';
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+    src: url("/fonts/Lato-Italic.woff2") format("woff2");
+}
+@font-face {
+    font-family: 'Lato';
+    font-style: normal;
+    font-weight: 900;
+    font-display: swap;
+    src: url("/fonts/Lato-Black.woff2") format("woff2");
+}
+@font-face {
+    font-family: 'Lato';
+    font-style: italic;
+    font-weight: 900;
+    font-display: swap;
+    src: url("/fonts/Lato-BlackItalic.woff2") format("woff2");
+}
+@font-face {
+	font-family: 'Cascadia';
+	font-style: normal;
+	font-weight: 400;
+	font-display: swap;
+	src: url("/fonts/CascadiaMono-Regular.woff2") format("woff2");
+}
+@font-face {
+	font-family: 'Cascadia';
+	font-style: italic;
+	font-weight: 400;
+	font-display: swap;
+	src: url("/fonts/CascadiaMono-Italic.woff2") format("woff2");
+}
+@font-face {
+	font-family: 'Cascadia';
+	font-style: normal;
+	font-weight: 900;
+	font-display: swap;
+	src: url("/fonts/CascadiaMono-Bold.woff2") format("woff2");
+}
+@font-face {
+	font-family: 'Cascadia';
+	font-style: italic;
+	font-weight: 900;
+	font-display: swap;
+	src: url("/fonts/CascadiaMono-BoldItalic.woff2") format("woff2");
+}
+
 html, body {
 	margin: 0;
 	padding: 0;
@@ -6,19 +63,19 @@ html, body {
 
 body {
 	background-color: rgb(64, 64, 64);
-	font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+	font-family: 'Lato', 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 * {
 	box-sizing: border-box;
 }
 
 a, a:visited {
-	color: rgb(116, 236, 116);
+	color: rgb(116, 154, 236);
 }
 
 code {
-	font-family: 'Courier New', Courier, monospace;
-	font-weight: 600;
+	font-family: 'Cascadia', 'Courier New', Courier, monospace;
+	font-weight: 400;
 }
 
 /* fixes the iOS landscape problem with UI chrome */

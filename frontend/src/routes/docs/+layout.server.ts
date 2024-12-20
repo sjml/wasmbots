@@ -9,6 +9,7 @@ import type { Root as MRoot, Node as MNode, Link } from "mdast";
 import type { Root as HRoot, Node as HNode, Element } from "hast";
 import remarkParse from "remark-parse";
 import remarkFrontmatter from "remark-frontmatter";
+import remarkSmartypants from "remark-smartypants";
 import remarkRehype from "remark-rehype";
 import rehypeStringify from "rehype-stringify";
 import { toString as rNodeToString } from "hast-util-to-string";
@@ -24,6 +25,14 @@ const indexBasename = "_index";
 const indexFile = `${indexBasename}.md`;
 
 
+function makeGHLink(absolute: string): string {
+	if (!absolute.startsWith(projectRoot)) {
+		throw new Error("Can't make GitHub link to file outside project directory");
+	}
+	const repoPath = absolute.substring(projectRoot.length);
+	return `${repoWebUrl}/blob/${repoBranch}${repoPath}`;
+
+}
 
 function fixMdLinks(params: {fpathAbsolute: string}) {
 	const isIndex = path.basename(params.fpathAbsolute) === indexFile;
@@ -58,9 +67,11 @@ function fixMdLinks(params: {fpathAbsolute: string}) {
 				throw new Error(`"${absoluteLinkPath}" does not exist`);
 			}
 
-			if (!absoluteLinkPath.startsWith(docsDir)) {
-				const repoPath = absoluteLinkPath.substring(projectRoot.length);
-				link.url = `${repoWebUrl}/blob/${repoBranch}${repoPath}${suffix}`;
+			if (   !absoluteLinkPath.startsWith(docsDir)
+				|| ignoreDirectories.some(ig => absoluteLinkPath.startsWith(ig))
+			) {
+				link.url = `${makeGHLink(absoluteLinkPath)}${suffix}`;
+				return;
 			}
 
 			let relativePath = path.relative(effectivePath, absoluteLinkPath);
@@ -102,6 +113,7 @@ function classifyLinks(params: object) {
 				classList.push("github");
 			}
 			if (classList.length > 0) {
+				link.properties["target"] = "_blank";
 				link.properties["className"] = classList;
 			}
 		});
@@ -129,7 +141,7 @@ function anchorifyHeaders(_params: object) {
 
 				properties: {
 					href: `#${slug}`,
-					classList: ["header-anchor"],
+					className: ["header-anchor"],
 					ariaHidden: "true",
 					tabIndex: -1,
 				},
@@ -144,6 +156,9 @@ async function renderMarkdown(md: string, fpathAbsolute: string): Promise<string
 		.use(remarkParse)
 		.use(remarkFrontmatter, ["yaml"])
 		.use(fixMdLinks, {fpathAbsolute})
+		.use(remarkSmartypants, {
+			dashes: "oldschool"
+		})
 		.use(remarkRehype)
 		.use(classifyLinks, {})
 		.use(anchorifyHeaders, {})
@@ -170,7 +185,7 @@ export async function load({params}) {
 	else if (!fpath.endsWith(".md")) {
 		fpath += ".md";
 	}
-;
+
 	if (ignoreDirectories.some(ig => fpath.startsWith(ig))) {
 		error(404, "Ignored file");
 	}
@@ -181,6 +196,6 @@ export async function load({params}) {
 	const md = await renderMarkdown(content, fpath);
 	return {
 		content: md,
-		fpath: fpath,
+		githubPath: makeGHLink(fpath),
 	}
 }

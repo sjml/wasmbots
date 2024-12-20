@@ -234,7 +234,6 @@
 	.description {
 		margin-top: 5px;
 		margin-bottom: 25px;
-		font-size: small;
 		margin-left: 30px;
 	}
 

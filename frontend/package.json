@@ -26,6 +26,7 @@
 		"remark-frontmatter": "^5.0.0",
 		"remark-parse": "^11.0.0",
 		"remark-rehype": "^11.1.1",
+		"remark-smartypants": "^3.0.2",
 		"svelte": "^5.0.0",
 		"svelte-check": "^4.0.0",
 		"tsx": "^4.19.2",
