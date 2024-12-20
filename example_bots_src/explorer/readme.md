@@ -1,6 +1,6 @@
 # explorer (implemented in [Zig](https://ziglang.org/))
 
-Maybe the most "real" bot of the bunch. Actually maps out the space, keeps track of what it's seen, and does A* pathfinding between points. 
+Maybe the most "real" bot of the bunch. Actually maps out the space, keeps track of what it's seen, and does pathfinding between points. 
 
 Basic algorithm is to find the closest space it has _seen_ but not _visited_. ("Visited" being defined as getting within one space of it, so it doesn't look overly meticulous.) Once it reaches the end of that path, it picks another such space. 
 
