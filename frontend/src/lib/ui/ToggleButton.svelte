@@ -27,14 +27,14 @@
 	button {
 		width: 40px;
 		height: 40px;
-		background-color: #000000;
+		background-color: hsl(204, 10%, 15%);
+		border: 1px solid rgba(218, 218, 218, 0.1);
+		border-radius: 11px;
 		color: rgb(218, 218, 218);
-		border: none;
 		cursor: pointer;
 		display: flex;
 		justify-content: center;
 		align-items: center;
-		border-radius: 11px;
 	}
 	:global(button.toggle svg) {
 		width: 30px;

@@ -19,6 +19,7 @@
 		padding-top: 15px;
 		opacity: 0.5;
 		width: 100%;
+		font-size: 85%;
 	}
 
 	.githubLink a {
@@ -28,23 +29,10 @@
 	}
 
 	.githubLink svg {
-		width: 25px;
+		width: 20px;
 		color: white;
 		text-decoration: none;
 		margin-right: 5px;
-	}
-
-	.documentation {
-		max-width: 700px;
-		margin: 0 auto 50px auto;
-		padding: 0 25px 20px 20px;
-		font-size: 18px;
-		background-color: rgb(46, 50, 54);
-		color: rgba(255, 255, 255, 0.85);
-
-		line-height: 1.4;
-		/* arguably if I'm making this kind of adjustment I should just pick a different font */
-		/* letter-spacing: 0.2px; */
 	}
 
 	.documentation :global {

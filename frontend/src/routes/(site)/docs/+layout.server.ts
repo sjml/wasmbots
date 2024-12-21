@@ -1,4 +1,4 @@
-import fs, { link } from "node:fs";
+import fs from "node:fs";
 import path from "node:path";
 
 import { redirect, error } from "@sveltejs/kit";
@@ -15,27 +15,21 @@ import rehypeStringify from "rehype-stringify";
 import { toString as rNodeToString } from "hast-util-to-string";
 import GitHubSlugger from "github-slugger";
 
-import { trailingSlash } from "../+layout.js";
-const repoWebUrl = "https://github.com/sjml/wasmbots";
-const repoBranch = "main";
-const projectRoot = path.resolve("..");
-const docsDir = path.resolve("../docs");
-const ignoreDirectories = [ path.join(docsDir, "notes") ];
-const indexBasename = "_index";
-const indexFile = `${indexBasename}.md`;
+import { trailingSlash } from "../../+layout.ts";
+import * as docs from "$lib/docs.ts";
 
 
 function makeGHLink(absolute: string): string {
-	if (!absolute.startsWith(projectRoot)) {
+	if (!absolute.startsWith(docs.projectRoot)) {
 		throw new Error("Can't make GitHub link to file outside project directory");
 	}
-	const repoPath = absolute.substring(projectRoot.length);
-	return `${repoWebUrl}/blob/${repoBranch}${repoPath}`;
+	const repoPath = absolute.substring(docs.projectRoot.length);
+	return `${docs.repoWebUrl}/blob/${docs.repoBranch}${repoPath}`;
 
 }
 
 function fixMdLinks(params: {fpathAbsolute: string}) {
-	const isIndex = path.basename(params.fpathAbsolute) === indexFile;
+	const isIndex = path.basename(params.fpathAbsolute) === docs.indexFile;
 	const effectivePath = (isIndex && trailingSlash !== "always")
 		? params.fpathAbsolute
 		: path.dirname(params.fpathAbsolute)
@@ -67,8 +61,8 @@ function fixMdLinks(params: {fpathAbsolute: string}) {
 				throw new Error(`"${absoluteLinkPath}" does not exist`);
 			}
 
-			if (   !absoluteLinkPath.startsWith(docsDir)
-				|| ignoreDirectories.some(ig => absoluteLinkPath.startsWith(ig))
+			if (   !absoluteLinkPath.startsWith(docs.docsDir)
+				|| docs.ignoreDirectories.some(ig => absoluteLinkPath.startsWith(ig))
 			) {
 				link.url = `${makeGHLink(absoluteLinkPath)}${suffix}`;
 				return;
@@ -109,7 +103,7 @@ function classifyLinks(params: object) {
 			if (url.startsWith("http://") || url.startsWith("https://")) {
 				classList.push("external");
 			}
-			if (url.startsWith(repoWebUrl)) {
+			if (url.startsWith(docs.repoWebUrl)) {
 				classList.push("github");
 			}
 			if (classList.length > 0) {
@@ -168,25 +162,25 @@ async function renderMarkdown(md: string, fpathAbsolute: string): Promise<string
 
 export async function load({params}) {
 	let filename;
-	if (params.docpath?.endsWith(indexBasename)) {
+	if (params.docpath?.endsWith(docs.indexBasename)) {
 		redirect(307, "./");
 	}
 	else if (params.docpath === undefined) {
-		filename = indexFile;
+		filename = docs.indexFile;
 	}
 	else {
 		filename = params.docpath;
 	}
 
-	let fpath = path.resolve(docsDir, filename);
+	let fpath = path.resolve(docs.docsDir, filename);
 	if (fs.existsSync(fpath) && fs.lstatSync(fpath).isDirectory()) {
-		fpath = path.join(fpath, indexFile);
+		fpath = path.join(fpath, docs.indexFile);
 	}
 	else if (!fpath.endsWith(".md")) {
 		fpath += ".md";
 	}
 
-	if (ignoreDirectories.some(ig => fpath.startsWith(ig))) {
+	if (docs.ignoreDirectories.some(ig => fpath.startsWith(ig))) {
 		error(404, "Ignored file");
 	}
 	if (!fs.existsSync(fpath)) {

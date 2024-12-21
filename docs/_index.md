@@ -12,5 +12,5 @@ Please enjoy.
 ## Language
 
 Throughout this documentation, source code comments, development notes, commit messages, etc. I tend to use these terms interchangeably depending on my mood, whims, and brainstate. I could probably come up with more formal/rigorous definitions but no need to get too far off into the weeds. 
-* engine ⇔ host ⇔ world ⇔ game
-* bot ⇔ wasm ⇔ module ⇔ guest ⇔ player
+* engine ↔ host ↔ world ↔ game
+* bot ↔ wasm ↔ module ↔ guest ↔ player

@@ -229,12 +229,14 @@
 <style>
 	.settings {
 		margin: 15px;
+		color: rgb(221, 221, 221);
 	}
 
 	.description {
 		margin-top: 5px;
 		margin-bottom: 25px;
 		margin-left: 30px;
+		line-height: 1.3;
 	}
 
 	.description code {

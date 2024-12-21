@@ -15,7 +15,7 @@
 	nav {
 		height: 50px;
 		flex-shrink: 0;
-		background-color: rgb(37, 37, 37);
+		background-color: hsl(204, 10%, 10%);
 		display: flex;
 		justify-content: space-between;
 		padding: 5px;
