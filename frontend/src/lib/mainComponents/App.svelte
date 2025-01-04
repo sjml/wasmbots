@@ -60,7 +60,7 @@
 	}
 
 	let windowWidth: number = $state(window.innerWidth);
-	let isSmallScreen: boolean = $derived(windowWidth < 900)
+	let isSmallScreen: boolean = $derived(windowWidth < 900);
 
 	function togglePanel(targetPanel: string) {
 		if (targetPanel == "left") {

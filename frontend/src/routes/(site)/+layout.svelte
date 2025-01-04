@@ -7,12 +7,16 @@
 	}
 	let { children }: Props = $props();
 
-	let navPinned = $state(false);
+	let windowWidth: number = $state(window.innerWidth);
+	let isSmallScreen: boolean = $derived(windowWidth < 650);
+	let navUnfolded: boolean = $state(false);
+
+	let navHeaderPinned = $state(false);
 	let nav: HTMLElement;
 	let navObserver: IntersectionObserver;
 	onMount(() => {
 		navObserver = new IntersectionObserver(([entry]) => {
-			navPinned = entry.isIntersecting;
+			navHeaderPinned = entry.isIntersecting;
 		}, {
 			threshold: [1],
 		});
@@ -24,14 +28,15 @@
 	});
 </script>
 
+<svelte:window bind:innerWidth={windowWidth} />
 
 <div class="container">
 	<header>
 		<h1><a href="{base}/">WasmBots</a></h1>
 	</header>
 	<main>
-		<nav bind:this={nav}>
-			<header class="navHeader" class:pinned={navPinned}>
+		<nav bind:this={nav} class:folded={isSmallScreen && !navUnfolded}>
+			<header class="navHeader" class:pinned={navHeaderPinned || isSmallScreen}>
 				<h2><a href="{base}/">WasmBots</a></h2>
 			</header>
 			<ul>
@@ -49,6 +54,13 @@
 				<li><a href="https://github.com/sjml/wasmbots" class="external github" target="_blank">Source Code</a></li>
 			</ul>
 		</nav>
+		<button class="navToggle" class:visible={isSmallScreen} onclick={() => navUnfolded = !navUnfolded}>
+			{#if navUnfolded}
+				<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M232,112a64.07,64.07,0,0,1-64,64H51.31l34.35,34.34a8,8,0,0,1-11.32,11.32l-48-48a8,8,0,0,1,0-11.32l48-48a8,8,0,0,1,11.32,11.32L51.31,160H168a48,48,0,0,0,0-96H80a8,8,0,0,1,0-16h88A64.07,64.07,0,0,1,232,112Z"></path></svg>
+			{:else}
+				<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M80,64a8,8,0,0,1,8-8H216a8,8,0,0,1,0,16H88A8,8,0,0,1,80,64Zm136,56H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16Zm0,64H88a8,8,0,0,0,0,16H216a8,8,0,0,0,0-16ZM44,52A12,12,0,1,0,56,64,12,12,0,0,0,44,52Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,116Zm0,64a12,12,0,1,0,12,12A12,12,0,0,0,44,180Z"></path></svg>
+			{/if}
+		</button>
 		<section class="content">
 			{@render children?.()}
 		</section>
@@ -62,7 +74,6 @@
 		display: flex;
 		flex-direction: column;
 		min-height: 100vh;
-		width: 90%;
 		max-width: 950px;
 		margin: 0 auto;
 	}
@@ -99,6 +110,14 @@
 		top: 0;
 		height: 100vh;
 		overflow-y: auto;
+
+		transition-property: margin-left;
+		transition-duration: 200ms;
+	}
+
+	nav.folded {
+		margin-left: -200px;
+		transform: translateX(0);
 	}
 
 	nav header.navHeader {
@@ -111,7 +130,7 @@
 
 	nav header h2 {
 		text-align: center;
-		margin-top: 0px;
+		margin: 0;
 		padding: 5px 10px;
 	}
 
@@ -132,6 +151,29 @@
 		padding-left: 0;
 	}
 
+	.navToggle {
+		height: 40px;
+		width: 40px;
+		background-color: hsl(204, 10%, 85%);
+		position: sticky;
+		top: 0;
+		z-index: 100;
+		margin-right: -40px;
+
+		opacity: 0.0;
+
+		border: none;
+		display: flex;
+		align-items: center;
+		cursor: pointer;
+		transition-property: opacity;
+		transition-duration: 200ms;
+	}
+
+	.navToggle.visible {
+		opacity: 1.0;
+	}
+
 	.content {
 		flex-grow: 1;
 		padding: 0 25px 20px 20px;
@@ -142,81 +184,5 @@
 		line-height: 1.4;
 		/* arguably if I'm making this kind of adjustment I should just pick a different font */
 		/* letter-spacing: 0.2px; */
-	}
-
-	@media (max-width: 775px) {
-		.container > header {
-			height: 45px;
-			position: sticky;
-			top: 0;
-			z-index: 100;
-			padding: 0px;
-		}
-
-		header.navHeader.pinned {
-			display: none;
-		}
-
-		header h1 {
-			height: 45px;
-		}
-
-		main {
-			flex-direction: column;
-		}
-
-		nav {
-			display: flex;
-			flex-direction: row;
-			width: 100%;
-			max-width: none;
-			padding: 15px 35px 15px;
-			position: sticky;
-			top: 45px;
-			z-index: 100;
-			height: auto;
-		}
-
-		nav ul {
-			display: flex;
-			gap: 35px;
-			margin: 0;
-		}
-
-		nav li {
-			margin-bottom: 0;
-		}
-
-		nav li:has(> ul)::before {
-			content: "❯";
-			color: rgba(255, 255, 255, 0.8);
-			display: inline-block;
-			transform: rotate(0deg);
-			transition-property: transform;
-			transition-duration: 100ms;
-			margin-right: 5px;
-		}
-
-		nav li:has(> ul):hover::before {
-			transform: rotate(90deg) translateX(2px);
-		}
-
-		nav ul ul {
-			display: block;
-			display: none;
-			position: fixed;
-			top: 64px;
-			margin-left: 0;
-			background-color: hsl(204, 10%, 15%);
-			padding: 10px 15px 15px 15px;
-		}
-
-		nav ul ul li {
-			margin-top: 12px;
-		}
-
-		nav li:hover ul {
-			display: block;
-		}
 	}
 </style>
