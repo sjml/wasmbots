@@ -1,7 +1,6 @@
 ## dev
 * give larger view radius to arena (which means it becomes a map parameter...?)
 * fix up (or bail on) lighting thing
-    * BUG: lighting cutout stays around if player is dropped
     * jitters when zoomed in -- might be drawing to the player's position in the last frame
       * not sure how to fix that since I don't have control over update ordering
     * maybe make them objects following the player which then get drawn into the texture? 
@@ -37,7 +36,6 @@
     * tile overlay set/clear color
     * add/clear text at tile?
   * allow seeding of world (and show seed)
-* build out a few different example bots (./bot_concepts.md)
 
 
 ## polish

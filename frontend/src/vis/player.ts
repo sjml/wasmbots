@@ -30,6 +30,7 @@ export class VisPlayer extends Phaser.GameObjects.Sprite {
 		);
 		this.on("destroy", () => {
 			VisPlayer.playerImageDeck?.restoreItem(imageIndex);
+			mapScene.removePlayer(this);
 		});
 		this.playerObject = playerObject;
 		this.tilePosition = playerObject.location;

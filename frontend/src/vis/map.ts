@@ -138,4 +138,9 @@ export class VisMap extends Phaser.Scene {
 		this.add.existing(p);
 		this._playerList.push(p);
 	}
+
+	removePlayer(p: VisPlayer) {
+		const pidx = this._playerList.findIndex(pv => pv === p);
+		this._playerList.splice(pidx, 1);
+	}
 }
