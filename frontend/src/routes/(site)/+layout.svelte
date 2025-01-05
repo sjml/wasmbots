@@ -11,43 +11,41 @@
 	let isSmallScreen: boolean = $derived(windowWidth < 650);
 	let navUnfolded: boolean = $state(false);
 
-	let navHeaderPinned = $state(false);
-	let nav: HTMLElement;
-	let navObserver: IntersectionObserver;
+	let mainHeader: HTMLElement;
+	let mainHeaderVisible = $state(true);
 	onMount(() => {
-		navObserver = new IntersectionObserver(([entry]) => {
-			navHeaderPinned = entry.isIntersecting;
-		}, {
-			threshold: [1],
-		});
-		navObserver.observe(nav);
-
-		return () => {
-			navObserver.disconnect();
-		};
+		const observer = new IntersectionObserver(([entry]) => {
+			mainHeaderVisible = entry.isIntersecting;
+		}, { threshold: [0.0] });
+		observer.observe(mainHeader);
+		return () => observer.disconnect();
 	});
 </script>
 
 <svelte:window bind:innerWidth={windowWidth} />
 
 <div class="container">
-	<header>
-		<h1><a href="{base}/">WasmBots</a></h1>
+	<header bind:this={mainHeader}>
+		<a href="{base}/">
+			<img class="logo" src="{base}/img/logo-cropped.svg" alt="WasmBots Logo">
+		</a>
 	</header>
 	<main>
-		<nav bind:this={nav} class:folded={isSmallScreen && !navUnfolded}>
-			<header class="navHeader" class:pinned={navHeaderPinned || isSmallScreen}>
-				<h2><a href="{base}/">WasmBots</a></h2>
+		<nav class:folded={isSmallScreen && !navUnfolded}>
+			<header class="navHeader" class:pinned={(!isSmallScreen && !mainHeaderVisible) || (isSmallScreen && navUnfolded && !mainHeaderVisible)}>
+				<a href="{base}/">
+					<img class="logo" src="{base}/img/logo-cropped.svg" alt="WasmBots Logo">
+				</a>
 			</header>
 			<ul>
 				<li><a href="{base}/app">App</a></li>
 				<li><a href="{base}/docs">Documentation</a>
 					<ul>
-						<li><a href="{base}/docs/history">Development History</a></li>
 						<li><a href="{base}/docs/concepts">Concepts</a></li>
 						<li><a href="{base}/docs/interface">Programming Interface</a></li>
 						<li><a href="{base}/docs/libraries">Bot Libraries</a></li>
 						<li><a href="{base}/docs/trainers">Trainers</a></li>
+						<li><a href="{base}/docs/history">Development History</a></li>
 					</ul>
 				</li>
 				<li><a href="{base}/embedded/">Embedded Example</a></li>
@@ -67,8 +65,6 @@
 	</main>
 </div>
 
-
-
 <style>
 	.container {
 		display: flex;
@@ -83,13 +79,19 @@
 		text-align: center;
 	}
 
-	h1 {
-		margin: 0;
+	header .logo {
+		filter: invert(0.9);
+		max-height: 50px;
+		margin: 8px;
+	}
+
+	header.navHeader .logo {
+		max-width: 80%;
+		margin: 8px auto;
 	}
 
 	header {
 		background-color: hsl(204, 10%, 10%);
-		color: white;
 	}
 
 	header a {
@@ -126,12 +128,7 @@
 
 	header.navHeader.pinned {
 		display: block;
-	}
-
-	nav header h2 {
 		text-align: center;
-		margin: 0;
-		padding: 5px 10px;
 	}
 
 	nav ul {
