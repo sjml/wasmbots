@@ -9,3 +9,14 @@
 		}
 	});
 </script>
+
+<div class="intro">
+	<h2>What is a WasmBot?</h2>
+	<p><em>(Introductory material will go here.)</em></p>
+</div>
+
+<style>
+	.intro {
+		margin-top: 50px;
+	}
+</style>

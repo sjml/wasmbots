@@ -5,7 +5,7 @@ import { redirect, error } from "@sveltejs/kit";
 
 import { unified } from "unified";
 import { visit } from "unist-util-visit";
-import type { Root as MRoot, Node as MNode, Link } from "mdast";
+import type { Root as MRoot, Node as MNode, Link, Image } from "mdast";
 import type { Root as HRoot, Node as HNode, Element } from "hast";
 import remarkParse from "remark-parse";
 import remarkFrontmatter from "remark-frontmatter";
@@ -87,6 +87,44 @@ function fixMdLinks(params: {fpathAbsolute: string}) {
 	};
 }
 
+function fixImgPaths(params: {fpathAbsolute: string}) {
+	const isIndex = path.basename(params.fpathAbsolute) === docs.indexFile;
+	const effectivePath = (isIndex && trailingSlash !== "always")
+		? params.fpathAbsolute
+		: path.dirname(params.fpathAbsolute)
+	;
+
+	return (tree: MRoot) => {
+		const imgNodes: Image[] = [];
+		visit(tree, (node: MNode) => {
+			if (node.type === "image") {
+				imgNodes.push(node as Image);
+			}
+		});
+
+		const docsImgDir = path.join(docs.docsDir, "img");
+		const baseUrl = params.fpathAbsolute.substring(docs.projectRoot.length);
+		const relUrl = path.relative(baseUrl, "/img/docs");
+		imgNodes.map((img) => {
+			if (img.url.startsWith("http://") || img.url.startsWith("https://")) {
+				throw new Error("Don't hotlink images directly.");
+			}
+
+			const absoluteImgPath = path.resolve(effectivePath, img.url);
+
+			if (!fs.existsSync(absoluteImgPath)) {
+				throw new Error(`"${absoluteImgPath}" does not exist`);
+			}
+			if (!absoluteImgPath.startsWith(docsImgDir)) {
+				throw new Error(`"${absoluteImgPath}" is not in docs/img`);
+			}
+
+			const relImgPath = path.join(relUrl, absoluteImgPath.substring(docsImgDir.length));
+			img.url = relImgPath;
+		});
+	};
+}
+
 function classifyLinks(params: object) {
 	return (tree: HRoot) => {
 		const linkNodes: Element[] = [];
@@ -114,7 +152,7 @@ function classifyLinks(params: object) {
 	};
 }
 
-function anchorifyHeaders(_params: object) {
+function anchorifyAndIncrementHeaders(_params: object) {
 	const slugger = new GitHubSlugger();
 
 	return (tree: HRoot) => {
@@ -127,6 +165,8 @@ function anchorifyHeaders(_params: object) {
 		});
 
 		headerNodes.map((header) => {
+			const currentLevel = parseInt(header.tagName.substring(1));
+			header.tagName = `h${currentLevel+1}`;
 			const slug = slugger.slug(rNodeToString(header));
 			header.properties.id = slug;
 			header.children.push({
@@ -150,12 +190,13 @@ async function renderMarkdown(md: string, fpathAbsolute: string): Promise<string
 		.use(remarkParse)
 		.use(remarkFrontmatter, ["yaml"])
 		.use(fixMdLinks, {fpathAbsolute})
+		.use(fixImgPaths, {fpathAbsolute})
 		.use(remarkSmartypants, {
 			dashes: "oldschool"
 		})
 		.use(remarkRehype)
 		.use(classifyLinks, {})
-		.use(anchorifyHeaders, {})
+		.use(anchorifyAndIncrementHeaders, {})
 		.use(rehypeStringify)
 		.process(md));
 }

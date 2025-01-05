@@ -92,6 +92,12 @@
 			margin-top: 10px;
 		}
 
+		img {
+			max-width: 100%;
+			display: block;
+			margin: 10px auto;
+		}
+
 		/* little external link indicator; got it working but it's kinda distracting */
 		/* a.external::after {
 			content: "";

@@ -3,10 +3,10 @@ This will be a guide to the documentation.
 Please enjoy. 
 
 * [Basic Concepts](./concepts.md)
-* [Development History](./history.md)
 * [Low-Level Programming Interface](./interface.md)
 * [Libraries](./libraries.md)
 * [Trainers](./trainers.md)
+* [Development History](./history.md)
 
 
 ## Language
