@@ -21,7 +21,6 @@
 * documentation
     * how everything works, I guess
     * video intro?
-    * add some fun: https://particles.js.org/
     * move SVGs to be sourced as proper images
 
 * web trainer

@@ -2,6 +2,8 @@
 	import { onMount, type Snippet } from "svelte";
 	import { base } from "$app/paths";
 
+	import FireParticles from "$lib/ui/FireParticles.svelte";
+
 	interface Props {
 		children?: Snippet;
 	}
@@ -21,7 +23,8 @@
 </script>
 
 <div class="container">
-	<header bind:this={mainHeader}>
+	<header bind:this={mainHeader} class="mainHeader">
+		<!-- <FireParticles /> -->
 		<a href="{base}/">
 			<img class="logo" src="{base}/img/logo-cropped.svg" alt="WasmBots Logo">
 		</a>
@@ -93,6 +96,10 @@
 	header a {
 		text-decoration: none;
 		color: inherit;
+	}
+
+	.mainHeader {
+		position: relative;
 	}
 
 	main {
