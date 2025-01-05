@@ -7,8 +7,6 @@
 	}
 	let { children }: Props = $props();
 
-	let windowWidth: number = $state(window.innerWidth);
-	let isSmallScreen: boolean = $derived(windowWidth < 650);
 	let navUnfolded: boolean = $state(false);
 
 	let mainHeader: HTMLElement;
@@ -22,8 +20,6 @@
 	});
 </script>
 
-<svelte:window bind:innerWidth={windowWidth} />
-
 <div class="container">
 	<header bind:this={mainHeader}>
 		<a href="{base}/">
@@ -31,8 +27,8 @@
 		</a>
 	</header>
 	<main>
-		<nav class:folded={isSmallScreen && !navUnfolded}>
-			<header class="navHeader" class:pinned={(!isSmallScreen && !mainHeaderVisible) || (isSmallScreen && navUnfolded && !mainHeaderVisible)}>
+		<nav class:unfolded={navUnfolded}>
+			<header class="navHeader" class:pinned={!mainHeaderVisible}>
 				<a href="{base}/">
 					<img class="logo" src="{base}/img/logo-cropped.svg" alt="WasmBots Logo">
 				</a>
@@ -52,7 +48,7 @@
 				<li><a href="https://github.com/sjml/wasmbots" class="external github" target="_blank">Source Code</a></li>
 			</ul>
 		</nav>
-		<button class="navToggle" class:visible={isSmallScreen} onclick={() => navUnfolded = !navUnfolded}>
+		<button class="navToggle" class:unfolded={navUnfolded} onclick={() => navUnfolded = !navUnfolded}>
 			{#if navUnfolded}
 				<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M232,112a64.07,64.07,0,0,1-64,64H51.31l34.35,34.34a8,8,0,0,1-11.32,11.32l-48-48a8,8,0,0,1,0-11.32l48-48a8,8,0,0,1,11.32,11.32L51.31,160H168a48,48,0,0,0,0-96H80a8,8,0,0,1,0-16h88A64.07,64.07,0,0,1,232,112Z"></path></svg>
 			{:else}
@@ -113,13 +109,8 @@
 		height: 100vh;
 		overflow-y: auto;
 
-		transition-property: margin-left;
+		transition-property: margin-left, transform;
 		transition-duration: 200ms;
-	}
-
-	nav.folded {
-		margin-left: -200px;
-		transform: translateX(0);
 	}
 
 	nav header.navHeader {
@@ -158,17 +149,34 @@
 		margin-right: -40px;
 
 		opacity: 0.0;
+		pointer-events: none;
 
 		border: none;
 		display: flex;
 		align-items: center;
-		cursor: pointer;
-		transition-property: opacity;
+		transition-property: opacity, transform;
 		transition-duration: 200ms;
 	}
 
-	.navToggle.visible {
-		opacity: 1.0;
+	@media screen and (max-width: 649px) {
+		nav {
+			margin-left: -200px;
+			transform: translateX(0);
+		}
+
+		nav.unfolded {
+			transform: translateX(200px);
+		}
+
+		.navToggle {
+			opacity: 1.0;
+			cursor: pointer;
+			pointer-events: all;
+		}
+
+		.navToggle.unfolded {
+			transform: translateX(200px);
+		}
 	}
 
 	.content {
