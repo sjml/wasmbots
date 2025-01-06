@@ -167,6 +167,9 @@ function anchorifyAndIncrementHeaders(_params: object) {
 		headerNodes.map((header) => {
 			const currentLevel = parseInt(header.tagName.substring(1));
 			header.tagName = `h${currentLevel+1}`;
+			if (header.tagName === "h2") {
+				return; // don't add anchor to top-level headings
+			}
 			const slug = slugger.slug(rNodeToString(header));
 			header.properties.id = slug;
 			header.children.push({

@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { BlobWriter, TextReader, Uint8ArrayReader, ZipWriter } from "@zip.js/zip.js"
-
 	import { getContext } from "svelte";
+
+	import { BlobWriter, TextReader, Uint8ArrayReader, ZipWriter } from "@zip.js/zip.js"
+	import { DownloadSimple } from "phosphor-svelte";
 
 	import { Config, Loader } from "wasmbots";
     import { mapObjectToJSON } from "wasmbots/generation/builder";
@@ -145,7 +146,7 @@
 				onclick={downloadMap}
 				disabled={gameState.mapLoading}
 			>
-				<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#000000" viewBox="0 0 256 256"><path d="M224,144v64a8,8,0,0,1-8,8H40a8,8,0,0,1-8-8V144a8,8,0,0,1,16,0v56H208V144a8,8,0,0,1,16,0Zm-101.66,5.66a8,8,0,0,0,11.32,0l40-40a8,8,0,0,0-11.32-11.32L136,124.69V32a8,8,0,0,0-16,0v92.69L93.66,98.34a8,8,0,0,0-11.32,11.32Z"></path></svg>
+				<DownloadSimple size={25} />
 				Download Current Map
 			</button>
 
@@ -255,11 +256,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-	}
-
-	.mapDownloadButton svg {
-		height: 25px;
-		margin-right: 10px;
+		gap: 10px;
 	}
 
 	.mapSeed {

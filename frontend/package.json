@@ -22,6 +22,7 @@
 		"github-slugger": "^2.0.0",
 		"hast-util-to-string": "^3.0.1",
 		"mdast-util-from-markdown": "^2.0.2",
+		"phosphor-svelte": "^3.0.1",
 		"rehype-stringify": "^10.0.1",
 		"remark-frontmatter": "^5.0.0",
 		"remark-parse": "^11.0.0",

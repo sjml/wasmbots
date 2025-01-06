@@ -20,7 +20,6 @@
 * documentation
     * how everything works, I guess
     * video intro?
-    * move SVGs to be sourced as proper images
 
 * web trainer
   * first UX:

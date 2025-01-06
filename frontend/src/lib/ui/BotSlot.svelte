@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { getContext, onMount, tick as svelteTick } from "svelte";
 
+    import { CaretRight, Trash, Copy } from "phosphor-svelte";
+
     import { GameState, Loader } from "wasmbots";
 
 	import { type LogEntry, type UIPlayerData, type WasmBotsState } from "../../types.svelte";
@@ -81,17 +83,17 @@
 				</div>
 			</div>
 			<button class="delete" onclick={dropPlayer} aria-label="delete this bot" disabled={!deleteEnabled}>
-				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M216,48H176V40a24,24,0,0,0-24-24H104A24,24,0,0,0,80,40v8H40a8,8,0,0,0,0,16h8V208a16,16,0,0,0,16,16H192a16,16,0,0,0,16-16V64h8a8,8,0,0,0,0-16ZM96,40a8,8,0,0,1,8-8h48a8,8,0,0,1,8,8v8H96Zm96,168H64V64H192ZM112,104v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Zm48,0v64a8,8,0,0,1-16,0V104a8,8,0,0,1,16,0Z"></path></svg>
+				<Trash size={20} />
 			</button>
 		</div>
 		<div class="consoleContainer" class:expanded={consoleExpanded}>
 			<div class="controls">
 				<button class="disclosure" onclick={() => {consoleExpanded = !consoleExpanded; deferScroll();}} aria-label="Toggle expanded console">
-					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M181.66,133.66l-80,80A8,8,0,0,1,88,208V48a8,8,0,0,1,13.66-5.66l80,80A8,8,0,0,1,181.66,133.66Z"></path></svg>
+					<CaretRight weight="fill" size={20} />
 				</button>
 				{#if consoleExpanded}
 				<button class="copyLog" onclick={copyLogs} aria-label="copy logs to clipboard">
-					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256"><path d="M216,32H88a8,8,0,0,0-8,8V80H40a8,8,0,0,0-8,8V216a8,8,0,0,0,8,8H168a8,8,0,0,0,8-8V176h40a8,8,0,0,0,8-8V40A8,8,0,0,0,216,32ZM160,208H48V96H160Zm48-48H176V88a8,8,0,0,0-8-8H96V48H208Z"></path></svg>
+					<Copy size={20} />
 				</button>
 				{/if}
 			</div>
@@ -183,10 +185,6 @@
 		cursor: pointer;
 	}
 
-	.delete svg {
-		width: 25px;
-	}
-
 	.delete:disabled {
 		opacity: 0.3;
 		cursor: not-allowed;
@@ -203,10 +201,6 @@
 
 	.consoleContainer .controls button {
 		height: 24px;
-	}
-
-	.consoleContainer .controls button svg {
-		height: 20px;
 	}
 
 	.console {

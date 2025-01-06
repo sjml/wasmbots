@@ -1,9 +1,11 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import { execSync } from 'child_process';
+import { sveltePhosphorOptimize } from "phosphor-svelte/vite";
 
 export default defineConfig({
 	plugins: [
+		sveltePhosphorOptimize(),
 		sveltekit()
 	],
 	resolve: {

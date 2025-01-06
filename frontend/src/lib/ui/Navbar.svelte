@@ -42,8 +42,6 @@
 		border: 0;
 	}
 	:global(.navLink svg) {
-		width: 38px;
-		height: 38px;
 		flex-shrink: 0;
 	}
 	:global(.navLink a) {
@@ -63,8 +61,6 @@
 		cursor: not-allowed;
 	}
 	:global(.navBarButton svg) {
-		width: 32px;
-		height: 32px;
 		flex-shrink: 0;
 	}
 </style>
