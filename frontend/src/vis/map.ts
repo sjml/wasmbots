@@ -1,9 +1,10 @@
 import Phaser from "phaser";
 
-import { Config, CoreMsg, WorldMap, type Point } from "wasmbots";
+import { Config, CoreMsg, GameState, WorldMap, type Point } from "wasmbots";
 import { type VisPlayer } from "./player";
 import { VisEventBus } from "./events";
 import { LightMaskPipeline } from "./fx";
+import type { WasmBotsVisualizer } from "./game";
 
 const ZOOM_TIME = 750;
 const ZOOM_FUNC = Phaser.Math.Easing.Sine.InOut;
@@ -137,9 +138,14 @@ export class VisMap extends Phaser.Scene {
 		});
 	}
 
-	update() {
-		if (this._fxCamera && this._groundLayer && this._lightswitch) {
-			if (this._lightswitch.isDown) {
+	update(time: number, delta: number) {
+		let isDark = (this.game as WasmBotsVisualizer).worldObject.gameState == GameState.Running;
+		if (this._lightswitch?.isDown) {
+			isDark = !isDark;
+		}
+
+		if (this._fxCamera && this._groundLayer) {
+			if (isDark) {
 				this._groundLayer.cameraFilter |= this._fxCamera.id;
 			}
 			else {
@@ -148,7 +154,7 @@ export class VisMap extends Phaser.Scene {
 		}
 
 		for (const p of this._playerList) {
-			p.update();
+			p.update(time, delta);
 		}
 	}
 

@@ -26,6 +26,7 @@ export class VisBootloader extends Phaser.Scene {
 			frameHeight: 16,
 		});
 		this.load.image("light-mask-5x5", "img/light-mask-5x5.png");
+		this.load.image("light-mask-3x3", "img/light-mask-3x3.png");
 	}
 
 	setLoadEvents() {
