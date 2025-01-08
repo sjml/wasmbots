@@ -11,6 +11,7 @@ import { VisMap } from "./map";
 import { VisBootloader } from "./bootloader";
 import { VisPlayer } from "./player";
 import { VisEventBus } from "./events";
+import { LightMaskPipeline } from "./fx";
 
 export class WasmBotsVisualizer extends Phaser.Game {
 	private _booloaderPromise: Promise<void>;
@@ -38,6 +39,9 @@ export class WasmBotsVisualizer extends Phaser.Game {
 			},
 			banner: false,
 			scene: [VisBootloader],
+			// TODO: fix this typing hilarity if PR is accepted
+			//  https://github.com/phaserjs/phaser/pull/6999
+			pipeline: [LightMaskPipeline as unknown as Phaser.Renderer.WebGL.Pipelines.PostFXPipeline]
 		});
 
 		this.worldObject = world;

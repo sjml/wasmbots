@@ -12,20 +12,28 @@ export enum PlayerFacing {
 	Left,
 }
 
-export class VisPlayer extends Phaser.GameObjects.Sprite {
+export class VisPlayer extends Phaser.GameObjects.Container {
 	static playerImageDeck?: Deck<number>;
 	playerObject: Player;
+	playerSprite: Phaser.GameObjects.Sprite;
+	playerLight: Phaser.GameObjects.Sprite;
 	tilePosition: Point;
 	imageIndex: number;
 
 	constructor(mapScene: VisMap, playerObject: Player) {
+		super(
+			mapScene,
+			playerObject.location.x * Config.tileSize, playerObject.location.y * Config.tileSize,
+		);
+
 		if (!VisPlayer.playerImageDeck) {
 			VisPlayer.playerImageDeck = new Deck(PLAYER_IMG_FRAMES, (mapScene.game as WasmBotsVisualizer).visualRNG)
 		}
 		const imageIndex = VisPlayer.playerImageDeck.draw();
-		super(
+
+		this.playerSprite = new Phaser.GameObjects.Sprite(
 			mapScene,
-			playerObject.location.x * Config.tileSize, playerObject.location.y * Config.tileSize,
+			0, 0,
 			"tiles-kenny", imageIndex
 		);
 		this.on("destroy", () => {
@@ -35,15 +43,23 @@ export class VisPlayer extends Phaser.GameObjects.Sprite {
 		this.playerObject = playerObject;
 		this.tilePosition = playerObject.location;
 		this.imageIndex = imageIndex;
-		this.setOrigin(0, 0);
+		this.playerSprite.setOrigin(0, 0);
+
+		this.playerLight = new Phaser.GameObjects.Sprite(
+			mapScene,
+			this.playerSprite.width * 0.5, this.playerSprite.height * 0.5,
+			"light-mask-5x5"
+		);
+		this.scene.cameras.main.ignore(this.playerLight);
 
 		this.resetFacing();
 		VisEventBus.on("world-reset", () => {
 			this.resetFacing();
 		});
 
+		this.add(this.playerSprite);
+		this.add(this.playerLight);
 		mapScene.addPlayer(this);
-		this.active = true;
 	}
 
 	resetFacing() {
@@ -57,14 +73,14 @@ export class VisPlayer extends Phaser.GameObjects.Sprite {
 
 	setFacing(facing: PlayerFacing) {
 		if (facing == PlayerFacing.Left) {
-			this.setFlipX(true);
+			this.playerSprite.setFlipX(true);
 		}
 		else {
-			this.setFlipX(false);
+			this.playerSprite.setFlipX(false);
 		}
 	}
 
-	preUpdate() {
+	update() {
 		if (   this.tilePosition.x != this.playerObject.location.x
 			|| this.tilePosition.y != this.playerObject.location.y
 		) {
