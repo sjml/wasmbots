@@ -96,8 +96,8 @@ export class VisMap extends Phaser.Scene {
 			"fxCamera"
 		);
 		this._fxCamera.setPostPipeline(LightMaskPipeline);
-		this._fxCamera.ignore([this._groundLayer!, this._wallsLayer!]);
-		this._fxCamera.visible = false;
+		// this._fxCamera.ignore([this._groundLayer!, this._wallsLayer!]);
+		this._fxCamera.ignore(this._wallsLayer!);
 
 		this._cameraSet.cameras = [this.cameras.main, this._fxCamera];
 
@@ -138,8 +138,13 @@ export class VisMap extends Phaser.Scene {
 	}
 
 	update() {
-		if (this._fxCamera) {
-			this._fxCamera.visible = this._lightswitch?.isDown ?? false;
+		if (this._fxCamera && this._groundLayer && this._lightswitch) {
+			if (this._lightswitch.isDown) {
+				this._groundLayer.cameraFilter |= this._fxCamera.id;
+			}
+			else {
+				this._groundLayer.cameraFilter &= ~this._fxCamera.id;
+			}
 		}
 
 		for (const p of this._playerList) {
