@@ -1,3 +1,7 @@
+---
+title: Trainers
+---
+
 # Trainers
 
 Alongside each of [the client libraries](./libraries.md), each target language (except AssemblyScript) includes a "trainer" program. Since debugging WebAssembly is very difficult, you can, instead, build your bot code into a native executable for testing. This native program runs a web server on port 9090 that [a special TypeScript wrapper](../engine/src/deno-cli/trainer.ts) can communicate with. You start up the trainer program and then run that script. At the moment, all it will do is drop your bot into a random map and then call its tick function repeatedly. All time limits are turned off in this mode; you can set breakpoints, debug memory, etc. all the things you're used to doing to fix your code when it's running natively. (This is assuming you know how to do such things in your IDE or tools of choice --- consult your programming language's documentation if you don't.)

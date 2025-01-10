@@ -1,11 +1,15 @@
+---
+title: Documentation
+---
+
 # Documentation
 
 As with all documentation, this is a work in progress. It's not an exhaustive exploration of the source code but more just a walk though the overall idea of what this project is and how it got to its present state. 
 
-* [Development History](./history.md)
-* [Basic Concepts](./concepts.md)
-* [Low-Level Programming Interface](./interface.md)
-* [Libraries](./libraries.md)
+* [Development History For Those Who Like Such Things](./history.md)
+* [Basic Concepts (Warning: Philosophy)](./concepts.md)
+* [Low-Level Generic Programming Interface](./interface.md)
+* [Client Libraries for Various Programming Languages](./libraries.md)
 * [Trainers](./trainers.md)
 
 

@@ -1,3 +1,7 @@
+---
+title: Programmatic Interface
+---
+
 # Programmatic Interface for WasmBots
 
 This is a description of the low-level interface. **Note that the [client libraries](./libraries.md) abstract a lot of this away, so if you're working in one of those languages (C, Rust, Zig, Go, or AssemblyScript) you probably want to start there.** If you find the libraries not to your liking, want to work in another language, or are simply curious about how the low-level stuff works, read on!
@@ -27,7 +31,7 @@ This is the order things happen in getting a module up and running in WasmBots.
 
 
 1. `_initialize` and/or `_start`: these are called immediately upon instantiation if they exist; some compilers create these automatically and expect them to be called before anything else occurs. (TinyGo, for example, uses `_initialize` to set up its heap.) You shouldn't manually be creating/exporting these functions, though. 
-2. `clientInitialize`: called right after the built-in ones above; this is for *your* intialization. It's really only meant to do very simple things like register callbacks. Think of it like a constructor that's only setting some variable so we can be sure they aren't null.
+2. `clientInitialize`: called right after the built-in ones above; this is for *your* initialization. It's really only meant to do very simple things like register callbacks. Think of it like a constructor that's only setting some variable so we can be sure they aren't null.
 3. `setup`: do whatever actual preparation work your module needs to be ready to run. (Setting up data structures for your map, training a neural network, etc.) It also _MUST_ allocate a contiguous block of memory of the number of bytes passed to it and return the address (in WebAssembly linear memory) where that block begins. If it cannot allocate, it should return `0`; the module will not be loaded into the host in that case. 
     * at the start of the reserve memory should be written exactly 32 bytes of the following information:
         1. a utf-8 encoded string representing the name of the bot; it must be no longer than 26 bytes. If shorter than 26 bytes, the remaining space must be padded with `0`s. 

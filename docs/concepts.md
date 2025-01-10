@@ -1,3 +1,7 @@
+---
+title: Basic Concepts
+---
+
 # Basic Concepts of WasmBots
 
 _I initially wrote this to help explain the project to a friend who is a novice programmer. The philosophy part might be off-putting, and you can feel free to skip. With the technical part, you may very well already know this stuff, and if that's the case, congratulations! Please don't feel condescended to; you are simply not the target audience for this. If this seems remedial to you, the other docs like [the low-level interface](./interface.md) and [library description](./libraries.md) may be more your speed._

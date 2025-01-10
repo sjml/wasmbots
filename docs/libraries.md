@@ -1,3 +1,7 @@
+---
+title: Client Libraries
+---
+
 # Client Libraries
 
 The main WasmBots repo includes a set of libraries that make it easier to write client modules in various programming languages. You don't **have** to use them; as long as your module validates against the [API](../engine/src/data/guestAPI.json), it will at least _run_. The libraries are mostly just a lot of convenience functions. Use them so much as they are useful.

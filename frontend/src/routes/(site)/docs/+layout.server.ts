@@ -14,10 +14,22 @@ import remarkRehype from "remark-rehype";
 import rehypeStringify from "rehype-stringify";
 import { toString as rNodeToString } from "hast-util-to-string";
 import GitHubSlugger from "github-slugger";
+import yaml from "js-yaml";
 
 import { trailingSlash } from "../../+layout.ts";
 import * as docs from "$lib/docs.ts";
 
+
+function extractMetadata(stash: any[]) {
+	return (tree: MRoot) => {
+		visit(tree, (node: MNode) => {
+			if (node.type == "yaml") {
+				const data = yaml.load((node as any).value);
+				stash.push(data);
+			}
+		});
+	}
+}
 
 function makeGHLink(absolute: string): string {
 	if (!absolute.startsWith(docs.projectRoot)) {
@@ -25,7 +37,6 @@ function makeGHLink(absolute: string): string {
 	}
 	const repoPath = absolute.substring(docs.projectRoot.length);
 	return `${docs.repoWebUrl}/blob/${docs.repoBranch}${repoPath}`;
-
 }
 
 function fixMdLinks(params: {fpathAbsolute: string}) {
@@ -209,10 +220,12 @@ function setupVideo(_params: object) {
 	};
 }
 
-async function renderMarkdown(md: string, fpathAbsolute: string): Promise<string> {
-	return String(await unified()
+async function renderMarkdown(md: string, fpathAbsolute: string): Promise<{rendered: string, metadata: any}> {
+	const metadatums: any[] = [];
+	const rendered = String(await unified()
 		.use(remarkParse)
 		.use(remarkFrontmatter, ["yaml"])
+		.use(extractMetadata, metadatums)
 		.use(fixMdLinks, {fpathAbsolute})
 		.use(fixImgPaths, {fpathAbsolute})
 		.use(remarkSmartypants, {
@@ -224,6 +237,9 @@ async function renderMarkdown(md: string, fpathAbsolute: string): Promise<string
 		.use(setupVideo, {})
 		.use(rehypeStringify, {allowDangerousHtml: true})
 		.process(md));
+
+	const metadata = metadatums.length == 1 ? metadatums[0] : {};
+	return {rendered, metadata};
 }
 
 export async function load({params}) {
@@ -255,7 +271,8 @@ export async function load({params}) {
 	const content = fs.readFileSync(fpath, {encoding: "utf-8"});
 	const md = await renderMarkdown(content, fpath);
 	return {
-		content: md,
+		content: md.rendered,
+		metadata: md.metadata,
 		githubPath: makeGHLink(fpath),
 	}
 }

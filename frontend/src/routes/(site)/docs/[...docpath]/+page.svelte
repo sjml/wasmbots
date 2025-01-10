@@ -4,6 +4,14 @@
 	let { data } = $props();
 </script>
 
+<svelte:head>
+	{#if data?.metadata?.title !== undefined}
+		<title>WasmBots | {data.metadata.title}</title>
+	{:else}
+		<title>WasmBots</title>
+	{/if}
+</svelte:head>
+
 <div class="documentation">
 	<div class="githubLink">
 		<a href={data.githubPath} class="external github" target="_blank">

@@ -1,3 +1,7 @@
+---
+title: Development History
+---
+
 # WasmBots Development History
 
 I am not assuming that WasmBots will be of interest to most people, and its history is probably of interest to even fewer people, but I wanted to record it for me, if nothing else. This also talks through some of the choices of tech. 

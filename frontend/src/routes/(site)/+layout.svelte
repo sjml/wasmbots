@@ -45,7 +45,7 @@
 						<li><a href="{base}/docs/history">Development History</a></li>
 						<li><a href="{base}/docs/concepts">Concepts</a></li>
 						<li><a href="{base}/docs/interface">Programming Interface</a></li>
-						<li><a href="{base}/docs/libraries">Bot Libraries</a></li>
+						<li><a href="{base}/docs/libraries">Client Libraries</a></li>
 						<li><a href="{base}/docs/trainers">Trainers</a></li>
 					</ul>
 				</li>

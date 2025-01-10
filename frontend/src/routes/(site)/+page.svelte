@@ -10,6 +10,10 @@
 	});
 </script>
 
+<svelte:head>
+		<title>WasmBots</title>
+</svelte:head>
+
 <div class="intro">
 	<h2>What is a WasmBot?</h2>
 	<p><em>(Introductory material will go here.)</em></p>
