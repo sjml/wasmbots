@@ -96,18 +96,6 @@ export class VisMap extends Phaser.Scene {
 
 		// clutter
 		const animatedClutter = this.add.group();
-		this.anims.create({
-			key: "flame",
-			frames: this.anims.generateFrameNumbers("tiles-dungeon", {start: 92, end: 97}),
-			frameRate: 12,
-			repeat: -1,
-		});
-		this.anims.create({
-			key: "banner-blue",
-			frames: this.anims.generateFrameNumbers("tiles-dungeon", {start: 100, end: 109}),
-			frameRate: 6,
-			repeat: -1,
-		});
 		for (let y = 0; y < this._tilemap.height; y += 1) {
 			for (let x = 0; x < this._tilemap.width; x += 1) {
 				const t = this._clutterLayer!.getTileAt(x, y, true);
