@@ -5,8 +5,15 @@
         * if a square can contain more than one thing (and it probably should) it gets tough
         * probably a generic-ish "Entity" type with an enum for Monster/Player/Item/etc., a location field, and, say, four bytes worth of data that have to be parsed on the client side? (annoying, but anything else would require something much more complicated than beschi)
     * items, weapons, armor(?), spells
+      * rooms should get themes and clutter (dungeon, study, etc.)
     * trapdoors with tunnels, teleporters
     * traps? 
+    * GOAL
+      * CTF: steal an item from opponent's spawn room and bring it back to yours
+      * last bot standing
+      * find the magic whatsit 
+        * can't guarantee that all bots have even remotely equal path to any point tho
+        * also an issue with CTF but at least the spawn rooms are roughly equidistant
 
 * documentation
     * how everything works, I guess
