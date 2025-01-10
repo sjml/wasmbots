@@ -53,6 +53,7 @@
 				<li class="githubLink"><a href="https://github.com/sjml/wasmbots" class="external github" target="_blank">Source Code<img src="{base}/img/github.svg" alt="GitHub Logo"></a></li>
 			</ul>
 		</nav>
+		<button id="tocOverlay" onclick={() => navUnfolded = false} aria-label="Dismiss navigation"></button>
 		<button class="navToggle" class:unfolded={navUnfolded} onclick={() => navUnfolded = !navUnfolded}>
 			{#if navUnfolded}
 				<ArrowUDownLeft size={32} />
@@ -80,6 +81,24 @@
 		text-align: center;
 	}
 
+	#tocOverlay {
+		all: unset; /* Svelte must be appeased */
+
+		position: fixed;
+		top:0;
+		left:0;
+		z-index: 5;
+
+		height: 100vh;
+		width: 100vw;
+		background-color: hsl(204, 10%, 10%);
+		opacity: 0;
+		pointer-events: none;
+
+		transition-property: opacity;
+		transition-duration: 200ms;
+	}
+
 	header .logo {
 		filter: invert(0.9);
 		max-height: 50px;
@@ -102,6 +121,7 @@
 
 	.mainHeader {
 		position: relative;
+		z-index: 50;
 	}
 
 	main {
@@ -170,8 +190,11 @@
 		top: 0;
 		z-index: 100;
 		margin-right: -40px;
+		padding: 5px;
+		justify-content: center;
+		color: inherit;
 
-		opacity: 0.0;
+		opacity: 0;
 		pointer-events: none;
 
 		border: none;
@@ -200,6 +223,11 @@
 
 		.navToggle.unfolded {
 			transform: translateX(200px);
+		}
+
+		nav.unfolded + #tocOverlay {
+			opacity: 0.3;
+			pointer-events: all;
 		}
 	}
 

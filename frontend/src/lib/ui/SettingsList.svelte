@@ -26,6 +26,20 @@
 	$effect(() => {
 		Config.zoomInDistance = zoomInDistance;
 	});
+	let minimumTurnTime = $state(Config.minimumTurnTime);
+	$effect(() => {
+		Config.minimumTurnTime = minimumTurnTime;
+		if (gameState.world) {
+			gameState.world.minimumTurnTime = minimumTurnTime;
+		}
+	});
+	let turnTimeBuffer = $state(Config.turnTimeBuffer);
+	$effect(() => {
+		Config.turnTimeBuffer = turnTimeBuffer;
+		if (gameState.world) {
+			gameState.world.turnTimeBuffer = turnTimeBuffer;
+		}
+	});
 
 
 	$effect(() => {
@@ -98,7 +112,7 @@
 		<hr>
 		<h2>Simulation Settings</h2>
 		<MagicSlider
-			bind:value={gameState.world!.minimumTurnTime}
+			bind:value={minimumTurnTime}
 			min={0}
 			max={5000}
 			name={"minimumTurnTime"}
@@ -116,7 +130,7 @@
 		</div>
 
 		<MagicSlider
-			bind:value={gameState.world!.turnTimeBuffer}
+			bind:value={turnTimeBuffer}
 			min={0}
 			max={500}
 			name={"turnTimeBuffer"}

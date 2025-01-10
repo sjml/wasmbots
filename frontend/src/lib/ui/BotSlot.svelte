@@ -1,10 +1,9 @@
 <script lang="ts">
 	import { getContext, onMount, tick as svelteTick } from "svelte";
 
-    import { CaretRight, Trash, Copy } from "phosphor-svelte";
+	import { CaretRight, Trash, Copy } from "phosphor-svelte";
 
-    import { GameState, Loader } from "wasmbots";
-
+	import { GameState, type Point } from "wasmbots";
 	import { type LogEntry, type UIPlayerData, type WasmBotsState } from "../../types.svelte";
 
 	const gameState: WasmBotsState = getContext("gameState");
@@ -28,6 +27,20 @@
 	});
 
 	let consoleExpanded: boolean = $state(false);
+
+	let portraitOffset: Point = $state({x: -1, y: -1});
+	$effect(() => {
+		if (!playerUI.visPlayer) {
+			portraitOffset = {x: -1, y: -1};
+			return;
+		}
+		const portraitIdx = playerUI.visPlayer.imageIndex;
+		const tilesPerRow = 192 / 16;
+		const x = (portraitIdx % tilesPerRow) * 16;
+		const y = Math.floor(portraitIdx / tilesPerRow) * 16;
+		console.log(portraitIdx, "=>", x, y);
+		portraitOffset = {x, y};
+	});
 
 	let consoleDiv: HTMLDivElement;
 	let displayLines: LogEntry[] = $state([]);
@@ -63,11 +76,10 @@
 	>
 		<div class="slotNumber">#{slotIdx}</div>
 		{#if playerUI.visPlayer !== null }
-			<img
-				src="{Loader.getRscPath()}/img/kenny_tiny-dungeon_tiles/tile_{String(playerUI.visPlayer.imageIndex).padStart(4, "0")}.png"
-				alt="sprite for player #{slotIdx}"
-				class="playerSprite"
+		 	<div class="playerSprite"
+				style={`background-position: -${portraitOffset.x*3}px -${portraitOffset.y*3}px`}
 			>
+			</div>
 		{/if}
 	</button>
 	<div class="botStuffs">
@@ -137,14 +149,16 @@
 		font-size: 20px;
 	}
 
-	img.playerSprite {
+	div.playerSprite {
+		background-image: url("/rsc/img/kenny_tiny-dungeon_tilemap.png");
+		background-origin: border-box;
+		background-size: 576px;
 		image-rendering: pixelated;
 		image-rendering: -moz-crisp-edges;
 		image-rendering: crisp-edges;
-		margin: 5px 5px;
-		width: 50px;
-		height: auto;
-		align-self: flex-start;
+		width: 48px;
+		height: 48px;
+		margin: 5px;
 	}
 
 	.botStuffs {

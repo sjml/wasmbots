@@ -2,7 +2,7 @@
 
 [A multi-wizard arena where all the competitors are bots!](https://shaneliesegang.com/projects/wasmbots/)
 
-![WasmBots Teaser Image](./art/misc/wasmbots-tease.gif)
+<p align="center"><img src="https://github.com/sjml/wasmbots/raw/main/art/misc/wasmbots-tease.gif" alt="WasmBots Teaser Image"></p>
 
 [The programming interface is described here](./docs/interface.md), and there are [pre-made libraries in a bunch of languages](./libraries/) to get you started. You can also peruse [the code for the example bots](./example_bots_src/). 
 
