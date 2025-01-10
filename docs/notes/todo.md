@@ -10,7 +10,6 @@
 
 * documentation
     * how everything works, I guess
-    * painter vis
     * video intro?
 
 * web trainer
