@@ -1,7 +1,7 @@
 import Phaser from "phaser";
 
 import { Loader } from "wasmbots";
-import { VisEventBus } from "./events";
+import { VisEventBus } from "./events.ts";
 
 export class VisBootloader extends Phaser.Scene {
 
@@ -27,6 +27,10 @@ export class VisBootloader extends Phaser.Scene {
 		});
 		this.load.image("light-mask-5x5", "img/light-mask-5x5.png");
 		this.load.image("light-mask-3x3", "img/light-mask-3x3.png");
+		this.load.image("light-mask-1x1", "img/light-mask-3x3.png");
+		this.load.image("light-mask-5x5-rot", "img/light-mask-5x5-rot.png");
+		this.load.image("light-mask-3x3-rot", "img/light-mask-3x3-rot.png");
+		this.load.image("light-mask-1x1-rot", "img/light-mask-1x1-rot.png");
 	}
 
 	setLoadEvents() {

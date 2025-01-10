@@ -21,7 +21,7 @@ export type TileMap = {
 	nextobjectid: number,
 	nextlayerid: number,
 	properties?: TiledProperty[],
-	layers: TileLayer[],
+	layers: (TileLayer|ObjectLayer)[],
 	tilesets: Tileset[],
 };
 
@@ -36,6 +36,35 @@ export type TileLayer = {
 	x: number,
 	y: number,
 	data: number[],
+};
+
+export type TiledObject = {
+	gid?: number,
+	id: number,
+	name: string,
+	x: number,
+	y: number,
+	width: number,
+	height: number,
+	ellipse?: boolean,
+	point?: boolean,
+	type?: string,
+	visible: boolean,
+	polygon?: {x: number, y: number}[],
+	polyline?: {x: number, y: number}[],
+	rotation: number,
+};
+
+export type ObjectLayer = {
+	id: number,
+	name: string,
+	type: "objectgroup",
+	draworder: "topdown" | "index",
+	opacity: number,
+	visible: boolean,
+	x: number,
+	y: number,
+	objects: TiledObject[],
 };
 
 export type Tileset = {
@@ -68,6 +97,6 @@ export type Tile = {
 
 export type TiledProperty = {
 	name: string,
-	type: "int"|"string",
-	value: number|string,
+	type: "int"|"string"|"bool",
+	value: number|string|boolean,
 };

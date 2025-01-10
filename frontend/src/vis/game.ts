@@ -7,11 +7,11 @@ import {
 	World,
 	Player as WorldPlayer,
 } from "wasmbots";
-import { VisMap } from "./map";
-import { VisBootloader } from "./bootloader";
-import { VisPlayer } from "./player";
-import { VisEventBus } from "./events";
-import { LightMaskPipeline } from "./fx";
+import { VisMap } from "./map.ts";
+import { VisBootloader } from "./bootloader.ts";
+import { VisPlayer } from "./player.ts";
+import { VisEventBus } from "./events.ts";
+import { LightMaskPipeline } from "./fx.ts";
 
 export class WasmBotsVisualizer extends Phaser.Game {
 	private _booloaderPromise: Promise<void>;

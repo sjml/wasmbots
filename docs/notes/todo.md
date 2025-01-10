@@ -1,6 +1,4 @@
 ## dev
-* give larger view radius to arena (which means it becomes a map parameter...?)
-
 * game
     * players should(?) collide with each other
     * need to figure out how to convey other stuff you see beside terrain
@@ -12,6 +10,7 @@
 
 * documentation
     * how everything works, I guess
+    * painter vis
     * video intro?
 
 * web trainer
@@ -36,8 +35,7 @@
     * consistency on underscore prefixing for private variables; commit one way or the other
     * consistency on error messages
     * clean up / clear out old test code and deno-cli stuff in engine
-* Visuals: 
-    * clutter / lighting pass on rendering
+    * clutter should be more data-driven instead of spaghetti code (in painter.ts)
 * UI: 
   * landscape view on iPhone - the drawers don't extend into the island areas
   * drag-and-drop to load files on page

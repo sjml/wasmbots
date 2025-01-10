@@ -93,3 +93,43 @@ export function debugDataView(dataView: DataView): string {
 	}
 	return hexArray.join(' ');
 }
+
+// I've gotten spoiled by Python's defaultdict
+export class DefaultMap<K, V> extends Map<K, V> {
+	private readonly defaultFactory: () => V;
+
+	constructor(defaultValue: V | (() => V)) {
+		super();
+		this.defaultFactory = typeof defaultValue === 'function'
+			? defaultValue as () => V
+			: this.createDefaultFactory(defaultValue as V)
+		;
+	}
+
+	private createDefaultFactory(value: V): () => V {
+		if (value === null) {
+			return () => value;
+		}
+
+		if (Array.isArray(value) || (typeof value === "object" && value.constructor === Object)) {
+			return () => structuredClone(value);
+		}
+
+		return () => value;
+	}
+
+	get(key: K): V {
+		if (!super.has(key)) {
+			const value = this.defaultFactory();
+			super.set(key, value);
+		}
+		return super.get(key)!;
+	}
+
+	set(key: K, value: V): this {
+		if (value === undefined) {
+			throw new Error("DefaultMap cannot contain undefined values.");
+		}
+		return super.set(key, value);
+	}
+}

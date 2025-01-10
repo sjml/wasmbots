@@ -250,7 +250,7 @@ export class World extends EventTarget {
 				const circumstances = new CoreMsg.PresentCircumstances();
 				circumstances.currentHitPoints = player.hitPoints;
 
-				circumstances.surroundingsRadius  = 2;
+				circumstances.surroundingsRadius = this.currentMap!.viewRadius;
 				circumstances.surroundings = this.currentMap!.computeFOV(
 					player.location,
 					circumstances.surroundingsRadius,

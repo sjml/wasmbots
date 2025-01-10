@@ -42,6 +42,8 @@ export class WorldMap {
 	spawnPoints: Point[] = [];
 	minPlayers: number = 1;
 	maxPlayers: number = 1;
+	isDark: boolean = false;
+	viewRadius: number = 2;
 	rawMapData!: Tiled.TileMap;
 	randomSeed: string = "";
 	isDynamic: boolean = false;
@@ -52,7 +54,7 @@ export class WorldMap {
 		const builder = new DungeonBuilder(rng, [], options ?? {});
 		builder.generate(config.mapWidth, config.mapHeight, [
 			{
-				id: "spawnRoom1",
+				id: "SpawnRoom_1",
 				rect: new Rect(1, 1, 3, 3),
 				metas: [{
 					position: {x: 2, y: 2},
@@ -60,7 +62,7 @@ export class WorldMap {
 				}]
 			},
 			{
-				id: "spawnRoom2",
+				id: "SpawnRoom_2",
 				rect: new Rect(61, 1, 3, 3),
 				metas: [{
 					position: {x: 62, y: 2},
@@ -68,7 +70,7 @@ export class WorldMap {
 				}]
 			},
 			{
-				id: "spawnRoom3",
+				id: "SpawnRoom_3",
 				rect: new Rect(1, 37, 3, 3),
 				metas: [{
 					position: {x: 2, y: 38},
@@ -76,7 +78,7 @@ export class WorldMap {
 				}]
 			},
 			{
-				id: "spawnRoom4",
+				id: "SpawnRoom_4",
 				rect: new Rect(61, 37, 3, 3),
 				metas: [{
 					position: {x: 62, y: 38},
@@ -156,8 +158,8 @@ export class WorldMap {
 			tsd.tileData = tileData;
 		}
 
-		const terrainLayer = this.rawMapData.layers.find((l: { name: string; }) => l.name == "terrain");
-		const metadataLayer = this.rawMapData.layers.find((l: { name: string; }) => l.name == "metadata");
+		const terrainLayer = this.rawMapData.layers.find((l: { name: string; }) => l.name == "terrain") as Tiled.TileLayer;
+		const metadataLayer = this.rawMapData.layers.find((l: { name: string; }) => l.name == "metadata") as Tiled.TileLayer;
 		if (!terrainLayer || !metadataLayer) {
 			throw new Error("Invalid map data, missing required layers!");
 		}
@@ -235,7 +237,13 @@ export class WorldMap {
 			?? this.spawnPoints.length;
 		this.minPlayers = this.rawMapData.properties?.
 			find((prop: { name: string; }) => prop.name === "minPlayers")?.value as number
-			?? 1;
+			?? this.minPlayers;
+		this.isDark = this.rawMapData.properties?.
+			find((prop: { name: string; }) => prop.name === "isDark")?.value as boolean
+			?? this.isDark;
+		this.viewRadius = this.rawMapData.properties?.
+			find((prop: { name: string; }) => prop.name === "viewRadius")?.value as number
+			?? this.viewRadius;
 
 		if (this.maxPlayers > this.spawnPoints.length) {
 			console.warn(`Map ${this.name} declares ${this.maxPlayers} player(s) but only has ${this.spawnPoints.length} spawn point(s); using smaller value.`);

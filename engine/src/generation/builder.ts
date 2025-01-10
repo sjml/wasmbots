@@ -1,4 +1,5 @@
 import { TileType } from "../core/messages.ts";
+import Config from "../core/config.ts";
 import {
 	Array2D,
 	type Point,
@@ -48,6 +49,7 @@ export abstract class MapBuilder {
 	tiles: Array2D<TileType>;
 	metaTiles: Array2D<TileType>;
 	mapProperties?: Tiled.TiledProperty[];
+	objects?: Tiled.TiledObject[];
 
 	constructor(rng: RNG, props: Tiled.TiledProperty[] = []) {
 		this.rng = rng;
@@ -108,6 +110,18 @@ export abstract class MapBuilder {
 			data: []
 		};
 
+		const objectLayerTemplate: Tiled.ObjectLayer = {
+			id: -1,
+			name: "",
+			type: "objectgroup",
+			draworder: "topdown",
+			opacity: 1.0,
+			visible: true,
+			x: 0,
+			y: 0,
+			objects: [],
+		}
+
 		const terrainLayer = structuredClone(layerTemplate);
 		terrainLayer.data = this.tiles.entries.flat().map(t => (t as number));
 		terrainLayer.name = "terrain";
@@ -125,6 +139,15 @@ export abstract class MapBuilder {
 		metaLayer.id = templateData.nextlayerid;
 		templateData.layers.push(metaLayer);
 		templateData.nextlayerid += 1;
+
+		if (this.objects && this.objects.length > 0) {
+			const roomLayer = structuredClone(objectLayerTemplate);
+			roomLayer.name = "rooms";
+			roomLayer.id = templateData.nextlayerid;
+			roomLayer.objects = structuredClone(this.objects);
+			templateData.layers.push(roomLayer);
+			templateData.nextlayerid += 1;
+		}
 
 		return templateData;
 	}
@@ -195,6 +218,16 @@ export class DungeonBuilder extends MapBuilder {
 					type: "int",
 					value: 1
 				},
+				{
+					name: "isDark",
+					type: "bool",
+					value: true,
+				},
+				{
+					name: "viewRadius",
+					type: "int",
+					value: 2,
+				}
 			];
 		}
 		super(rng, properties);
@@ -244,6 +277,7 @@ export class DungeonBuilder extends MapBuilder {
 		if (this.generatorOptions.fillDeadEnds) {
 			this.removeDeadEnds();
 		}
+		this.tagRooms();
 	}
 
 	addRoom(room: DungeonRoomSpec) {
@@ -287,7 +321,7 @@ export class DungeonBuilder extends MapBuilder {
 			}
 
 			this.addRoom({
-				id: `random_${i+1}`,
+				id: `Room_${i+1}`,
 				rect: roomRect,
 			});
 		}
@@ -487,6 +521,23 @@ export class DungeonBuilder extends MapBuilder {
 			type = TileType.ClosedDoor;
 		}
 		this.tiles.set(pos, type);
+	}
+
+	tagRooms() {
+		let objIdx = 0;
+		this.objects = this.rooms.map(r => {
+			objIdx += 1;
+			return {
+				id: objIdx,
+				name: r.id,
+				visible: false,
+				rotation: 0,
+				x: r.rect.x * Config.tileSize,
+				y: r.rect.y * Config.tileSize,
+				width: r.rect.width * Config.tileSize,
+				height: r.rect.height * Config.tileSize,
+			};
+		});
 	}
 }
 

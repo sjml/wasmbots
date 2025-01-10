@@ -11,10 +11,11 @@ if (Deno.args.length == 0) {
 	Deno.exit(1);
 }
 
-const builder = new DungeonBuilder(new RNG(null));
+// const builder = new DungeonBuilder(new RNG(null));
+const builder = new DungeonBuilder(new RNG(2119213253));
 builder.generate(config.mapWidth, config.mapHeight, [
 	{
-		id: "spawnRoom1",
+		id: "SpawnRoom_1",
 		rect: new Rect(1, 1, 3, 3),
 		metas: [{
 			position: {x: 2, y: 2},
@@ -22,26 +23,26 @@ builder.generate(config.mapWidth, config.mapHeight, [
 		}]
 	},
 	{
-		id: "spawnRoom2",
-		rect: new Rect(59, 1, 3, 3),
+		id: "SpawnRoom_2",
+		rect: new Rect(61, 1, 3, 3),
 		metas: [{
-			position: {x: 60, y: 2},
+			position: {x: 62, y: 2},
 			type: "SpawnPoint"
 		}]
 	},
 	{
-		id: "spawnRoom3",
-		rect: new Rect(1, 35, 3, 3),
+		id: "SpawnRoom_3",
+		rect: new Rect(1, 37, 3, 3),
 		metas: [{
-			position: {x: 2, y: 36},
+			position: {x: 2, y: 38},
 			type: "SpawnPoint"
 		}]
 	},
 	{
-		id: "spawnRoom4",
-		rect: new Rect(59, 35, 3, 3),
+		id: "SpawnRoom_4",
+		rect: new Rect(61, 37, 3, 3),
 		metas: [{
-			position: {x: 60, y: 36},
+			position: {x: 62, y: 38},
 			type: "SpawnPoint"
 		}]
 	},

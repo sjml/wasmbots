@@ -1,11 +1,11 @@
 { "columns":10,
  "image":"..\/..\/img\/Dungeon_Tileset.png",
- "imageheight":176,
+ "imageheight":224,
  "imagewidth":160,
  "margin":0,
  "name":"dungeon",
  "spacing":0,
- "tilecount":110,
+ "tilecount":140,
  "tiledversion":"1.11.0",
  "tileheight":16,
  "tiles":[
@@ -17,7 +17,7 @@
                  "type":"int",
                  "value":48
                 }]
-        },
+        }, 
         {
          "id":47,
          "properties":[
@@ -26,7 +26,7 @@
                  "type":"int",
                  "value":58
                 }]
-        },
+        }, 
         {
          "id":48,
          "properties":[
@@ -35,7 +35,7 @@
                  "type":"int",
                  "value":36
                 }]
-        },
+        }, 
         {
          "id":58,
          "properties":[
@@ -44,6 +44,198 @@
                  "type":"int",
                  "value":47
                 }]
+        }, 
+        {
+         "id":90,
+         "type":"Torch"
+        }, 
+        {
+         "id":91,
+         "type":"Torch"
+        }, 
+        {
+         "id":92,
+         "type":"TorchFire"
+        }, 
+        {
+         "id":93,
+         "type":"TorchFire"
+        }, 
+        {
+         "id":94,
+         "type":"TorchFire"
+        }, 
+        {
+         "id":95,
+         "type":"TorchFire"
+        }, 
+        {
+         "id":96,
+         "type":"TorchFire"
+        }, 
+        {
+         "id":97,
+         "type":"TorchFire"
+        }, 
+        {
+         "id":100,
+         "type":"Banner"
+        }, 
+        {
+         "id":101,
+         "type":"Banner"
+        }, 
+        {
+         "id":102,
+         "type":"Banner"
+        }, 
+        {
+         "id":103,
+         "type":"Banner"
+        }, 
+        {
+         "id":104,
+         "type":"Banner"
+        }, 
+        {
+         "id":105,
+         "type":"Banner"
+        }, 
+        {
+         "id":106,
+         "type":"Banner"
+        }, 
+        {
+         "id":107,
+         "type":"Banner"
+        }, 
+        {
+         "id":108,
+         "type":"Banner"
+        }, 
+        {
+         "id":109,
+         "type":"Banner"
+        }, 
+        {
+         "id":110,
+         "type":"Banner"
+        }, 
+        {
+         "id":111,
+         "type":"Banner"
+        }, 
+        {
+         "id":112,
+         "type":"Banner"
+        }, 
+        {
+         "id":113,
+         "type":"Banner"
+        }, 
+        {
+         "id":114,
+         "type":"Banner"
+        }, 
+        {
+         "id":115,
+         "type":"Banner"
+        }, 
+        {
+         "id":116,
+         "type":"Banner"
+        }, 
+        {
+         "id":117,
+         "type":"Banner"
+        }, 
+        {
+         "id":118,
+         "type":"Banner"
+        }, 
+        {
+         "id":119,
+         "type":"Banner"
+        }, 
+        {
+         "id":120,
+         "type":"Banner"
+        }, 
+        {
+         "id":121,
+         "type":"Banner"
+        }, 
+        {
+         "id":122,
+         "type":"Banner"
+        }, 
+        {
+         "id":123,
+         "type":"Banner"
+        }, 
+        {
+         "id":124,
+         "type":"Banner"
+        }, 
+        {
+         "id":125,
+         "type":"Banner"
+        }, 
+        {
+         "id":126,
+         "type":"Banner"
+        }, 
+        {
+         "id":127,
+         "type":"Banner"
+        }, 
+        {
+         "id":128,
+         "type":"Banner"
+        }, 
+        {
+         "id":129,
+         "type":"Banner"
+        }, 
+        {
+         "id":130,
+         "type":"Banner"
+        }, 
+        {
+         "id":131,
+         "type":"Banner"
+        }, 
+        {
+         "id":132,
+         "type":"Banner"
+        }, 
+        {
+         "id":133,
+         "type":"Banner"
+        }, 
+        {
+         "id":134,
+         "type":"Banner"
+        }, 
+        {
+         "id":135,
+         "type":"Banner"
+        }, 
+        {
+         "id":136,
+         "type":"Banner"
+        }, 
+        {
+         "id":137,
+         "type":"Banner"
+        }, 
+        {
+         "id":138,
+         "type":"Banner"
+        }, 
+        {
+         "id":139,
+         "type":"Banner"
         }],
  "tilewidth":16,
  "type":"tileset",

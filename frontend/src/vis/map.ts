@@ -1,10 +1,11 @@
 import Phaser from "phaser";
 
 import { Config, CoreMsg, GameState, WorldMap, type Point } from "wasmbots";
-import { type VisPlayer } from "./player";
-import { VisEventBus } from "./events";
-import { LightMaskPipeline } from "./fx";
-import type { WasmBotsVisualizer } from "./game";
+import { type VisPlayer } from "./player.ts";
+import { VisEventBus } from "./events.ts";
+import { LightMaskPipeline } from "./fx.ts";
+import { LightEffect } from "./light.ts";
+import type { WasmBotsVisualizer } from "./game.ts";
 
 const ZOOM_TIME = 750;
 const ZOOM_FUNC = Phaser.Math.Easing.Sine.InOut;
@@ -60,9 +61,10 @@ export class VisMap extends Phaser.Scene {
 	private _tilemap: Phaser.Tilemaps.Tilemap | null = null;
 	private _groundLayer: Phaser.Tilemaps.TilemapLayer | null = null;
 	private _wallsLayer: Phaser.Tilemaps.TilemapLayer | null = null;
+	private _clutterLayer: Phaser.Tilemaps.TilemapLayer | null = null;
 	private _playerList: VisPlayer[] = [];
-	private _zoomedPlayer: VisPlayer | null = null;
 	private _lightswitch: Phaser.Input.Keyboard.Key|null = null;
+	private _lights: LightEffect[] = [];
 	private _fxCamera: Phaser.Cameras.Scene2D.Camera | null = null;
 	private _cameraSet: CameraSet = new CameraSet();
 
@@ -89,21 +91,77 @@ export class VisMap extends Phaser.Scene {
 		}
 		this._groundLayer = this._tilemap.createLayer("ground", this._tilemap.tilesets, 0, 0);
 		this._wallsLayer = this._tilemap.createLayer("walls", this._tilemap.tilesets, 0, 0);
+		this._clutterLayer = this._tilemap.createLayer("clutter", this._tilemap.tilesets, 0, 0);
 
-		this._fxCamera = this.cameras.add(
-			0, 0,
-			this.scale.width, this.scale.height,
-			false,
-			"fxCamera"
-		);
-		this._fxCamera.setPostPipeline(LightMaskPipeline);
-		// this._fxCamera.ignore([this._groundLayer!, this._wallsLayer!]);
-		this._fxCamera.ignore(this._wallsLayer!);
 
-		this._cameraSet.cameras = [this.cameras.main, this._fxCamera];
+		// clutter
+		const animatedClutter = this.add.group();
+		this.anims.create({
+			key: "flame",
+			frames: this.anims.generateFrameNumbers("tiles-dungeon", {start: 92, end: 97}),
+			frameRate: 12,
+			repeat: -1,
+		});
+		this.anims.create({
+			key: "banner-blue",
+			frames: this.anims.generateFrameNumbers("tiles-dungeon", {start: 100, end: 109}),
+			frameRate: 6,
+			repeat: -1,
+		});
+		for (let y = 0; y < this._tilemap.height; y += 1) {
+			for (let x = 0; x < this._tilemap.width; x += 1) {
+				const t = this._clutterLayer!.getTileAt(x, y, true);
+				if (!t) {
+					throw new Error(`No tile at ${x}, ${y}?!`);
+				}
+				const datums = t.getTileData();
+				if (datums && (datums as any).type == "Torch") {
+					const flame = this.add.sprite(t.pixelX, t.pixelY-8, "tiles-dungeon");
+					flame.play({key: "flame", randomFrame: true});
+					flame.setOrigin(0,0);
+					flame.setDepth(100);
+					flame.flipX = t.flipX;
+					animatedClutter.add(flame);
+
+					const light = new LightEffect(this, 3, true);
+					light.x = flame.x + flame.width * 0.5;
+					light.y = flame.y + flame.height * 0.5;
+					light.y += 4;
+					this.add.existing(light);
+					this._lights.push(light);
+				}
+				if (datums && (datums as any).type == "Banner") {
+					this._clutterLayer!.removeTileAt(x, y);
+					const banner = this.add.sprite(t.pixelX, t.pixelY, "tiles-dungeon");
+					banner.setOrigin(0,0);
+					banner.play({key: "banner-blue", randomFrame: true});
+					animatedClutter.add(banner);
+				}
+			}
+		}
+
+
+		// cameras
+		this._cameraSet.cameras.push(this.cameras.main);
+
+		if (this.worldMap.isDark) {
+			this._fxCamera = this.cameras.add(
+				0, 0,
+				this.scale.width, this.scale.height,
+				false,
+				"fxCamera"
+			);
+			this._fxCamera.setPostPipeline(LightMaskPipeline);
+			this._fxCamera.ignore(this._wallsLayer!);
+			this._fxCamera.ignore(this._clutterLayer!);
+			this._fxCamera.ignore(animatedClutter);
+			this._cameraSet.cameras.push(this._fxCamera);
+		}
 
 		this._cameraSet.setBounds(0, 0, Config.gameWidth, Config.gameHeight);
 
+
+		// events
 		VisEventBus.on("zoom-in", (data: {target: VisPlayer}) => {
 			let duration = ZOOM_TIME;
 			if (this.cameras.main.panEffect.isRunning) {
@@ -117,7 +175,6 @@ export class VisMap extends Phaser.Scene {
 			});
 			this._cameraSet.zoomTo(Config.zoomInDistance, duration, ZOOM_FUNC);
 			this._cameraSet.startFollow(data.target, false);
-			this._zoomedPlayer = data.target;
 		}, this);
 		VisEventBus.on("zoom-out", () => {
 			let duration = ZOOM_TIME;
@@ -129,7 +186,6 @@ export class VisMap extends Phaser.Scene {
 			this._cameraSet.pan(Config.gameWidth / 2, Config.gameHeight / 2, duration, ZOOM_FUNC);
 			this._cameraSet.zoomTo(1.0, duration, ZOOM_FUNC);
 			this._cameraSet.stopFollow();
-			this._zoomedPlayer = null;
 		}, this);
 
 		this.events.on("destroy", () => {
@@ -139,6 +195,10 @@ export class VisMap extends Phaser.Scene {
 	}
 
 	update(time: number, delta: number) {
+		for (const l of this._lights) {
+			l.update(time, delta);
+		}
+
 		let isDark = (this.game as WasmBotsVisualizer).worldObject.gameState == GameState.Running;
 		if (this._lightswitch?.isDown) {
 			isDark = !isDark;

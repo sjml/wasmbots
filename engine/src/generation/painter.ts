@@ -3,7 +3,10 @@
 //   if this project takes off enough that I want it to start
 //     looking polished, this can be revisited
 //   just doing enough work to have it look not *utter* garbage
+// this is full of magic numbers and spaghetti code 🙃
 
+import Config from "../core/config.ts";
+import { DefaultMap } from "../core/util.ts";
 import { TileType } from "../core/messages.ts";
 import { type Point, Array2D } from "../core/math.ts";
 import { RNG } from "../game/random.ts";
@@ -36,11 +39,27 @@ export class MapPainter {
 	wangBagLookup!: Map<number, TileBag>;
 	rng: RNG;
 	private tileGrid: Array2D<TileType>;
+	private regionLookup: Map<string, string>;
 
 	constructor(map: Tiled.TileMap, rng: RNG) {
 		this.rng = rng;
 		this.map = map;
-		this.tileGrid = Array2D.from((this.map.layers[0]).data, this.map.width, this.map.height);
+		this.tileGrid = Array2D.from((this.map.layers.find((l: { name: string; }) => l.name == "terrain") as Tiled.TileLayer).data, this.map.width, this.map.height);
+		this.regionLookup = new Map<string, string>();
+		const objLayer = this.map.layers.find((l: {name: string;}) => l.name == "rooms") as Tiled.ObjectLayer;
+		if (objLayer) {
+			for (const o of objLayer.objects) {
+				const ox = (o.x - objLayer.x) / Config.tileSize;
+				const oy = (o.y - objLayer.y) / Config.tileSize;
+				const ow = o.width / Config.tileSize;
+				const oh = o.height / Config.tileSize;
+				for (let y = oy; y < oy + oh; y += 1) {
+					for (let x = ox; x < ox + ow; x += 1) {
+						this.regionLookup.set(`${x},${y}`, o.name);
+					}
+				}
+			}
+		}
 	}
 
 	paint(ts: Tiled.Tileset) {
@@ -137,55 +156,145 @@ export class MapPainter {
 						wallLayer.data[targetIndex] = 0;
 						break;
 					case 1:
-						wallLayer.data[targetIndex] = (100 + this.tileset.firstgid);
+						wallLayer.data[targetIndex] = (80 + this.tileset.firstgid);
 						break;
 					case 2:
-						wallLayer.data[targetIndex] = (100 + this.tileset.firstgid) | ROTATE_90;
+						wallLayer.data[targetIndex] = (80 + this.tileset.firstgid) | ROTATE_90;
 						break;
 					case 3:
-						wallLayer.data[targetIndex] = (101 + this.tileset.firstgid) | ROTATE_90;
+						wallLayer.data[targetIndex] = (81 + this.tileset.firstgid) | ROTATE_90;
 						break;
 					case 4:
-						wallLayer.data[targetIndex] = (100 + this.tileset.firstgid) | ROTATE_180;
+						wallLayer.data[targetIndex] = (80 + this.tileset.firstgid) | ROTATE_180;
 						break;
 					case 5:
-						wallLayer.data[targetIndex] = (102 + this.tileset.firstgid);
+						wallLayer.data[targetIndex] = (82 + this.tileset.firstgid);
 						break;
 					case 6:
-						wallLayer.data[targetIndex] = (101 + this.tileset.firstgid) | ROTATE_180;
+						wallLayer.data[targetIndex] = (81 + this.tileset.firstgid) | ROTATE_180;
 						break;
 					case 7:
-						wallLayer.data[targetIndex] = (103 + this.tileset.firstgid) | ROTATE_180;
+						wallLayer.data[targetIndex] = (83 + this.tileset.firstgid) | ROTATE_180;
 						break;
 					case 8:
-						wallLayer.data[targetIndex] = (100 + this.tileset.firstgid) | ROTATE_270;
+						wallLayer.data[targetIndex] = (80 + this.tileset.firstgid) | ROTATE_270;
 						break;
 					case 9:
-						wallLayer.data[targetIndex] = 101 + this.tileset.firstgid;
+						wallLayer.data[targetIndex] = 81 + this.tileset.firstgid;
 						break;
 					case 10:
-						wallLayer.data[targetIndex] = (102 + this.tileset.firstgid) | ROTATE_90;
+						wallLayer.data[targetIndex] = (82 + this.tileset.firstgid) | ROTATE_90;
 						break;
 					case 11:
-						wallLayer.data[targetIndex] = (103 + this.tileset.firstgid) | ROTATE_90;
+						wallLayer.data[targetIndex] = (83 + this.tileset.firstgid) | ROTATE_90;
 						break;
 					case 12:
-						wallLayer.data[targetIndex] = (101 + this.tileset.firstgid) | ROTATE_270;
+						wallLayer.data[targetIndex] = (81 + this.tileset.firstgid) | ROTATE_270;
 						break;
 					case 13:
-						wallLayer.data[targetIndex] = 103 + this.tileset.firstgid;
+						wallLayer.data[targetIndex] = 83 + this.tileset.firstgid;
 						break;
 					case 14:
-						wallLayer.data[targetIndex] = (103 + this.tileset.firstgid) | ROTATE_270;
+						wallLayer.data[targetIndex] = (83 + this.tileset.firstgid) | ROTATE_270;
 						break;
 					case 15:
-						wallLayer.data[targetIndex] = 104 + this.tileset.firstgid;
+						wallLayer.data[targetIndex] = 84 + this.tileset.firstgid;
 						break;
 				}
 			}
 		}
 
 		this.map.layers.push(wallLayer);
+		this.map.nextlayerid += 1;
+
+		const clutterLayer = Object.assign({}, layerTemplate, {
+			name: "clutter",
+			id: this.map.nextlayerid,
+			width: this.map.width,
+			height: this.map.height,
+		});
+		clutterLayer.data = Array.from({length: this.map.width * this.map.height}, () => 0);
+
+		const roomContents = new DefaultMap<string, string[]>([]);
+
+		for (let y = 0; y < this.map.height; y += 1) {
+			// row traversal direction is random
+			let start = 0;
+			let end = this.map.width;
+			let delta = 1;
+			if (this.rng.oneIn(2)) {
+				start = this.map.width - 1;
+				end = -1
+				delta = -1;
+			}
+
+			// TODO: this should be data-driven, but meh
+			let run: Point[] = [];
+			let runRoom: string = "";
+			let lastTorchX = -1024;
+			const adornRun = () => {
+				if (run.length == 0) {
+					runRoom = "";
+					return;
+				}
+				if (runRoom.startsWith("Spawn")) {
+					run = this.rng.shuffle(run);
+					const currContents = roomContents.get(runRoom)
+					while (run.length > 0) {
+						const currTile = run.pop()!;
+						if (!currContents.includes("banner")) {
+							clutterLayer.data[this.pointToIndex(currTile)] = 103 + this.tileset.firstgid;
+							currContents.push("banner");
+							continue;
+						}
+						else if (!currContents.includes("torch")) {
+							clutterLayer.data[this.pointToIndex(currTile)] = 90 + this.tileset.firstgid;
+							currContents.push("torch");
+							continue;
+						}
+						break;
+					}
+					roomContents.set(runRoom, currContents);
+				}
+				else {
+					let inverseTorchChance = this.rng.randInt(1, 15) + run.length;
+					for (const pt of run) {
+						const lastTorchDist = Math.abs(pt.x - lastTorchX);
+						if (lastTorchDist == 1) {
+							continue;
+						}
+						if (this.rng.oneIn(inverseTorchChance)) {
+							lastTorchX = pt.x;
+							inverseTorchChance = this.rng.randInt(1, 7) + run.length;
+							clutterLayer.data[this.pointToIndex(pt)] = (90 + this.tileset.firstgid);
+							if (this.rng.oneIn(2)) {
+								clutterLayer.data[this.pointToIndex(pt)] |= TILED_FLAG_FLIPPED_HORIZONTALLY;
+							}
+							roomContents.get(runRoom).push("torch");
+						}
+						inverseTorchChance -= 1;
+					}
+				}
+			}
+
+			run = [];
+			runRoom = "";
+			for (let x = start; x != end; x += delta) {
+				const pt = {x, y};
+				const t = wallLayer.data[this.pointToIndex(pt)];
+				const newRunRoom = this.regionLookup.get(`${pt.x},${pt.y+1}`) || "";
+				if (!this.wallBag.contains(t) || (runRoom.length > 0 && newRunRoom != runRoom)) {
+					adornRun();
+					run = []
+					runRoom = "";
+					continue;
+				}
+				run.push(pt);
+				runRoom = newRunRoom;
+			}
+		}
+
+		this.map.layers.push(clutterLayer);
 		this.map.nextlayerid += 1;
 	}
 
@@ -361,6 +470,10 @@ class TileBag {
 			});
 		}
 		this.totalProbability = this.probs.reduce((sum, pair) => sum + pair.probability, 0);
+	}
+
+	contains(tgid: number): boolean {
+		return this.probs.findIndex(pair => pair.tileGid == tgid) != -1;
 	}
 
 	draw(rng: RNG): number {
