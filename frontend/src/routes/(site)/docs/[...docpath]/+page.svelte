@@ -92,8 +92,8 @@
 			margin-top: 10px;
 		}
 
-		img {
-			max-width: 100%;
+		img, video, iframe {
+			max-width: 95%;
 			display: block;
 			margin: 10px auto;
 		}

@@ -188,6 +188,27 @@ function anchorifyAndIncrementHeaders(_params: object) {
 	};
 }
 
+function setupVideo(_params: object) {
+	return (tree: HRoot) => {
+		const imgNodes: Element[] = [];
+		visit(tree, (node: HNode) => {
+			const elNode = node as Element;
+			if (elNode.tagName == "img") {
+				imgNodes.push(elNode);
+			}
+		});
+
+		imgNodes.map((img) => {
+			const src = String(img.properties.src);
+			if (src.endsWith(".mp4")) {
+				img.tagName = "video";
+				img.properties.type = "video/mp4";
+				img.properties.controls = true;
+			}
+		});
+	};
+}
+
 async function renderMarkdown(md: string, fpathAbsolute: string): Promise<string> {
 	return String(await unified()
 		.use(remarkParse)
@@ -197,10 +218,11 @@ async function renderMarkdown(md: string, fpathAbsolute: string): Promise<string
 		.use(remarkSmartypants, {
 			dashes: "oldschool"
 		})
-		.use(remarkRehype)
+		.use(remarkRehype, {allowDangerousHtml: true})
 		.use(classifyLinks, {})
 		.use(anchorifyAndIncrementHeaders, {})
-		.use(rehypeStringify)
+		.use(setupVideo, {})
+		.use(rehypeStringify, {allowDangerousHtml: true})
 		.process(md));
 }
 

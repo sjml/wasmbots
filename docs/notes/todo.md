@@ -18,6 +18,7 @@
 * documentation
     * how everything works, I guess
     * video intro?
+    * have page title get updated with doc navigation
 
 * web trainer
   * first UX:
