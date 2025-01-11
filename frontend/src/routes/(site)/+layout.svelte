@@ -109,7 +109,7 @@
 	}
 
 	header .logo {
-		filter: invert(0.9);
+		filter: invert(0.9) drop-shadow(0px 0px 10px hsl(221, 10%, 10%));
 		max-height: 50px;
 		margin: 8px;
 	}

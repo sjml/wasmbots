@@ -1,13 +1,18 @@
 <script lang="ts">
 	import { onMount } from "svelte";
 
-	interface Props {}
-	let {}: Props = $props();
+	interface Props {
+		animRate?: number;
+		minExtent?: number;
+		maxExtent?: number;
+		lightShape?: string;
+	}
+	let { animRate = 75, minExtent = 75, maxExtent = 100, lightShape = "ellipse at bottom" }: Props = $props();
 
 	let particleCanvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D | null = null;
 	let canvasSize = $state({ w: 0, h: 0 });
-	let scale = $derived({x: canvasSize.w / 950, y: canvasSize.h / 100});;
+	let scale = $derived({x: canvasSize.w / Math.min(950, canvasSize.w), y: canvasSize.h / Math.min(100, canvasSize.h)});;
 	let particles: Particle[] = [];
 	let elapsedTime: number = $state(0);
 
@@ -48,6 +53,7 @@
 			vx = Math.cos(angle) * speed * scale.x;
 			vy = Math.sin(angle) * speed * scale.y;
 		} else {
+			// start from bottom
 			x = canvasSize.w * (0.2 + Math.random() * 0.6);
 			y = canvasSize.h;
 
@@ -149,7 +155,7 @@
 <div class="container" aria-hidden="true"
 	bind:offsetWidth={canvasSize.w}
 	bind:offsetHeight={canvasSize.h}
-	style="--elapsed-time: {elapsedTime};"
+	style="--elapsed-time: {elapsedTime}; --anim-rate: {animRate}deg; --min-extent: {minExtent}%; --extent-diff: {maxExtent-minExtent}%; --light-shape: {lightShape};"
 >
 	<canvas
 		bind:this={particleCanvas}
@@ -170,15 +176,15 @@
 	}
 
 	canvas {
-		--anim-rate: calc(var(--elapsed-time) * 75deg);
+		--anim-frame: calc(var(--elapsed-time) * var(--anim-rate));
 		background: radial-gradient(
-			ellipse at bottom,
+			var(--light-shape),
 			hsl(221, 45%, 45%) 	0%,
 			hsl(221, 10%,  5%) 	calc(
-				75% + (25% * (
-					  (3 * sin(var(--anim-rate)))
-					+ (sin(10 * var(--anim-rate)))
-					+ (cos( 5 * var(--anim-rate)))
+				var(--min-extent) + (var(--extent-diff) * (
+					  (3 * sin(var(--anim-frame)))
+					+ (sin(10 * var(--anim-frame)))
+					+ (cos( 5 * var(--anim-frame)))
 				) / 10.5)
 			)
 		);
