@@ -132,7 +132,6 @@ function fixImgPaths(params: {fpathAbsolute: string}) {
 
 			const relImgPath = path.join(relUrl, absoluteImgPath.substring(docsImgDir.length));
 			img.url = relImgPath;
-			console.log(img.url);
 		});
 	};
 }

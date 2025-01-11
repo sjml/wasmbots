@@ -24,9 +24,11 @@ But video games are fun and cool! And in my previous career, I used to make them
 I had a lingering memory of a program called [Crobots](https://tpoindex.github.io/crobots/) [[Wikipedia Link](https://en.wikipedia.org/wiki/Crobots)] (which, in researching again to write this, I distressingly discovered is pronounced "See Robots" and not "Crow-bots" as I had always imagined), where you could write little AIs in a subset of C and have them fight each other! You can get it running [in the Internet Archive's DOSBox](https://archive.org/details/msdos_shareware_fb_CROBOT) pretty easily: just run `CR-DEMO.BAT` and press enter until things are done compiling. [The old manual is also good reading!](https://tpoindex.github.io/crobots/docs/crobots_manual.html) I was tempted to just do a modern version of this, but I don't like guns. 
 
 ### Screeps
-<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/ZboTgOajnGg?si=gWyeAScNw2z88-LP" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+![Screeps Screenshot](./img/screeps.jpg)
 
 I played around with [Screeps](https://screeps.com/) a few years ago, and it's definitely interesting! While I see **some** people using WebAssembly with it, it's mostly JavaScript or TypeScript authoring. I'm also not interested in making an online connected game --- or, rather, I should say, the details of making such a thing function are a lot less interesting to me than the details of making the local multiplayer work. Setting up servers, handling load, etc. is just not my thing. (Very grateful to those for whom it **is** their thing, though, since I frequently enjoy playing in such spaces!) In any case, I also have a [vow of poverty](https://jesuits.org), and setting up a server that could run such a thing wasn't feasible. 
+
+(Note that I'm not _philosophically_ opposed to an online version of WasmBots, but it's not something I'm likely to do on my own.)
 
 ### Advent of Code
 ![Advent of Code Screenshot](./img/aoc.png)
