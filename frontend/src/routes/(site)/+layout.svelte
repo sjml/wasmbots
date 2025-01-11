@@ -4,7 +4,7 @@
 
 	import { ListBullets, ArrowUDownLeft } from "phosphor-svelte";
 
-	import FireParticles from "$lib/ui/FireParticles.svelte";
+	import ManaForge from "$lib/ui/ManaForge.svelte";
 
 	interface Props {
 		children?: Snippet;
@@ -26,7 +26,7 @@
 
 <div class="container">
 	<header bind:this={mainHeader} class="mainHeader">
-		<!-- <FireParticles /> -->
+		<ManaForge />
 		<a href="{base}/">
 			<img class="logo" src="{base}/img/logo-cropped.svg" alt="WasmBots Logo">
 		</a>
@@ -34,6 +34,7 @@
 	<main>
 		<nav class:unfolded={navUnfolded}>
 			<header class="navHeader" class:pinned={!mainHeaderVisible}>
+				<ManaForge />
 				<a href="{base}/">
 					<img class="logo" src="{base}/img/logo-cropped.svg" alt="WasmBots Logo">
 				</a>
@@ -145,6 +146,9 @@
 
 	nav header.navHeader {
 		/* display: none; */
+		display: flex;
+		align-items: center;
+		min-height: 45px;
 		text-align: center;
 		transform: translateY(-100%);
 		transition-property: transform;
@@ -154,6 +158,11 @@
 	header.navHeader.pinned {
 		/* display: block; */
 		transform: translateY(0);
+	}
+
+	header.navHeader a {
+		display: flex;
+		align-items: center;
 	}
 
 	nav ul {
