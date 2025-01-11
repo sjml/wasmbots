@@ -29,7 +29,7 @@
 	button {
 		width: 40px;
 		height: 40px;
-		background-color: hsl(204, 10%, 15%);
+		background-color: hsl(221, 10%, 15%);
 		border: 1px solid rgba(218, 218, 218, 0.1);
 		border-radius: 11px;
 		color: rgb(218, 218, 218);

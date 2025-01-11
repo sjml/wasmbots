@@ -120,7 +120,7 @@
 
 <style>
 	.botSlot {
-		background-color: hsl(204, 10%, 15%);
+		background-color: hsl(221, 10%, 15%);
 		min-height: 60px;
 		border-top: 1px solid black;
 

@@ -92,7 +92,7 @@
 
 		height: 100vh;
 		width: 100vw;
-		background-color: hsl(204, 10%, 10%);
+		background-color: hsl(221, 10%, 10%);
 		opacity: 0;
 		pointer-events: none;
 
@@ -112,7 +112,7 @@
 	}
 
 	header {
-		background-color: hsl(204, 10%, 10%);
+		background-color: hsl(221, 10%, 10%);
 	}
 
 	header a {
@@ -133,7 +133,7 @@
 	nav {
 		max-width: 200px;
 		flex-shrink: 0;
-		background-color: hsl(204, 10%, 15%);
+		background-color: hsl(221, 10%, 15%);
 		position: sticky;
 		top: 0;
 		height: 100vh;
@@ -194,7 +194,7 @@
 	.navToggle {
 		height: 40px;
 		width: 40px;
-		background-color: hsl(204, 10%, 85%);
+		background-color: hsl(221, 10%, 85%);
 		position: sticky;
 		top: 0;
 		z-index: 100;
@@ -221,7 +221,7 @@
 
 		nav.unfolded {
 			transform: translateX(200px);
-			box-shadow: hsl(204, 10%, 10%) 10px 40px 15px;
+			box-shadow: hsl(221, 10%, 10%) 10px 40px 15px;
 		}
 
 		.navToggle {

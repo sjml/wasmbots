@@ -20,7 +20,7 @@
 		height: 100%;
 		width: 450px;
 		max-width: calc(100% - 60px);
-		background-color: hsla(204, 10%, 5%, 0.8);
+		background-color: hsla(221, 10%, 5%, 0.8);
 		color: white;
 		padding-top: 50px;
 
@@ -34,12 +34,12 @@
 	.leftPanel {
 		left: 0;
 		transform: translateX(-100%);
-		border-right: 1px solid hsla(204, 10%, 5%, 0.8);
+		border-right: 1px solid hsla(221, 10%, 5%, 0.8);
 	}
 	.rightPanel {
 		right: 0;
 		transform: translateX(100%);
-		border-left: 1px solid hsla(204, 10%, 5%, 0.8);
+		border-left: 1px solid hsla(221, 10%, 5%, 0.8);
 	}
 	.drawerPanel.panelOpened {
 		transform: translateX(0);

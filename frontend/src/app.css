@@ -62,7 +62,7 @@ html, body {
 }
 
 body {
-	background-color: hsl(0, 0%, 25%);
+	background-color: hsl(221, 0%, 25%);
 	font-family: 'Lato', 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
 }
 * {
@@ -70,7 +70,7 @@ body {
 }
 
 a, a:visited {
-	color: rgb(116, 154, 236);
+	color: hsl(221, 76%, 69%);
 }
 
 code {
