@@ -100,10 +100,10 @@ function fixMdLinks(params: {fpathAbsolute: string}) {
 
 function fixImgPaths(params: {fpathAbsolute: string}) {
 	const isIndex = path.basename(params.fpathAbsolute) === docs.indexFile;
-	const effectivePath = (isIndex && trailingSlash !== "always")
-		? params.fpathAbsolute
-		: path.dirname(params.fpathAbsolute)
-	;
+	let effectivePath = isIndex ? path.dirname(params.fpathAbsolute) : params.fpathAbsolute.slice(0, -3);
+	if (trailingSlash === "always" && !effectivePath.endsWith("?")) {
+		effectivePath += "/";
+	}
 
 	return (tree: MRoot) => {
 		const imgNodes: Image[] = [];
@@ -114,14 +114,14 @@ function fixImgPaths(params: {fpathAbsolute: string}) {
 		});
 
 		const docsImgDir = path.join(docs.docsDir, "img");
-		const baseUrl = params.fpathAbsolute.substring(docs.projectRoot.length);
+		const baseUrl = effectivePath.substring(docs.projectRoot.length);
 		const relUrl = path.relative(baseUrl, "/img/docs");
 		imgNodes.map((img) => {
 			if (img.url.startsWith("http://") || img.url.startsWith("https://")) {
 				throw new Error("Don't hotlink images directly.");
 			}
 
-			const absoluteImgPath = path.resolve(effectivePath, img.url);
+			const absoluteImgPath = path.join(path.dirname(params.fpathAbsolute), img.url);
 
 			if (!fs.existsSync(absoluteImgPath)) {
 				throw new Error(`"${absoluteImgPath}" does not exist`);
@@ -132,6 +132,7 @@ function fixImgPaths(params: {fpathAbsolute: string}) {
 
 			const relImgPath = path.join(relUrl, absoluteImgPath.substring(docsImgDir.length));
 			img.url = relImgPath;
+			console.log(img.url);
 		});
 	};
 }

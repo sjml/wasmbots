@@ -3,10 +3,13 @@ import { defineConfig } from 'vite';
 import { execSync } from 'child_process';
 import { sveltePhosphorOptimize } from "phosphor-svelte/vite";
 
+import hashAssets from "./scripts/hashPhaserAssets";
+
 export default defineConfig({
 	plugins: [
 		sveltePhosphorOptimize(),
-		sveltekit()
+		hashAssets(),
+		sveltekit(),
 	],
 	resolve: {
 		preserveSymlinks: true

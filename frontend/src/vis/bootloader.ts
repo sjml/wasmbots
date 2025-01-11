@@ -2,6 +2,7 @@ import Phaser from "phaser";
 
 import { Loader } from "wasmbots";
 import { VisEventBus } from "./events.ts";
+import { phaserAssetKeys } from "./assets.ts";
 
 export class VisBootloader extends Phaser.Scene {
 
@@ -17,24 +18,24 @@ export class VisBootloader extends Phaser.Scene {
 
 		this.load.setPath(Loader.getRscPath());
 
-		this.load.spritesheet("tiles-dungeon", "img/Dungeon_Tileset.png", {
+		this.load.spritesheet("tiles-dungeon", phaserAssetKeys.dungeonTiles, {
 			frameWidth: 16,
 			frameHeight: 16,
 		});
-		this.load.spritesheet("tiles-kenny", "img/kenny_tiny-dungeon_tilemap.png", {
+		this.load.spritesheet("tiles-kenny", phaserAssetKeys.kennyTiles, {
 			frameWidth: 16,
 			frameHeight: 16,
 		});
-		this.load.spritesheet("tiles-data", "img/colors.png", {
+		this.load.spritesheet("tiles-data", phaserAssetKeys.colorTiles, {
 			frameWidth: 16,
 			frameHeight: 16,
 		});
-		this.load.image("light-mask-5x5", "img/light-mask-5x5.png");
-		this.load.image("light-mask-3x3", "img/light-mask-3x3.png");
-		this.load.image("light-mask-1x1", "img/light-mask-3x3.png");
-		this.load.image("light-mask-5x5-rot", "img/light-mask-5x5-rot.png");
-		this.load.image("light-mask-3x3-rot", "img/light-mask-3x3-rot.png");
-		this.load.image("light-mask-1x1-rot", "img/light-mask-1x1-rot.png");
+		this.load.image("light-mask-5x5", phaserAssetKeys.lightmask5x5);
+		this.load.image("light-mask-3x3", phaserAssetKeys.lightmask3x3);
+		this.load.image("light-mask-1x1", phaserAssetKeys.lightmask1x1);
+		this.load.image("light-mask-5x5-rot", phaserAssetKeys.lightmask5x5rot);
+		this.load.image("light-mask-3x3-rot", phaserAssetKeys.lightmask3x3rot);
+		this.load.image("light-mask-1x1-rot", phaserAssetKeys.lightmask1x1rot);
 	}
 
 	create() {

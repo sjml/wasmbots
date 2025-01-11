@@ -75,6 +75,14 @@
 		min-height: 100vh;
 		max-width: 950px;
 		margin: 0 auto;
+
+		--transition-timing: 200ms;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.container {
+			--transition-timing: 0ms;
+		}
 	}
 
 	.container > header {
@@ -97,7 +105,7 @@
 		pointer-events: none;
 
 		transition-property: opacity;
-		transition-duration: 200ms;
+		transition-duration: var(--transition-timing);
 	}
 
 	header .logo {
@@ -140,8 +148,8 @@
 		overflow-y: auto;
 
 		z-index: 10;
-		transition-property: margin-left, transform;
-		transition-duration: 200ms;
+		transition-property: margin-left, transform, box-shadow;
+		transition-duration: var(--transition-timing);
 	}
 
 	nav header.navHeader {
@@ -152,7 +160,7 @@
 		text-align: center;
 		transform: translateY(-100%);
 		transition-property: transform;
-		transition-duration: 200ms;
+		transition-duration: var(--transition-timing);
 	}
 
 	header.navHeader.pinned {
@@ -210,7 +218,7 @@
 		display: flex;
 		align-items: center;
 		transition-property: opacity, transform;
-		transition-duration: 200ms;
+		transition-duration: var(--transition-timing);
 	}
 
 	@media screen and (max-width: 649px) {

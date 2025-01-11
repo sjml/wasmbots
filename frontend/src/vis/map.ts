@@ -63,7 +63,7 @@ export class VisMap extends Phaser.Scene {
 	private _wallsLayer: Phaser.Tilemaps.TilemapLayer | null = null;
 	private _clutterLayer: Phaser.Tilemaps.TilemapLayer | null = null;
 	private _playerList: VisPlayer[] = [];
-	private _lightswitch: Phaser.Input.Keyboard.Key|null = null;
+	// private _lightswitch: Phaser.Input.Keyboard.Key|null = null;
 	private _lights: LightEffect[] = [];
 	private _fxCamera: Phaser.Cameras.Scene2D.Camera | null = null;
 	private _cameraSet: CameraSet = new CameraSet();
@@ -83,7 +83,7 @@ export class VisMap extends Phaser.Scene {
 	}
 
 	create() {
-		this._lightswitch = this.input.keyboard?.addKey("L") ?? null;
+		// this._lightswitch = this.input.keyboard?.addKey("L") ?? null;
 
 		this._tilemap = this.make.tilemap({key: `map-${this.worldMap.name}`});
 		for (const tsObj of this._tilemap.tilesets) {
@@ -188,9 +188,9 @@ export class VisMap extends Phaser.Scene {
 		}
 
 		let isDark = (this.game as WasmBotsVisualizer).worldObject.gameState == GameState.Running;
-		if (this._lightswitch?.isDown) {
-			isDark = !isDark;
-		}
+		// if (this._lightswitch?.isDown) {
+		// 	isDark = !isDark;
+		// }
 
 		if (this._fxCamera && this._groundLayer) {
 			if (isDark) {
