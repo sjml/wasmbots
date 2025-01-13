@@ -287,7 +287,7 @@ export class WorldMap {
 	}
 
 	getTile(x: number, y: number): Tile {
-		if (x < 0 || y < 0 || x >= config.mapWidth || y >= config.mapWidth) {
+		if (x < 0 || y < 0 || x >= config.mapWidth || y >= config.mapHeight) {
 			return new Tile();
 		}
 		return this.tiles[y][x];
