@@ -38,7 +38,6 @@
 		const tilesPerRow = 192 / 16;
 		const x = (portraitIdx % tilesPerRow) * 16;
 		const y = Math.floor(portraitIdx / tilesPerRow) * 16;
-		console.log(portraitIdx, "=>", x, y);
 		portraitOffset = {x, y};
 	});
 

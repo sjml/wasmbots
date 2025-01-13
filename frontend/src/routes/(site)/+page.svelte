@@ -15,8 +15,8 @@
 </svelte:head>
 
 <div class="intro">
-	<h2>What is a WasmBot?</h2>
-	<p><em>(Introductory material will go here.)</em></p>
+	<p><em>intro video goes here</em></p>
+	<p>Hi! <a href="https://shaneliesegang.com" target="_blank">I’m Shane</a>, and this is WasmBots.</p>
 </div>
 
 <style>

@@ -8,6 +8,7 @@ node_modules
 /static/embedded/*
 !/static/embedded/index.html
 /static/docs
+/video-frames
 
 # OS
 .DS_Store

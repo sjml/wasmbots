@@ -1,18 +1,34 @@
 <script lang="ts">
 	import { onMount } from "svelte";
+    import type { Point } from "wasmbots";
 
 	interface Props {
 		animRate?: number;
 		minExtent?: number;
 		maxExtent?: number;
 		lightShape?: string;
+		autoRun?: boolean;
+		creationChance?: number;
+		bottomSpeedMod?: Point;
 	}
-	let { animRate = 75, minExtent = 75, maxExtent = 100, lightShape = "ellipse at bottom" }: Props = $props();
+	let {
+		animRate = 45,
+		minExtent = 85,
+		maxExtent = 100,
+		lightShape = "ellipse at bottom",
+		autoRun = true,
+		creationChance = 0.2,
+		bottomSpeedMod = {x: 2.0, y: 1.0},
+	}: Props = $props();
 
 	let particleCanvas: HTMLCanvasElement;
 	let ctx: CanvasRenderingContext2D | null = null;
 	let canvasSize = $state({ w: 0, h: 0 });
-	let scale = $derived({x: canvasSize.w / Math.min(950, canvasSize.w), y: canvasSize.h / Math.min(100, canvasSize.h)});;
+	let scale = $derived({
+		x: Math.min(975, canvasSize.w) / 950,
+		y: Math.min(115, canvasSize.h) / 100
+	});
+	$inspect(canvasSize, scale);
 	let particles: Particle[] = [];
 	let elapsedTime: number = $state(0);
 
@@ -49,7 +65,7 @@
 			const dy = targetY - y;
 			const angle = Math.atan2(dy, dx) + (Math.random() - 0.5) * 0.8;
 
-			const speed = 2 + Math.random() * 2;
+			const speed = 2 + Math.random() * 4;
 			vx = Math.cos(angle) * speed * scale.x;
 			vy = Math.sin(angle) * speed * scale.y;
 		} else {
@@ -60,8 +76,8 @@
 			const angle = -Math.PI/2 + (Math.random() - 0.5) * 2.2;
 			const speed = 0.8 + Math.random() * 1.2;
 
-			vx = Math.cos(angle) * speed * 2 * scale.x;
-			vy = Math.sin(angle) * speed * scale.y;
+			vx = Math.cos(angle) * speed * bottomSpeedMod.x * scale.x;
+			vy = Math.sin(angle) * speed * bottomSpeedMod.y * scale.y;
 		}
 
 		const hue = 210 + Math.random() * 10;
@@ -73,7 +89,7 @@
 			y,
 			vx,
 			vy,
-			size: Math.random() * 3 + 1 * scale.x,
+			size: (Math.random() * 3 + 1) * ((scale.x + scale.y) / 2),
 			life: 1,
 			maxLife: Math.random() * 1.5 + 1,
 			color: `hsl(${hue}, ${saturation}%, ${lightness}%)`,
@@ -82,7 +98,7 @@
 	}
 
 	function update(dt: number) {
-		if (particles.length < numParticles && Math.random() < .2) {
+		if (particles.length < numParticles && Math.random() < creationChance) {
 			particles.push(createParticle());
 		}
 
@@ -126,7 +142,7 @@
 	}
 
 	let lastTime: DOMHighResTimeStamp = 0;
-	function animate(t: DOMHighResTimeStamp) {
+	export function tick(t: DOMHighResTimeStamp) {
 		let dt = 0;
 		if (lastTime != 0) {
 			dt = t - lastTime;
@@ -138,7 +154,9 @@
 		update(dt);
 		render();
 
-		requestAnimationFrame(animate);
+		if (autoRun) {
+			requestAnimationFrame(tick);
+		}
 	}
 
 	onMount(() => {
@@ -148,14 +166,24 @@
 		}
 		ctx = particleCanvas.getContext("2d");
 
-		requestAnimationFrame(animate);
+		if (!autoRun) {
+			return;
+		}
+
+		requestAnimationFrame(tick);
 	});
 </script>
 
 <div class="container" aria-hidden="true"
 	bind:offsetWidth={canvasSize.w}
 	bind:offsetHeight={canvasSize.h}
-	style="--elapsed-time: {elapsedTime}; --anim-rate: {animRate}deg; --min-extent: {minExtent}%; --extent-diff: {maxExtent-minExtent}%; --light-shape: {lightShape};"
+	style={[
+		`--elapsed-time: ${elapsedTime};`,
+		`--anim-rate: ${animRate}deg;`,
+		`--min-extent: ${minExtent}%;`,
+		`--extent-diff: ${maxExtent-minExtent}%;`,
+		`--light-shape: ${lightShape};`,
+	].join(" ")}
 >
 	<canvas
 		bind:this={particleCanvas}
@@ -177,15 +205,21 @@
 
 	canvas {
 		--anim-frame: calc(var(--elapsed-time) * var(--anim-rate));
+		--intensity: (
+			  (3 * sin(var(--anim-frame)))
+			+ (sin(10 * var(--anim-frame)))
+			+ (cos( 5 * var(--anim-frame)))
+		) / 10.5;
+		--light-color: hsl(
+			221,
+			calc(45% + 10% * var(--intensity)),
+			calc(40% + 15% * var(--intensity))
+		);
 		background: radial-gradient(
 			var(--light-shape),
-			hsl(221, 45%, 45%) 	0%,
-			hsl(221, 10%,  5%) 	calc(
-				var(--min-extent) + (var(--extent-diff) * (
-					  (3 * sin(var(--anim-frame)))
-					+ (sin(10 * var(--anim-frame)))
-					+ (cos( 5 * var(--anim-frame)))
-				) / 10.5)
+			var(--light-color)	 0%,
+			hsl(221, 10%,  5%)	calc(
+				var(--min-extent) + (var(--extent-diff) * var(--intensity))
 			)
 		);
 	}
