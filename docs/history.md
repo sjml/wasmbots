@@ -18,6 +18,8 @@ But video games are fun and cool! And in my previous career, I used to make them
 
 ## Inspirations
 
+Nothing comes from nowhere.
+
 ### Crobots
 ![Crobots Video](./img/crobots.mp4) 
 
