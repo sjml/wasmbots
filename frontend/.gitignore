@@ -6,7 +6,8 @@ node_modules
 /.svelte-kit
 /build
 /static/embedded/*
-!/static/embedded/index.html
+!/static/embedded/index.html*
+!/static/embedded/basic_style.css
 /static/docs
 /video-frames
 
