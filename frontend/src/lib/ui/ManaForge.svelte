@@ -28,7 +28,6 @@
 		x: Math.min(975, canvasSize.w) / 950,
 		y: Math.min(115, canvasSize.h) / 100
 	});
-	$inspect(canvasSize, scale);
 	let particles: Particle[] = [];
 	let elapsedTime: number = $state(0);
 

@@ -37,6 +37,10 @@ export class WasmBotsVisualizer extends Phaser.Game {
 			audio: {
 				noAudio: true,
 			},
+			input: {
+				mouse: false,
+				touch: false,
+			},
 			banner: false,
 			scene: [VisBootloader],
 			// TODO: fix this typing hilarity if PR is accepted

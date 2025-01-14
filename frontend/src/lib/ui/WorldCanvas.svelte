@@ -37,6 +37,10 @@
 		}
 	});
 
+	export function requestFullscreen() {
+		parentDiv.requestFullscreen();
+	}
+
 	onMount(() => {
 		if (createWorld) {
 			gameSetup();

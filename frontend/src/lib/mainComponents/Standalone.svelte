@@ -19,6 +19,11 @@
 	}
 	let { setupInfo = DefaultStandaloneSetupInfo, autoRun = false, }: Props = $props();
 
+	let mainDiv: HTMLDivElement;
+	export function requestFullscreen() {
+		mainDiv.requestFullscreen();
+	}
+
 	async function setupFromProps() {
 		const setup: StandaloneSetupInfo = Object.assign(structuredClone(DefaultStandaloneSetupInfo), setupInfo);
 		autoRun = autoRun !== false;
@@ -68,12 +73,15 @@
 	});
 </script>
 
-<div class="worldSizer" style="--aspectRatio: {aspectRatio};">
+<div bind:this={mainDiv} class="worldSizer" style="--aspectRatio: {aspectRatio};">
 	<WorldCanvas createWorld={false} />
 </div>
 
 <style>
 	.worldSizer {
 		aspect-ratio: var(--aspectRatio);
+		width: 100%;
+		max-width: 100%;
+		height: auto;
 	}
 </style>

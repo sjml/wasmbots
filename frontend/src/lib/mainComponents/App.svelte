@@ -4,6 +4,7 @@
 
 	import {
 		Circuitry,
+		ArrowsOut,
 		ArrowsInLineHorizontal,
 		ArrowsOutLineHorizontal,
 		House,
@@ -94,6 +95,8 @@
 			rightPanelVisible = false;
 		}
 	}
+
+	let worldCanvas: WorldCanvas;
 </script>
 
 <svelte:window bind:innerWidth={windowWidth} />
@@ -110,6 +113,11 @@
 			<Circuitry weight="fill"/>
 		</ToggleButton>
 		<div class="spacer"></div>
+		{#if document.fullscreenEnabled}
+			<button class="navBarButton" onclick={() => worldCanvas.requestFullscreen()}>
+				<ArrowsOut size={30} />
+			</button>
+		{/if}
 		{#if !isSmallScreen}
 			{#if leftPanelVisible && rightPanelVisible}
 				<button class="navBarButton" onclick={() => {leftPanelVisible = rightPanelVisible = false;}} aria-label="Close both side panels" title="Close both side panels (Up Arrow)">
@@ -139,7 +147,7 @@
 			<Gear />
 		</ToggleButton>
 	</Navbar>
-	<WorldCanvas/>
+	<WorldCanvas bind:this={worldCanvas}/>
 </div>
 
 <style>

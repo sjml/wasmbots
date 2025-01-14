@@ -55,7 +55,10 @@
 
 	<!--
 		You can stick it in whatever div you want, obviously,
-		and style/size it to your liking.
+		and style/size it to your liking. Note that because
+		of the way the canvas gets sized by Phaser, this div
+		needs to have definitive dimensions somewhere in its
+		hierarchy ancestors.
 	-->
 	<div id="aquarium">
 		<!--
@@ -103,7 +106,7 @@
 		make the div with the game in it take over the screen.
 	-->
 	<button id="fullScreenButton">
-		Show fullscreen (doesn’t work on iPhones 😔)
+		Show fullscreen
 	</button>
 
 	<script>
@@ -136,9 +139,14 @@
 			stepButton.removeAttribute("disabled");
 		});
 
-		fullScreenButton.addEventListener("click", () => {
-			aquarium.requestFullscreen();
-		});
+		if (document.fullscreenEnabled) {
+			fullScreenButton.addEventListener("click", () => {
+				aquarium.requestFullscreen();
+			});
+		}
+		else {
+			fullScreenButton.style = "display: none;";
+		}
 	</script>
 </body>
 </html>

@@ -1,10 +1,12 @@
 <script lang="ts">
 	import { onMount, type Snippet } from "svelte";
 	import { base } from "$app/paths";
+	import { navigating } from "$app/state";
 
 	import { ListBullets, ArrowUDownLeft } from "phosphor-svelte";
 
 	import ManaForge from "$lib/ui/ManaForge.svelte";
+    import Spinner from "$lib/ui/Spinner.svelte";
 
 	interface Props {
 		children?: Snippet;
@@ -22,6 +24,8 @@
 		observer.observe(mainHeader);
 		return () => observer.disconnect();
 	});
+
+	let isNavigating = $derived(navigating.from !== null);
 </script>
 
 <div class="container">
@@ -63,7 +67,11 @@
 			{/if}
 		</button>
 		<section class="content">
-			{@render children?.()}
+			{#if !isNavigating}
+				{@render children?.()}
+			{:else}
+				<Spinner />
+			{/if}
 		</section>
 	</main>
 </div>
@@ -250,9 +258,11 @@
 
 	.content {
 		flex-grow: 1;
+		position: relative;
+		overflow: hidden;
 		padding: 0 25px 20px 20px;
 		font-size: 18px;
-		background-color: rgb(46, 50, 54);
+		background-color: hsl(221, 8%, 20%);
 		color: rgba(255, 255, 255, 0.85);
 
 		line-height: 1.4;
