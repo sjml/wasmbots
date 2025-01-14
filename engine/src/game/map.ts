@@ -282,6 +282,8 @@ export class WorldMap {
 		).join("\n");
 	}
 
+	// If I ever learn that Eric Wastl is dining in the same place that
+	//    I am, he will not pay for his meal.
 	get aoc(): string {
 		return WorldMap.getDebugSlice(this.tiles);
 	}
