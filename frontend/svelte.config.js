@@ -1,5 +1,8 @@
+import process from 'node:process';
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
+
+const projectBase = process.env['WASMBOTS_BASE'] ?? '/projects/wasmbots';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
@@ -18,7 +21,7 @@ const config = {
 			strict: true,
 		}),
 		paths: {
-			base: process.argv.includes('dev') ? '' : '/projects/wasmbots'
+			base: process.argv.includes('dev') ? '' : projectBase
 		},
 		alias: {
 			"wasmbots": "../engine/src"

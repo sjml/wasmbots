@@ -39,7 +39,7 @@ jobs:
         run: |
           cd frontend
           npm install
-          npm run build
+          WASMBOTS_BASE="/wasmbots" npm run build
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:

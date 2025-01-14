@@ -5,6 +5,8 @@ import { sveltePhosphorOptimize } from "phosphor-svelte/vite";
 
 import hashAssets from "./scripts/hashPhaserAssets";
 
+const projectBase = process.env['WASMBOTS_BASE'] ?? '/projects/wasmbots';
+
 export default defineConfig({
 	plugins: [
 		sveltePhosphorOptimize(),
@@ -24,7 +26,7 @@ export default defineConfig({
 		chunkSizeWarningLimit: 2000,
 	},
 	define: {
-		'__RSC_PATH__': process.argv.includes('dev') ? `'/rsc'` : `'/projects/wasmbots/rsc'`,
+		'__RSC_PATH__': process.argv.includes('dev') ? `'/rsc'` : `'${projectBase}/rsc'`,
 		'__IIFE_BUILD__': 'false',
 		'__GIT_REVISION__': `'${execSync('git rev-parse HEAD').toString().trim()}'`,
 	}
