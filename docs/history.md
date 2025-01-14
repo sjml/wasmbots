@@ -33,7 +33,7 @@ I played around with [Screeps](https://screeps.com/) a few years ago, and it's d
 ### Advent of Code
 ![Advent of Code Screenshot](./img/aoc.png)
 
-I've been doing [Advent of Code](https://adventofcode.com/) since 2019, and it is one of my favorite things. The story is just the right level of goofy/twee, and the puzzles have made me a substantially better programmer as I've had to go deeper on math and algorithms than I ever did before. Very frequently those puzzles will have you navigating mazes, so writing code to map a space, pathfind, etc. is now close to second-nature. (This is why the map class has an [`aoc()`](https://github.com/sjml/wasmbots/blob/7b1a24efd88f8330d47d16f3d85340f06514ce75/engine/src/game/map.ts#L277) function that outputs in the usual format from Advent of Code. 😝)
+I've been doing [Advent of Code](https://adventofcode.com/) since 2019, and it is one of my favorite things. The story is just the right level of goofy/twee, and the puzzles have made me a substantially better programmer as I've had to go deeper on math and algorithms than I ever did before. Very frequently those puzzles will have you navigating mazes, so writing code to map a space, pathfind, etc. is now close to second-nature. (This is why the map class has an [`aoc()`](https://github.com/sjml/wasmbots/blob/8fda7ef1a5a73a1b573d5ab6a616c79a58048733/engine/src/game/map.ts#L285) function that outputs in the usual format from Advent of Code. 😝)
 
 
 ## Building the Thing
