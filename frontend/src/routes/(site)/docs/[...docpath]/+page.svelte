@@ -48,6 +48,16 @@
 			display: none;
 		}
 
+		h1 {
+			font-size: xx-large;
+		}
+
+		h3 {
+			font-weight: normal;
+			font-style: italic;
+			font-size: x-large;
+		}
+
 		h2, h3 {
 			margin-top: 35px;
 			margin-bottom: 0;

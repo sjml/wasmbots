@@ -165,6 +165,7 @@ function classifyLinks(params: object) {
 
 function anchorifyAndIncrementHeaders(_params: object) {
 	const slugger = new GitHubSlugger();
+	const headerIncrement = 0; // since there's no proper h1 on the page anymore
 
 	return (tree: HRoot) => {
 		const headerNodes: Element[] = [];
@@ -177,7 +178,7 @@ function anchorifyAndIncrementHeaders(_params: object) {
 
 		headerNodes.map((header) => {
 			const currentLevel = parseInt(header.tagName.substring(1));
-			header.tagName = `h${currentLevel+1}`;
+			header.tagName = `h${currentLevel + headerIncrement}`;
 			if (header.tagName === "h2") {
 				return; // don't add anchor to top-level headings
 			}
