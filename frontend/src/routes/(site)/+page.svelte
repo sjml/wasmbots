@@ -13,13 +13,20 @@
 </svelte:head>
 
 <div class="intro">
-	<!-- svelte-ignore a11y_media_has_caption -->
-	<video src="{base}/img/docs/WasmBots_Proof-of-Concept.mp4" controls poster="{base}/img/docs/intro-video-poster.jpg"></video>
+
+	<iframe
+		src="https://www.youtube-nocookie.com/embed/DGkkTYJrflI?si=5_shrFAmXkVYP12q&modestbranding=1"
+		title="YouTube video player"
+		frameborder="0"
+		allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+		referrerpolicy="strict-origin-when-cross-origin"
+		allowfullscreen>
+	</iframe>
 
 	<p>
 		Hello! <a href="https://shaneliesegang.com" target="_blank">I’m Shane</a>, and
-		this is WasmBots, a project for hosting WebAssembly modules that play a
-		light dungeon exploration game.
+		this is WasmBots, an in-progress project for hosting WebAssembly modules that
+		play a light dungeon exploration game.
 	</p>
 
 	<p>
@@ -70,8 +77,12 @@
 		margin-top: 50px;
 	}
 
-	.intro video {
-		max-width: 100%;
+	.intro iframe {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		margin-left: auto;
+		margin-right: auto;
+		display: block;
 	}
 
 	.standaloneWithControls {
