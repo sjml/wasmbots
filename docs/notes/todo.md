@@ -43,6 +43,7 @@
     * consistency on error messages
     * clean up / clear out old test code and deno-cli stuff in engine
     * clutter should be more data-driven instead of spaghetti code (in painter.ts)
+    * pages action should cache dependencies
 * UI: 
   * landscape view on iPhone - the drawers don't extend into the island areas
   * drag-and-drop to load files on page

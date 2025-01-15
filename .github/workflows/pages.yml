@@ -1,8 +1,8 @@
 name: Deploy to GitHub Pages
 
 on:
-  # push:
-  #   branches: ["main"]
+  push:
+    branches: ["main"]
   workflow_dispatch:
 
 permissions:
@@ -17,12 +17,16 @@ concurrency:
 jobs:
   build:
     name: Build
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@master
       - name: Install Dependencies
-        run: brew install deno wabt zig emscripten node go tinygo-org/tools/tinygo
+        run: |
+          brew install zig wabt emscripten go tinygo-org/tools/tinygo
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@master
         with:
