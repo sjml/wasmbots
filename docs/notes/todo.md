@@ -1,24 +1,27 @@
-## dev
-* game
-    * players should(?) collide with each other
-    * need to figure out how to convey other stuff you see beside terrain
-        * if a square can contain more than one thing (and it probably should) it gets tough
-        * probably a generic-ish "Entity" type with an enum for Monster/Player/Item/etc., a location field, and, say, four bytes worth of data that have to be parsed on the client side? (annoying, but anything else would require something much more complicated than beschi)
-    * items, weapons, armor(?), spells
-      * rooms should get themes and clutter (dungeon, study, etc.)
-    * trapdoors with tunnels, teleporters
-    * traps? 
-    * GOAL
-      * CTF: steal an item from opponent's spawn room and bring it back to yours
-      * last bot standing
-      * find the magic whatsit 
-        * can't guarantee that all bots have even remotely equal path to any point tho
-        * also an issue with CTF but at least the spawn rooms are roughly equidistant
+(speculative ideas are all in [the idea dump](./idea_dump.md); this file is just for actionable tasks)
 
-* documentation
-    * how everything works, I guess
-    * video intro?
-    * have page title get updated with doc navigation
+## dev
+* perception system
+    * entities on tiles
+    * list of events that happened last turn
+* first goal: find macguffin
+  * randomly place in interior room, first bot to find it wins
+  * to that end:
+    1. create game modes (leave "Wander" as one)
+    2. event to let players know they won or lost
+* player collision
+* physical attacks
+* second goal: last bot standing
+* items (weapon/armor) that change numbers involved in physical attacks
+* third goal: CTF
+  * item to bring back to your spawn room
+* spells
+  * items that grant abilities to use cast actions
+* NPCs
+  * monsters first
+
+* flavor
+    * rooms should get themes and clutter (dungeon, study, etc.)
 
 * web trainer
   * first UX:
@@ -49,7 +52,8 @@
   * drag-and-drop to load files on page
     * whole bot panel is target
     * can drag multiple and will fill them up
-* Tech: ability to reseed player on reset
+* Tech: 
+  * ability to reseed player on reset
 * Trainer:
   * author + load JSON files of message sequences
     * means generating code to serialize/deserialize messages from JSON 😬
@@ -61,13 +65,9 @@
     * https://code.visualstudio.com/docs/editor/multi-root-workspaces
   * https://code.visualstudio.com/docs/editor/debugging#_compound-launch-configurations
   * https://code.visualstudio.com/Docs/editor/debugging#_multitarget-debugging
-* CI to build/validate/deploy
 
 
 ## horizon
-* monsters! 
-  * TypeScript-driven AIs, very basic behaviors
-  * stat blocks read from JSON?
 * game player objects should have labels that world can see
   * update world.ts processMove error handler once they do
 * custom Phaser3 build to trim down export size
@@ -75,7 +75,6 @@
 
 
 ## far-flung future
-* allow teams? hooboy, whole other layer of functionality
 * if/when this PR ships, push more data stuff into the tileset
     * https://github.com/mapeditor/tiled/pull/4045
     * classes, etc. could be done now, but don't want to overcommit until there's support for lists (https://github.com/mapeditor/tiled/pull/4002)

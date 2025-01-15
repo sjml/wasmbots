@@ -1,6 +1,6 @@
 # WasmBots
 
-[A multi-wizard arena where all the competitors are bots!](https://shaneliesegang.com/projects/wasmbots/)
+[A multi-wizard arena where all the competitors are bots!](https://shaneliesegang.com/projects/wasmbots/) (Always a latest build at [GitHub Pages](https://sjml.github.io/wasmbots/), but that site is the canonical deployment.)
 
 <p align="center"><img src="https://github.com/sjml/wasmbots/raw/main/art/misc/wasmbots-tease.gif" alt="WasmBots Teaser Image"></p>
 
