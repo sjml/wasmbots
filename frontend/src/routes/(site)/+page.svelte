@@ -70,6 +70,14 @@
 		example bots</a> are implemented in a variety of languages and should
 		be useful examples.
 	</p>
+
+	<p>
+		I note that this context is not the kind of thing that WebAssembly is
+		<em>especially</em> good at. Every turn, memory is getting passed back
+		and forth between host and module, which is a relatively slow operation.
+		However, (a) at the scale at which we’re operating, it’s fine and (b) this
+		is fun. It’s not optimal. It’s fun.
+	</p>
 </div>
 
 <style>
