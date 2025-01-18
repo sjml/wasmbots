@@ -1,5 +1,6 @@
 use std::sync::Mutex;
 
+pub mod client;
 mod host_reserve;
 pub mod params;
 pub mod wasmbot_messages;
