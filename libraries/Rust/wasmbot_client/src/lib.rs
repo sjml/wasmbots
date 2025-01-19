@@ -5,6 +5,7 @@ pub mod params;
 pub mod wasmbot_messages;
 pub mod ffi;
 pub mod log;
+mod platform;
 
 pub use client::Client;
 pub use log::*;
