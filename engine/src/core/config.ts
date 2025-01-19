@@ -5,7 +5,7 @@ const MAP_HEIGHT = 41;
 const TILE_SIZE = 16;
 
 const config = {
-	version: [0, 0, 1],
+	version: [0, 1, 0],
 
 	// @ts-ignore
 	environment: typeof Deno !== "undefined" ? "Deno" : "Web",

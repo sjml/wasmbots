@@ -15,6 +15,13 @@ string_size_type = "byte"
 _name = "_Error"
 description = "string"
 
+[[enums]]
+_name = "GameMode"
+_values = [
+	"Wander", # the proof-of-concept "navigate with no stakes" mode
+	"Attain", # find the amulet
+]
+
 # initial setup message that you can either accept or reject
 [[messages]]
 _name = "InitialParameters"
@@ -25,6 +32,7 @@ engineVersionPatch = "uint16"  # patch version of engine
 diagonalMovement = "bool"      # if false, any attempted diagonal move will be Invalid
 playerStride = "byte"          # how far you can move on a given turn
 playerOpenReach = "byte"       # the distance at which you can open things (doors, chests)
+gameMode = "GameMode"          # what type of game we're going to play
 
 [[structs]]
 _name = "Point"
@@ -35,33 +43,58 @@ y = "int16"
 [[enums]]
 _name = "MoveResult"
 _values = [
-    "Succeeded",  # your move worked (ex: attack hit, moved successfully)
-    "Failed",     # your move did not work (ex: attack missed, moved into wall)
-    "Invalid",    # your move was not allowed by the system (ex: tried diagonal movement when not allowed, targeted something out of range)
-    "Error",      # your move was not understood (ex: malformed message, missing data)
+	"Succeeded",  # your move worked (ex: attack hit, moved successfully)
+	"Failed",     # your move did not work (ex: attack missed, moved into wall)
+	"Invalid",    # your move was not allowed by the system (ex: tried diagonal movement when not allowed, targeted something out of range)
+	"Error",      # your move was not understood (ex: malformed message, missing data)
 ]
 
 [[enums]]
 _name = "TileType"
 _values = [
-    "Void",        # you don't know what's there; might be off the edge of the map, or maybe just behind a wall
-    "Floor",       # an open space you can move to
-    "OpenDoor",    # a door space that you can pass through or take a turn to target with Close
-    "ClosedDoor",  # an impassable door space that you can take a turn to target with Open
-    "Wall",        # an impassable space
+	"Void",        # you don't know what's there; might be off the edge of the map, or maybe just behind a wall
+	"Floor",       # an open space you can move to
+	"OpenDoor",    # a door space that you can pass through or take a turn to target with Close
+	"ClosedDoor",  # an impassable door space that you can take a turn to target with Open
+	"Wall",        # an impassable space
 ]
 
 [[enums]]
 _name = "Direction"
 _values = [
-    "North",
-    "Northeast",
-    "East",
-    "Southeast",
-    "South",
-    "Southwest",
-    "West",
-    "Northwest",
+	"North",
+	"Northeast",
+	"East",
+	"Southeast",
+	"South",
+	"Southwest",
+	"West",
+	"Northwest",
+]
+
+[[enums]]
+_name = "EntityType"
+_values = [
+	"Player",
+	"Item",
+]
+
+[[structs]]
+_name = "Entity"
+id = "uint32"
+type = "EntityType"
+surroundingsIndex = "uint16"
+label = "string"
+dataByteA = "byte"
+dataByteB = "byte"
+dataIntA = "int32"
+dataIntB = "int32"
+
+[[enums]]
+_name = "ItemType"
+_values = [
+	"Stone",
+	"Amulet",
 ]
 
 # player receives every tick
@@ -378,6 +411,29 @@ pub fn process_raw_bytes(reader: &mut BufferReader, max: i32) -> Result<Vec<Mess
 
 #[repr(u8)]
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum GameMode {
+	Wander = 0,
+	Attain = 1,
+}
+
+impl Default for GameMode {
+	fn default() -> Self { GameMode::Wander }
+}
+
+impl TryFrom<u8> for GameMode {
+	type Error = WasmBotsError;
+
+	fn try_from(value: u8) -> Result<Self, WasmBotsError> {
+		match value {
+			0 => Ok(GameMode::Wander),
+			1 => Ok(GameMode::Attain),
+			_ => Err(WasmBotsError::InvalidData)
+		}
+	}
+}
+
+#[repr(u8)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub enum MoveResult {
 	Succeeded = 0,
 	Failed = 1,
@@ -467,6 +523,52 @@ impl TryFrom<u8> for Direction {
 	}
 }
 
+#[repr(u8)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum EntityType {
+	Player = 0,
+	Item = 1,
+}
+
+impl Default for EntityType {
+	fn default() -> Self { EntityType::Player }
+}
+
+impl TryFrom<u8> for EntityType {
+	type Error = WasmBotsError;
+
+	fn try_from(value: u8) -> Result<Self, WasmBotsError> {
+		match value {
+			0 => Ok(EntityType::Player),
+			1 => Ok(EntityType::Item),
+			_ => Err(WasmBotsError::InvalidData)
+		}
+	}
+}
+
+#[repr(u8)]
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum ItemType {
+	Stone = 0,
+	Amulet = 1,
+}
+
+impl Default for ItemType {
+	fn default() -> Self { ItemType::Stone }
+}
+
+impl TryFrom<u8> for ItemType {
+	type Error = WasmBotsError;
+
+	fn try_from(value: u8) -> Result<Self, WasmBotsError> {
+		match value {
+			0 => Ok(ItemType::Stone),
+			1 => Ok(ItemType::Amulet),
+			_ => Err(WasmBotsError::InvalidData)
+		}
+	}
+}
+
 #[derive(Default)]
 pub struct Point {
 	pub x: i16,
@@ -487,6 +589,52 @@ impl Point {
 	pub fn write_bytes(&self, writer: &mut Vec<u8>) {
 		writer.extend(self.x.to_le_bytes());
 		writer.extend(self.y.to_le_bytes());
+	}
+}
+
+#[derive(Default)]
+pub struct Entity {
+	pub id: u32,
+	pub type: EntityType,
+	pub surroundings_index: u16,
+	pub label: String,
+	pub data_byte_a: u8,
+	pub data_byte_b: u8,
+	pub data_int_a: i32,
+	pub data_int_b: i32,
+}
+
+impl Entity {
+	fn get_size_in_bytes(&self) -> usize {
+		let mut size: usize = 0;
+		size += self.label.len();
+		size += 18;
+		size
+	}
+
+	fn from_bytes(reader: &mut BufferReader) -> Result<Entity, WasmBotsError> {
+		let id = reader.read_u32()?;
+		let type = reader.read_u8()?;
+		let type = EntityType::try_from(type)?;
+		let surroundings_index = reader.read_u16()?;
+		let label = reader.read_string()?;
+		let data_byte_a = reader.take_byte()?;
+		let data_byte_b = reader.take_byte()?;
+		let data_int_a = reader.read_i32()?;
+		let data_int_b = reader.read_i32()?;
+		Ok(Entity {id, type, surroundings_index, label, data_byte_a, data_byte_b, data_int_a, data_int_b})
+	}
+
+	pub fn write_bytes(&self, writer: &mut Vec<u8>) {
+		writer.extend(self.id.to_le_bytes());
+		writer.push(self.type as u8);
+		writer.extend(self.surroundings_index.to_le_bytes());
+		writer.extend((self.label.len() as u8).to_le_bytes());
+		writer.extend(self.label.as_bytes());
+		writer.push(self.data_byte_a);
+		writer.push(self.data_byte_b);
+		writer.extend(self.data_int_a.to_le_bytes());
+		writer.extend(self.data_int_b.to_le_bytes());
 	}
 }
 
@@ -530,6 +678,7 @@ pub struct InitialParameters {
 	pub diagonal_movement: bool,
 	pub player_stride: u8,
 	pub player_open_reach: u8,
+	pub game_mode: GameMode,
 }
 
 impl MessageCodec for InitialParameters {
@@ -538,7 +687,7 @@ impl MessageCodec for InitialParameters {
 	}
 
 	fn get_size_in_bytes(&self) -> usize {
-		11
+		12
 	}
 
 	fn from_bytes(reader: &mut BufferReader) -> Result<InitialParameters, WasmBotsError> {
@@ -549,7 +698,9 @@ impl MessageCodec for InitialParameters {
 		let diagonal_movement = reader.take_byte()? > 0;
 		let player_stride = reader.take_byte()?;
 		let player_open_reach = reader.take_byte()?;
-		Ok(InitialParameters {params_version, engine_version_major, engine_version_minor, engine_version_patch, diagonal_movement, player_stride, player_open_reach})
+		let game_mode = reader.read_u8()?;
+		let game_mode = GameMode::try_from(game_mode)?;
+		Ok(InitialParameters {params_version, engine_version_major, engine_version_minor, engine_version_patch, diagonal_movement, player_stride, player_open_reach, game_mode})
 	}
 
 	fn write_bytes(&self, writer: &mut Vec<u8>, tag: bool) {
@@ -563,6 +714,7 @@ impl MessageCodec for InitialParameters {
 		writer.push(if self.diagonal_movement {1_u8} else {0_u8});
 		writer.push(self.player_stride);
 		writer.push(self.player_open_reach);
+		writer.push(self.game_mode as u8);
 	}
 }
 

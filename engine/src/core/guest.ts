@@ -84,7 +84,7 @@ export abstract class GuestProgram {
 		reserveBlock.fill(0);
 
 		const gp = new CoreMsg.InitialParameters();
-		gp.paramsVersion = 7;
+		gp.paramsVersion = 8;
 		gp.engineVersionMajor = config.version[0];
 		gp.engineVersionMinor = config.version[1];
 		gp.engineVersionPatch = config.version[2];

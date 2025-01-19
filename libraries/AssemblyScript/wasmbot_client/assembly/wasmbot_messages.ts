@@ -15,6 +15,13 @@ string_size_type = "byte"
 _name = "_Error"
 description = "string"
 
+[[enums]]
+_name = "GameMode"
+_values = [
+	"Wander", # the proof-of-concept "navigate with no stakes" mode
+	"Attain", # find the amulet
+]
+
 # initial setup message that you can either accept or reject
 [[messages]]
 _name = "InitialParameters"
@@ -25,6 +32,7 @@ engineVersionPatch = "uint16"  # patch version of engine
 diagonalMovement = "bool"      # if false, any attempted diagonal move will be Invalid
 playerStride = "byte"          # how far you can move on a given turn
 playerOpenReach = "byte"       # the distance at which you can open things (doors, chests)
+gameMode = "GameMode"          # what type of game we're going to play
 
 [[structs]]
 _name = "Point"
@@ -35,33 +43,58 @@ y = "int16"
 [[enums]]
 _name = "MoveResult"
 _values = [
-    "Succeeded",  # your move worked (ex: attack hit, moved successfully)
-    "Failed",     # your move did not work (ex: attack missed, moved into wall)
-    "Invalid",    # your move was not allowed by the system (ex: tried diagonal movement when not allowed, targeted something out of range)
-    "Error",      # your move was not understood (ex: malformed message, missing data)
+	"Succeeded",  # your move worked (ex: attack hit, moved successfully)
+	"Failed",     # your move did not work (ex: attack missed, moved into wall)
+	"Invalid",    # your move was not allowed by the system (ex: tried diagonal movement when not allowed, targeted something out of range)
+	"Error",      # your move was not understood (ex: malformed message, missing data)
 ]
 
 [[enums]]
 _name = "TileType"
 _values = [
-    "Void",        # you don't know what's there; might be off the edge of the map, or maybe just behind a wall
-    "Floor",       # an open space you can move to
-    "OpenDoor",    # a door space that you can pass through or take a turn to target with Close
-    "ClosedDoor",  # an impassable door space that you can take a turn to target with Open
-    "Wall",        # an impassable space
+	"Void",        # you don't know what's there; might be off the edge of the map, or maybe just behind a wall
+	"Floor",       # an open space you can move to
+	"OpenDoor",    # a door space that you can pass through or take a turn to target with Close
+	"ClosedDoor",  # an impassable door space that you can take a turn to target with Open
+	"Wall",        # an impassable space
 ]
 
 [[enums]]
 _name = "Direction"
 _values = [
-    "North",
-    "Northeast",
-    "East",
-    "Southeast",
-    "South",
-    "Southwest",
-    "West",
-    "Northwest",
+	"North",
+	"Northeast",
+	"East",
+	"Southeast",
+	"South",
+	"Southwest",
+	"West",
+	"Northwest",
+]
+
+[[enums]]
+_name = "EntityType"
+_values = [
+	"Player",
+	"Item",
+]
+
+[[structs]]
+_name = "Entity"
+id = "uint32"
+type = "EntityType"
+surroundingsIndex = "uint16"
+label = "string"
+dataByteA = "byte"
+dataByteB = "byte"
+dataIntA = "int32"
+dataIntB = "int32"
+
+[[enums]]
+_name = "ItemType"
+_values = [
+	"Stone",
+	"Amulet",
 ]
 
 # player receives every tick
@@ -495,6 +528,12 @@ export function ProcessRawBytesDA(da: DataAccess, max: number): Message[] {
 	return msgList;
 }
 
+export enum GameMode {
+	Wander = 0,
+	Attain = 1,
+	_Unknown,
+}
+
 export enum MoveResult {
 	Succeeded = 0,
 	Failed = 1,
@@ -524,6 +563,18 @@ export enum Direction {
 	_Unknown,
 }
 
+export enum EntityType {
+	Player = 0,
+	Item = 1,
+	_Unknown,
+}
+
+export enum ItemType {
+	Stone = 0,
+	Amulet = 1,
+	_Unknown,
+}
+
 export class Point {
 	x: i16 = 0;
 	y: i16 = 0;
@@ -541,6 +592,62 @@ export class Point {
 		da.setInt16(this.x);
 		if (da.hasError) { return false; }
 		da.setInt16(this.y);
+		if (da.hasError) { return false; }
+		return true;
+	}
+}
+
+export class Entity {
+	id: u32 = 0;
+	type: EntityType = EntityType.Player;
+	surroundingsIndex: u16 = 0;
+	label: string = "";
+	dataByteA: u8 = 0;
+	dataByteB: u8 = 0;
+	dataIntA: i32 = 0;
+	dataIntB: i32 = 0;
+
+	static fromBytes(da: DataAccess): Entity | null {
+		const nEntity = new Entity();
+		nEntity.id = da.getUint32();
+		if (da.hasError) { return null; }
+		let _type = da.getByte();
+		if (da.hasError) { return null; }
+		if (_type < 0 || _type >= (EntityType._Unknown as u8)) {
+			_type = EntityType._Unknown as u8;
+		}
+		nEntity.type = _type;
+		nEntity.surroundingsIndex = da.getUint16();
+		if (da.hasError) { return null; }
+		nEntity.label = da.getString();
+		if (da.hasError) { return null; }
+		nEntity.dataByteA = da.getByte();
+		if (da.hasError) { return null; }
+		nEntity.dataByteB = da.getByte();
+		if (da.hasError) { return null; }
+		nEntity.dataIntA = da.getInt32();
+		if (da.hasError) { return null; }
+		nEntity.dataIntB = da.getInt32();
+		if (da.hasError) { return null; }
+		return nEntity;
+	}
+
+	writeBytes(da: DataAccess): bool {
+		da.setUint32(this.id);
+		if (da.hasError) { return false; }
+		da.setByte(this.type as u8);
+		if (da.hasError) { return false; }
+		da.setUint16(this.surroundingsIndex);
+		if (da.hasError) { return false; }
+		da.setString(this.label);
+		if (da.hasError) { return false; }
+		da.setByte(this.dataByteA);
+		if (da.hasError) { return false; }
+		da.setByte(this.dataByteB);
+		if (da.hasError) { return false; }
+		da.setInt32(this.dataIntA);
+		if (da.hasError) { return false; }
+		da.setInt32(this.dataIntB);
 		if (da.hasError) { return false; }
 		return true;
 	}
@@ -594,11 +701,12 @@ export class InitialParameters extends Message {
 	diagonalMovement: bool = 0;
 	playerStride: u8 = 0;
 	playerOpenReach: u8 = 0;
+	gameMode: GameMode = GameMode.Wander;
 
 	getMessageType() : MessageType { return MessageType.InitialParametersType; }
 
 	getSizeInBytes(): usize {
-		return 11;
+		return 12;
 	}
 
 	static override fromBytes(data: DataView): InitialParameters | null {
@@ -622,6 +730,12 @@ export class InitialParameters extends Message {
 		if (da.hasError) { return null; }
 		nInitialParameters.playerOpenReach = da.getByte();
 		if (da.hasError) { return null; }
+		let _gameMode = da.getByte();
+		if (da.hasError) { return null; }
+		if (_gameMode < 0 || _gameMode >= (GameMode._Unknown as u8)) {
+			_gameMode = GameMode._Unknown as u8;
+		}
+		nInitialParameters.gameMode = _gameMode;
 		return nInitialParameters;
 	}
 
@@ -648,6 +762,8 @@ export class InitialParameters extends Message {
 		da.setByte(this.playerStride);
 		if (da.hasError) { return false; }
 		da.setByte(this.playerOpenReach);
+		if (da.hasError) { return false; }
+		da.setByte(this.gameMode as u8);
 		if (da.hasError) { return false; }
 		return true;
 	}

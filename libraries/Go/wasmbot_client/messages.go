@@ -15,6 +15,13 @@ string_size_type = "byte"
 _name = "_Error"
 description = "string"
 
+[[enums]]
+_name = "GameMode"
+_values = [
+	"Wander", # the proof-of-concept "navigate with no stakes" mode
+	"Attain", # find the amulet
+]
+
 # initial setup message that you can either accept or reject
 [[messages]]
 _name = "InitialParameters"
@@ -25,6 +32,7 @@ engineVersionPatch = "uint16"  # patch version of engine
 diagonalMovement = "bool"      # if false, any attempted diagonal move will be Invalid
 playerStride = "byte"          # how far you can move on a given turn
 playerOpenReach = "byte"       # the distance at which you can open things (doors, chests)
+gameMode = "GameMode"          # what type of game we're going to play
 
 [[structs]]
 _name = "Point"
@@ -35,33 +43,58 @@ y = "int16"
 [[enums]]
 _name = "MoveResult"
 _values = [
-    "Succeeded",  # your move worked (ex: attack hit, moved successfully)
-    "Failed",     # your move did not work (ex: attack missed, moved into wall)
-    "Invalid",    # your move was not allowed by the system (ex: tried diagonal movement when not allowed, targeted something out of range)
-    "Error",      # your move was not understood (ex: malformed message, missing data)
+	"Succeeded",  # your move worked (ex: attack hit, moved successfully)
+	"Failed",     # your move did not work (ex: attack missed, moved into wall)
+	"Invalid",    # your move was not allowed by the system (ex: tried diagonal movement when not allowed, targeted something out of range)
+	"Error",      # your move was not understood (ex: malformed message, missing data)
 ]
 
 [[enums]]
 _name = "TileType"
 _values = [
-    "Void",        # you don't know what's there; might be off the edge of the map, or maybe just behind a wall
-    "Floor",       # an open space you can move to
-    "OpenDoor",    # a door space that you can pass through or take a turn to target with Close
-    "ClosedDoor",  # an impassable door space that you can take a turn to target with Open
-    "Wall",        # an impassable space
+	"Void",        # you don't know what's there; might be off the edge of the map, or maybe just behind a wall
+	"Floor",       # an open space you can move to
+	"OpenDoor",    # a door space that you can pass through or take a turn to target with Close
+	"ClosedDoor",  # an impassable door space that you can take a turn to target with Open
+	"Wall",        # an impassable space
 ]
 
 [[enums]]
 _name = "Direction"
 _values = [
-    "North",
-    "Northeast",
-    "East",
-    "Southeast",
-    "South",
-    "Southwest",
-    "West",
-    "Northwest",
+	"North",
+	"Northeast",
+	"East",
+	"Southeast",
+	"South",
+	"Southwest",
+	"West",
+	"Northwest",
+]
+
+[[enums]]
+_name = "EntityType"
+_values = [
+	"Player",
+	"Item",
+]
+
+[[structs]]
+_name = "Entity"
+id = "uint32"
+type = "EntityType"
+surroundingsIndex = "uint16"
+label = "string"
+dataByteA = "byte"
+dataByteB = "byte"
+dataIntA = "int32"
+dataIntB = "int32"
+
+[[enums]]
+_name = "ItemType"
+_values = [
+	"Stone",
+	"Amulet",
 ]
 
 # player receives every tick
@@ -271,6 +304,22 @@ func ProcessRawBytes(data io.Reader, max int) ([]Message, error) {
 	return msgList, nil
 }
 
+type GameMode byte
+
+const (
+	GameModeWander GameMode = 0
+	GameModeAttain GameMode = 1
+)
+
+func isValidGameMode(value GameMode) bool {
+	switch value {
+	case GameModeWander, GameModeAttain:
+		return true
+	default:
+		return false
+	}
+}
+
 type MoveResult byte
 
 const (
@@ -330,6 +379,38 @@ func isValidDirection(value Direction) bool {
 	}
 }
 
+type EntityType byte
+
+const (
+	EntityTypePlayer EntityType = 0
+	EntityTypeItem   EntityType = 1
+)
+
+func isValidEntityType(value EntityType) bool {
+	switch value {
+	case EntityTypePlayer, EntityTypeItem:
+		return true
+	default:
+		return false
+	}
+}
+
+type ItemType byte
+
+const (
+	ItemTypeStone  ItemType = 0
+	ItemTypeAmulet ItemType = 1
+)
+
+func isValidItemType(value ItemType) bool {
+	switch value {
+	case ItemTypeStone, ItemTypeAmulet:
+		return true
+	default:
+		return false
+	}
+}
+
 type Point struct {
 	X int16
 	Y int16
@@ -352,6 +433,67 @@ func PointFromBytes(data io.Reader, input *Point) error {
 func (output Point) WriteBytes(data io.Writer) {
 	binary.Write(data, binary.LittleEndian, &output.X)
 	binary.Write(data, binary.LittleEndian, &output.Y)
+}
+
+type Entity struct {
+	Id uint32
+	Type EntityType
+	SurroundingsIndex uint16
+	Label string
+	DataByteA byte
+	DataByteB byte
+	DataIntA int32
+	DataIntB int32
+}
+
+func NewEntityDefault() Entity {
+	return Entity{
+		Type: EntityTypePlayer,
+	}
+}
+
+func EntityFromBytes(data io.Reader, input *Entity) error {
+	if err := binary.Read(data, binary.LittleEndian, &input.Id); err != nil {
+		return fmt.Errorf("could not read input.Id at offset %d (%w)", getDataOffset(data), err)
+	}
+	var _Type EntityType
+	if err := binary.Read(data, binary.LittleEndian, &_Type); err != nil {
+		return fmt.Errorf("could not read input.Type at offset %d (%w)", getDataOffset(data), err)
+	}
+	if !isValidEntityType(_Type) {
+		return fmt.Errorf("enum %d out of range for EntityType", _Type)
+	}
+	input.Type = _Type
+	if err := binary.Read(data, binary.LittleEndian, &input.SurroundingsIndex); err != nil {
+		return fmt.Errorf("could not read input.SurroundingsIndex at offset %d (%w)", getDataOffset(data), err)
+	}
+	if err := readString(data, &input.Label); err != nil {
+		return fmt.Errorf("could not read string at offset %d (%w)", getDataOffset(data), err)
+	}
+	if err := binary.Read(data, binary.LittleEndian, &input.DataByteA); err != nil {
+		return fmt.Errorf("could not read input.DataByteA at offset %d (%w)", getDataOffset(data), err)
+	}
+	if err := binary.Read(data, binary.LittleEndian, &input.DataByteB); err != nil {
+		return fmt.Errorf("could not read input.DataByteB at offset %d (%w)", getDataOffset(data), err)
+	}
+	if err := binary.Read(data, binary.LittleEndian, &input.DataIntA); err != nil {
+		return fmt.Errorf("could not read input.DataIntA at offset %d (%w)", getDataOffset(data), err)
+	}
+	if err := binary.Read(data, binary.LittleEndian, &input.DataIntB); err != nil {
+		return fmt.Errorf("could not read input.DataIntB at offset %d (%w)", getDataOffset(data), err)
+	}
+	return nil
+}
+
+func (output Entity) WriteBytes(data io.Writer) {
+	binary.Write(data, binary.LittleEndian, &output.Id)
+	binary.Write(data, binary.LittleEndian, &output.Type)
+	binary.Write(data, binary.LittleEndian, &output.SurroundingsIndex)
+	writeString(data, &output.Label)
+	binary.Write(data, binary.LittleEndian, &output.DataByteA)
+	binary.Write(data, binary.LittleEndian, &output.DataByteB)
+	binary.Write(data, binary.LittleEndian, &output.DataIntA)
+	binary.Write(data, binary.LittleEndian, &output.DataIntB)
 }
 
 type _Error struct {
@@ -398,10 +540,13 @@ type InitialParameters struct {
 	DiagonalMovement bool
 	PlayerStride byte
 	PlayerOpenReach byte
+	GameMode GameMode
 }
 
 func NewInitialParametersDefault() InitialParameters {
-	return InitialParameters{}
+	return InitialParameters{
+		GameMode: GameModeWander,
+	}
 }
 
 func (output InitialParameters) GetMessageType() MessageType {
@@ -409,7 +554,7 @@ func (output InitialParameters) GetMessageType() MessageType {
 }
 
 func (output InitialParameters) GetSizeInBytes() int {
-	return 11
+	return 12
 }
 
 func InitialParametersFromBytes(data io.Reader) (*InitialParameters, error) {
@@ -436,6 +581,14 @@ func InitialParametersFromBytes(data io.Reader) (*InitialParameters, error) {
 	if err := binary.Read(data, binary.LittleEndian, &msg.PlayerOpenReach); err != nil {
 		return nil, fmt.Errorf("could not read msg.PlayerOpenReach at offset %d (%w)", getDataOffset(data), err)
 	}
+	var _GameMode GameMode
+	if err := binary.Read(data, binary.LittleEndian, &_GameMode); err != nil {
+		return nil, fmt.Errorf("could not read msg.GameMode at offset %d (%w)", getDataOffset(data), err)
+	}
+	if !isValidGameMode(_GameMode) {
+		return nil, fmt.Errorf("enum %d out of range for GameMode", _GameMode)
+	}
+	msg.GameMode = _GameMode
 
 	return msg, nil
 }
@@ -451,6 +604,7 @@ func (output InitialParameters) WriteBytes(data io.Writer, tag bool) {
 	binary.Write(data, binary.LittleEndian, &output.DiagonalMovement)
 	binary.Write(data, binary.LittleEndian, &output.PlayerStride)
 	binary.Write(data, binary.LittleEndian, &output.PlayerOpenReach)
+	binary.Write(data, binary.LittleEndian, &output.GameMode)
 }
 
 type PresentCircumstances struct {

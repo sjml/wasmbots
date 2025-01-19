@@ -17,6 +17,13 @@ string_size_type = "byte"
 _name = "_Error"
 description = "string"
 
+[[enums]]
+_name = "GameMode"
+_values = [
+	"Wander", # the proof-of-concept "navigate with no stakes" mode
+	"Attain", # find the amulet
+]
+
 # initial setup message that you can either accept or reject
 [[messages]]
 _name = "InitialParameters"
@@ -27,6 +34,7 @@ engineVersionPatch = "uint16"  # patch version of engine
 diagonalMovement = "bool"      # if false, any attempted diagonal move will be Invalid
 playerStride = "byte"          # how far you can move on a given turn
 playerOpenReach = "byte"       # the distance at which you can open things (doors, chests)
+gameMode = "GameMode"          # what type of game we're going to play
 
 [[structs]]
 _name = "Point"
@@ -37,33 +45,58 @@ y = "int16"
 [[enums]]
 _name = "MoveResult"
 _values = [
-    "Succeeded",  # your move worked (ex: attack hit, moved successfully)
-    "Failed",     # your move did not work (ex: attack missed, moved into wall)
-    "Invalid",    # your move was not allowed by the system (ex: tried diagonal movement when not allowed, targeted something out of range)
-    "Error",      # your move was not understood (ex: malformed message, missing data)
+	"Succeeded",  # your move worked (ex: attack hit, moved successfully)
+	"Failed",     # your move did not work (ex: attack missed, moved into wall)
+	"Invalid",    # your move was not allowed by the system (ex: tried diagonal movement when not allowed, targeted something out of range)
+	"Error",      # your move was not understood (ex: malformed message, missing data)
 ]
 
 [[enums]]
 _name = "TileType"
 _values = [
-    "Void",        # you don't know what's there; might be off the edge of the map, or maybe just behind a wall
-    "Floor",       # an open space you can move to
-    "OpenDoor",    # a door space that you can pass through or take a turn to target with Close
-    "ClosedDoor",  # an impassable door space that you can take a turn to target with Open
-    "Wall",        # an impassable space
+	"Void",        # you don't know what's there; might be off the edge of the map, or maybe just behind a wall
+	"Floor",       # an open space you can move to
+	"OpenDoor",    # a door space that you can pass through or take a turn to target with Close
+	"ClosedDoor",  # an impassable door space that you can take a turn to target with Open
+	"Wall",        # an impassable space
 ]
 
 [[enums]]
 _name = "Direction"
 _values = [
-    "North",
-    "Northeast",
-    "East",
-    "Southeast",
-    "South",
-    "Southwest",
-    "West",
-    "Northwest",
+	"North",
+	"Northeast",
+	"East",
+	"Southeast",
+	"South",
+	"Southwest",
+	"West",
+	"Northwest",
+]
+
+[[enums]]
+_name = "EntityType"
+_values = [
+	"Player",
+	"Item",
+]
+
+[[structs]]
+_name = "Entity"
+id = "uint32"
+type = "EntityType"
+surroundingsIndex = "uint16"
+label = "string"
+dataByteA = "byte"
+dataByteB = "byte"
+dataIntA = "int32"
+dataIntB = "int32"
+
+[[enums]]
+_name = "ItemType"
+_values = [
+	"Stone",
+	"Amulet",
 ]
 
 # player receives every tick
@@ -188,6 +221,12 @@ WasmBots_err_t WasmBots_GetPackedSize(void** msgList, size_t len, size_t* packed
 WasmBots_err_t WasmBots_PackMessages(void** msgList, size_t len, WasmBots_DataAccess* w);
 WasmBots_err_t WasmBots_UnpackMessages(WasmBots_DataAccess* r, void*** msgListOut, size_t* len);
 
+typedef enum WasmBots_GameMode {
+	WasmBots_GameMode_Wander = 0,
+	WasmBots_GameMode_Attain = 1
+} WasmBots_GameMode;
+bool WasmBots_IsValidGameMode(uint8_t value);
+
 typedef enum WasmBots_MoveResult {
 	WasmBots_MoveResult_Succeeded = 0,
 	WasmBots_MoveResult_Failed = 1,
@@ -217,6 +256,18 @@ typedef enum WasmBots_Direction {
 } WasmBots_Direction;
 bool WasmBots_IsValidDirection(uint8_t value);
 
+typedef enum WasmBots_EntityType {
+	WasmBots_EntityType_Player = 0,
+	WasmBots_EntityType_Item = 1
+} WasmBots_EntityType;
+bool WasmBots_IsValidEntityType(uint8_t value);
+
+typedef enum WasmBots_ItemType {
+	WasmBots_ItemType_Stone = 0,
+	WasmBots_ItemType_Amulet = 1
+} WasmBots_ItemType;
+bool WasmBots_IsValidItemType(uint8_t value);
+
 typedef struct {
 	int16_t x;
 	int16_t y;
@@ -224,6 +275,22 @@ typedef struct {
 
 WasmBots_err_t WasmBots_Point_WriteBytes(WasmBots_DataAccess* w, const WasmBots_Point* src);
 WasmBots_err_t WasmBots_Point_FromBytes(WasmBots_DataAccess* r, WasmBots_Point* dst);
+
+
+typedef struct {
+	uint32_t id;
+	WasmBots_EntityType type;
+	uint16_t surroundingsIndex;
+	uint8_t label_len;
+	char* label;
+	uint8_t dataByteA;
+	uint8_t dataByteB;
+	int32_t dataIntA;
+	int32_t dataIntB;
+} WasmBots_Entity;
+
+WasmBots_err_t WasmBots_Entity_WriteBytes(WasmBots_DataAccess* w, const WasmBots_Entity* src);
+WasmBots_err_t WasmBots_Entity_FromBytes(WasmBots_DataAccess* r, WasmBots_Entity* dst);
 
 
 typedef struct {
@@ -250,6 +317,7 @@ typedef struct {
 	bool diagonalMovement;
 	uint8_t playerStride;
 	uint8_t playerOpenReach;
+	WasmBots_GameMode gameMode;
 } WasmBots_InitialParameters;
 extern const WasmBots_InitialParameters WasmBots_InitialParameters_default;
 
@@ -994,6 +1062,16 @@ WasmBots_err_t WasmBots_UnpackMessages(WasmBots_DataAccess* r, void*** msgListOu
 	return WASMBOTS_ERR_OK;
 }
 
+bool WasmBots_IsValidGameMode(uint8_t value) {
+	switch (value) {
+		case WasmBots_GameMode_Wander:
+		case WasmBots_GameMode_Attain:
+			return true;
+		default:
+			return false;
+	}
+}
+
 bool WasmBots_IsValidMoveResult(uint8_t value) {
 	switch (value) {
 		case WasmBots_MoveResult_Succeeded:
@@ -1035,6 +1113,26 @@ bool WasmBots_IsValidDirection(uint8_t value) {
 	}
 }
 
+bool WasmBots_IsValidEntityType(uint8_t value) {
+	switch (value) {
+		case WasmBots_EntityType_Player:
+		case WasmBots_EntityType_Item:
+			return true;
+		default:
+			return false;
+	}
+}
+
+bool WasmBots_IsValidItemType(uint8_t value) {
+	switch (value) {
+		case WasmBots_ItemType_Stone:
+		case WasmBots_ItemType_Amulet:
+			return true;
+		default:
+			return false;
+	}
+}
+
 WasmBots_err_t WasmBots_Point_FromBytes(WasmBots_DataAccess* r, WasmBots_Point* dst) {
 	WasmBots_err_t err;
 	err = WasmBots__ReadInt16(r, &(dst->x));
@@ -1055,6 +1153,85 @@ WasmBots_err_t WasmBots_Point_WriteBytes(WasmBots_DataAccess* w, const WasmBots_
 		return err;
 	}
 	err = WasmBots__WriteInt16(w, (src->y));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	return WASMBOTS_ERR_OK;
+}
+
+WasmBots_err_t WasmBots_Entity_FromBytes(WasmBots_DataAccess* r, WasmBots_Entity* dst) {
+	WasmBots_err_t err;
+	err = WasmBots__ReadUInt32(r, &(dst->id));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	uint8_t _type;
+	err = WasmBots__ReadUInt8(r, &(_type));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	if (!WasmBots_IsValidEntityType(_type)) {
+		return WASMBOTS_ERR_INVALID_DATA;
+	}
+	dst->type = (WasmBots_EntityType)_type;
+	err = WasmBots__ReadUInt16(r, &(dst->surroundingsIndex));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	err = WasmBots__ReadString(r, &(dst->label), &(dst->label_len));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	err = WasmBots__ReadUInt8(r, &(dst->dataByteA));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	err = WasmBots__ReadUInt8(r, &(dst->dataByteB));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	err = WasmBots__ReadInt32(r, &(dst->dataIntA));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	err = WasmBots__ReadInt32(r, &(dst->dataIntB));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	return WASMBOTS_ERR_OK;
+}
+
+WasmBots_err_t WasmBots_Entity_WriteBytes(WasmBots_DataAccess* w, const WasmBots_Entity* src) {
+	WasmBots_err_t err;
+	err = WasmBots__WriteUInt32(w, (src->id));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	err = WasmBots__WriteUInt8(w, (uint8_t)(src->type));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	err = WasmBots__WriteUInt16(w, (src->surroundingsIndex));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	err = WasmBots__WriteString(w, &(src->label), (src->label_len));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	err = WasmBots__WriteUInt8(w, (src->dataByteA));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	err = WasmBots__WriteUInt8(w, (src->dataByteB));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	err = WasmBots__WriteInt32(w, (src->dataIntA));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	err = WasmBots__WriteInt32(w, (src->dataIntB));
 	if (err != WASMBOTS_ERR_OK) {
 		return err;
 	}
@@ -1125,10 +1302,11 @@ const WasmBots_InitialParameters WasmBots_InitialParameters_default = {
 	.diagonalMovement = false,
 	.playerStride = 0,
 	.playerOpenReach = 0,
+	.gameMode = WasmBots_GameMode_Wander,
 };
 
 WasmBots_err_t WasmBots_InitialParameters_GetSizeInBytes(const WasmBots_InitialParameters* m, size_t* size) {
-	*size = 11;
+	*size = 12;
 	return WASMBOTS_ERR_OK;
 }
 
@@ -1143,6 +1321,7 @@ WasmBots_InitialParameters* WasmBots_InitialParameters_Create(void) {
 	out->diagonalMovement = WasmBots_InitialParameters_default.diagonalMovement;
 	out->playerStride = WasmBots_InitialParameters_default.playerStride;
 	out->playerOpenReach = WasmBots_InitialParameters_default.playerOpenReach;
+	out->gameMode = WasmBots_InitialParameters_default.gameMode;
 	return out;
 }
 
@@ -1185,6 +1364,15 @@ WasmBots_err_t WasmBots_InitialParameters_FromBytes(WasmBots_DataAccess* r, Wasm
 	if (err != WASMBOTS_ERR_OK) {
 		return err;
 	}
+	uint8_t _gameMode;
+	err = WasmBots__ReadUInt8(r, &(_gameMode));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	if (!WasmBots_IsValidGameMode(_gameMode)) {
+		return WASMBOTS_ERR_INVALID_DATA;
+	}
+	dst->gameMode = (WasmBots_GameMode)_gameMode;
 	return WASMBOTS_ERR_OK;
 }
 
@@ -1221,6 +1409,10 @@ WasmBots_err_t WasmBots_InitialParameters_WriteBytes(WasmBots_DataAccess* w, con
 		return err;
 	}
 	err = WasmBots__WriteUInt8(w, (src->playerOpenReach));
+	if (err != WASMBOTS_ERR_OK) {
+		return err;
+	}
+	err = WasmBots__WriteUInt8(w, (uint8_t)(src->gameMode));
 	if (err != WASMBOTS_ERR_OK) {
 		return err;
 	}

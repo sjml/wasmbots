@@ -14,6 +14,13 @@
 // _name = "_Error"
 // description = "string"
 // 
+// [[enums]]
+// _name = "GameMode"
+// _values = [
+// 	"Wander", # the proof-of-concept "navigate with no stakes" mode
+// 	"Attain", # find the amulet
+// ]
+// 
 // # initial setup message that you can either accept or reject
 // [[messages]]
 // _name = "InitialParameters"
@@ -24,6 +31,7 @@
 // diagonalMovement = "bool"      # if false, any attempted diagonal move will be Invalid
 // playerStride = "byte"          # how far you can move on a given turn
 // playerOpenReach = "byte"       # the distance at which you can open things (doors, chests)
+// gameMode = "GameMode"          # what type of game we're going to play
 // 
 // [[structs]]
 // _name = "Point"
@@ -34,33 +42,58 @@
 // [[enums]]
 // _name = "MoveResult"
 // _values = [
-//     "Succeeded",  # your move worked (ex: attack hit, moved successfully)
-//     "Failed",     # your move did not work (ex: attack missed, moved into wall)
-//     "Invalid",    # your move was not allowed by the system (ex: tried diagonal movement when not allowed, targeted something out of range)
-//     "Error",      # your move was not understood (ex: malformed message, missing data)
+// 	"Succeeded",  # your move worked (ex: attack hit, moved successfully)
+// 	"Failed",     # your move did not work (ex: attack missed, moved into wall)
+// 	"Invalid",    # your move was not allowed by the system (ex: tried diagonal movement when not allowed, targeted something out of range)
+// 	"Error",      # your move was not understood (ex: malformed message, missing data)
 // ]
 // 
 // [[enums]]
 // _name = "TileType"
 // _values = [
-//     "Void",        # you don't know what's there; might be off the edge of the map, or maybe just behind a wall
-//     "Floor",       # an open space you can move to
-//     "OpenDoor",    # a door space that you can pass through or take a turn to target with Close
-//     "ClosedDoor",  # an impassable door space that you can take a turn to target with Open
-//     "Wall",        # an impassable space
+// 	"Void",        # you don't know what's there; might be off the edge of the map, or maybe just behind a wall
+// 	"Floor",       # an open space you can move to
+// 	"OpenDoor",    # a door space that you can pass through or take a turn to target with Close
+// 	"ClosedDoor",  # an impassable door space that you can take a turn to target with Open
+// 	"Wall",        # an impassable space
 // ]
 // 
 // [[enums]]
 // _name = "Direction"
 // _values = [
-//     "North",
-//     "Northeast",
-//     "East",
-//     "Southeast",
-//     "South",
-//     "Southwest",
-//     "West",
-//     "Northwest",
+// 	"North",
+// 	"Northeast",
+// 	"East",
+// 	"Southeast",
+// 	"South",
+// 	"Southwest",
+// 	"West",
+// 	"Northwest",
+// ]
+// 
+// [[enums]]
+// _name = "EntityType"
+// _values = [
+// 	"Player",
+// 	"Item",
+// ]
+// 
+// [[structs]]
+// _name = "Entity"
+// id = "uint32"
+// type = "EntityType"
+// surroundingsIndex = "uint16"
+// label = "string"
+// dataByteA = "byte"
+// dataByteB = "byte"
+// dataIntA = "int32"
+// dataIntB = "int32"
+// 
+// [[enums]]
+// _name = "ItemType"
+// _values = [
+// 	"Stone",
+// 	"Amulet",
 // ]
 // 
 // # player receives every tick
@@ -127,7 +160,7 @@ const simpleTypes = [_]type{
 };
 
 const enumTypes = [_]type{
-	MoveResult, TileType, Direction,
+	GameMode, MoveResult, TileType, Direction, EntityType, ItemType,
 };
 
 fn typeIsSimple(comptime T: type) bool {
@@ -495,6 +528,11 @@ pub fn processRawBytes(allocator: std.mem.Allocator, buffer: []const u8, max: i3
 	return msg_list.toOwnedSlice();
 }
 
+pub const GameMode = enum(u8) {
+	Wander = 0,
+	Attain = 1,
+};
+
 pub const MoveResult = enum(u8) {
 	Succeeded = 0,
 	Failed = 1,
@@ -521,6 +559,16 @@ pub const Direction = enum(u8) {
 	Northwest = 7,
 };
 
+pub const EntityType = enum(u8) {
+	Player = 0,
+	Item = 1,
+};
+
+pub const ItemType = enum(u8) {
+	Stone = 0,
+	Amulet = 1,
+};
+
 pub const Point = struct {
 	x: i16 = 0,
 	y: i16 = 0,
@@ -543,6 +591,90 @@ pub const Point = struct {
 		_ = writeNumber(i16, offset + 0, buffer, self.x);
 		_ = writeNumber(i16, offset + 2, buffer, self.y);
 		return 4;
+	}
+};
+
+pub const Entity = struct {
+	id: u32 = 0,
+	type: EntityType = EntityType.Player,
+	surroundingsIndex: u16 = 0,
+	label: []const u8 = "",
+	dataByteA: u8 = 0,
+	dataByteB: u8 = 0,
+	dataIntA: i32 = 0,
+	dataIntB: i32 = 0,
+
+	pub fn getSizeInBytes(self: *const Entity) usize {
+		var size: usize = 0;
+		size += self.label.len;
+		size += 18;
+		return size;
+	}
+
+	pub fn fromBytes(allocator: std.mem.Allocator, offset: usize, buffer: []const u8) !struct { value: Entity, bytes_read: usize } {
+		var local_offset = offset;
+
+		const Entity_id_read = try readNumber(u32, local_offset, buffer);
+		const Entity_id = Entity_id_read.value;
+		local_offset += Entity_id_read.bytes_read;
+
+		const Entity_type_read = try readNumber(EntityType, local_offset, buffer);
+		const Entity_type = Entity_type_read.value;
+		local_offset += Entity_type_read.bytes_read;
+
+		const Entity_surroundingsIndex_read = try readNumber(u16, local_offset, buffer);
+		const Entity_surroundingsIndex = Entity_surroundingsIndex_read.value;
+		local_offset += Entity_surroundingsIndex_read.bytes_read;
+
+		const Entity_label_read = try readString(allocator, local_offset, buffer);
+		const Entity_label = Entity_label_read.value;
+		local_offset += Entity_label_read.bytes_read;
+
+		const Entity_dataByteA_read = try readNumber(u8, local_offset, buffer);
+		const Entity_dataByteA = Entity_dataByteA_read.value;
+		local_offset += Entity_dataByteA_read.bytes_read;
+
+		const Entity_dataByteB_read = try readNumber(u8, local_offset, buffer);
+		const Entity_dataByteB = Entity_dataByteB_read.value;
+		local_offset += Entity_dataByteB_read.bytes_read;
+
+		const Entity_dataIntA_read = try readNumber(i32, local_offset, buffer);
+		const Entity_dataIntA = Entity_dataIntA_read.value;
+		local_offset += Entity_dataIntA_read.bytes_read;
+
+		const Entity_dataIntB_read = try readNumber(i32, local_offset, buffer);
+		const Entity_dataIntB = Entity_dataIntB_read.value;
+		local_offset += Entity_dataIntB_read.bytes_read;
+
+		return .{ .value = Entity{
+			.id = Entity_id,
+			.type = Entity_type,
+			.surroundingsIndex = Entity_surroundingsIndex,
+			.label = Entity_label,
+			.dataByteA = Entity_dataByteA,
+			.dataByteB = Entity_dataByteB,
+			.dataIntA = Entity_dataIntA,
+			.dataIntB = Entity_dataIntB,
+		}, .bytes_read = local_offset - offset };
+	}
+
+	pub fn writeBytes(self: *const Entity, offset: usize, buffer: []u8) usize {
+		var local_offset = offset;
+
+		local_offset += writeNumber(u32, local_offset, buffer, self.id);
+		local_offset += writeNumber(EntityType, local_offset, buffer, self.type);
+		local_offset += writeNumber(u16, local_offset, buffer, self.surroundingsIndex);
+		local_offset += writeString(local_offset, buffer, self.label);
+		local_offset += writeNumber(u8, local_offset, buffer, self.dataByteA);
+		local_offset += writeNumber(u8, local_offset, buffer, self.dataByteB);
+		local_offset += writeNumber(i32, local_offset, buffer, self.dataIntA);
+		local_offset += writeNumber(i32, local_offset, buffer, self.dataIntB);
+
+		return local_offset - offset;
+	}
+
+	pub fn deinit(self: *Entity, allocator: std.mem.Allocator) void {
+		allocator.free(self.label);
 	}
 };
 
@@ -592,10 +724,11 @@ pub const InitialParameters = struct {
 	diagonalMovement: bool = false,
 	playerStride: u8 = 0,
 	playerOpenReach: u8 = 0,
+	gameMode: GameMode = GameMode.Wander,
 
 	pub fn getSizeInBytes(self: *const InitialParameters) usize {
 		_ = self;
-		return 11;
+		return 12;
 	}
 
 	pub fn fromBytes(offset: usize, buffer: []const u8) !struct { value: InitialParameters, bytes_read: usize } {
@@ -606,6 +739,7 @@ pub const InitialParameters = struct {
 		const InitialParameters_diagonalMovement = (try readNumber(bool, offset + 8, buffer)).value;
 		const InitialParameters_playerStride = (try readNumber(u8, offset + 9, buffer)).value;
 		const InitialParameters_playerOpenReach = (try readNumber(u8, offset + 10, buffer)).value;
+		const InitialParameters_gameMode = (try readNumber(GameMode, offset + 11, buffer)).value;
 		return .{ .value = InitialParameters{
 			.paramsVersion = InitialParameters_paramsVersion,
 			.engineVersionMajor = InitialParameters_engineVersionMajor,
@@ -614,7 +748,8 @@ pub const InitialParameters = struct {
 			.diagonalMovement = InitialParameters_diagonalMovement,
 			.playerStride = InitialParameters_playerStride,
 			.playerOpenReach = InitialParameters_playerOpenReach,
-		}, .bytes_read = 11 };
+			.gameMode = InitialParameters_gameMode,
+		}, .bytes_read = 12 };
 	}
 
 	pub fn writeBytes(self: *const InitialParameters, offset: usize, buffer: []u8, tag: bool) usize {
@@ -630,6 +765,7 @@ pub const InitialParameters = struct {
 		local_offset += writeNumber(bool, local_offset, buffer, self.diagonalMovement);
 		local_offset += writeNumber(u8, local_offset, buffer, self.playerStride);
 		local_offset += writeNumber(u8, local_offset, buffer, self.playerOpenReach);
+		local_offset += writeNumber(GameMode, local_offset, buffer, self.gameMode);
 
 		return local_offset - offset;
 	}
