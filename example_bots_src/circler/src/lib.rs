@@ -1,7 +1,7 @@
 pub mod exploration;
 
 use exploration::{Grid, Point};
-use wasmbot_client::{client::Client, log, params, register_client, wasmbot_messages};
+use wasmbot_client::{Client, log, params, register_client, wasmbot_messages};
 
 struct Bot {
     direction: wasmbot_messages::Direction,
@@ -9,35 +9,20 @@ struct Bot {
 }
 
 impl Client for Bot {
-    fn setup() -> (params::BotMetadata, Self) {
-        let mut bot_meta = params::BotMetadata {
-            name: params::make_bot_name(env!("CARGO_PKG_NAME")),
-            version: [0, 1, 0],
-        };
-
+    fn create() -> Self {
         let random_dir = wasmbot_client::get_random_int(0, 3) * 2;
 
-        let bot = Self {
+        Self {
             direction: (random_dir as u8).try_into().expect("Bad direction"),
             last_move_type: wasmbot_messages::MessageType::_Error,
-        };
-
-        let version_str = env!("CARGO_PKG_VERSION");
-        let version_parts = version_str.split('.');
-        if version_parts.clone().count() != 3 {
-            wasmbot_client::log_err("CLIENT ERROR: version must be semver");
-            return (bot_meta, bot);
         }
+    }
 
-        let mut version_parts =
-            version_parts.map(|p| p.parse().expect("Semver parts must fit in u16"));
-
-        let major = version_parts.next().unwrap();
-        let minor = version_parts.next().unwrap();
-        let patch = version_parts.next().unwrap();
-        bot_meta.version = [major, minor, patch];
-
-        (bot_meta, bot)
+    fn get_metadata(&mut self) -> params::BotMetadata {
+        params::BotMetadata {
+            name: params::make_bot_name(env!("CARGO_PKG_NAME")),
+            version: params::parse_bot_version(env!("CARGO_PKG_VERSION")).unwrap_or([0; 3]),
+        }
     }
 
     fn tick(&mut self, pc: wasmbot_messages::PresentCircumstances) -> wasmbot_messages::Message {
