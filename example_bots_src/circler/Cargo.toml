@@ -15,6 +15,3 @@ wasmbot_client = { path = "../../libraries/Rust/wasmbot_client" }
 
 [dev-dependencies]
 trainer = { path = "../../libraries/Rust/trainer" }
-
-[[example]]
-name = "trainer"
