@@ -14,7 +14,7 @@ extern "C" {
 // placeholders to make the linker happy (will be overridden in trainer)
 mod native_fallbacks {
 	#[no_mangle]
-	extern "C" fn placeholder_shutdown() {
+	extern "C" fn trainer_shutdown() {
 		println!("Native shutdown called");
 	}
 
