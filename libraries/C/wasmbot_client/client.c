@@ -100,7 +100,7 @@ bool _reserveMemory(size_t request) {
 
 
 //// GAME PARAMETERS
-const uint16_t GP_VERSION = 7;
+const uint16_t GP_VERSION = 8;
 
 extern wsmbt_BotMetadata clientSetup(void);
 extern bool clientReceiveGameParams(WasmBots_InitialParameters*);

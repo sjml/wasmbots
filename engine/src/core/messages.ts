@@ -82,7 +82,7 @@ _values = [
 [[structs]]
 _name = "Entity"
 id = "uint32"
-type = "EntityType"
+entityType = "EntityType"
 surroundingsIndex = "uint16"
 label = "string"
 dataByteA = "byte"
@@ -477,7 +477,7 @@ export class Point {
 
 export class Entity {
 	id: number = 0;
-	type: EntityType = EntityType.Player;
+	entityType: EntityType = EntityType.Player;
 	surroundingsIndex: number = 0;
 	label: string = "";
 	dataByteA: number = 0;
@@ -488,11 +488,11 @@ export class Entity {
 	static fromBytes(da: DataAccess): Entity {
 		const nEntity = new Entity();
 		nEntity.id = da.getUint32();
-		const _type = da.getByte();
-		if (EntityType[_type] === undefined) {
-			throw new Error(`Enum (${_type}) out of range for EntityType`);
+		const _entityType = da.getByte();
+		if (EntityType[_entityType] === undefined) {
+			throw new Error(`Enum (${_entityType}) out of range for EntityType`);
 		}
-		nEntity.type = _type;
+		nEntity.entityType = _entityType;
 		nEntity.surroundingsIndex = da.getUint16();
 		nEntity.label = da.getString();
 		nEntity.dataByteA = da.getByte();
@@ -504,7 +504,7 @@ export class Entity {
 
 	writeBytes(da: DataAccess): void {
 		da.setUint32(this.id);
-		da.setByte(this.type);
+		da.setByte(this.entityType);
 		da.setUint16(this.surroundingsIndex);
 		da.setString(this.label);
 		da.setByte(this.dataByteA);

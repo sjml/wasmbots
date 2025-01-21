@@ -82,7 +82,7 @@ _values = [
 [[structs]]
 _name = "Entity"
 id = "uint32"
-type = "EntityType"
+entityType = "EntityType"
 surroundingsIndex = "uint16"
 label = "string"
 dataByteA = "byte"
@@ -595,7 +595,7 @@ impl Point {
 #[derive(Default)]
 pub struct Entity {
 	pub id: u32,
-	pub type: EntityType,
+	pub entity_type: EntityType,
 	pub surroundings_index: u16,
 	pub label: String,
 	pub data_byte_a: u8,
@@ -614,20 +614,20 @@ impl Entity {
 
 	fn from_bytes(reader: &mut BufferReader) -> Result<Entity, WasmBotsError> {
 		let id = reader.read_u32()?;
-		let type = reader.read_u8()?;
-		let type = EntityType::try_from(type)?;
+		let entity_type = reader.read_u8()?;
+		let entity_type = EntityType::try_from(entity_type)?;
 		let surroundings_index = reader.read_u16()?;
 		let label = reader.read_string()?;
 		let data_byte_a = reader.take_byte()?;
 		let data_byte_b = reader.take_byte()?;
 		let data_int_a = reader.read_i32()?;
 		let data_int_b = reader.read_i32()?;
-		Ok(Entity {id, type, surroundings_index, label, data_byte_a, data_byte_b, data_int_a, data_int_b})
+		Ok(Entity {id, entity_type, surroundings_index, label, data_byte_a, data_byte_b, data_int_a, data_int_b})
 	}
 
 	pub fn write_bytes(&self, writer: &mut Vec<u8>) {
 		writer.extend(self.id.to_le_bytes());
-		writer.push(self.type as u8);
+		writer.push(self.entity_type as u8);
 		writer.extend(self.surroundings_index.to_le_bytes());
 		writer.extend((self.label.len() as u8).to_le_bytes());
 		writer.extend(self.label.as_bytes());

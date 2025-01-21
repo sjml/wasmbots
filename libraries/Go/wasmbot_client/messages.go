@@ -82,7 +82,7 @@ _values = [
 [[structs]]
 _name = "Entity"
 id = "uint32"
-type = "EntityType"
+entityType = "EntityType"
 surroundingsIndex = "uint16"
 label = "string"
 dataByteA = "byte"
@@ -437,7 +437,7 @@ func (output Point) WriteBytes(data io.Writer) {
 
 type Entity struct {
 	Id uint32
-	Type EntityType
+	EntityType EntityType
 	SurroundingsIndex uint16
 	Label string
 	DataByteA byte
@@ -448,7 +448,7 @@ type Entity struct {
 
 func NewEntityDefault() Entity {
 	return Entity{
-		Type: EntityTypePlayer,
+		EntityType: EntityTypePlayer,
 	}
 }
 
@@ -456,14 +456,14 @@ func EntityFromBytes(data io.Reader, input *Entity) error {
 	if err := binary.Read(data, binary.LittleEndian, &input.Id); err != nil {
 		return fmt.Errorf("could not read input.Id at offset %d (%w)", getDataOffset(data), err)
 	}
-	var _Type EntityType
-	if err := binary.Read(data, binary.LittleEndian, &_Type); err != nil {
-		return fmt.Errorf("could not read input.Type at offset %d (%w)", getDataOffset(data), err)
+	var _EntityType EntityType
+	if err := binary.Read(data, binary.LittleEndian, &_EntityType); err != nil {
+		return fmt.Errorf("could not read input.EntityType at offset %d (%w)", getDataOffset(data), err)
 	}
-	if !isValidEntityType(_Type) {
-		return fmt.Errorf("enum %d out of range for EntityType", _Type)
+	if !isValidEntityType(_EntityType) {
+		return fmt.Errorf("enum %d out of range for EntityType", _EntityType)
 	}
-	input.Type = _Type
+	input.EntityType = _EntityType
 	if err := binary.Read(data, binary.LittleEndian, &input.SurroundingsIndex); err != nil {
 		return fmt.Errorf("could not read input.SurroundingsIndex at offset %d (%w)", getDataOffset(data), err)
 	}
@@ -487,7 +487,7 @@ func EntityFromBytes(data io.Reader, input *Entity) error {
 
 func (output Entity) WriteBytes(data io.Writer) {
 	binary.Write(data, binary.LittleEndian, &output.Id)
-	binary.Write(data, binary.LittleEndian, &output.Type)
+	binary.Write(data, binary.LittleEndian, &output.EntityType)
 	binary.Write(data, binary.LittleEndian, &output.SurroundingsIndex)
 	writeString(data, &output.Label)
 	binary.Write(data, binary.LittleEndian, &output.DataByteA)

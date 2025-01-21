@@ -81,7 +81,7 @@
 // [[structs]]
 // _name = "Entity"
 // id = "uint32"
-// type = "EntityType"
+// entityType = "EntityType"
 // surroundingsIndex = "uint16"
 // label = "string"
 // dataByteA = "byte"
@@ -596,7 +596,7 @@ pub const Point = struct {
 
 pub const Entity = struct {
 	id: u32 = 0,
-	type: EntityType = EntityType.Player,
+	entityType: EntityType = EntityType.Player,
 	surroundingsIndex: u16 = 0,
 	label: []const u8 = "",
 	dataByteA: u8 = 0,
@@ -618,9 +618,9 @@ pub const Entity = struct {
 		const Entity_id = Entity_id_read.value;
 		local_offset += Entity_id_read.bytes_read;
 
-		const Entity_type_read = try readNumber(EntityType, local_offset, buffer);
-		const Entity_type = Entity_type_read.value;
-		local_offset += Entity_type_read.bytes_read;
+		const Entity_entityType_read = try readNumber(EntityType, local_offset, buffer);
+		const Entity_entityType = Entity_entityType_read.value;
+		local_offset += Entity_entityType_read.bytes_read;
 
 		const Entity_surroundingsIndex_read = try readNumber(u16, local_offset, buffer);
 		const Entity_surroundingsIndex = Entity_surroundingsIndex_read.value;
@@ -648,7 +648,7 @@ pub const Entity = struct {
 
 		return .{ .value = Entity{
 			.id = Entity_id,
-			.type = Entity_type,
+			.entityType = Entity_entityType,
 			.surroundingsIndex = Entity_surroundingsIndex,
 			.label = Entity_label,
 			.dataByteA = Entity_dataByteA,
@@ -662,7 +662,7 @@ pub const Entity = struct {
 		var local_offset = offset;
 
 		local_offset += writeNumber(u32, local_offset, buffer, self.id);
-		local_offset += writeNumber(EntityType, local_offset, buffer, self.type);
+		local_offset += writeNumber(EntityType, local_offset, buffer, self.entityType);
 		local_offset += writeNumber(u16, local_offset, buffer, self.surroundingsIndex);
 		local_offset += writeString(local_offset, buffer, self.label);
 		local_offset += writeNumber(u8, local_offset, buffer, self.dataByteA);

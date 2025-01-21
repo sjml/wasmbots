@@ -75,7 +75,7 @@ _values = [
 [[structs]]
 _name = "Entity"
 id = "uint32"
-type = "EntityType"
+entityType = "EntityType"
 surroundingsIndex = "uint16"
 label = "string"
 dataByteA = "byte"

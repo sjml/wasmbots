@@ -82,7 +82,7 @@ _values = [
 [[structs]]
 _name = "Entity"
 id = "uint32"
-type = "EntityType"
+entityType = "EntityType"
 surroundingsIndex = "uint16"
 label = "string"
 dataByteA = "byte"
@@ -599,7 +599,7 @@ export class Point {
 
 export class Entity {
 	id: u32 = 0;
-	type: EntityType = EntityType.Player;
+	entityType: EntityType = EntityType.Player;
 	surroundingsIndex: u16 = 0;
 	label: string = "";
 	dataByteA: u8 = 0;
@@ -611,12 +611,12 @@ export class Entity {
 		const nEntity = new Entity();
 		nEntity.id = da.getUint32();
 		if (da.hasError) { return null; }
-		let _type = da.getByte();
+		let _entityType = da.getByte();
 		if (da.hasError) { return null; }
-		if (_type < 0 || _type >= (EntityType._Unknown as u8)) {
-			_type = EntityType._Unknown as u8;
+		if (_entityType < 0 || _entityType >= (EntityType._Unknown as u8)) {
+			_entityType = EntityType._Unknown as u8;
 		}
-		nEntity.type = _type;
+		nEntity.entityType = _entityType;
 		nEntity.surroundingsIndex = da.getUint16();
 		if (da.hasError) { return null; }
 		nEntity.label = da.getString();
@@ -635,7 +635,7 @@ export class Entity {
 	writeBytes(da: DataAccess): bool {
 		da.setUint32(this.id);
 		if (da.hasError) { return false; }
-		da.setByte(this.type as u8);
+		da.setByte(this.entityType as u8);
 		if (da.hasError) { return false; }
 		da.setUint16(this.surroundingsIndex);
 		if (da.hasError) { return false; }

@@ -199,8 +199,6 @@ fn clientTick(circumstances: msg.PresentCircumstances) msg.Message {
 ////////////
 //////////// housekeeping below
 
-const GP_VERSION: u16 = 7;
-
 var global_allocator: std.mem.Allocator = undefined;
 
 export fn clientInitialize() void {

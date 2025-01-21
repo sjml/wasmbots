@@ -84,7 +84,7 @@ _values = [
 [[structs]]
 _name = "Entity"
 id = "uint32"
-type = "EntityType"
+entityType = "EntityType"
 surroundingsIndex = "uint16"
 label = "string"
 dataByteA = "byte"
@@ -279,7 +279,7 @@ WasmBots_err_t WasmBots_Point_FromBytes(WasmBots_DataAccess* r, WasmBots_Point* 
 
 typedef struct {
 	uint32_t id;
-	WasmBots_EntityType type;
+	WasmBots_EntityType entityType;
 	uint16_t surroundingsIndex;
 	uint8_t label_len;
 	char* label;
@@ -1167,15 +1167,15 @@ WasmBots_err_t WasmBots_Entity_FromBytes(WasmBots_DataAccess* r, WasmBots_Entity
 	if (err != WASMBOTS_ERR_OK) {
 		return err;
 	}
-	uint8_t _type;
-	err = WasmBots__ReadUInt8(r, &(_type));
+	uint8_t _entityType;
+	err = WasmBots__ReadUInt8(r, &(_entityType));
 	if (err != WASMBOTS_ERR_OK) {
 		return err;
 	}
-	if (!WasmBots_IsValidEntityType(_type)) {
+	if (!WasmBots_IsValidEntityType(_entityType)) {
 		return WASMBOTS_ERR_INVALID_DATA;
 	}
-	dst->type = (WasmBots_EntityType)_type;
+	dst->entityType = (WasmBots_EntityType)_entityType;
 	err = WasmBots__ReadUInt16(r, &(dst->surroundingsIndex));
 	if (err != WASMBOTS_ERR_OK) {
 		return err;
@@ -1209,7 +1209,7 @@ WasmBots_err_t WasmBots_Entity_WriteBytes(WasmBots_DataAccess* w, const WasmBots
 	if (err != WASMBOTS_ERR_OK) {
 		return err;
 	}
-	err = WasmBots__WriteUInt8(w, (uint8_t)(src->type));
+	err = WasmBots__WriteUInt8(w, (uint8_t)(src->entityType));
 	if (err != WASMBOTS_ERR_OK) {
 		return err;
 	}

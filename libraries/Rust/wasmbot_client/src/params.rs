@@ -3,7 +3,7 @@ use crate::wasmbot_messages;
 use crate::wasmbot_messages::BufferReader;
 use crate::wasmbot_messages::MessageCodec;
 
-const GP_VERSION: u16 = 7;
+const GP_VERSION: u16 = 8;
 const MAX_NAME_LEN: usize = 26;
 
 #[repr(C)]
@@ -15,7 +15,7 @@ pub struct BotMetadata {
 impl BotMetadata {
 	pub fn to_bytes(&self, buf: &mut [u8]) -> usize {
 		let mut offset = 0;
-		
+
 		// Name
 
 		let name_len = self

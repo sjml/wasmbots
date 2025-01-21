@@ -4,7 +4,7 @@ const Allocator = std.mem.Allocator;
 pub const messages = @import("wasmbot_messages.zig");
 
 const MAX_NAME_LEN: usize = 26;
-const GP_VERSION: u16 = 7;
+const GP_VERSION: u16 = 8;
 
 extern fn logFunction(logLevel: i32, msgPtr: usize, msgLen: usize) void;
 pub fn log(msg: []const u8) void {
