@@ -98,7 +98,7 @@ lastMoveResult = "MoveResult"   # the result of your last turn (will be Succeede
 currentHitPoints = "uint16"     # how many hit points you have
 surroundings = "[TileType]"     # array of tiles representing your immediate surroundings as a square with you in the middle
 surroundingsRadius = "byte"     # radius (from you) of the surroundings, so the side of a square is (this * 2) + 1
-
+visibleEntities = "[Entity]"    # array of entities within your current field of view
 
 ### moves that the player submits
 

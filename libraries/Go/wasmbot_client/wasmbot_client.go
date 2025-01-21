@@ -8,7 +8,7 @@ import (
 	"unsafe"
 )
 
-const GP_VERSION uint16 = 7
+const GP_VERSION uint16 = 8
 const MAX_NAME_LEN int = 26
 
 type BotMetadata struct {

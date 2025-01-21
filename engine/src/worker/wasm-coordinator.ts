@@ -147,10 +147,13 @@ export class WasmCoordinator implements Coordinator {
 			this.tickStartTime = performance.now();
 
 			circumstances.lastTickDuration = this.lastTickDuration;
+
+			const buffer = new Uint8Array(circumstances.getSizeInBytes());
+			circumstances.writeBytes(new DataView(buffer.buffer), false);
 			this.worker.postMessage({
 				type: Msg.HostToGuestMessageType.RunTick,
 				payload: {
-					circumstances: circumstances,
+					circumstancesBuffer: buffer,
 				} as Msg.RunTickPayload
 			});
 

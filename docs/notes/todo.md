@@ -3,14 +3,16 @@
 ## dev
 * perception system
     * entities on tiles
-    * list of events that happened last turn
 * first goal: find macguffin
   * randomly place in interior room, first bot to find it wins
   * to that end:
     1. create game modes (leave "Wander" as one)
-    2. event to let players know they won or lost
 * player collision
 * physical attacks
+    1. perception system needs events
+    2. let players know they won or lost
+       * do we need this? to what end? the game is over and your submitted turn will be ignored so what's the point? 
+       * maybe in some far-flung future when we let bots do network requests it can phone home to report what happened? cross that bridge when we come to it. 
 * second goal: last bot standing
 * items (weapon/armor) that change numbers involved in physical attacks
 * third goal: CTF

@@ -6,6 +6,7 @@ import { type DungeonBuilderOptions } from "../generation/builder.ts";
 import { RNG, Deck } from "./random.ts";
 import { Player } from "./player.ts";
 import { WorldMap } from "./map.ts";
+import { EntityIdGenerator } from "./entities.ts";
 
 export enum GameState {
 	Setup,
@@ -37,6 +38,7 @@ export class World extends EventTarget {
 		super();
 		this.currentMap = null;
 		this.rng = new RNG(randomSeed);
+		EntityIdGenerator.initialize(this.rng);
 		this.minimumTurnTime = Config.minimumTurnTime;
 		this.turnTimeBuffer = Config.turnTimeBuffer;
 		this._spawnPointDeck = new Deck([{x: -1, y: -1}], this.rng, (a: Point, b: Point) => a.x === b.x && a.y === b.y);
@@ -251,12 +253,40 @@ export class World extends EventTarget {
 				circumstances.currentHitPoints = player.hitPoints;
 
 				circumstances.surroundingsRadius = this.currentMap!.viewRadius;
-				circumstances.surroundings = this.currentMap!.computeFOV(
+				const rawFOV = this.currentMap!.computeFOV(
 					player.location,
 					circumstances.surroundingsRadius,
 					[CoreMsg.TileType.Wall, CoreMsg.TileType.ClosedDoor]
-				).flat().map(t => t.terrainType);
+				);
+				circumstances.surroundings = rawFOV.flat().map(t => t.terrainType);
 
+				for (const otherPlayer of this.players) {
+					if (otherPlayer === player) {
+						continue;
+					}
+					const offset = {
+						x: otherPlayer.location.x - player.location.x,
+						y: otherPlayer.location.y - player.location.y,
+					};
+					if (   Math.abs(offset.x) <= circumstances.surroundingsRadius
+						&& Math.abs(offset.y) <= circumstances.surroundingsRadius
+					) {
+						const lookup = {
+							x: circumstances.surroundingsRadius + offset.x,
+							y: circumstances.surroundingsRadius + offset.y,
+						};
+						if (rawFOV[lookup.y][lookup.x].terrainType !== CoreMsg.TileType.Void) {
+							const playerEntity = new CoreMsg.Entity();
+							playerEntity.id = otherPlayer.entityId;
+							playerEntity.type = CoreMsg.EntityType.Player;
+							playerEntity.label = otherPlayer.name;
+							playerEntity.surroundingsIndex = lookup.y * rawFOV.length + lookup.x;
+							playerEntity.dataByteA = 255;
+							playerEntity.dataByteB = 255;
+							circumstances.visibleEntities.push(playerEntity);
+						}
+					}
+				}
 
 				let move: CoreMsg.Message;
 				try {

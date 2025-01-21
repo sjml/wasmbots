@@ -10,8 +10,12 @@ export function getGitRevision(): string {
 		const { stdout } = process.outputSync();
 		return new TextDecoder().decode(stdout).trim();
 	}
-	// @ts-ignore
-	return __GIT_REVISION__;
+	try {
+		// @ts-ignore
+		return __GIT_REVISION__;
+	} catch {
+		return "[unknown]";
+	}
 }
 
 export async function sleep(ms: number): Promise<void> {

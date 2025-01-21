@@ -32,11 +32,44 @@ const idleThoughts: string[] = [
 	"Won the staring contest again.",
 ];
 
+
+let trackingPlayers = new Map<number, string>();
 let turnsSinceThought = 0;
 let turnCount = 0;
 
 function tick(pc: wasmbots.CoreMsg.PresentCircumstances): wasmbots.CoreMsg.Message {
 	turnCount += 1;
+
+	let spoke = false;
+	const seenIds = new Set<number>();
+
+	for (let i = 0; i < pc.visibleEntities.length; i++) {
+		const vid = pc.visibleEntities[i].id;
+		const label = pc.visibleEntities[i].label;
+		seenIds.add(vid);
+		if (!trackingPlayers.has(vid)) {
+			wasmbots.log(`Greetings, ${label}.`);
+			trackingPlayers.set(vid, label);
+			spoke = true;
+		}
+	}
+
+	const trackedValues = trackingPlayers.keys();
+	for (let i = 0; i < trackedValues.length; i++) {
+		const vid = trackedValues[i];
+
+		if (!seenIds.has(vid)) {
+			const label = trackingPlayers.get(vid);
+			wasmbots.log(`Farewell, ${label}.`);
+			trackingPlayers.delete(vid);
+			spoke = true;
+		}
+	}
+
+	if (spoke) {
+		return new wasmbots.CoreMsg.Wait();
+	}
+
 	turnsSinceThought += 1;
 	const dieRoll = wasmbots.getRandomInt(0, 200);
 	if (dieRoll < (turnsSinceThought * turnsSinceThought) / 300) {

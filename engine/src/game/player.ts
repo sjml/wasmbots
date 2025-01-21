@@ -4,10 +4,12 @@ import * as CoreMsg from "../core/messages.ts";
 import { type Coordinator, CoordinatorStatus } from "../core/coordinator.ts";
 import { type Point } from "../core/math.ts";
 import { sleep } from "../core/util.ts";
+import { EntityIdGenerator } from "./entities.ts";
 
 
 export class Player {
 	coordinator!: Coordinator;
+	readonly entityId: number;
 	name: string;
 	version: number[];
 
@@ -20,6 +22,7 @@ export class Player {
 	openReach: number;
 
 	constructor() {
+		this.entityId = EntityIdGenerator.generateId();
 		this.name = "";
 		this.version = [];
 

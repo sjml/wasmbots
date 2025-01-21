@@ -1,7 +1,7 @@
 import { CoreMsg, log, logErr } from ".";
 import { HostReserve } from "./hostReserve";
 
-const GP_VERSION: u16 = 7;
+const GP_VERSION: u16 = 8;
 const MAX_NAME_LEN: i32 = 26; // should be usize, but this causes fewer complaints
 
 export class BotMetadata {
