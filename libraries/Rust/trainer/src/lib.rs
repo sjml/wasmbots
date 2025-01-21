@@ -29,9 +29,18 @@ struct MemoryResult {
 	mem: String,
 }
 
-// single-thread this puppy
-#[tokio::main(flavor = "current_thread")]
-async fn main() {
+/// Runs the trainer.
+/// 
+/// The client must be linked to the program.
+pub fn run() {
+	tokio::runtime::Builder::new_current_thread()
+		.enable_all()
+		.build()
+		.unwrap()
+		.block_on(run_main())
+}
+
+async fn run_main() {
 	tracing_subscriber::fmt::init();
 
 	let app = Router::new()

@@ -11,5 +11,7 @@ strip = true
 lto = true
 
 [dependencies]
-wasmbot_client = { path = "../../libraries/Rust/wasmbot_client"}
+wasmbot_client = { path = "../../libraries/Rust/wasmbot_client" }
 
+[dev-dependencies]
+trainer = { path = "../../libraries/Rust/trainer" }
