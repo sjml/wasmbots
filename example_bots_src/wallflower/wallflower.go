@@ -15,7 +15,7 @@ func ClientInit() {
 func clientSetup() wasmbot_client.BotMetadata {
 	return wasmbot_client.BotMetadata{
 		Name:    "wallflower",
-		Version: [3]uint16{0, 1, 0},
+		Version: [3]uint16{0, 1, 5},
 	}
 }
 

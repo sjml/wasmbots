@@ -4,7 +4,7 @@ import * as wasmbots from "wasmbot_client/assembly";
 // as with zig, would be nice to be able to pull from
 //   the build config, but alack
 const BOT_NAME = "statue";
-const VERSION: u16[] = [0, 1, 0];
+const VERSION: u16[] = [0, 1, 5];
 
 
 export function clientInitialize(): void {

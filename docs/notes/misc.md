@@ -106,3 +106,43 @@ Would it be possible to have a native trainer library for at least some of the l
   * AssemblyScript
     * 🤬
     * given its difficulty here and with beschi (at least testing) maybe this gets dropped? or moved to second-class status? 
+
+
+## event system
+* how the player gets told about what's happening every turn
+* some will be nearby, things you can directly see
+* others might be broadcast from the host
+* maybe some kind of distant-communication with teammates?
+* beschi's lack of inheritance means they are flat, like the entities
+* types of events
+  * broadcast
+    * Attain
+      * goal announcement "you're looking for the Amulet of Yendor" etc.
+        * data:
+          * name of item: string
+          * how many turns to find: uintXX (0 means no limit)
+    * CTF
+      * team assignment
+        * your team name
+        * other team name(s)? 
+    * Last Bot Standing
+      * ???
+    * all
+      * Team communication
+        * sender: int
+        * message: string
+      * GameOver
+        * winner: id
+        * but again, why? there's nothing the bot can do with this information
+  * local
+    * Attack Event
+      * Attacker (id, int)
+      * Target (x,y)
+      * InstrumentType: weapon, spell, unarmed (, etc.?)
+      * Subtype (Dagger, Sword, Fireball, Magic Missile, etc.)
+      * Damage (int; 0 if missed [but might also be 0 if armor or spell reduced])
+    * Hazard
+      * Type: ex: FirespoutEngaged
+      * Location: (x,y)
+      * 
+

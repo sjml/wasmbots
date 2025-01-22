@@ -1,12 +1,12 @@
 (speculative ideas are all in [the idea dump](./idea_dump.md); this file is just for actionable tasks)
 
 ## dev
-* perception system
-    * entities on tiles
 * first goal: find macguffin
   * randomly place in interior room, first bot to find it wins
   * to that end:
     1. create game modes (leave "Wander" as one)
+  * maybe: libraries "de-flatten" the entity into structures w/inheritance? 
+    * shouldn't be TOO hard, but could be annoying as different entity types are added... 
 * player collision
 * physical attacks
     1. perception system needs events
