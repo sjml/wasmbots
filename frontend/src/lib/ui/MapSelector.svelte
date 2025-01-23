@@ -3,7 +3,7 @@
 
 	import { CompassRose } from "phosphor-svelte";
 
-	import { Config, GameState, RNG } from "wasmbots";
+	import { Config, GameState, RNG, type DungeonBuilderOptions } from "wasmbots";
 
 	import { type WasmBotsState } from "../../types.svelte";
 
@@ -64,7 +64,8 @@
 		else {
 			rng = new RNG(null);
 		}
-		await gameState.world!.setMap(gameState.currentMapOptionString, rng, $state.snapshot(gameState.mapGeneratorOptions));
+		const genOpts =  $state.snapshot(gameState.mapGeneratorOptions) as DungeonBuilderOptions;
+		await gameState.world!.setMap(gameState.currentMapOptionString, rng, genOpts);
 		gameState.mapLoading = false;
 	}
 

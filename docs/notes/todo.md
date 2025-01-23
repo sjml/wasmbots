@@ -2,7 +2,7 @@
 
 ## dev
 * first goal: find macguffin
-  * randomly place in interior room, first bot to find it wins
+  * placed; first bot to find it wins
   * to that end:
     1. create game modes (leave "Wander" as one)
   * maybe: libraries "de-flatten" the entity into structures w/inheritance? 

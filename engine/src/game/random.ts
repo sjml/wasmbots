@@ -51,6 +51,13 @@ export class RNG {
 		}
 	}
 
+	/**
+	 * Random integer in the range [min, max)
+	 *
+	 * @param min minimum value (inclusive)
+	 * @param max maximum value (exclusive)
+	 * @returns a random integer in the given range
+	 */
 	randInt(min: number, max: number) {
 		if (min >= max) {
 		  throw new Error(`${min} is not less than ${max}!`);
@@ -58,6 +65,13 @@ export class RNG {
 		return prand.unsafeUniformIntDistribution(min, max-1, this._rng);
 	}
 
+	/**
+	 * Random double-precision floating point number in the range [min, max]
+	 *
+	 * @param min minimum value (default 0.0)
+	 * @param max maximum value (default 1.0, but required if min is provided)
+	 * @returns a random double-precision floating point number in the range [min, max] (or [0.0, 1.0] if no arguments)
+	 */
 	randDouble(min?: number, max?: number) {
 		const g1 = prand.unsafeUniformIntDistribution(0, (1 << 26) - 1, this._rng);
 		const g2 = prand.unsafeUniformIntDistribution(0, (1 << 27) - 1, this._rng);
@@ -76,6 +90,12 @@ export class RNG {
 		return value;
 	}
 
+	/**
+	 * Shuffles the contents of an array in place
+	 *
+	 * @param array The array to shuffle
+	 * @returns The shuffled array
+	 */
 	shuffle<T>(array: T[]): T[] {
 		for (let i = array.length - 1; i > 0; i--) {
 			const j = this.randInt(0, i + 1);

@@ -1,10 +1,11 @@
 import config from "../core/config.ts";
-import { TileType as TerrainTileType } from "../core/messages.ts";
+import * as CoreMsg from "../core/messages.ts";
 import { readJsonFile } from "../core/loader.ts";
 import { type Point, Rect } from "../core/math.ts";
 import { stringToNumericEnum } from "../core/util.ts";
 import { DungeonBuilder } from "../generation/builder.ts";
 import { MapPainter } from "../generation/painter.ts";
+import type { TileTypeCondition, LevelAreaCondition } from "../generation/itemPlacement.ts";
 import * as Tiled from "../generation/tileTypes.ts";
 import { RNG } from "./random.ts";
 import { computeFOV } from "./fov.ts";
@@ -20,18 +21,19 @@ export enum MetaTileType {
 }
 
 export class Tile {
-	terrainType: TerrainTileType;
+	terrainType: CoreMsg.TileType;
 	metaDatums: Set<MetaTileType>;
 
-	constructor(terrain?: TerrainTileType) {
-		this.terrainType = terrain || TerrainTileType.Void;
+	constructor(terrain?: CoreMsg.TileType) {
+		this.terrainType = terrain || CoreMsg.TileType.Void;
 		this.metaDatums = new Set();
 	}
 }
 
 interface TileRecord {
-	terrain?: TerrainTileType;
+	terrain?: CoreMsg.TileType;
 	meta?: MetaTileType
+	item?: CoreMsg.ItemType;
 }
 
 export class WorldMap {
@@ -137,7 +139,7 @@ export class WorldMap {
 				}
 				switch (genus) {
 					case "Terrain":
-						const terrain = stringToNumericEnum(TerrainTileType, species);
+						const terrain = stringToNumericEnum(CoreMsg.TileType, species);
 						if (terrain === undefined) {
 							throw new Error(`Invalid tile type: ${td.type}`);
 						}
@@ -149,6 +151,13 @@ export class WorldMap {
 							throw new Error(`Invalid tile type: ${td.type}`);
 						}
 						tileData.set(td.id, { meta });
+						continue;
+					case "Item":
+						const item = stringToNumericEnum(CoreMsg.ItemType, species);
+						if (item === undefined) {
+							throw new Error(`Invalid item type: ${td.type}`);
+						}
+						tileData.set(td.id, { item });
 						continue;
 					default:
 						console.warn(`Unrecognized tile genus: ${genus}`);
@@ -256,7 +265,7 @@ export class WorldMap {
 				// (maybe someday a howling vortex somewhere?
 				//  more likely would be its own tile type and void
 				//  will remain a proper nil.)
-				if (this.tiles[y][x].terrainType === TerrainTileType.Void) {
+				if (this.tiles[y][x].terrainType === CoreMsg.TileType.Void) {
 					throw new Error(`Tile at ${x}, ${y} was void after map parsing`);
 				}
 			}
@@ -267,15 +276,15 @@ export class WorldMap {
 		return slice.map(row =>
 			row.map(t => {
 				switch (t.terrainType) {
-					case TerrainTileType.Floor:
+					case CoreMsg.TileType.Floor:
 						return ".";
-					case TerrainTileType.Void:
+					case CoreMsg.TileType.Void:
 						return " ";
-					case TerrainTileType.OpenDoor:
+					case CoreMsg.TileType.OpenDoor:
 						return "_";
-					case TerrainTileType.ClosedDoor:
+					case CoreMsg.TileType.ClosedDoor:
 						return "-";
-					case TerrainTileType.Wall:
+					case CoreMsg.TileType.Wall:
 						return "#";
 				}
 			}).join("")
@@ -314,7 +323,7 @@ export class WorldMap {
 	}
 
 	// outsourcing to another file because lotsa helper classes and things
-	computeFOV(origin: Point, radius: number, opacityTest: TerrainTileType[]|((t: TerrainTileType) => boolean)): Tile[][] {
+	computeFOV(origin: Point, radius: number, opacityTest: CoreMsg.TileType[]|((t: CoreMsg.TileType) => boolean)): Tile[][] {
 		return computeFOV(this, origin, radius, opacityTest);
 	}
 }
@@ -322,8 +331,8 @@ export class WorldMap {
 // // testing functionality while developing
 // async function main() {
 // 	const m = await WorldMap.loadTiled("dungeon");
-// 	const opaqueList = [TerrainTileType.Wall, TerrainTileType.ClosedDoor];
-// 	// const opaqueList = [TerrainTileType.Wall]; // letting us see through closed doors for the purposes of testing
+// 	const opaqueList = [CoreMsg.TileType.Wall, CoreMsg.TileType.ClosedDoor];
+// 	// const opaqueList = [CoreMsg.TileType.Wall]; // letting us see through closed doors for the purposes of testing
 // 	const view = m.computeFOV({x: 21, y: 4}, 2, opaqueList);
 // 	console.log(WorldMap.getDebugSlice(view));
 // }

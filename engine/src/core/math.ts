@@ -1,5 +1,10 @@
 import { Direction as MsgDir } from "./messages.ts";
 
+export function clamp(val: number, minimum: number, maximum: number): number {
+	return Math.max(minimum, Math.min(val, maximum));
+}
+
+
 // transform direction values from `messages.toml` into more useful/powerful TypeScript things
 const DirectionValues = {
 	North: MsgDir.North,

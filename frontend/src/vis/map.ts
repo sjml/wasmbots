@@ -61,6 +61,7 @@ export class VisMap extends Phaser.Scene {
 	private _tilemap: Phaser.Tilemaps.Tilemap | null = null;
 	private _groundLayer: Phaser.Tilemaps.TilemapLayer | null = null;
 	private _wallsLayer: Phaser.Tilemaps.TilemapLayer | null = null;
+	private _itemsLayer: Phaser.Tilemaps.TilemapLayer | null = null;
 	private _clutterLayer: Phaser.Tilemaps.TilemapLayer | null = null;
 	private _playerList: VisPlayer[] = [];
 	// private _lightswitch: Phaser.Input.Keyboard.Key|null = null;
@@ -91,6 +92,7 @@ export class VisMap extends Phaser.Scene {
 		}
 		this._groundLayer = this._tilemap.createLayer("ground", this._tilemap.tilesets, 0, 0);
 		this._wallsLayer = this._tilemap.createLayer("walls", this._tilemap.tilesets, 0, 0);
+		this._itemsLayer = this._tilemap.createLayer("items", this._tilemap.tilesets, 0, 0);
 		this._clutterLayer = this._tilemap.createLayer("clutter", this._tilemap.tilesets, 0, 0);
 
 
@@ -129,6 +131,26 @@ export class VisMap extends Phaser.Scene {
 		}
 
 
+		// items
+		const items = this.add.group();
+		for (let y = 0; y < this._tilemap.height; y += 1) {
+			for (let x = 0; x < this._tilemap.width; x += 1) {
+				const t = this._itemsLayer!.getTileAt(x, y, true);
+				if (!t) {
+					throw new Error(`No tile at ${x}, ${y}?!`);
+				}
+				const datums = t.getTileData();
+				if (datums && (datums as any).type == "Item.Amulet") {
+					this._itemsLayer!.removeTileAt(x, y);
+					const coin = this.add.sprite(t.pixelX, t.pixelY, "tiles-dungeon");
+					coin.setOrigin(0,0);
+					coin.play({key: "coin", randomFrame: true});
+					items.add(coin);
+				}
+			}
+		}
+
+
 		// cameras
 		this._cameraSet.cameras.push(this.cameras.main);
 
@@ -143,6 +165,7 @@ export class VisMap extends Phaser.Scene {
 			this._fxCamera.ignore(this._wallsLayer!);
 			this._fxCamera.ignore(this._clutterLayer!);
 			this._fxCamera.ignore(animatedClutter);
+			this._fxCamera.ignore(items);
 			this._cameraSet.cameras.push(this._fxCamera);
 		}
 

@@ -8,8 +8,10 @@ import {
 	Rect,
 } from "../core/math.ts";
 import { getGitRevision } from "../core/util.ts";
+import * as CoreMsg from "../core/messages.ts";
 import { RNG } from "../game/random.ts";
 import * as Tiled from "./tileTypes.ts";
+import { type ItemPlacementRule, type PlacedItem, placeItems } from "./itemPlacement.ts";
 
 import rawMapTemplate from "../data/blankMapTemplate.json" with { type: "json" };
 const mapTemplate = rawMapTemplate as Tiled.TileMap;
@@ -18,6 +20,12 @@ import rawAbstractTileset from "../data/abstractDataTileset.json" with { type: "
 const abstractTileset = rawAbstractTileset as Tiled.Tileset;
 abstractTileset.image = abstractTileset.image.replace("../../rsc/img/", "../../img/");
 mapTemplate.tilesets.push(abstractTileset);
+const abstractTileLookup = new Map<string, number>();
+for (const t of abstractTileset.tiles) {
+	if (t.type !== undefined) {
+		abstractTileLookup.set(t.type, t.id + abstractTileset.firstgid);
+	}
+}
 
 const metaMapping = new Map<string, number>();
 for (const t of mapTemplate.tilesets[0].tiles) {
@@ -44,9 +52,20 @@ export function mapObjectToJSON(map: Tiled.TileMap): string {
 	return outputJson;
 }
 
+export interface BuilderRoom {
+	id: string;
+	rect: Rect;
+	metas?: {
+		position: Point,
+		type: string,
+	}[];
+}
+
 export abstract class MapBuilder {
 	rng: RNG;
 	tiles: Array2D<TileType>;
+	rooms: BuilderRoom[];
+	items: PlacedItem[];
 	metaTiles: Array2D<TileType>;
 	mapProperties?: Tiled.TiledProperty[];
 	objects?: Tiled.TiledObject[];
@@ -54,10 +73,14 @@ export abstract class MapBuilder {
 	constructor(rng: RNG, props: Tiled.TiledProperty[] = []) {
 		this.rng = rng;
 		this.tiles = new Array2D<TileType>(0, 0, TileType.Void);
+		this.rooms = [];
+		this.items = [];
 		this.metaTiles = new Array2D<TileType>(0, 0, TileType.Void);
 		this.mapProperties = props;
-		console.log(`generating with seed {${this.rng.seed}}...`);
+		console.log(`generating ${this.builderType()} with seed {${this.rng.seed}}...`);
 	}
+
+	abstract builderType(): string;
 
 	abstract generate(width: number, height: number): void;
 
@@ -140,6 +163,24 @@ export abstract class MapBuilder {
 		templateData.layers.push(metaLayer);
 		templateData.nextlayerid += 1;
 
+		const itemsLayer = structuredClone(layerTemplate);
+		itemsLayer.name = "items";
+		itemsLayer.width = this.metaTiles.width;
+		itemsLayer.height = this.metaTiles.height;
+		itemsLayer.id = templateData.nextlayerid;
+		itemsLayer.data = new Array(this.metaTiles.width * this.metaTiles.height).fill(0);
+		for (const item of this.items) {
+			const abstractTileIdx = abstractTileLookup.get(`Item.${CoreMsg.ItemType[item.itemType]}`);
+			if (abstractTileIdx === undefined) {
+				throw new Error(`Invalid item type in map builder: ${item.itemType}`);
+			}
+			const dataIdx = item.position.y * this.metaTiles.width + item.position.x;
+			itemsLayer.data[dataIdx] = abstractTileIdx;
+		}
+
+		templateData.layers.push(itemsLayer);
+		templateData.nextlayerid += 1;
+
 		if (this.objects && this.objects.length > 0) {
 			const roomLayer = structuredClone(objectLayerTemplate);
 			roomLayer.name = "rooms";
@@ -166,41 +207,56 @@ function advance(pt: Point, dir: Direction, steps: number = 1): Point {
 	};
 }
 
-
-interface DungeonRoomSpec {
-	id: string;
-	rect: Rect;
-	metas?: {
-		position: Point,
-		type: string,
-	}[];
-}
-
 export interface DungeonBuilderOptions {
 	numRoomTries?: number;
 	extraConnectorChance?: number;
 	roomExtraSize?: number;
 	windingPercent?: number;
 	fillDeadEnds?: boolean;
+	itemPlacements?: ItemPlacementRule[];
 }
 
 
 // a simple adaptation of Robert Nystrom's "Rooms and Mazes" generator
 //     https://journal.stuffwithstuff.com/2014/12/21/rooms-and-mazes/
 export class DungeonBuilder extends MapBuilder {
+	builderType(): string {
+		return "dungeon";
+	}
+
 	static readonly optionsDefaults: DungeonBuilderOptions = {
 		numRoomTries: 200,
 		extraConnectorChance: 30,
 		roomExtraSize: 0,
 		windingPercent: 0,
 		fillDeadEnds: true,
+		itemPlacements: [
+			{
+				itemType: CoreMsg.ItemType.Amulet,
+				levelCount: { min: 1, max: 1 },
+				conditions: [
+					{
+						conditionType: "TileType",
+						tileTypes: [CoreMsg.TileType.Floor],
+					},
+					{
+						conditionType: "LevelArea",
+						area: new Rect(
+							Math.ceil(Config.mapWidth * 0.33),
+							Math.ceil(Config.mapHeight * 0.33),
+							Math.floor(Config.mapWidth * 0.33),
+							Math.floor(Config.mapHeight * 0.33),
+						),
+					}
+				]
+			}
+		],
 	};
 	generatorOptions: DungeonBuilderOptions = structuredClone(DungeonBuilder.optionsDefaults);
 
 	width: number = -1;
 	height: number = -1;
 	worldBounds: Rect = new Rect(0, 0, 0, 0);
-	rooms: DungeonRoomSpec[] = [];
 	currentRegion = -1;
 	regions: Array2D<number|null> = new Array2D(0, 0, null);
 	regionNames: Map<number, string> = new Map();
@@ -236,7 +292,7 @@ export class DungeonBuilder extends MapBuilder {
 		}
 	}
 
-	generate(width: number, height: number, seedRooms?: DungeonRoomSpec[]) {
+	generate(width: number, height: number, seedRooms?: BuilderRoom[]) {
 		if (width % 2 == 0 || height % 2 == 0) {
 			throw new Error("Map generation requires odd dimensions");
 		}
@@ -278,9 +334,11 @@ export class DungeonBuilder extends MapBuilder {
 			this.removeDeadEnds();
 		}
 		this.tagRooms();
+
+		this.items = placeItems(this.rng, this, this.generatorOptions.itemPlacements!);
 	}
 
-	addRoom(room: DungeonRoomSpec) {
+	addRoom(room: BuilderRoom) {
 		this.rooms.push(room);
 		this.currentRegion += 1;
 		this.regionNames.set(this.currentRegion, room.id);

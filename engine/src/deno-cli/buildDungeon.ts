@@ -11,8 +11,8 @@ if (Deno.args.length == 0) {
 	Deno.exit(1);
 }
 
-// const builder = new DungeonBuilder(new RNG(null));
-const builder = new DungeonBuilder(new RNG(2119213253));
+const builder = new DungeonBuilder(new RNG(null));
+
 builder.generate(config.mapWidth, config.mapHeight, [
 	{
 		id: "SpawnRoom_1",

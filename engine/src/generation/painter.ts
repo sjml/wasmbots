@@ -243,7 +243,7 @@ export class MapPainter {
 					while (run.length > 0) {
 						const currTile = run.pop()!;
 						if (!currContents.includes("banner")) {
-							clutterLayer.data[this.pointToIndex(currTile)] = 103 + this.tileset.firstgid;
+							clutterLayer.data[this.pointToIndex(currTile)] = 113 + this.tileset.firstgid;
 							currContents.push("banner");
 							continue;
 						}

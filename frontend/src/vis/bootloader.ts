@@ -47,9 +47,16 @@ export class VisBootloader extends Phaser.Scene {
 		});
 		this.anims.create({
 			key: "banner-blue",
-			frames: this.anims.generateFrameNumbers("tiles-dungeon", {start: 100, end: 109}),
+			frames: this.anims.generateFrameNumbers("tiles-dungeon", {start: 110, end: 119}),
 			frameRate: 6,
 			repeat: -1,
+		});
+		this.anims.create({
+			key: "coin",
+			frames: this.anims.generateFrameNumbers("tiles-dungeon", {start: 100, end: 102}),
+			frameRate: 9,
+			repeat: -1,
+			yoyo: true,
 		});
 
 		VisEventBus.emit("bootloader-done");

@@ -277,8 +277,8 @@ export class World extends EventTarget {
 						};
 						if (rawFOV[lookup.y][lookup.x].terrainType !== CoreMsg.TileType.Void) {
 							const playerEntity = new CoreMsg.Entity();
-							playerEntity.id = otherPlayer.entityId;
-							playerEntity.type = CoreMsg.EntityType.Player;
+							playerEntity.id = otherPlayer.id;
+							playerEntity.entityType = CoreMsg.EntityType.Player;
 							playerEntity.label = otherPlayer.name;
 							playerEntity.surroundingsIndex = lookup.y * rawFOV.length + lookup.x;
 							playerEntity.dataByteA = 255;
