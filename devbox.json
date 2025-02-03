@@ -15,22 +15,21 @@
     "binaryen@latest",
     "gnumake@latest",
     "rsync@latest",
-    "nodejs@latest",
+    "nodejs@latest"
   ],
   "shell": {
     "init_hook": [
       "echo 'Welcome to devbox!' > /dev/null",
       "rustup default stable",
-      "rustup target add wasm32-unknown-unknown",
+      "rustup target add wasm32-unknown-unknown"
     ],
     "scripts": {
-      "serve": [
+      "build": [
         "cd validator && make install && cd ..",
         "/bin/bash scripts/_build_wasms.sh",
         "cd frontend && npm install && cd ..",
-        "cd frontend && WASMBOTS_BASE=\"\" npm run build && cd ..",
-        "cd frontend && npx http-server -p 3000 build"
-      ],
-    },
-  },
+        "cd frontend && WASMBOTS_BASE=\"\" npm run build"
+      ]
+    }
+  }
 }
