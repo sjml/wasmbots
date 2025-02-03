@@ -1,5 +1,5 @@
 WASM_CC = emcc
-WASM_CFLAGS = -s WASM=1 -s EXPORTED_FUNCTIONS='["_setup", "_receiveGameParams", "_tick"]' -O3 --no-entry -s ERROR_ON_UNDEFINED_SYMBOLS=0 -Werror
+WASM_CFLAGS = -s WASM=1 -s EXPORTED_FUNCTIONS='["_setup", "_receiveGameParams", "_tick"]' -O3 --no-entry -s ERROR_ON_UNDEFINED_SYMBOLS=0 -Werror --cache .cache
 CC := clang
 LIBDIR = ../../libraries/C
 TRAINER_DIR = $(LIBDIR)/trainer
