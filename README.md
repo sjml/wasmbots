@@ -32,4 +32,4 @@ That will build and validate all the example bots; it doesn't check their functi
 
 There is a Dockerfile you can use to run wasmbots on your local machine. It's set up for editing; there may be a more production-ready image to come.
 
-From within the repository root: build the image with `docker build --rm -t wasmbots:latest .`, then run it with `docker run -d -v .:/code -p <your favorite port>:3000 wasmbots:latest`. Then look for it in your favorite browser at `http://localhost:<your favorite port>`.
+From within the repository root: build the image with `docker build --rm -t wasmbots:latest .`, then run it with `docker run -d -p <your favorite port>:80 wasmbots:latest`. Then look for it in your favorite browser at `http://localhost:<your favorite port>`.
