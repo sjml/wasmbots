@@ -1,0 +1,36 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.13.7/.schema/devbox.schema.json",
+  "packages": [
+    "docker@latest",
+    "zig@latest",
+    "wabt@latest",
+    "emscripten@latest",
+    "rustup@latest",
+    "go@latest",
+    "tinygo@latest",
+    "libiconv@latest",
+    "llvm@latest",
+    "gcc@latest",
+    "git@latest",
+    "binaryen@latest",
+    "gnumake@latest",
+    "rsync@latest",
+    "nodejs@latest",
+  ],
+  "shell": {
+    "init_hook": [
+      "echo 'Welcome to devbox!' > /dev/null",
+      "rustup default stable",
+      "rustup target add wasm32-unknown-unknown",
+    ],
+    "scripts": {
+      "serve": [
+        "cd validator && make install && cd ..",
+        "/bin/bash scripts/_build_wasms.sh",
+        "cd frontend && npm install && cd ..",
+        "cd frontend && WASMBOTS_BASE=\"\" npm run build && cd ..",
+        "cd frontend && npx http-server -p 3000 build"
+      ],
+    },
+  },
+}
