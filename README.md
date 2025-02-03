@@ -28,3 +28,8 @@ At the moment you can verify everything is working as expected by running:
 
 That will build and validate all the example bots; it doesn't check their functionality at all, just that WebAssembly modules were produced that conform to [the expected interface](./engine/src/data/guestAPI.json).
 
+## Docker
+
+There is a Dockerfile you can use to run wasmbots on your local machine. It's set up for editing; there may be a more production-ready image to come.
+
+From within the repository root: build the image with `docker build --rm -t wasmbots:latest .`, then run it with `docker run -d -v .:/code -p <your favorite port>:3000 wasmbots:latest`. Then look for it in your favorite browser at `http://localhost:<your favorite port>`.
