@@ -9,9 +9,9 @@
     "binaryen@latest",
     "llvm@latest",
     "emscripten@latest",
-    "zig@latest",
     "rustup@latest",
     "libiconv@latest",
+    "zig@latest",
     "go@latest",
     "tinygo@latest"
   ],

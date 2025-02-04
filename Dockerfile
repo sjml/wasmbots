@@ -1,19 +1,16 @@
-FROM jetpackio/devbox:latest AS builder
-
+FROM jetpackio/devbox:latest AS base
 WORKDIR /code
 USER root:root
 RUN mkdir -p /code && chown ${DEVBOX_USER}:${DEVBOX_USER} /code
 USER ${DEVBOX_USER}:${DEVBOX_USER}
-COPY --chown=${DEVBOX_USER}:${DEVBOX_USER} devbox.json devbox.json
-COPY --chown=${DEVBOX_USER}:${DEVBOX_USER} devbox.lock devbox.lock
 
-RUN devbox run -- echo "Devbox environment ready."
+FROM base as dev
+CMD ["devbox", "shell"]
 
-COPY --chown=${DEVBOX_USER}:${DEVBOX_USER} . /code/
-
+FROM base as build
 WORKDIR /code
+COPY --chown=${DEVBOX_USER}:${DEVBOX_USER} . .
 RUN devbox run build
 
-FROM caddy:2-alpine
-
-COPY --from=builder /code/frontend/build/ /usr/share/caddy/
+FROM caddy:2-alpine as serve
+COPY --from=build /code/frontend/build/ /usr/share/caddy/

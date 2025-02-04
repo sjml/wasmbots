@@ -14,12 +14,47 @@ The [documentation can also be useful](./docs/), or maybe just [the development 
 
 It's a big ole monorepo. Sorry about that; it's what happens when a proof-of-concept just grows organically. I presumptively registered a [wasmbots org on GitHub](https://github.com/wasmbots) just in case this becomes A Thing™ in which case I'll split things out more productively. 
 
-Prereqs on macOS; modify this appropriately if you're using something else: 
-```
-brew install deno wabt rust zig emscripten node go tinygo-org/tools/tinygo
+
+### Devbox
+You can always build and run with [devbox](https://www.jetify.com/devbox). ([Installation instructions are here.](https://www.jetify.com/docs/devbox/installing_devbox/)) 
+
+Run `devbox shell` to be in a usable environment where you can run 
+
+
+### Docker
+The [Dockerfile](./Dockerfile) just pipes everything through devbox, but makes it a little more turnkey, especially if you're already a Docker user. 
+
+```sh
+# produces a container with a built frontend, 
+#   including example bots, served with Caddy
+docker build -t wasmbots .
+
+# to actually get it serving:
+docker run -d -p 8080:80 wasmbots
+# Then look for it in your favorite browser at:
+#   `http://localhost:8080`
+#   (change out the port number to whatever you want)
 ```
 
-At the moment you can verify everything is working as expected by running:
+```sh
+# this will drop you into a shell within the container
+#   where all the tools are installed and paths are set
+#   and everything. 
+docker build --target dev -t wasmbots-dev .
+docker run -it -v $PWD:/code wasmbots-dev
+```
+
+
+### Manual Installation
+If you don't want to install a whole other package manager, here's what I (used to) use to get up and running with [Homebrew](https://brew.sh/) on macOS. Modify appropriately if you're using something else. 
+
+
+```sh
+brew install deno node wabt emscripten rust zig go tinygo-org/tools/tinygo
+```
+
+### Simple Checks
+Regardless of how you get your dev environment running, you can verify everything is working as expected by running:
 
 ```
 ./scripts/_build_wasms.sh
@@ -28,8 +63,3 @@ At the moment you can verify everything is working as expected by running:
 
 That will build and validate all the example bots; it doesn't check their functionality at all, just that WebAssembly modules were produced that conform to [the expected interface](./engine/src/data/guestAPI.json).
 
-## Docker
-
-There is a Dockerfile you can use to run wasmbots on your local machine. It's set up for editing; there may be a more production-ready image to come.
-
-From within the repository root: build the image with `docker build --rm -t wasmbots:latest .`, then run it with `docker run -d -p <your favorite port>:80 wasmbots:latest`. Then look for it in your favorite browser at `http://localhost:<your favorite port>`.
