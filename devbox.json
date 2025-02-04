@@ -20,8 +20,8 @@
   },
   "shell": {
     "init_hook": [
-      "rustup default stable",
-      "rustup target add wasm32-unknown-unknown",
+      "bash -c 'if ! find \"$RUSTUP_HOME/toolchains\" -maxdepth 1 -type d -name \"stable*\" | grep -q .; then rustup default stable; fi'",
+      "bash -c 'if ! find \"$RUSTUP_HOME/toolchains\" -maxdepth 1 -type d -name \"stable*\" -exec test -d \"{}/lib/rustlib/wasm32-unknown-unknown\" \\; -print | grep -q .; then rustup target add wasm32-unknown-unknown; fi'",
       "echo '\n🤖 WasmBots devbox environment loaded!'"
     ],
     "scripts": {
