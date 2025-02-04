@@ -2,6 +2,7 @@
 
 /.vscode
 /.envrc
+/.emscripten_cache
 /node_modules
 
 

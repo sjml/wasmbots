@@ -15,6 +15,9 @@
     "go@latest",
     "tinygo@latest"
   ],
+  "env": {
+    "EM_CACHE": "$DEVBOX_PROJECT_ROOT/.emscripten_cache"
+  },
   "shell": {
     "init_hook": [
       "rustup default stable",
