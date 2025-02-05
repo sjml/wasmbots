@@ -25,12 +25,19 @@ jobs:
         uses: jetify-com/devbox-install-action@v0.12.0
         with:
           enable-cache: true
-      - name: Build Site
+      - name: Build Distribution Site
         run: |
           devbox run build
-        env:
-          WASMBOTS_BASE: "/wasmbots"
-      - name: Upload site artifact
+      - name: Upload Distribution Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wasmbots-dist
+          path: frontend/build
+      - name: Build GitHub Pages Site
+        run: |
+          cd frontend
+          devbox run --env WASMBOTS_BASE="/wasmbots" npm run build
+      - name: Upload GitHub Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: frontend/build
