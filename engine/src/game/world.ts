@@ -6,6 +6,7 @@ import { type DungeonBuilderOptions } from "../generation/builder.ts";
 import { RNG, Deck } from "./random.ts";
 import { Player } from "./player.ts";
 import { WorldMap } from "./map.ts";
+import { LogLevel } from "../core/logger.ts";
 import { EntityIdGenerator } from "./entities.ts";
 
 export enum GameState {
@@ -292,6 +293,7 @@ export class World extends EventTarget {
 				try {
 					move = await player.tickTurn(circumstances, visualTick);
 				} catch (error) {
+					player.coordinator.logger(LogLevel.Error, "Exception in player tick");
 					console.error("Exception in player tick:", error);
 					player.lastMoveStatus = CoreMsg.MoveResult.Error;
 					continue;

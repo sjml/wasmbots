@@ -9,7 +9,8 @@ cd ..
 ./scripts/_validate_wasms.sh
 
 pushd frontend
-npm run build
+    # setting for deployment on the canonical site @ shaneliesegang.com
+    WASMBOTS_BASE="/projects/wasmbots" npm run build
 popd
 
 if [[ -f ./scripts/deploy_frontend.sh ]]; then
