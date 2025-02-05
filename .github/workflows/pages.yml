@@ -21,29 +21,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Set up Homebrew
-        id: set-up-homebrew
-        uses: Homebrew/actions/setup-homebrew@master
-      - name: Install Dependencies
-        run: |
-          brew install zig wabt emscripten go tinygo-org/tools/tinygo
-      - name: Setup Rust
-        uses: dtolnay/rust-toolchain@master
+      - name: Install Devbox + Dependencies
+        uses: jetify-com/devbox-install-action@v0.12.0
         with:
-          toolchain: 'stable'
-          targets: 'wasm32-unknown-unknown'
-      - name: Build Validator
+          enable-cache: true
+      - name: Build Site
         run: |
-          cd validator
-          make install
-      - name: Build Modules
-        run: |
-          scripts/_build_wasms.sh
-      - name: Build Frontend
-        run: |
-          cd frontend
-          npm install
-          WASMBOTS_BASE="/wasmbots" npm run build
+          devbox run build
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:
@@ -54,8 +38,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     needs: build
-    runs-on: ubuntu-latest
     name: Deploy
+    runs-on: ubuntu-latest
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
