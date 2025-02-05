@@ -28,6 +28,8 @@ jobs:
       - name: Build Site
         run: |
           devbox run build
+        env:
+          WASMBOTS_BASE: "/wasmbots"
       - name: Upload site artifact
         uses: actions/upload-pages-artifact@v3
         with:
