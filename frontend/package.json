@@ -3,6 +3,7 @@
 	"version": "0.0.1",
 	"type": "module",
 	"scripts": {
+		"prepare": "svelte-kit sync",
 		"dev": "vite dev",
 		"dev-host": "vite dev --host",
 		"build:component": "npx tsx scripts/buildComponentDist.ts",
