@@ -5,7 +5,7 @@ import { sveltePhosphorOptimize } from "phosphor-svelte/vite";
 
 import hashAssets from "./scripts/hashPhaserAssets";
 
-const projectBase = process.env['WASMBOTS_BASE'] ?? '/projects/wasmbots';
+const projectBase = process.env['WASMBOTS_BASE'] ?? '';
 
 export default defineConfig({
 	plugins: [

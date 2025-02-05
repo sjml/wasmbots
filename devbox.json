@@ -30,7 +30,7 @@
         "/bin/bash scripts/_build_wasms.sh",
         "/bin/bash scripts/_validate_wasms.sh",
         "cd frontend && npm install && cd ..",
-        "cd frontend && WASMBOTS_BASE=\"\" npm run build"
+        "cd frontend && npm run build"
       ]
     }
   }

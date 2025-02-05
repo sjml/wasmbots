@@ -2,7 +2,7 @@ import process from 'node:process';
 import adapter from '@sveltejs/adapter-static';
 import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
-const projectBase = process.env['WASMBOTS_BASE'] ?? '/projects/wasmbots';
+const projectBase = process.env['WASMBOTS_BASE'] ?? '';
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
