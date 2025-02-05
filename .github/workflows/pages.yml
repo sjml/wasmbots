@@ -35,7 +35,9 @@ jobs:
           path: frontend/build
       - name: Build GitHub Pages Site
         run: |
-          devbox run --env WASMBOTS_BASE="/wasmbots" cd frontend && npm run build
+          devbox run --env WASMBOTS_BASE="/wasmbots" npm run build
+        env:
+          DEVBOX_WD: ${{ github.workspace }}/frontend
       - name: Upload GitHub Pages Artifact
         uses: actions/upload-pages-artifact@v3
         with:
