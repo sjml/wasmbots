@@ -1,5 +1,8 @@
 (speculative ideas are all in [the idea dump](./idea_dump.md); this file is just for actionable tasks)
 
+## bugs
+* validator error message reports missing *exports* when it should be imports (https://github.com/sjml/wasmbots/issues/8)
+
 ## dev
 * perception system
     * entities on tiles
